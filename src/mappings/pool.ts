@@ -91,13 +91,24 @@ export function handleSetup(event: LOG_CALL): void {
   let poolId = event.address.toHex()
 
   let data = event.params.data.toHexString()
+  // First 2 chars are 0x
+  // Next there is 8 chars
+  // Next starts the data each params occupies exactly 64 chars
+  // Each value is padded with 0s to the left
+  // For an Address, need to remove the leading 24 zeros, because the address itself is 40 chars
+  // For numbers we donot need to remove the leading zeros because they have no effect being on the left of the number
+
+  // skip 8 then take the last 40 (2 + 8 + 24 = 34) to (2 + 8 + 64 = 74)
   let dataTokenAddress = Address.fromString(data.slice(34,74)).toHexString()
-  let dataTokenAmount = data.slice(98,162)
-  let dataTokenWeight = data.slice(162,226)
-  let baseTokenAddress = Address.fromString(data.slice(226, 290-24)).toHexString()
-  let baseTokenAmount = data.slice(290,354)
-  let baseTokenWeight = data.slice(354,418)
-  let swapFee = data.slice(418)
+
+  let dataTokenAmount = data.slice(74, 138) // 74+64
+  let dataTokenWeight = data.slice(138,202) // (74+64,74+(2*64)
+  let baseTokenAddress = Address.fromString(data.slice(202+24, 266)).toHexString() // (74+(2*64)+24, 74+(3*64))
+  let baseTokenAmount = data.slice(266,330) // (74+(3*64),74+(4*64))
+  let baseTokenWeight = data.slice(330,394) // (74+(4*64),74+(5*64))
+  let swapFee = data.slice(394) // (74+(5*64), END)
+  // log.error('handleSetup: ##{}, {}, {}, {}, {}, {}, {}##, \nDATA=##{} ##\n lenData={}',
+  //   [dataTokenAddress, dataTokenAmount, dataTokenWeight, baseTokenAddress, baseTokenAmount, baseTokenWeight, swapFee, data, BigInt.fromI32(data.length).toString()])
 
   _handleRebind(event, poolId, dataTokenAddress, dataTokenAmount, dataTokenWeight)
   _handleRebind(event, poolId, baseTokenAddress, baseTokenAmount, baseTokenWeight)
