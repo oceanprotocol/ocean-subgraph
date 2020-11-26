@@ -42,10 +42,8 @@ type Pool @entity {
 type PoolToken @entity {
     id: ID!                                             # poolId + token address
     poolId: Pool!
-    symbol: String
-    name: String
-    decimals: Int!
-    address: String!
+    tokenId: Datatoken
+    address: String
     balance: BigDecimal!
     denormWeight: BigDecimal!
 }
@@ -60,8 +58,12 @@ type PoolShare @entity {
 type User @entity {
     id: ID!
     sharesOwned: [PoolShare!]  @derivedFrom(field: "userAddress")
-    txs: [Transaction!]  @derivedFrom(field: "userAddress")
+    tokenBalancesOwned: [TokenBalance!] @derivedFrom(field: "userAddress")
+    tokensOwned: [Datatoken!] @derivedFrom(field: "minter")
+    poolTxs: [PoolTransaction!]  @derivedFrom(field: "userAddress")
+    tokenTxs: [TokenTransaction!]  @derivedFrom(field: "userAddress")
     swaps: [Swap!]  @derivedFrom(field: "userAddress")
+
 }
 
 type Swap @entity {
@@ -83,7 +85,7 @@ type Swap @entity {
     timestamp: Int!
 }
 
-type Transaction @entity {
+type PoolTransaction @entity {
     id: ID!                         # Log ID
     tx: Bytes!
     event: String
@@ -105,6 +107,51 @@ type TokenPrice @entity {
     price: BigDecimal!
     poolLiquidity: BigDecimal!
     poolTokenId: String
+}
+
+type OceanDatatokens @entity {
+    id: ID!
+    tokenCount: Int!                                     # Number of datatokens
+    datatokens: [Datatoken!] @derivedFrom(field: "factoryID")
+    txCount: BigInt!                                    # Number of txs
+}
+
+type Datatoken @entity {
+    id: ID!                                             # token address
+    factoryID: OceanDatatokens!
+    symbol: String
+    name: String
+    decimals: Int!
+    address: String!
+    cap: BigDecimal!
+    supply: BigDecimal!
+    minter: User!
+    publisher: User!
+    balances: [TokenBalance!] @derivedFrom(field: "datatokenId")
+    createTime: Int!                                    # Block time datatoken was created
+    holdersCount: BigInt!                               # Number of addresses holding a balance of datatoken
+    tx: Bytes                                           # Datatoken creation transaction id
+}
+
+type TokenBalance @entity {
+    id: ID!                                             # datatokenId + userAddress
+    userAddress: User!
+    datatokenId: Datatoken!
+    balance: BigDecimal!
+}
+
+type TokenTransaction @entity {
+    id: ID!                         # Log ID
+    tx: Bytes!
+    event: String
+    block: Int!
+    timestamp: Int!
+    gasUsed: BigDecimal!
+    gasPrice: BigDecimal!
+    datatokenAddress: Datatoken
+    userAddress: User
+    sender: Bytes
+
 }
 
 enum SwapType {

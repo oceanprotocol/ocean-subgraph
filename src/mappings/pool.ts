@@ -1,16 +1,16 @@
 
 import { BigInt, Address, Bytes, store, BigDecimal } from '@graphprotocol/graph-ts'
-import { LOG_CALL, LOG_JOIN, LOG_EXIT, LOG_SWAP, Transfer, GulpCall } from '../types/templates/Pool/Pool'
+import { LOG_CALL, LOG_JOIN, LOG_EXIT, LOG_SWAP, Transfer } from '../types/templates/Pool/Pool'
 import { Pool as BPool } from '../types/templates/Pool/Pool'
 import { log } from '@graphprotocol/graph-ts'
 
 import {
-  OceanPools,
-  Pool,
-  PoolToken,
-  PoolShare,
-  Swap,
-  TokenPrice
+    OceanPools,
+    Pool,
+    PoolToken,
+    PoolShare,
+    Swap,
+    TokenPrice, Datatoken
 } from '../types/schema'
 import {
   hexToDecimal,
@@ -136,7 +136,9 @@ export function _handleRebind(event: LOG_CALL, poolId: string, tokenAddress: str
     }
   }
 
-  let balance = hexToDecimal(balanceStr, poolToken.decimals)
+  let datatoken = poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
+  let decimals = datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
+  let balance = hexToDecimal(balanceStr, decimals)
 
   poolToken.balance = balance
   poolToken.denormWeight = denormWeight
@@ -182,8 +184,9 @@ export function handleJoinPool(event: LOG_JOIN): void {
   if (!poolToken) {
     return
   }
-  poolToken.decimals = BigInt.fromI32(18).toI32()
-  let tokenAmountIn = tokenToDecimal(event.params.tokenAmountIn.toBigDecimal(), poolToken.decimals)
+  let datatoken = poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
+  let decimals = datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
+  let tokenAmountIn = tokenToDecimal(event.params.tokenAmountIn.toBigDecimal(), decimals)
   poolToken.balance = poolToken.balance.plus(tokenAmountIn)
   poolToken.save()
 
@@ -200,7 +203,9 @@ export function handleExitPool(event: LOG_EXIT): void {
   if (!poolToken) {
     return
   }
-  let tokenAmountOut = tokenToDecimal(event.params.tokenAmountOut.toBigDecimal(), poolToken.decimals)
+  let datatoken = poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
+  let decimals = datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
+  let tokenAmountOut = tokenToDecimal(event.params.tokenAmountOut.toBigDecimal(), decimals)
   let newAmount = poolToken.balance.minus(tokenAmountOut)
   poolToken.balance = newAmount
   poolToken.save()

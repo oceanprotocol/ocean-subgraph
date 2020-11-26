@@ -24,6 +24,26 @@ dataSources:
       eventHandlers:
         - event: BPoolRegistered(address,indexed address)
           handler: handleNewPool
+  - kind: ethereum/contract
+    name: DTFactory
+    network: mainnet
+    source:
+      address: "0x57317f97E9EA49eBd19f7c9bB7c180b8cDcbDeB9"
+      abi: DTFactory
+      startBlock: 11105560
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/dtfactory.ts
+      entities:
+        - OceanDatatokens
+      abis:
+        - name: DTFactory
+          file: ./abis/DTFactory.json
+      eventHandlers:
+        - event: TokenRegistered(indexed address,string,string,uint256,indexed address,indexed string)
+          handler: handleNewToken
 templates:
   - kind: ethereum/contract
     name: Pool
@@ -74,3 +94,25 @@ templates:
           handler: handleSwap
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+
+  - kind: ethereum/contract
+    name: Datatoken
+    network: mainnet
+    source:
+      abi: Datatoken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/datatoken.ts
+      entities:
+        - Datatoken
+        - OceanDatatokens
+      abis:
+        - name: Datatoken
+          file: ./abis/DataTokenTemplate.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: OrderStarted(indexed address,indexed address,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleOrderStarted

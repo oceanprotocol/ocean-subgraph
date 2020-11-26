@@ -7,13 +7,13 @@ import {
   ethereum
 } from '@graphprotocol/graph-ts'
 import {
-  Pool,
-  User,
-  PoolToken,
-  PoolShare,
-  TokenPrice,
-  Transaction,
-  OceanPools
+    Pool,
+    User,
+    PoolToken,
+    PoolShare,
+    TokenPrice,
+    Transaction,
+    OceanPools, Datatoken, TokenBalance
 } from '../types/schema'
 import { BToken } from '../types/templates/Pool/BToken'
 import { log } from '@graphprotocol/graph-ts'
@@ -55,51 +55,12 @@ export function createPoolShareEntity(id: string, pool: string, user: string): v
 }
 
 export function createPoolTokenEntity(id: string, pool: string, address: string): void {
-  let token = BToken.bind(Address.fromString(address))
-  let symbol = ''
-  let name = ''
-  let decimals = 18
-
-  // COMMENT THE LINES BELOW OUT FOR LOCAL DEV ON KOVAN
-  let symbolCall = token.try_symbol()
-  let nameCall = token.try_name()
-
-  if (!symbolCall.reverted) {
-    symbol = symbolCall.value
-  }
-
-  if (!nameCall.reverted) {
-    name = nameCall.value
-  }
-
-  // COMMENT THE LINES ABOVE OUT FOR LOCAL DEV ON KOVAN
-
-  // !!! COMMENT THE LINES BELOW OUT FOR NON-LOCAL DEPLOYMENT
-  // This code allows Symbols to be added when testing on local Kovan
-  /*
-  if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
-    symbol = 'WETH';
-  else if(address == '0x1528f3fcc26d13f7079325fb78d9442607781c8c')
-    symbol = 'DAI'
-  else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
-    symbol = 'MKR'
-  else if(address == '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5')
-    symbol = 'USDC'
-  else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
-    symbol = 'BAT'
-  else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
-    symbol = 'SNX'
-  else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
-    symbol = 'REP'
-  */
-  // !!! COMMENT THE LINES ABOVE OUT FOR NON-LOCAL DEPLOYMENT
+  let datatoken = Datatoken.load(address)
 
   let poolToken = new PoolToken(id)
   poolToken.poolId = pool
+  poolToken.tokenId = datatoken ? datatoken.id: null
   poolToken.address = address
-  poolToken.name = name
-  poolToken.symbol = symbol
-  poolToken.decimals = decimals
   poolToken.balance = ZERO_BD
   poolToken.denormWeight = ZERO_BD
   poolToken.save()
@@ -110,30 +71,27 @@ export function updatePoolLiquidity(id: string): void {
   let tokensList: Array<Bytes> = pool.tokensList
 
   if (!tokensList || pool.tokensCount.lt(BigInt.fromI32(2)) || !pool.publicSwap) return
+  if (tokensList[0] != Address.fromString(OCEAN)) return
 
   // Find pool liquidity
 
   let hasPrice = false
   let hasOceanPrice = false
-  let poolLiquidity = ZERO_BD
+  let poolOcnLiquidity = ZERO_BD
+  let poolDTLiquidity = ZERO_BD
 
-  // if (tokensList.includes(Address.fromString(OCEAN))) {
-  //   let oceanPoolTokenId = id.concat('-').concat(OCEAN)
-  //   let oceanPoolToken = PoolToken.load(oceanPoolTokenId)
-  //   poolLiquidity = oceanPoolToken.balance.div(oceanPoolToken.denormWeight).times(pool.totalWeight)
-  //   hasPrice = true
-  //   hasOceanPrice = true
-  // } else {
-  //   let DT = tokensList[1].toHexString()
-  //   let dtTokenPrice = TokenPrice.load(DT)
-  //   if (dtTokenPrice !== null) {
-  //     let poolTokenId = id.concat('-').concat(DT)
-  //     let poolToken = PoolToken.load(poolTokenId)
-  //     poolLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-  //     hasPrice = true
-  //   }
-  // }
-  //
+  let oceanPoolTokenId = id.concat('-').concat(OCEAN)
+  let oceanPoolToken = PoolToken.load(oceanPoolTokenId)
+  poolOcnLiquidity = oceanPoolToken.balance.div(oceanPoolToken.denormWeight).times(pool.totalWeight)
+  let DT = tokensList[1].toHexString()
+  let dtTokenPrice = TokenPrice.load(DT)
+  if (dtTokenPrice !== null) {
+    let poolTokenId = id.concat('-').concat(DT)
+    let poolToken = PoolToken.load(poolTokenId)
+    poolDTLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+    hasPrice = true
+  }
+
   // // Create or update token price
   //
   // if (hasPrice) {
@@ -227,4 +185,19 @@ export function createUserEntity(address: string): void {
     let user = new User(address)
     user.save()
   }
+}
+
+export function createTokenBalanceEntity(id: string, token: string, user: string): void {
+  if (TokenBalance.load(id) != null) return
+
+  let tokenBalance = new TokenBalance(id)
+  createUserEntity(user)
+  tokenBalance.userAddress = user
+  tokenBalance.datatokenId = token
+  tokenBalance.balance = ZERO_BD
+  tokenBalance.save()
+}
+
+export function updateDatatokenBalance(): void {
+
 }
