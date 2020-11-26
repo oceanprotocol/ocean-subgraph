@@ -6,7 +6,7 @@ import { log } from '@graphprotocol/graph-ts'
 
 import {
     OceanDatatokens,
-    Datatoken, PoolShare, Pool, User, TokenBalance
+    Datatoken, PoolShare, Pool, User, TokenBalance, TokenOrder
 } from '../types/schema'
 import {
     hexToDecimal,
@@ -14,7 +14,7 @@ import {
     tokenToDecimal,
     createTokenBalanceEntity,
     updateDatatokenBalance,
-    saveTransaction,
+    saveTokenTransaction,
     ZERO_BD, createPoolShareEntity, createUserEntity
 } from './helpers'
 
@@ -37,8 +37,8 @@ export function handleTransfer(event: Transfer): void {
   let tokenBalanceToId = tokenId.concat('-').concat(event.params.to.toHex())
   let tokenBalanceFrom = TokenBalance.load(tokenBalanceFromId)
   let tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
-  let oldBalanceFrom = 0
-  let oldBalanceTo = 0
+  let oldBalanceFrom = BigDecimal.fromString('0.0')
+  let oldBalanceTo = BigDecimal.fromString('0.0')
 
   let datatoken = Datatoken.load(tokenId)
 
@@ -95,5 +95,34 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleOrderStarted(event: OrderStarted): void {
+  let ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+  let tokenId = event.address.toHex()
+  let datatoken = Datatoken.load(tokenId)
+  if (datatoken == null) return
 
+
+  let payer = event.params.payer.toHex()
+  // let feeCollector = event.params.mrktFeeCollector
+  // let marketFee = event.params.marketFee
+  let tx = event.transaction.hash
+  let orderId = tokenId.concat('-').concat(payer).concat('-').concat(tx.toHexString())
+  let order = TokenOrder.load(orderId)
+  if (order == null) {
+      order = new TokenOrder(orderId)
+  }
+  order.datatokenId = tokenId
+  order.amount = tokenToDecimal(event.params.amount.toBigDecimal(), 18)
+  order.consumer = event.params.consumer.toHex()
+  order.payer = payer
+  order.serviceId = event.params.serviceId.toI32()
+  order.timestamp = event.params.timestamp.toI32()
+  if (event.params.mrktFeeCollector != null && event.params.mrktFeeCollector.toHex() != ZERO_ADDRESS) {
+      order.marketFeeCollector = event.params.mrktFeeCollector.toHexString()
+  }
+  order.marketFee = tokenToDecimal(event.params.marketFee.toBigDecimal(), 18)
+  order.tx = tx
+
+  order.save()
+  datatoken.orderCount = datatoken.orderCount + BigInt.fromI32(1)
+  datatoken.save()
 }

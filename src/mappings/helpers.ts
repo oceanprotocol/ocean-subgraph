@@ -7,13 +7,13 @@ import {
   ethereum
 } from '@graphprotocol/graph-ts'
 import {
-    Pool,
-    User,
-    PoolToken,
-    PoolShare,
-    TokenPrice,
-    Transaction,
-    OceanPools, Datatoken, TokenBalance
+  Pool,
+  User,
+  PoolToken,
+  PoolShare,
+  TokenPrice,
+  PoolTransaction,
+  OceanPools, Datatoken, TokenBalance, TokenTransaction
 } from '../types/schema'
 import { BToken } from '../types/templates/Pool/BToken'
 import { log } from '@graphprotocol/graph-ts'
@@ -27,7 +27,7 @@ export let OCEAN: string = (network == 'mainnet')
   : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
 
 export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
-  let bytes = Bytes.fromHexString(hexString).reverse() as Bytes
+  let bytes = Bytes.fromHexString(hexString.toString()).reverse() as Bytes
   let bi = BigInt.fromUnsignedBytes(bytes)
   let scale = BigInt.fromI32(10).pow(decimals as u8).toBigDecimal()
   return bi.divDecimal(scale)
@@ -59,7 +59,7 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
 
   let poolToken = new PoolToken(id)
   poolToken.poolId = pool
-  poolToken.tokenId = datatoken ? datatoken.id: null
+  poolToken.tokenId = datatoken ? datatoken.id: ''
   poolToken.address = address
   poolToken.balance = ZERO_BD
   poolToken.denormWeight = ZERO_BD
@@ -79,6 +79,7 @@ export function updatePoolLiquidity(id: string): void {
   let hasOceanPrice = false
   let poolOcnLiquidity = ZERO_BD
   let poolDTLiquidity = ZERO_BD
+  return
 
   let oceanPoolTokenId = id.concat('-').concat(OCEAN)
   let oceanPoolToken = PoolToken.load(oceanPoolTokenId)
@@ -88,7 +89,7 @@ export function updatePoolLiquidity(id: string): void {
   if (dtTokenPrice !== null) {
     let poolTokenId = id.concat('-').concat(DT)
     let poolToken = PoolToken.load(poolTokenId)
-    poolDTLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+    poolDTLiquidity = TokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
     hasPrice = true
   }
 
@@ -160,15 +161,35 @@ export function decrPoolCount(finalized: boolean): void {
   factory.save()
 }
 
-export function saveTransaction(event: ethereum.Event, eventName: string): void {
+export function savePoolTransaction(event: ethereum.Event, eventName: string): void {
   let tx = event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString())
   let userAddress = event.transaction.from.toHex()
-  let transaction = Transaction.load(tx)
+  let transaction = PoolTransaction.load(tx)
   if (transaction == null) {
-    transaction = new Transaction(tx)
+    transaction = new PoolTransaction(tx)
   }
   transaction.event = eventName
   transaction.poolAddress = event.address.toHex()
+  transaction.userAddress = userAddress
+  transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
+  transaction.gasPrice = event.transaction.gasPrice.toBigDecimal()
+  transaction.tx = event.transaction.hash
+  transaction.timestamp = event.block.timestamp.toI32()
+  transaction.block = event.block.number.toI32()
+  transaction.save()
+
+  createUserEntity(userAddress)
+}
+
+export function saveTokenTransaction(event: ethereum.Event, eventName: string): void {
+  let tx = event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString())
+  let userAddress = event.transaction.from.toHex()
+  let transaction = TokenTransaction.load(tx)
+  if (transaction == null) {
+    transaction = new TokenTransaction(tx)
+  }
+  transaction.event = eventName
+  transaction.datatokenAddress = event.address.toHex()
   transaction.userAddress = userAddress
   transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
   transaction.gasPrice = event.transaction.gasPrice.toBigDecimal()
