@@ -47,6 +47,7 @@ type Pool @entity {
     tokens: [PoolToken!] @derivedFrom(field: "poolId")
     shares: [PoolShare!] @derivedFrom(field: "poolId")
     transactions: [PoolTransaction!] @derivedFrom(field: "poolAddress")
+    transactionsTokenValues: [PoolTransactionTokenValues!] @derivedFrom(field: "poolAddress")
 }
 
 type PoolToken @entity {
@@ -69,6 +70,10 @@ type PoolTransactionTokenValues @entity {
     id: ID!                                 # pool tx +  tokenAddress
     txId: PoolTransaction!
     poolToken: PoolToken!
+    poolAddress: Pool!
+    userAddress: User!
+    tokenAddress: String!
+
     value: BigDecimal!
     tokenReserve: BigDecimal!
     feeValue: BigDecimal!                   # Swap fee value in OCEAN
@@ -79,6 +84,8 @@ type PoolTransaction @entity {
     id: ID!                                 # pool tx
     poolAddress: Pool
     userAddress: User                       # User address that initiates the swap
+    poolAddressStr: String!
+    userAddressStr: String!
 
     sharesTransferAmount: BigDecimal!       #
     sharesBalance: BigDecimal!
@@ -171,6 +178,7 @@ type User @entity {
     tokenBalancesOwned: [TokenBalance!] @derivedFrom(field: "userAddress")
     tokensOwned: [Datatoken!] @derivedFrom(field: "minter")
     poolTransactions: [PoolTransaction!]  @derivedFrom(field: "userAddress")
+    poolTransactionsTokenValues: [PoolTransactionTokenValues!] @derivedFrom(field: "userAddress")
     tokenTransactions: [TokenTransaction!]  @derivedFrom(field: "userAddress")
     orders: [TokenOrder!] @derivedFrom(field: "payer")
 }

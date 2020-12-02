@@ -84,11 +84,32 @@ export function handleSetup(event: LOG_CALL): void {
   let baseTokenWeight = data.slice(330,394) // (74+(4*64),74+(5*64))
   let swapFee = data.slice(394) // (74+(5*64), END)
 
-  _handleRebind(event, poolId, dataTokenAddress, dataTokenAmount, dataTokenWeight)
+  let poolTokenId = poolId.concat('-').concat(baseTokenAddress)
+  let poolToken = PoolToken.load(poolTokenId)
+  if (poolToken != null) return
 
+  _handleRebind(event, poolId, dataTokenAddress, dataTokenAmount, dataTokenWeight)
   _handleRebind(event, poolId, baseTokenAddress, baseTokenAmount, baseTokenWeight)
   handleSetSwapFee(event, swapFee)
   handleFinalize(event)
+  createPoolTransaction(event, 'setup', event.transaction.from.toHex())
+
+  let pool = Pool.load(poolId)
+  // update base token
+  let amount = hexToDecimal(baseTokenAmount, 18)
+
+  updatePoolTransactionToken(
+    event.transaction.hash.toHexString(), poolTokenId,
+    amount, PoolToken.load(poolTokenId).balance,
+    ZERO_BD
+  )
+  // update the datatoken
+  amount = hexToDecimal(dataTokenAmount, 18)
+  updatePoolTransactionToken(
+    event.transaction.hash.toHexString(), poolId.concat('-').concat(dataTokenAddress),
+    amount, PoolToken.load(poolId.concat('-').concat(dataTokenAddress)).balance,
+    ZERO_BD
+  )
 }
 
 export function _handleRebind(event: LOG_CALL, poolId: string, tokenAddress: string, balanceStr: string, denormWeightStr: string): void {
@@ -98,7 +119,7 @@ export function _handleRebind(event: LOG_CALL, poolId: string, tokenAddress: str
   if (tokenAddress != OCEAN ) {
     pool.datatokenAddress = tokenAddress
   }
-  pool.tokenCount = BigInt.fromI32(2)
+  pool.tokenCount += BigInt.fromI32(1)
   let address = Address.fromString(tokenAddress)
   let denormWeight = hexToDecimal(denormWeightStr, decimals)
   let poolTokenId = poolId.concat('-').concat(address.toHexString())
@@ -129,6 +150,7 @@ export function _handleRebind(event: LOG_CALL, poolId: string, tokenAddress: str
 }
 
 export function handleRebind(event: LOG_CALL): void {
+  return
   let poolId = event.address.toHex()
   _handleRebind(
       event,
@@ -153,6 +175,11 @@ export function handleJoinPool(event: LOG_JOIN): void {
 
   pool.joinCount = pool.joinCount.plus(BigInt.fromI32(1))
   pool.save()
+  let ptx = event.transaction.hash.toHexString()
+  let poolTx = PoolTransaction.load(ptx)
+  if (poolTx != null) {
+    return
+  }
 
   let address = event.params.tokenIn.toHex()
   let poolTokenId = poolId.concat('-').concat(address)
@@ -167,7 +194,6 @@ export function handleJoinPool(event: LOG_JOIN): void {
   let tokenAmountIn = tokenToDecimal(event.params.tokenAmountIn.toBigDecimal(), decimals)
   poolToken.balance = poolToken.balance.plus(tokenAmountIn)
   poolToken.save()
-
   createPoolTransaction(event, 'join', event.params.caller.toHexString())
   updatePoolTransactionToken(
     event.transaction.hash.toHexString(), poolTokenId,

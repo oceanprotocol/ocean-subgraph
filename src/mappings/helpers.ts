@@ -26,7 +26,7 @@ export let ONE = BigDecimal.fromString('1.0')
 let network = dataSource.network()
 
 export let OCEAN: string = (network == 'mainnet')
-  ? '0x967da4048cD07aB37855c090aAF366e4ce1b9F48'
+  ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
   : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
 
 export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
@@ -74,6 +74,7 @@ export function updatePoolTransactionToken(
   balance: BigDecimal, feeValue: BigDecimal
 ): void {
 
+  let ptx = PoolTransaction.load(poolTx)
   let poolToken = PoolToken.load(poolTokenId)
   let ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
   let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
@@ -82,8 +83,12 @@ export function updatePoolTransactionToken(
   }
   ptxTokenValues.txId = poolTx
   ptxTokenValues.poolToken = poolTokenId
+  ptxTokenValues.poolAddress = poolToken.poolId
+  ptxTokenValues.userAddress = ptx.userAddress
+  ptxTokenValues.tokenAddress = PoolToken.load(poolTokenId).tokenAddress
+
   ptxTokenValues.value = amount
-  ptxTokenValues.tokenReserve = balance.plus(amount)
+  ptxTokenValues.tokenReserve = balance
   ptxTokenValues.feeValue = feeValue
   if (amount.lt(ZERO_BD)) {
     ptxTokenValues.type = 'out'
@@ -97,23 +102,28 @@ export function updatePoolTransactionToken(
 export function createPoolTransaction(event: ethereum.Event, event_type: string, userAddress: string): void {
   let poolId = event.address.toHex()
   let pool = Pool.load(poolId)
-
   let ptx = event.transaction.hash.toHexString()
 
   let ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
   let dtToken = PoolToken.load(poolId.concat('-').concat(pool.datatokenAddress))
-  if (ocnToken == null || dtToken == null) return
+
+  if (ocnToken == null || dtToken == null) {
+    return
+  }
 
   let poolTx = PoolTransaction.load(ptx)
-  if (poolTx == null) {
-    poolTx = new PoolTransaction(ptx)
+  if (poolTx != null) {
+    return
   }
+  poolTx = new PoolTransaction(ptx)
 
   poolTx.poolAddress = poolId
   poolTx.userAddress = userAddress
+  poolTx.poolAddressStr = poolId
+  poolTx.userAddressStr = userAddress
+
   poolTx.sharesTransferAmount = ZERO_BD
   poolTx.sharesBalance = ZERO_BD
-// poolTx.spotPrice = ZERO_BD
   poolTx.spotPrice = calcSpotPrice(
     ocnToken.denormWeight, dtToken.denormWeight, ocnToken.balance, dtToken.balance, pool.swapFee)
   // poolTx.consumePrice = calcInGivenOut(
