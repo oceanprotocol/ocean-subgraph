@@ -1,21 +1,16 @@
 
-import { BigInt, Address, Bytes, store, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 import { OrderStarted, Transfer } from '../types/templates/Datatoken/Datatoken'
-import { Datatoken as DatatokenTemplate } from '../types/templates/Datatoken/Datatoken'
 import { log } from '@graphprotocol/graph-ts'
 
 import {
-    OceanDatatokens,
-    Datatoken, PoolShare, Pool, User, TokenBalance, TokenOrder
+    Datatoken, TokenBalance, TokenOrder
 } from '../types/schema'
 import {
-    hexToDecimal,
-    bigIntToDecimal,
-    tokenToDecimal,
-    createTokenBalanceEntity,
-    updateDatatokenBalance,
-    saveTokenTransaction,
-    ZERO_BD, createPoolShareEntity, createUserEntity
+  tokenToDecimal,
+  updateTokenBalance,
+  ZERO_BD,
+  MINUS_1, saveTokenTransaction
 } from './helpers'
 
 /************************************
@@ -43,36 +38,27 @@ export function handleTransfer(event: Transfer): void {
   let datatoken = Datatoken.load(tokenId)
 
   if (isMint) {
-    createTokenBalanceEntity(tokenBalanceToId, tokenId, tokenShareTo)
     tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
-    let user = User.load(tokenShareTo)
-    oldBalanceTo = tokenBalanceTo.balance
-    tokenBalanceTo.balance += amount
-    tokenBalanceTo.save()
-    datatoken.supply += amount
+    oldBalanceTo = (tokenBalanceTo == null) ? ZERO_BD : tokenBalanceTo.balance
+    datatoken.supply = datatoken.supply.plus(amount)
+    updateTokenBalance(tokenBalanceToId, tokenId, tokenShareTo, amount)
+
   } else if (isBurn) {
-    createTokenBalanceEntity(tokenBalanceFromId, tokenId, tokenShareFrom)
     tokenBalanceFrom = TokenBalance.load(tokenBalanceFromId)
-    let user = User.load(tokenShareFrom)
-    oldBalanceFrom = tokenBalanceFrom.balance
-    tokenBalanceFrom.balance -= amount
-    tokenBalanceFrom.save()
-    datatoken.supply -= amount
+    oldBalanceFrom = (tokenBalanceFrom == null) ? ZERO_BD : tokenBalanceFrom.balance
+    datatoken.supply = datatoken.supply.minus(amount)
+    updateTokenBalance(tokenBalanceFromId, tokenId, tokenShareFrom, amount.times(MINUS_1))
   } else {
 
-    createTokenBalanceEntity(tokenBalanceFromId, tokenId, tokenShareFrom)
-    let userFrom = User.load(tokenShareFrom)
     tokenBalanceFrom = TokenBalance.load(tokenBalanceFromId)
-    oldBalanceFrom = tokenBalanceFrom.balance
-    tokenBalanceFrom.balance -= amount
-    tokenBalanceFrom.save()
+    oldBalanceFrom = (tokenBalanceFrom == null) ? ZERO_BD : tokenBalanceFrom.balance
+    datatoken.supply = datatoken.supply.minus(amount)
+    updateTokenBalance(tokenBalanceFromId, tokenId, tokenShareFrom, amount.times(MINUS_1))
 
-    createTokenBalanceEntity(tokenBalanceToId, tokenId, tokenShareTo)
-    let userTo = User.load(tokenShareTo)
     tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
-    oldBalanceTo = tokenBalanceTo.balance
-    tokenBalanceTo.balance += amount
-    tokenBalanceTo.save()
+    oldBalanceTo = (tokenBalanceTo == null) ? ZERO_BD : tokenBalanceTo.balance
+    datatoken.supply = datatoken.supply.plus(amount)
+    updateTokenBalance(tokenBalanceToId, tokenId, tokenShareTo, amount)
   }
 
   if (
@@ -80,7 +66,7 @@ export function handleTransfer(event: Transfer): void {
     && tokenBalanceTo.balance.notEqual(ZERO_BD)
     && oldBalanceTo.equals(ZERO_BD)
   ) {
-    datatoken.holdersCount += BigInt.fromI32(1)
+    datatoken.holderCount = datatoken.holderCount.plus(BigInt.fromI32(1))
   }
 
   if (
@@ -88,10 +74,11 @@ export function handleTransfer(event: Transfer): void {
     && tokenBalanceFrom.balance.equals(ZERO_BD)
     && oldBalanceFrom.notEqual(ZERO_BD)
   ) {
-    datatoken.holdersCount -= BigInt.fromI32(1)
+    datatoken.holderCount = datatoken.holderCount.minus(BigInt.fromI32(1))
   }
 
   datatoken.save()
+  saveTokenTransaction(event, 'Transfer')
 }
 
 export function handleOrderStarted(event: OrderStarted): void {
@@ -99,7 +86,6 @@ export function handleOrderStarted(event: OrderStarted): void {
   let tokenId = event.address.toHex()
   let datatoken = Datatoken.load(tokenId)
   if (datatoken == null) return
-
 
   let payer = event.params.payer.toHex()
   // let feeCollector = event.params.mrktFeeCollector
@@ -123,6 +109,9 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.tx = tx
 
   order.save()
-  datatoken.orderCount = datatoken.orderCount + BigInt.fromI32(1)
+
+  datatoken.orderCount = datatoken.orderCount.plus(BigInt.fromI32(1))
   datatoken.save()
+
+  saveTokenTransaction(event, 'OrderStarted')
 }

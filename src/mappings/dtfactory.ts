@@ -1,6 +1,6 @@
-import { Address, BigInt, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt } from '@graphprotocol/graph-ts'
 import { TokenRegistered } from '../types/DTFactory/DTFactory'
-import { OceanDatatokens, Datatoken } from '../types/schema'
+import { DatatokenFactory, Datatoken } from '../types/schema'
 import { Datatoken as DatatokenContract } from '../types/templates'
 import {
   tokenToDecimal,
@@ -9,11 +9,11 @@ import {
 import { log } from '@graphprotocol/graph-ts'
 
 export function handleNewToken(event: TokenRegistered): void {
-  let factory = OceanDatatokens.load('1')
+  let factory = DatatokenFactory.load('1')
 
   // if no factory yet, set up blank initial
   if (factory == null) {
-    factory = new OceanDatatokens('1')
+    factory = new DatatokenFactory('1')
     factory.tokenCount = 0
     factory.txCount = BigInt.fromI32(0)
   }
@@ -22,6 +22,7 @@ export function handleNewToken(event: TokenRegistered): void {
   log.error('************************ handleNewToken: datatokenId {}', [datatoken.id.toString()])
 
   datatoken.factoryID = event.address.toHexString()
+
   datatoken.symbol = event.params.tokenSymbol
   datatoken.name = event.params.tokenName
   datatoken.decimals = 18
@@ -30,9 +31,11 @@ export function handleNewToken(event: TokenRegistered): void {
   datatoken.supply = ZERO_BD
   datatoken.minter = event.params.registeredBy.toHex()
   datatoken.publisher = event.params.registeredBy.toHex()
-  datatoken.createTime = event.block.timestamp.toI32()
-  datatoken.holdersCount = BigInt.fromI32(0)
+
+  datatoken.holderCount = BigInt.fromI32(0)
   datatoken.orderCount = BigInt.fromI32(0)
+
+  datatoken.createTime = event.block.timestamp.toI32()
   datatoken.tx = event.transaction.hash
   datatoken.save()
 

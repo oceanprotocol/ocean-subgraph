@@ -1,6 +1,5 @@
 import {
   BigDecimal,
-  Address,
   BigInt,
   Bytes,
   dataSource,
@@ -11,14 +10,18 @@ import {
   User,
   PoolToken,
   PoolShare,
-  TokenPrice,
   PoolTransaction,
-  OceanPools, Datatoken, TokenBalance, TokenTransaction
+  PoolFactory,
+  Datatoken,
+  TokenBalance,
+  TokenTransaction,
+  PoolTransactionTokenValues
 } from '../types/schema'
-import { BToken } from '../types/templates/Pool/BToken'
 import { log } from '@graphprotocol/graph-ts'
 
-export let ZERO_BD = BigDecimal.fromString('0')
+export let ZERO_BD = BigDecimal.fromString('0.0')
+export let MINUS_1 = BigDecimal.fromString('-1.0')
+export let ONE = BigDecimal.fromString('1.0')
 
 let network = dataSource.network()
 
@@ -60,125 +63,105 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
   let poolToken = new PoolToken(id)
   poolToken.poolId = pool
   poolToken.tokenId = datatoken ? datatoken.id: ''
-  poolToken.address = address
+  poolToken.tokenAddress = address
   poolToken.balance = ZERO_BD
   poolToken.denormWeight = ZERO_BD
   poolToken.save()
 }
 
-export function updatePoolLiquidity(id: string): void {
-  let pool = Pool.load(id)
-  let tokensList: Array<Bytes> = pool.tokensList
+export function updatePoolTransactionToken(
+  poolTx: string, poolTokenId: string, amount: BigDecimal,
+  balance: BigDecimal, feeValue: BigDecimal
+): void {
 
-  if (!tokensList || pool.tokensCount.lt(BigInt.fromI32(2)) || !pool.publicSwap) return
-  if (tokensList[0] != Address.fromString(OCEAN)) return
-
-  // Find pool liquidity
-
-  let hasPrice = false
-  let hasOceanPrice = false
-  let poolOcnLiquidity = ZERO_BD
-  let poolDTLiquidity = ZERO_BD
-  return
-
-  let oceanPoolTokenId = id.concat('-').concat(OCEAN)
-  let oceanPoolToken = PoolToken.load(oceanPoolTokenId)
-  poolOcnLiquidity = oceanPoolToken.balance.div(oceanPoolToken.denormWeight).times(pool.totalWeight)
-  let DT = tokensList[1].toHexString()
-  let dtTokenPrice = TokenPrice.load(DT)
-  if (dtTokenPrice !== null) {
-    let poolTokenId = id.concat('-').concat(DT)
-    let poolToken = PoolToken.load(poolTokenId)
-    poolDTLiquidity = TokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-    hasPrice = true
+  let poolToken = PoolToken.load(poolTokenId)
+  let ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
+  let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
+  if (ptxTokenValues == null) {
+    ptxTokenValues = new PoolTransactionTokenValues(ptxTokenValuesId)
+  }
+  ptxTokenValues.txId = poolTx
+  ptxTokenValues.poolToken = poolTokenId
+  ptxTokenValues.value = amount
+  ptxTokenValues.tokenReserve = balance.plus(amount)
+  ptxTokenValues.feeValue = feeValue
+  if (amount.lt(ZERO_BD)) {
+    ptxTokenValues.type = 'out'
+  } else {
+    ptxTokenValues.type = 'in'
   }
 
-  // // Create or update token price
-  //
-  // if (hasPrice) {
-  //   for (let i: i32 = 0; i < tokensList.length; i++) {
-  //     let tokenPriceId = tokensList[i].toHexString()
-  //     let tokenPrice = TokenPrice.load(tokenPriceId)
-  //     if (tokenPrice == null) {
-  //       tokenPrice = new TokenPrice(tokenPriceId)
-  //       tokenPrice.poolTokenId = ''
-  //       tokenPrice.poolLiquidity = ZERO_BD
-  //     }
-  //
-  //     let poolTokenId = id.concat('-').concat(tokenPriceId)
-  //     let poolToken = PoolToken.load(poolTokenId)
-  //
-  //     if (
-  //       (tokenPrice.poolTokenId == poolTokenId || poolLiquidity.gt(tokenPrice.poolLiquidity)) &&
-  //       (tokenPriceId != WETH.toString() || (pool.tokensCount.equals(BigInt.fromI32(2)) && hasUsdPrice))
-  //     ) {
-  //       tokenPrice.price = ZERO_BD
-  //
-  //       if (poolToken.balance.gt(ZERO_BD)) {
-  //         tokenPrice.price = poolLiquidity.div(pool.totalWeight).times(poolToken.denormWeight).div(poolToken.balance)
-  //       }
-  //
-  //       tokenPrice.symbol = poolToken.symbol
-  //       tokenPrice.name = poolToken.name
-  //       tokenPrice.decimals = poolToken.decimals
-  //       tokenPrice.poolLiquidity = poolLiquidity
-  //       tokenPrice.poolTokenId = poolTokenId
-  //       tokenPrice.save()
-  //     }
-  //   }
-  // }
-
-  // Update pool liquidity
-
-  let liquidity = ZERO_BD
-  let denormWeight = ZERO_BD
-
-  for (let i: i32 = 0; i < tokensList.length; i++) {
-    let tokenPriceId = tokensList[i].toHexString()
-    let tokenPrice = TokenPrice.load(tokenPriceId)
-    if (tokenPrice !== null) {
-      let poolTokenId = id.concat('-').concat(tokenPriceId)
-      let poolToken = PoolToken.load(poolTokenId)
-      if (poolToken.denormWeight.gt(denormWeight)) {
-        denormWeight = poolToken.denormWeight
-        liquidity = tokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-      }
-    }
-  }
-
-  let factory = OceanPools.load('1')
-  factory.totalLiquidity = factory.totalLiquidity.minus(pool.liquidity).plus(liquidity)
-  factory.save()
-
-  pool.liquidity = liquidity
-  pool.save()
+  ptxTokenValues.save()
 }
 
+export function createPoolTransaction(event: ethereum.Event, event_type: string, userAddress: string): void {
+  let poolId = event.address.toHex()
+  let pool = Pool.load(poolId)
+
+  let ptx = event.transaction.hash.toHexString()
+
+  let ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
+  let dtToken = PoolToken.load(poolId.concat('-').concat(pool.datatokenAddress))
+  if (ocnToken == null || dtToken == null) return
+
+  let poolTx = PoolTransaction.load(ptx)
+  if (poolTx == null) {
+    poolTx = new PoolTransaction(ptx)
+  }
+
+  poolTx.poolAddress = poolId
+  poolTx.userAddress = userAddress
+  poolTx.sharesTransferAmount = ZERO_BD
+  poolTx.sharesBalance = ZERO_BD
+// poolTx.spotPrice = ZERO_BD
+  poolTx.spotPrice = calcSpotPrice(
+    ocnToken.denormWeight, dtToken.denormWeight, ocnToken.balance, dtToken.balance, pool.swapFee)
+  // poolTx.consumePrice = calcInGivenOut(
+  //   ocnToken.denormWeight, dtToken.denormWeight, ocnToken.balance, dtToken.balance,
+  //   ONE, pool.swapFee)
+  poolTx.consumePrice = ZERO_BD
+
+  poolTx.tx = event.transaction.hash
+  poolTx.event = event_type
+  poolTx.block = event.block.number.toI32()
+  poolTx.timestamp = event.block.timestamp.toI32()
+  poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
+  poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
+
+  poolTx.save()
+}
+
+export function calcSpotPrice(
+  wIn: BigDecimal, wOut: BigDecimal,
+  balanceIn: BigDecimal, balanceOut: BigDecimal,
+  swapFee: BigDecimal
+): BigDecimal {
+  let numer = balanceIn.div(wIn)
+  let denom = balanceOut.div(wOut)
+  let ratio = numer.div(denom)
+  let scale = ONE.div(ONE.minus(swapFee))
+  return  ratio.times(scale)
+}
+
+// export function calcInGivenOut(
+//   wIn: BigDecimal, wOut: BigDecimal, balanceIn: BigDecimal, balanceOut: BigDecimal,
+//   amountOut: BigDecimal, swapFee: BigDecimal): BigDecimal {
+//
+//   let weightRatio = wOut.div(wIn)
+//   let diff = balanceOut.minus(amountOut)
+//   let y = balanceOut.div(diff)
+//   y.toString()
+//
+//   let foo = BigDecimal.fromString(Math.pow(y, weightRatio).toString()) - ONE
+//   return balanceIn.times(foo / (ONE - swapFee))
+// }
+
+
 export function decrPoolCount(finalized: boolean): void {
-  let factory = OceanPools.load('1')
+  let factory = PoolFactory.load('1')
   factory.poolCount -= 1
   if (finalized) factory.finalizedPoolCount -= 1
   factory.save()
-}
-
-export function savePoolTransaction(event: ethereum.Event, eventName: string): void {
-  let tx = event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString())
-  let userAddress = event.transaction.from.toHex()
-  let transaction = PoolTransaction.load(tx)
-  if (transaction == null) {
-    transaction = new PoolTransaction(tx)
-  }
-  transaction.event = eventName
-  transaction.poolAddress = event.address.toHex()
-  transaction.userAddress = userAddress
-  transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
-  transaction.gasPrice = event.transaction.gasPrice.toBigDecimal()
-  transaction.tx = event.transaction.hash
-  transaction.timestamp = event.block.timestamp.toI32()
-  transaction.block = event.block.number.toI32()
-  transaction.save()
-
-  createUserEntity(userAddress)
 }
 
 export function saveTokenTransaction(event: ethereum.Event, eventName: string): void {
@@ -208,17 +191,16 @@ export function createUserEntity(address: string): void {
   }
 }
 
-export function createTokenBalanceEntity(id: string, token: string, user: string): void {
-  if (TokenBalance.load(id) != null) return
+export function updateTokenBalance(id: string, token: string, user: string, amount: BigDecimal): void {
+  let tokenBalance = TokenBalance.load(id)
+  if (tokenBalance == null) {
+    tokenBalance = new TokenBalance(id)
+    createUserEntity(user)
+    tokenBalance.userAddress = user
+    tokenBalance.datatokenId = token
+    tokenBalance.balance = ZERO_BD
+  }
 
-  let tokenBalance = new TokenBalance(id)
-  createUserEntity(user)
-  tokenBalance.userAddress = user
-  tokenBalance.datatokenId = token
-  tokenBalance.balance = ZERO_BD
+  tokenBalance.balance = tokenBalance.balance.plus(amount)
   tokenBalance.save()
-}
-
-export function updateDatatokenBalance(): void {
-
 }

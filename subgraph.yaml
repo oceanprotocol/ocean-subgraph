@@ -17,7 +17,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
-        - OceanPools
+        - PoolFactory
       abis:
         - name: Factory
           file: ./abis/BFactory.json
@@ -37,7 +37,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/dtfactory.ts
       entities:
-        - OceanDatatokens
+        - DatatokenFactory
       abis:
         - name: DTFactory
           file: ./abis/DTFactory.json
@@ -57,7 +57,7 @@ templates:
       file: ./src/mappings/pool.ts
       entities:
         - Pool
-        - OceanPools
+        - PoolFactory
         - Swap
       abis:
         - name: Pool
@@ -107,7 +107,7 @@ templates:
       file: ./src/mappings/datatoken.ts
       entities:
         - Datatoken
-        - OceanDatatokens
+        - DatatokenFactory
       abis:
         - name: Datatoken
           file: ./abis/DataTokenTemplate.json
