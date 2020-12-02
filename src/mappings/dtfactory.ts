@@ -3,6 +3,7 @@ import { TokenRegistered } from '../types/DTFactory/DTFactory'
 import { DatatokenFactory, Datatoken } from '../types/schema'
 import { Datatoken as DatatokenContract } from '../types/templates'
 import {
+  createUserEntity,
   tokenToDecimal,
   ZERO_BD,
 } from './helpers'
@@ -29,6 +30,8 @@ export function handleNewToken(event: TokenRegistered): void {
   datatoken.address = event.params.tokenAddress.toHexString()
   datatoken.cap = tokenToDecimal(event.params.tokenCap.toBigDecimal(), 18)
   datatoken.supply = ZERO_BD
+
+  createUserEntity(event.params.registeredBy.toHex())
   datatoken.minter = event.params.registeredBy.toHex()
   datatoken.publisher = event.params.registeredBy.toHex()
 

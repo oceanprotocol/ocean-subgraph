@@ -115,7 +115,7 @@ type Datatoken @entity {
     cap: BigDecimal!
     supply: BigDecimal!
     minter: User!
-    publisher: User!
+    publisher: String!
 
     holderCount: BigInt!                               # Number of addresses holding a balance of datatoken
     orderCount: BigInt!                                 # Number of orders executed for this dataset
