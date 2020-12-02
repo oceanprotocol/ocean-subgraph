@@ -22,18 +22,19 @@ export function handleTransfer(event: Transfer): void {
 
   let ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-  let isMint = event.params.from.toHex() == ZERO_ADDRESS
-  let isBurn = event.params.to.toHex() == ZERO_ADDRESS
 
   let amount = tokenToDecimal(event.params.value.toBigDecimal(), 18)
   let tokenShareFrom = event.params.from.toHex()
   let tokenShareTo = event.params.to.toHex()
-  let tokenBalanceFromId = tokenId.concat('-').concat(event.params.from.toHex())
-  let tokenBalanceToId = tokenId.concat('-').concat(event.params.to.toHex())
+  let tokenBalanceFromId = tokenId.concat('-').concat(tokenShareFrom)
+  let tokenBalanceToId = tokenId.concat('-').concat(tokenShareTo)
   let tokenBalanceFrom = TokenBalance.load(tokenBalanceFromId)
   let tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
   let oldBalanceFrom = BigDecimal.fromString('0.0')
   let oldBalanceTo = BigDecimal.fromString('0.0')
+
+  let isMint = tokenShareFrom == ZERO_ADDRESS
+  let isBurn = tokenShareTo == ZERO_ADDRESS
 
   let datatoken = Datatoken.load(tokenId)
 
@@ -66,7 +67,7 @@ export function handleTransfer(event: Transfer): void {
     && tokenBalanceTo.balance.notEqual(ZERO_BD)
     && oldBalanceTo.equals(ZERO_BD)
   ) {
-    datatoken.holderCount = datatoken.holderCount.plus(BigInt.fromI32(1))
+    datatoken.holderCount += BigInt.fromI32(1)
   }
 
   if (
@@ -74,7 +75,7 @@ export function handleTransfer(event: Transfer): void {
     && tokenBalanceFrom.balance.equals(ZERO_BD)
     && oldBalanceFrom.notEqual(ZERO_BD)
   ) {
-    datatoken.holderCount = datatoken.holderCount.minus(BigInt.fromI32(1))
+    datatoken.holderCount -= BigInt.fromI32(1)
   }
 
   datatoken.save()
