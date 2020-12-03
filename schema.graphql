@@ -91,7 +91,6 @@ type PoolTransaction @entity {
     sharesBalance: BigDecimal!
 
     spotPrice: BigDecimal!
-    consumePrice: BigDecimal!
     tx: Bytes!
     event: String
     block: Int!

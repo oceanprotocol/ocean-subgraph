@@ -23,11 +23,26 @@ export let ZERO_BD = BigDecimal.fromString('0.0')
 export let MINUS_1 = BigDecimal.fromString('-1.0')
 export let ONE = BigDecimal.fromString('1.0')
 
+export let ENABLE_DEBUG = false
+
 let network = dataSource.network()
 
 export let OCEAN: string = (network == 'mainnet')
   ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
   : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
+
+export function debuglog(message: string, event: ethereum.Event, args: Array<string>): void {
+  if (!ENABLE_DEBUG) return
+
+  if (event != null) {
+    args.push(event.transaction.hash.toHex())
+    args.push(event.address.toHex())
+  }
+  for (let i=0; i < args.length; i++) {
+    message = message.concat(' {}')
+  }
+  log.info(message, args)
+}
 
 export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
   let bytes = Bytes.fromHexString(hexString.toString()).reverse() as Bytes
@@ -44,6 +59,12 @@ export function bigIntToDecimal(amount: BigInt, decimals: i32): BigDecimal {
 export function tokenToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
   let scale = BigInt.fromI32(10).pow(decimals as u8).toBigDecimal()
   return amount.div(scale)
+}
+
+export function updatePoolTokenBalance(poolToken: PoolToken, balance: BigDecimal, source: string): void {
+  debuglog('updating poolToken balance (source, oldBalance, newBalance, poolId) ', null,
+    [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId])
+  poolToken.balance = balance
 }
 
 export function createPoolShareEntity(id: string, pool: string, user: string): void {
@@ -129,7 +150,16 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
   // poolTx.consumePrice = calcInGivenOut(
   //   ocnToken.denormWeight, dtToken.denormWeight, ocnToken.balance, dtToken.balance,
   //   ONE, pool.swapFee)
-  poolTx.consumePrice = ZERO_BD
+
+  pool.datatokenReserve = dtToken.balance
+  pool.oceanReserve = ocnToken.balance
+  pool.spotPrice = poolTx.spotPrice
+  pool.save()
+  debuglog('updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
+    event,
+    ['createPoolTransaction', dtToken.balance.toString(), ocnToken.balance.toString(),
+      pool.datatokenReserve.toString(), pool.oceanReserve.toString()])
+  // pool.consumePrice = ZERO_BD
 
   poolTx.tx = event.transaction.hash
   poolTx.event = event_type

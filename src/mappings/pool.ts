@@ -19,7 +19,9 @@ import {
   MINUS_1,
   decrPoolCount,
   updatePoolTransactionToken,
-  createPoolTransaction, OCEAN,
+  createPoolTransaction,
+  OCEAN,
+  debuglog, updatePoolTokenBalance
 } from './helpers'
 
 /************************************
@@ -65,6 +67,7 @@ export function handleFinalize(event: LOG_CALL): void {
 
 export function handleSetup(event: LOG_CALL): void {
   let poolId = event.address.toHex()
+  debuglog('handleSetup: ', event, [])
 
   let data = event.params.data.toHexString()
   // First 2 chars are 0x
@@ -138,7 +141,7 @@ export function _handleRebind(event: LOG_CALL, poolId: string, tokenAddress: str
   }
 
   let balance = hexToDecimal(balanceStr, decimals)
-  poolToken.balance = balance
+  updatePoolTokenBalance(poolToken as PoolToken, balance, '_handleRebind')
 
   poolToken.denormWeight = denormWeight
   poolToken.save()
@@ -150,7 +153,6 @@ export function _handleRebind(event: LOG_CALL, poolId: string, tokenAddress: str
 }
 
 export function handleRebind(event: LOG_CALL): void {
-  return
   let poolId = event.address.toHex()
   _handleRebind(
       event,
@@ -192,7 +194,8 @@ export function handleJoinPool(event: LOG_JOIN): void {
   datatoken = poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
   let decimals = datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
   let tokenAmountIn = tokenToDecimal(event.params.tokenAmountIn.toBigDecimal(), decimals)
-  poolToken.balance = poolToken.balance.plus(tokenAmountIn)
+  updatePoolTokenBalance(poolToken as PoolToken, poolToken.balance.plus(tokenAmountIn), 'handleJoinPool')
+
   poolToken.save()
   createPoolTransaction(event, 'join', event.params.caller.toHexString())
   updatePoolTransactionToken(
@@ -217,7 +220,7 @@ export function handleExitPool(event: LOG_EXIT): void {
   let decimals = datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
   let tokenAmountOut = tokenToDecimal(event.params.tokenAmountOut.toBigDecimal(), decimals)
   let newAmount = poolToken.balance.minus(tokenAmountOut)
-  poolToken.balance = newAmount
+  updatePoolTokenBalance(poolToken as PoolToken, newAmount, 'handleExitPool')
   poolToken.save()
 
   let pool = Pool.load(poolId)
@@ -253,7 +256,7 @@ export function handleSwap(event: LOG_SWAP): void {
   let dtIn = Datatoken.load(tokenIn)
   let tokenAmountIn = tokenToDecimal(event.params.tokenAmountIn.toBigDecimal(), (dtIn == null) ? 18 : dtIn.decimals)
   let newAmountIn = poolTokenIn.balance.plus(tokenAmountIn)
-  poolTokenIn.balance = newAmountIn
+  updatePoolTokenBalance(poolTokenIn as PoolToken, newAmountIn, 'handleSwap.tokenIn')
   poolTokenIn.save()
 
   let tokenOut = event.params.tokenOut.toHex()
@@ -262,7 +265,7 @@ export function handleSwap(event: LOG_SWAP): void {
   let dtOut = Datatoken.load(tokenOut)
   let tokenAmountOut = tokenToDecimal(event.params.tokenAmountOut.toBigDecimal(), (dtOut == null) ? 18 : dtOut.decimals)
   let newAmountOut = poolTokenOut.balance.minus(tokenAmountOut)
-  poolTokenOut.balance = newAmountOut
+  updatePoolTokenBalance(poolTokenOut as PoolToken, newAmountOut, 'handleSwap.tokenOut')
   poolTokenOut.save()
 
   let pool = Pool.load(poolId)
