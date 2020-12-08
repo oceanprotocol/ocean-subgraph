@@ -96,20 +96,20 @@ templates:
           handler: handleTransfer
 
   - kind: ethereum/contract
-    name: Datatoken
+    name: DataToken
     network: mainnet
     source:
-      abi: Datatoken
+      abi: DataToken
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/datatoken.ts
       entities:
-        - Datatoken
+        - DataToken
         - DatatokenFactory
       abis:
-        - name: Datatoken
+        - name: DataToken
           file: ./abis/DataTokenTemplate.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)

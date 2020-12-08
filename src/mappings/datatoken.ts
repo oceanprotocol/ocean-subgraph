@@ -1,6 +1,6 @@
 
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
-import { OrderStarted, Transfer } from '../types/templates/Datatoken/Datatoken'
+import { OrderStarted, Transfer } from '../types/templates/DataToken/DataToken'
 import { log } from '@graphprotocol/graph-ts'
 
 import {

@@ -3,10 +3,12 @@ import {
   BigInt,
   Bytes,
   dataSource,
+  Address,
   ethereum
 } from '@graphprotocol/graph-ts'
+
 import {
-  Pool,
+  Pool as PoolEntity,
   User,
   PoolToken,
   PoolShare,
@@ -18,10 +20,15 @@ import {
   PoolTransactionTokenValues
 } from '../types/schema'
 import { log } from '@graphprotocol/graph-ts'
+import { Pool } from '../types/templates/Pool/Pool'
 
 export let ZERO_BD = BigDecimal.fromString('0.0')
 export let MINUS_1 = BigDecimal.fromString('-1.0')
 export let ONE = BigDecimal.fromString('1.0')
+
+export let ONE_INT = BigInt.fromI32(10).pow(18 as u8)
+export let BONE = BigDecimal.fromString('1000000000000000000')
+
 
 export let ENABLE_DEBUG = false
 
@@ -41,7 +48,7 @@ export function debuglog(message: string, event: ethereum.Event, args: Array<str
   for (let i=0; i < args.length; i++) {
     message = message.concat(' {}')
   }
-  log.info(message, args)
+  log.error('********** ' + message, args)
 }
 
 export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
@@ -59,6 +66,13 @@ export function bigIntToDecimal(amount: BigInt, decimals: i32): BigDecimal {
 export function tokenToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
   let scale = BigInt.fromI32(10).pow(decimals as u8).toBigDecimal()
   return amount.div(scale)
+}
+
+export function decimalToBigInt(value: BigDecimal): BigInt {
+  value.truncate(18)
+  let scale = BigInt.fromI32(10).pow((value.exp.toI32() + 18) as u8)
+  return value.digits.times(scale)
+
 }
 
 export function updatePoolTokenBalance(poolToken: PoolToken, balance: BigDecimal, source: string): void {
@@ -122,7 +136,7 @@ export function updatePoolTransactionToken(
 
 export function createPoolTransaction(event: ethereum.Event, event_type: string, userAddress: string): void {
   let poolId = event.address.toHex()
-  let pool = Pool.load(poolId)
+  let pool = PoolEntity.load(poolId)
   let ptx = event.transaction.hash.toHexString()
 
   let ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
@@ -147,19 +161,36 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
   poolTx.sharesBalance = ZERO_BD
   poolTx.spotPrice = calcSpotPrice(
     ocnToken.denormWeight, dtToken.denormWeight, ocnToken.balance, dtToken.balance, pool.swapFee)
-  // poolTx.consumePrice = calcInGivenOut(
-  //   ocnToken.denormWeight, dtToken.denormWeight, ocnToken.balance, dtToken.balance,
-  //   ONE, pool.swapFee)
 
   pool.datatokenReserve = dtToken.balance
   pool.oceanReserve = ocnToken.balance
   pool.spotPrice = poolTx.spotPrice
+
+  let p = Pool.bind(Address.fromString(poolId))
+  let result = p.try_calcInGivenOut(
+    decimalToBigInt(ocnToken.balance), decimalToBigInt(ocnToken.denormWeight),
+    decimalToBigInt(dtToken.balance), decimalToBigInt(dtToken.denormWeight),
+    ONE_INT, decimalToBigInt(pool.swapFee)
+  )
+  pool.consumePrice = result.reverted ? BigDecimal.fromString('-1') : bigIntToDecimal(result.value, 18)
+  debuglog(
+    'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)', null,
+    [
+      decimalToBigInt(ocnToken.balance).toString(),
+      decimalToBigInt(ocnToken.denormWeight).toString(),
+      decimalToBigInt(dtToken.balance).toString(),
+      decimalToBigInt(dtToken.denormWeight).toString(),
+      ONE_INT.toString(),
+      decimalToBigInt(pool.swapFee).toString(),
+      result.reverted ? 'failed' : result.value.toString()
+    ]
+  )
+
   pool.save()
   debuglog('updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
     event,
     ['createPoolTransaction', dtToken.balance.toString(), ocnToken.balance.toString(),
       pool.datatokenReserve.toString(), pool.oceanReserve.toString()])
-  // pool.consumePrice = ZERO_BD
 
   poolTx.tx = event.transaction.hash
   poolTx.event = event_type
@@ -182,20 +213,6 @@ export function calcSpotPrice(
   let scale = ONE.div(ONE.minus(swapFee))
   return  ratio.times(scale)
 }
-
-// export function calcInGivenOut(
-//   wIn: BigDecimal, wOut: BigDecimal, balanceIn: BigDecimal, balanceOut: BigDecimal,
-//   amountOut: BigDecimal, swapFee: BigDecimal): BigDecimal {
-//
-//   let weightRatio = wOut.div(wIn)
-//   let diff = balanceOut.minus(amountOut)
-//   let y = balanceOut.div(diff)
-//   y.toString()
-//
-//   let foo = BigDecimal.fromString(Math.pow(y, weightRatio).toString()) - ONE
-//   return balanceIn.times(foo / (ONE - swapFee))
-// }
-
 
 export function decrPoolCount(finalized: boolean): void {
   let factory = PoolFactory.load('1')
