@@ -98,6 +98,9 @@ type PoolTransaction @entity {
     gasUsed: BigDecimal!
     gasPrice: BigDecimal!
 
+    oceanReserve: BigDecimal!
+    datatokenReserve: BigDecimal!
+
     tokens: [PoolTransactionTokenValues!] @derivedFrom(field: "txId")
 }
 

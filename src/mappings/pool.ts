@@ -21,7 +21,7 @@ import {
   updatePoolTransactionToken,
   createPoolTransaction,
   OCEAN,
-  debuglog, updatePoolTokenBalance
+  debuglog, updatePoolTokenBalance, _debuglog, DEBUG_POOL_ADDRESS
 } from './helpers'
 
 /************************************
@@ -67,8 +67,9 @@ export function handleFinalize(event: LOG_CALL): void {
 
 export function handleSetup(event: LOG_CALL): void {
   let poolId = event.address.toHex()
-  debuglog('handleSetup: ', event, [])
-
+  if (poolId == DEBUG_POOL_ADDRESS) {
+    _debuglog('handleSetup: ', event, [])
+  }
   let data = event.params.data.toHexString()
   // First 2 chars are 0x
   // Next there is 8 chars
@@ -180,6 +181,9 @@ export function handleJoinPool(event: LOG_JOIN): void {
   let ptx = event.transaction.hash.toHexString()
   let poolTx = PoolTransaction.load(ptx)
   if (poolTx != null) {
+    if (poolId == DEBUG_POOL_ADDRESS && event.params.tokenIn.toHex() == OCEAN) {
+      _debuglog('!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  JOIN JOIN JOIN !!!!!!!!!!!! PoolTransaction EXISTS: ', event, [])
+    }
     return
   }
 
@@ -187,6 +191,9 @@ export function handleJoinPool(event: LOG_JOIN): void {
   let poolTokenId = poolId.concat('-').concat(address)
   let poolToken = PoolToken.load(poolTokenId)
   if (poolToken == null) {
+    if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
+      _debuglog('!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  JOIN JOIN JOIN !!!!!!!!!!!! NO PoolToken: ', event, [address, poolTokenId])
+    }
     return
   }
 
@@ -195,6 +202,10 @@ export function handleJoinPool(event: LOG_JOIN): void {
   let decimals = datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
   let tokenAmountIn = tokenToDecimal(event.params.tokenAmountIn.toBigDecimal(), decimals)
   updatePoolTokenBalance(poolToken as PoolToken, poolToken.balance.plus(tokenAmountIn), 'handleJoinPool')
+  if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
+    _debuglog('!!!!!!!!!!!!!!!!!!    JOIN JOIN JOIN : (token, amountIn, amountIn) ', event,
+    [address, tokenAmountIn.toString(), event.params.tokenAmountIn.toString()])
+  }
 
   poolToken.save()
   createPoolTransaction(event, 'join', event.params.caller.toHexString())
@@ -212,7 +223,10 @@ export function handleExitPool(event: LOG_EXIT): void {
   let poolTokenId = poolId.concat('-').concat(address.toString())
   let poolToken = PoolToken.load(poolTokenId)
   if (!poolToken) {
-    return
+    if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
+      _debuglog('!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  EXIT EXIT EXIT !!!!!!!!!!!! NO PoolToken: ', event, [address, poolTokenId])
+    }
+      return
   }
 
   let datatoken: Datatoken | null
@@ -222,7 +236,10 @@ export function handleExitPool(event: LOG_EXIT): void {
   let newAmount = poolToken.balance.minus(tokenAmountOut)
   updatePoolTokenBalance(poolToken as PoolToken, newAmount, 'handleExitPool')
   poolToken.save()
-
+  if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
+    _debuglog('!!!!!!!!!!!!!!!!!!    EXIT EXIT EXIT : (token, amountOut, amountOut)', event,
+      [address, tokenAmountOut.toString(), event.params.tokenAmountOut.toString()])
+  }
   let pool = Pool.load(poolId)
   pool.exitCount = pool.exitCount.plus(BigInt.fromI32(1))
   if (newAmount.equals(ZERO_BD)) {
@@ -251,6 +268,10 @@ export function handleSwap(event: LOG_SWAP): void {
   let poolTokenInId = poolId.concat('-').concat(tokenIn.toString())
   let poolTokenIn = PoolToken.load(poolTokenInId)
   if (!poolTokenIn) {
+    if (poolId == DEBUG_POOL_ADDRESS) {
+      _debuglog('!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  SWAP SWAP SWAP !!!!!!!!!!!! NO PoolToken: ', event,
+        [tokenIn, poolTokenInId])
+    }
     return
   }
   let dtIn = Datatoken.load(tokenIn)
@@ -267,7 +288,11 @@ export function handleSwap(event: LOG_SWAP): void {
   let newAmountOut = poolTokenOut.balance.minus(tokenAmountOut)
   updatePoolTokenBalance(poolTokenOut as PoolToken, newAmountOut, 'handleSwap.tokenOut')
   poolTokenOut.save()
-
+  if (poolId == DEBUG_POOL_ADDRESS) {
+    _debuglog('!!!!!!!!!!!!!!!!!!    SWAP SWAP SWAP : (tokenIn, tokenOut, amountIn, amountIn, amountOut, amountOut)', event,
+      [tokenIn, tokenOut, tokenAmountIn.toString(), event.params.tokenAmountIn.toString(),
+        tokenAmountOut.toString(), event.params.tokenAmountOut.toString()])
+  }
   let pool = Pool.load(poolId)
 
   pool.swapCount += BigInt.fromI32(1)

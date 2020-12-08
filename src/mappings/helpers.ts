@@ -31,6 +31,7 @@ export let BONE = BigDecimal.fromString('1000000000000000000')
 
 
 export let ENABLE_DEBUG = false
+export let DEBUG_POOL_ADDRESS = '0x64269ce81a07f21cb3566afa752810c4ca0bcb6f'
 
 let network = dataSource.network()
 
@@ -38,9 +39,7 @@ export let OCEAN: string = (network == 'mainnet')
   ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
   : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
 
-export function debuglog(message: string, event: ethereum.Event, args: Array<string>): void {
-  if (!ENABLE_DEBUG) return
-
+export function _debuglog(message: string, event: ethereum.Event, args: Array<string>): void {
   if (event != null) {
     args.push(event.transaction.hash.toHex())
     args.push(event.address.toHex())
@@ -48,7 +47,12 @@ export function debuglog(message: string, event: ethereum.Event, args: Array<str
   for (let i=0; i < args.length; i++) {
     message = message.concat(' {}')
   }
-  log.error('********** ' + message, args)
+  log.error('@@@@@@@@@@@@@@@@@@@ ' + message, args)
+}
+
+export function debuglog(message: string, event: ethereum.Event, args: Array<string>): void {
+  if (!ENABLE_DEBUG) return
+  _debuglog(message, event, args)
 }
 
 export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
@@ -76,8 +80,10 @@ export function decimalToBigInt(value: BigDecimal): BigInt {
 }
 
 export function updatePoolTokenBalance(poolToken: PoolToken, balance: BigDecimal, source: string): void {
-  debuglog('updating poolToken balance (source, oldBalance, newBalance, poolId) ', null,
-    [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId])
+  if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
+    _debuglog('########## updating poolToken balance (source, oldBalance, newBalance, poolId) ', null,
+      [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId])
+  }
   poolToken.balance = balance
 }
 
@@ -132,6 +138,25 @@ export function updatePoolTransactionToken(
   }
 
   ptxTokenValues.save()
+
+  if (ptxTokenValues.tokenAddress == OCEAN) {
+    ptx.oceanReserve = ptxTokenValues.tokenReserve
+  } else {
+    ptx.datatokenReserve = ptxTokenValues.tokenReserve
+  }
+  if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
+    _debuglog('########## updatePoolTransactionToken: ', null,
+      [
+        BigInt.fromI32(ptx.block).toString(),
+        BigInt.fromI32(ptx.timestamp).toString(),
+        ptxTokenValues.type,
+        ptxTokenValues.value.toString(),
+        ptxTokenValues.tokenReserve.toString(),
+        poolToken.poolId,
+      ])
+  }
+
+  ptx.save()
 }
 
 export function createPoolTransaction(event: ethereum.Event, event_type: string, userAddress: string): void {
@@ -164,27 +189,35 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
 
   pool.datatokenReserve = dtToken.balance
   pool.oceanReserve = ocnToken.balance
-  pool.spotPrice = poolTx.spotPrice
+  // Initial reserve values, will be updated in `updatePoolTransactionToken`
+  poolTx.datatokenReserve = dtToken.balance
+  poolTx.oceanReserve = ocnToken.balance
 
   let p = Pool.bind(Address.fromString(poolId))
-  let result = p.try_calcInGivenOut(
-    decimalToBigInt(ocnToken.balance), decimalToBigInt(ocnToken.denormWeight),
-    decimalToBigInt(dtToken.balance), decimalToBigInt(dtToken.denormWeight),
-    ONE_INT, decimalToBigInt(pool.swapFee)
-  )
+  let result = p.try_getSpotPrice(
+    Address.fromString(ocnToken.tokenAddress),
+    Address.fromString(dtToken.tokenAddress))
+  // pool.spotPrice = poolTx.spotPrice
   pool.consumePrice = result.reverted ? BigDecimal.fromString('-1') : bigIntToDecimal(result.value, 18)
-  debuglog(
-    'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)', null,
-    [
-      decimalToBigInt(ocnToken.balance).toString(),
-      decimalToBigInt(ocnToken.denormWeight).toString(),
-      decimalToBigInt(dtToken.balance).toString(),
-      decimalToBigInt(dtToken.denormWeight).toString(),
-      ONE_INT.toString(),
-      decimalToBigInt(pool.swapFee).toString(),
-      result.reverted ? 'failed' : result.value.toString()
-    ]
-  )
+
+  // let result = p.try_calcInGivenOut(
+  //   decimalToBigInt(ocnToken.balance), decimalToBigInt(ocnToken.denormWeight),
+  //   decimalToBigInt(dtToken.balance), decimalToBigInt(dtToken.denormWeight),
+  //   ONE_INT, decimalToBigInt(pool.swapFee)
+  // )
+  // pool.consumePrice = BigDecimal.fromString('-1')//result.reverted ? BigDecimal.fromString('-1') : bigIntToDecimal(result.value, 18)
+  // debuglog(
+  //   'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)', null,
+  //   [
+  //     decimalToBigInt(ocnToken.balance).toString(),
+  //     decimalToBigInt(ocnToken.denormWeight).toString(),
+  //     decimalToBigInt(dtToken.balance).toString(),
+  //     decimalToBigInt(dtToken.denormWeight).toString(),
+  //     ONE_INT.toString(),
+  //     decimalToBigInt(pool.swapFee).toString(),
+  //     result.reverted ? 'failed' : result.value.toString()
+  //   ]
+  // )
 
   pool.save()
   debuglog('updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
@@ -198,6 +231,16 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
   poolTx.timestamp = event.block.timestamp.toI32()
   poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
+
+
+  if (poolId == DEBUG_POOL_ADDRESS) {
+    _debuglog('####################### poolTransaction: ', event,
+      [
+        BigInt.fromI32(poolTx.block).toString(),
+        BigInt.fromI32(poolTx.timestamp).toString(),
+        pool.oceanReserve.toString()
+      ])
+  }
 
   poolTx.save()
 }
