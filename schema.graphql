@@ -7,7 +7,6 @@ type PoolFactory @entity {
 
     poolCount: Int!                                     # Number of pools
     finalizedPoolCount: Int!                            # Number of finalized pools
-    txCount: BigInt!                                    # Number of txs
 
     pools: [Pool!] @derivedFrom(field: "factoryID")
 }
@@ -39,6 +38,7 @@ type Pool @entity {
     joinCount: BigInt!                                 # liquidity has been added
     exitCount: BigInt!                                 # liquidity has been removed
     swapCount: BigInt!
+    transactionCount: BigInt!                          # Number of transactions in this pool involving liquidity changes
 
     datatokenAddress: String!
     createTime: Int!                                    # Block time pool was created
@@ -91,6 +91,7 @@ type PoolTransaction @entity {
     sharesBalance: BigDecimal!
 
     spotPrice: BigDecimal!
+    consumePrice: BigDecimal!
     tx: Bytes!
     event: String
     block: Int!
@@ -108,7 +109,6 @@ type DatatokenFactory @entity {
     id: ID!
 
     tokenCount: Int!                                     # Number of datatokens
-    txCount: BigInt!                                    # Number of txs
 
     datatokens: [Datatoken!] @derivedFrom(field: "factoryID")
 }

@@ -10,7 +10,8 @@ import {
   tokenToDecimal,
   updateTokenBalance,
   ZERO_BD,
-  MINUS_1, saveTokenTransaction
+  MINUS_1_BD,
+  saveTokenTransaction
 } from './helpers'
 
 /************************************
@@ -48,13 +49,13 @@ export function handleTransfer(event: Transfer): void {
     tokenBalanceFrom = TokenBalance.load(tokenBalanceFromId)
     oldBalanceFrom = (tokenBalanceFrom == null) ? ZERO_BD : tokenBalanceFrom.balance
     datatoken.supply = datatoken.supply.minus(amount)
-    updateTokenBalance(tokenBalanceFromId, tokenId, tokenShareFrom, amount.times(MINUS_1))
+    updateTokenBalance(tokenBalanceFromId, tokenId, tokenShareFrom, amount.times(MINUS_1_BD))
   } else {
 
     tokenBalanceFrom = TokenBalance.load(tokenBalanceFromId)
     oldBalanceFrom = (tokenBalanceFrom == null) ? ZERO_BD : tokenBalanceFrom.balance
     datatoken.supply = datatoken.supply.minus(amount)
-    updateTokenBalance(tokenBalanceFromId, tokenId, tokenShareFrom, amount.times(MINUS_1))
+    updateTokenBalance(tokenBalanceFromId, tokenId, tokenShareFrom, amount.times(MINUS_1_BD))
 
     tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
     oldBalanceTo = (tokenBalanceTo == null) ? ZERO_BD : tokenBalanceTo.balance

@@ -17,7 +17,6 @@ export function handleNewToken(event: TokenRegistered): void {
   if (factory == null) {
     factory = new DatatokenFactory('1')
     factory.tokenCount = 0
-    factory.txCount = BigInt.fromI32(0)
   }
 
   let datatoken = new DatatokenEntity(event.params.tokenAddress.toHexString())

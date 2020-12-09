@@ -19,7 +19,6 @@ export function handleNewPool(event: BPoolRegistered): void {
 
     factory.poolCount = 0
     factory.finalizedPoolCount = 0
-    factory.txCount = BigInt.fromI32(0)
   }
 
   let pool = new Pool(event.params.bpoolAddress.toHexString())
@@ -50,6 +49,7 @@ export function handleNewPool(event: BPoolRegistered): void {
   pool.joinCount = BigInt.fromI32(0)
   pool.exitCount = BigInt.fromI32(0)
   pool.swapCount = BigInt.fromI32(0)
+  pool.transactionCount = BigInt.fromI32(0)
 
   pool.datatokenAddress = ''
 

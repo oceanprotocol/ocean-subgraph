@@ -23,15 +23,13 @@ import { log } from '@graphprotocol/graph-ts'
 import { Pool } from '../types/templates/Pool/Pool'
 
 export let ZERO_BD = BigDecimal.fromString('0.0')
-export let MINUS_1 = BigDecimal.fromString('-1.0')
-export let ONE = BigDecimal.fromString('1.0')
+export let MINUS_1_BD = BigDecimal.fromString('-1.0')
+export let ONE_BD = BigDecimal.fromString('1.0')
 
-export let ONE_INT = BigInt.fromI32(10).pow(18 as u8)
+export let ONE_BASE_18 = BigInt.fromI32(10).pow(18 as u8)
 export let BONE = BigDecimal.fromString('1000000000000000000')
 
-
 export let ENABLE_DEBUG = false
-export let DEBUG_POOL_ADDRESS = '0x64269ce81a07f21cb3566afa752810c4ca0bcb6f'
 
 let network = dataSource.network()
 
@@ -47,7 +45,7 @@ export function _debuglog(message: string, event: ethereum.Event, args: Array<st
   for (let i=0; i < args.length; i++) {
     message = message.concat(' {}')
   }
-  log.error('@@@@@@@@@@@@@@@@@@@ ' + message, args)
+  log.info('@@@@@@ ' + message, args)
 }
 
 export function debuglog(message: string, event: ethereum.Event, args: Array<string>): void {
@@ -80,10 +78,8 @@ export function decimalToBigInt(value: BigDecimal): BigInt {
 }
 
 export function updatePoolTokenBalance(poolToken: PoolToken, balance: BigDecimal, source: string): void {
-  if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
-    _debuglog('########## updating poolToken balance (source, oldBalance, newBalance, poolId) ', null,
-      [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId])
-  }
+  debuglog('########## updating poolToken balance (source, oldBalance, newBalance, poolId) ', null,
+    [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId])
   poolToken.balance = balance
 }
 
@@ -117,6 +113,7 @@ export function updatePoolTransactionToken(
 
   let ptx = PoolTransaction.load(poolTx)
   let poolToken = PoolToken.load(poolTokenId)
+  let pool = PoolEntity.load(poolToken.poolId)
   let ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
   let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
   if (ptxTokenValues == null) {
@@ -141,22 +138,23 @@ export function updatePoolTransactionToken(
 
   if (ptxTokenValues.tokenAddress == OCEAN) {
     ptx.oceanReserve = ptxTokenValues.tokenReserve
+    pool.oceanReserve = ptxTokenValues.tokenReserve
   } else {
     ptx.datatokenReserve = ptxTokenValues.tokenReserve
+    pool.datatokenReserve = ptxTokenValues.tokenReserve
   }
-  if (poolToken.poolId == DEBUG_POOL_ADDRESS && poolToken.tokenAddress == OCEAN) {
-    _debuglog('########## updatePoolTransactionToken: ', null,
-      [
-        BigInt.fromI32(ptx.block).toString(),
-        BigInt.fromI32(ptx.timestamp).toString(),
-        ptxTokenValues.type,
-        ptxTokenValues.value.toString(),
-        ptxTokenValues.tokenReserve.toString(),
-        poolToken.poolId,
-      ])
-  }
+  debuglog('########## updatePoolTransactionToken: ', null,
+    [
+      BigInt.fromI32(ptx.block).toString(),
+      BigInt.fromI32(ptx.timestamp).toString(),
+      ptxTokenValues.type,
+      ptxTokenValues.value.toString(),
+      ptxTokenValues.tokenReserve.toString(),
+      poolToken.poolId,
+    ])
 
   ptx.save()
+  pool.save()
 }
 
 export function createPoolTransaction(event: ethereum.Event, event_type: string, userAddress: string): void {
@@ -184,42 +182,45 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
 
   poolTx.sharesTransferAmount = ZERO_BD
   poolTx.sharesBalance = ZERO_BD
-  poolTx.spotPrice = calcSpotPrice(
-    ocnToken.denormWeight, dtToken.denormWeight, ocnToken.balance, dtToken.balance, pool.swapFee)
 
-  pool.datatokenReserve = dtToken.balance
-  pool.oceanReserve = ocnToken.balance
+  // pool.datatokenReserve = dtToken.balance
+  // pool.oceanReserve = ocnToken.balance
   // Initial reserve values, will be updated in `updatePoolTransactionToken`
   poolTx.datatokenReserve = dtToken.balance
   poolTx.oceanReserve = ocnToken.balance
 
   let p = Pool.bind(Address.fromString(poolId))
-  let result = p.try_getSpotPrice(
-    Address.fromString(ocnToken.tokenAddress),
-    Address.fromString(dtToken.tokenAddress))
-  // pool.spotPrice = poolTx.spotPrice
-  pool.consumePrice = result.reverted ? BigDecimal.fromString('-1') : bigIntToDecimal(result.value, 18)
+  let priceResult = p.try_calcInGivenOut(
+    decimalToBigInt(ocnToken.balance), decimalToBigInt(ocnToken.denormWeight),
+    decimalToBigInt(dtToken.balance), decimalToBigInt(dtToken.denormWeight),
+    ONE_BASE_18, decimalToBigInt(pool.swapFee)
+  )
+  debuglog(
+    'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)', null,
+    [
+      decimalToBigInt(ocnToken.balance).toString(),
+      decimalToBigInt(ocnToken.denormWeight).toString(),
+      decimalToBigInt(dtToken.balance).toString(),
+      decimalToBigInt(dtToken.denormWeight).toString(),
+      ONE_BASE_18.toString(),
+      decimalToBigInt(pool.swapFee).toString(),
+      priceResult.reverted ? 'failed' : priceResult.value.toString()
+    ]
+  )
+  poolTx.consumePrice = priceResult.reverted ? MINUS_1_BD : bigIntToDecimal(priceResult.value, 18)
+  poolTx.spotPrice = calcSpotPrice(
+    ocnToken.balance, ocnToken.denormWeight,
+    dtToken.balance, dtToken.denormWeight,
+    pool.swapFee
+  )
 
-  // let result = p.try_calcInGivenOut(
-  //   decimalToBigInt(ocnToken.balance), decimalToBigInt(ocnToken.denormWeight),
-  //   decimalToBigInt(dtToken.balance), decimalToBigInt(dtToken.denormWeight),
-  //   ONE_INT, decimalToBigInt(pool.swapFee)
-  // )
-  // pool.consumePrice = BigDecimal.fromString('-1')//result.reverted ? BigDecimal.fromString('-1') : bigIntToDecimal(result.value, 18)
-  // debuglog(
-  //   'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)', null,
-  //   [
-  //     decimalToBigInt(ocnToken.balance).toString(),
-  //     decimalToBigInt(ocnToken.denormWeight).toString(),
-  //     decimalToBigInt(dtToken.balance).toString(),
-  //     decimalToBigInt(dtToken.denormWeight).toString(),
-  //     ONE_INT.toString(),
-  //     decimalToBigInt(pool.swapFee).toString(),
-  //     result.reverted ? 'failed' : result.value.toString()
-  //   ]
-  // )
+  pool.consumePrice = poolTx.consumePrice
+  pool.spotPrice = poolTx.spotPrice
+
+  pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
   pool.save()
+
   debuglog('updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
     event,
     ['createPoolTransaction', dtToken.balance.toString(), ocnToken.balance.toString(),
@@ -233,28 +234,38 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
 
 
-  if (poolId == DEBUG_POOL_ADDRESS) {
-    _debuglog('####################### poolTransaction: ', event,
-      [
-        BigInt.fromI32(poolTx.block).toString(),
-        BigInt.fromI32(poolTx.timestamp).toString(),
-        pool.oceanReserve.toString()
-      ])
-  }
+  debuglog('####################### poolTransaction: ', event,
+    [
+      BigInt.fromI32(poolTx.block).toString(),
+      BigInt.fromI32(poolTx.timestamp).toString(),
+      pool.oceanReserve.toString()
+    ])
 
   poolTx.save()
 }
 
 export function calcSpotPrice(
-  wIn: BigDecimal, wOut: BigDecimal,
-  balanceIn: BigDecimal, balanceOut: BigDecimal,
+  balanceIn: BigDecimal, wIn: BigDecimal,
+  balanceOut: BigDecimal, wOut: BigDecimal,
   swapFee: BigDecimal
 ): BigDecimal {
+  if (balanceIn <= ZERO_BD || balanceOut <= ZERO_BD) return MINUS_1_BD
+  debuglog('################ calcSpotPrice', null,
+    [balanceIn.toString(), wIn.toString(),
+     balanceOut.toString(), wOut.toString(),
+     swapFee.toString()])
+
   let numer = balanceIn.div(wIn)
   let denom = balanceOut.div(wOut)
+  if (denom <= ZERO_BD) return MINUS_1_BD
+
   let ratio = numer.div(denom)
-  let scale = ONE.div(ONE.minus(swapFee))
-  return  ratio.times(scale)
+  let scale = ONE_BD.div(ONE_BD.minus(swapFee))
+  let price = ratio.times(scale)
+  price.truncate(18)
+  debuglog('################ calcSpotPrice values:', null,
+    [numer.toString(), denom.toString(), ratio.toString(), scale.toString(), price.toString()])
+  return price
 }
 
 export function decrPoolCount(finalized: boolean): void {
