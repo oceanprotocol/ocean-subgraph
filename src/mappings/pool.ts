@@ -8,7 +8,8 @@ import {
   Pool,
   PoolToken,
   PoolShare,
-  Datatoken, PoolTransaction, PoolTransactionTokenValues
+  Datatoken,
+  PoolTransaction
 } from '../types/schema'
 import {
   hexToDecimal,
