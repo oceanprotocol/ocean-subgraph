@@ -1,16 +1,13 @@
-import { Address, BigInt, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 import { BPoolRegistered } from '../types/Factory/Factory'
 import { PoolFactory, Pool } from '../types/schema'
 import { Pool as PoolContract } from '../types/templates'
-import {
-  ZERO_BD,
-} from './helpers'
+import { ZERO_BD } from './helpers'
 import { log } from '@graphprotocol/graph-ts'
 
 export function handleNewPool(event: BPoolRegistered): void {
   let factory = PoolFactory.load('1')
 
-  // if no factory yet, set up blank initial
   if (factory == null) {
     factory = new PoolFactory('1')
     factory.totalLiquidity = ZERO_BD
@@ -22,7 +19,7 @@ export function handleNewPool(event: BPoolRegistered): void {
   }
 
   let pool = new Pool(event.params.bpoolAddress.toHexString())
-  log.error('************************ handleNewPool: poolId {}', [pool.id.toString()])
+  log.info('************************ handleNewPool: poolId {}', [pool.id.toString()])
 
   pool.factoryID = event.address.toHexString()
   pool.controller = event.params.registeredBy
