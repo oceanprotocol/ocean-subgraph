@@ -35,7 +35,7 @@ export const ENABLE_DEBUG = false
 const network = dataSource.network()
 
 export const OCEAN: string =
-  network == 'mainnet'
+  network === 'mainnet'
     ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
     : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
 
@@ -105,6 +105,13 @@ export function updatePoolTokenBalance(
   poolToken.balance = balance
 }
 
+export function createUserEntity(address: string): void {
+  if (User.load(address) == null) {
+    const user = new User(address)
+    user.save()
+  }
+}
+
 export function createPoolShareEntity(
   id: string,
   pool: string,
@@ -168,7 +175,7 @@ export function updatePoolTransactionToken(
 
   ptxTokenValues.save()
 
-  if (ptxTokenValues.tokenAddress == OCEAN) {
+  if (ptxTokenValues.tokenAddress === OCEAN) {
     ptx.oceanReserve = ptxTokenValues.tokenReserve
     pool.oceanReserve = ptxTokenValues.tokenReserve
   } else {
@@ -188,8 +195,43 @@ export function updatePoolTransactionToken(
   pool.save()
 }
 
+export function calcSpotPrice(
+  balanceIn: BigDecimal,
+  wIn: BigDecimal,
+  balanceOut: BigDecimal,
+  wOut: BigDecimal,
+  swapFee: BigDecimal
+): BigDecimal {
+  if (balanceIn <= ZERO_BD || balanceOut <= ZERO_BD) return MINUS_1_BD
+  debuglog('################ calcSpotPrice', null, [
+    balanceIn.toString(),
+    wIn.toString(),
+    balanceOut.toString(),
+    wOut.toString(),
+    swapFee.toString()
+  ])
+
+  const numer = balanceIn.div(wIn)
+  const denom = balanceOut.div(wOut)
+  if (denom <= ZERO_BD) return MINUS_1_BD
+
+  const ratio = numer.div(denom)
+  const scale = ONE_BD.div(ONE_BD.minus(swapFee))
+  const price = ratio.times(scale)
+  price.truncate(18)
+  debuglog('################ calcSpotPrice values:', null, [
+    numer.toString(),
+    denom.toString(),
+    ratio.toString(),
+    scale.toString(),
+    price.toString()
+  ])
+  return price
+}
+
 export function createPoolTransaction(
   event: ethereum.Event,
+  // eslint-disable-next-line camelcase
   event_type: string,
   userAddress: string
 ): void {
@@ -279,6 +321,7 @@ export function createPoolTransaction(
   )
 
   poolTx.tx = event.transaction.hash
+  // eslint-disable-next-line camelcase
   poolTx.event = event_type
   poolTx.block = event.block.number.toI32()
   poolTx.timestamp = event.block.timestamp.toI32()
@@ -292,40 +335,6 @@ export function createPoolTransaction(
   ])
 
   poolTx.save()
-}
-
-export function calcSpotPrice(
-  balanceIn: BigDecimal,
-  wIn: BigDecimal,
-  balanceOut: BigDecimal,
-  wOut: BigDecimal,
-  swapFee: BigDecimal
-): BigDecimal {
-  if (balanceIn <= ZERO_BD || balanceOut <= ZERO_BD) return MINUS_1_BD
-  debuglog('################ calcSpotPrice', null, [
-    balanceIn.toString(),
-    wIn.toString(),
-    balanceOut.toString(),
-    wOut.toString(),
-    swapFee.toString()
-  ])
-
-  const numer = balanceIn.div(wIn)
-  const denom = balanceOut.div(wOut)
-  if (denom <= ZERO_BD) return MINUS_1_BD
-
-  const ratio = numer.div(denom)
-  const scale = ONE_BD.div(ONE_BD.minus(swapFee))
-  const price = ratio.times(scale)
-  price.truncate(18)
-  debuglog('################ calcSpotPrice values:', null, [
-    numer.toString(),
-    denom.toString(),
-    ratio.toString(),
-    scale.toString(),
-    price.toString()
-  ])
-  return price
 }
 
 export function decrPoolCount(finalized: boolean): void {
@@ -359,13 +368,6 @@ export function saveTokenTransaction(
   transaction.save()
 
   createUserEntity(userAddress)
-}
-
-export function createUserEntity(address: string): void {
-  if (User.load(address) == null) {
-    const user = new User(address)
-    user.save()
-  }
 }
 
 export function updateTokenBalance(

@@ -29,8 +29,8 @@ export function handleTransfer(event: Transfer): void {
   let oldBalanceFrom = BigDecimal.fromString('0.0')
   let oldBalanceTo = BigDecimal.fromString('0.0')
 
-  const isMint = tokenShareFrom == ZERO_ADDRESS
-  const isBurn = tokenShareTo == ZERO_ADDRESS
+  const isMint = tokenShareFrom === ZERO_ADDRESS
+  const isBurn = tokenShareTo === ZERO_ADDRESS
 
   const datatoken = Datatoken.load(tokenId)
 
@@ -115,7 +115,7 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.timestamp = event.params.timestamp.toI32()
   if (
     event.params.mrktFeeCollector != null &&
-    event.params.mrktFeeCollector.toHex() != ZERO_ADDRESS
+    event.params.mrktFeeCollector.toHex() !== ZERO_ADDRESS
   ) {
     order.marketFeeCollector = event.params.mrktFeeCollector.toHexString()
   }

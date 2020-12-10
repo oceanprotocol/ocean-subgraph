@@ -59,7 +59,7 @@ export function handleSetController(event: LOG_CALL): void {
 export function handleSetPublicSwap(event: LOG_CALL): void {
   const poolId = event.address.toHex()
   const pool = Pool.load(poolId)
-  pool.publicSwap = event.params.data.toHexString().slice(-1) == '1'
+  pool.publicSwap = event.params.data.toHexString().slice(-1) === '1'
   pool.save()
 }
 
@@ -74,6 +74,60 @@ export function handleFinalize(event: LOG_CALL): void {
   const factory = PoolFactory.load('1')
   factory.finalizedPoolCount = factory.finalizedPoolCount + 1
   factory.save()
+}
+
+export function _handleRebind(
+  event: LOG_CALL,
+  poolId: string,
+  tokenAddress: string,
+  balanceStr: string,
+  denormWeightStr: string
+): void {
+  const pool = Pool.load(poolId)
+  const decimals = BigInt.fromI32(18).toI32()
+
+  if (tokenAddress !== OCEAN) {
+    pool.datatokenAddress = tokenAddress
+  }
+  pool.tokenCount += BigInt.fromI32(1)
+  const address = Address.fromString(tokenAddress)
+  const denormWeight = hexToDecimal(denormWeightStr, decimals)
+  const poolTokenId = poolId.concat('-').concat(address.toHexString())
+  let poolToken = PoolToken.load(poolTokenId)
+  if (poolToken == null) {
+    createPoolTokenEntity(poolTokenId, poolId, address.toHexString())
+    poolToken = PoolToken.load(poolTokenId)
+    pool.totalWeight += denormWeight
+  } else {
+    const oldWeight = poolToken.denormWeight
+    if (denormWeight > oldWeight) {
+      pool.totalWeight = pool.totalWeight + (denormWeight - oldWeight)
+    } else {
+      pool.totalWeight = pool.totalWeight - (oldWeight - denormWeight)
+    }
+  }
+
+  poolToken.denormWeight = denormWeight
+  const balance = hexToDecimal(balanceStr, decimals)
+  updatePoolTokenBalance(poolToken as PoolToken, balance, '_handleRebind')
+
+  poolToken.save()
+  if (balance.equals(ZERO_BD)) {
+    decrPoolCount(pool.finalized)
+    pool.active = false
+  }
+  pool.save()
+}
+
+export function handleRebind(event: LOG_CALL): void {
+  const poolId = event.address.toHex()
+  _handleRebind(
+    event,
+    poolId,
+    event.params.data.toHexString().slice(34, 74),
+    event.params.data.toHexString().slice(74, 138),
+    event.params.data.toHexString().slice(138)
+  )
 }
 
 export function handleSetup(event: LOG_CALL): void {
@@ -142,60 +196,6 @@ export function handleSetup(event: LOG_CALL): void {
   )
 }
 
-export function _handleRebind(
-  event: LOG_CALL,
-  poolId: string,
-  tokenAddress: string,
-  balanceStr: string,
-  denormWeightStr: string
-): void {
-  const pool = Pool.load(poolId)
-  const decimals = BigInt.fromI32(18).toI32()
-
-  if (tokenAddress !== OCEAN) {
-    pool.datatokenAddress = tokenAddress
-  }
-  pool.tokenCount += BigInt.fromI32(1)
-  const address = Address.fromString(tokenAddress)
-  const denormWeight = hexToDecimal(denormWeightStr, decimals)
-  const poolTokenId = poolId.concat('-').concat(address.toHexString())
-  let poolToken = PoolToken.load(poolTokenId)
-  if (poolToken == null) {
-    createPoolTokenEntity(poolTokenId, poolId, address.toHexString())
-    poolToken = PoolToken.load(poolTokenId)
-    pool.totalWeight += denormWeight
-  } else {
-    const oldWeight = poolToken.denormWeight
-    if (denormWeight > oldWeight) {
-      pool.totalWeight = pool.totalWeight + (denormWeight - oldWeight)
-    } else {
-      pool.totalWeight = pool.totalWeight - (oldWeight - denormWeight)
-    }
-  }
-
-  poolToken.denormWeight = denormWeight
-  const balance = hexToDecimal(balanceStr, decimals)
-  updatePoolTokenBalance(poolToken as PoolToken, balance, '_handleRebind')
-
-  poolToken.save()
-  if (balance.equals(ZERO_BD)) {
-    decrPoolCount(pool.finalized)
-    pool.active = false
-  }
-  pool.save()
-}
-
-export function handleRebind(event: LOG_CALL): void {
-  const poolId = event.address.toHex()
-  _handleRebind(
-    event,
-    poolId,
-    event.params.data.toHexString().slice(34, 74),
-    event.params.data.toHexString().slice(74, 138),
-    event.params.data.toHexString().slice(138)
-  )
-}
-
 /************************************
  ********** JOINS & EXITS ***********
  ************************************/
@@ -204,7 +204,7 @@ export function handleJoinPool(event: LOG_JOIN): void {
   const poolId = event.address.toHex()
 
   const pool = Pool.load(poolId)
-  if (pool.finalized == false) {
+  if (pool.finalized === false) {
     return
   }
 
