@@ -28,7 +28,7 @@ import {
   OCEAN,
   debuglog,
   updatePoolTokenBalance
-} from './helpers'
+} from '../helpers'
 
 /************************************
  ********** Pool Controls ***********

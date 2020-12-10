@@ -2,7 +2,7 @@ import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import { BPoolRegistered } from '../types/Factory/Factory'
 import { PoolFactory, Pool } from '../types/schema'
 import { Pool as PoolContract } from '../types/templates'
-import { ZERO_BD } from './helpers'
+import { ZERO_BD } from '../helpers'
 
 export function handleNewPool(event: BPoolRegistered): void {
   let factory = PoolFactory.load('1')

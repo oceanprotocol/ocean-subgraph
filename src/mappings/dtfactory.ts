@@ -3,7 +3,7 @@ import { TokenRegistered } from '../types/DTFactory/DTFactory'
 import { DatatokenFactory, Datatoken as DatatokenEntity } from '../types/schema'
 import { DataToken as DatatokenDataSource } from '../types/templates'
 
-import { createUserEntity, tokenToDecimal, ZERO_BD } from './helpers'
+import { createUserEntity, tokenToDecimal, ZERO_BD } from '../helpers'
 
 export function handleNewToken(event: TokenRegistered): void {
   let factory = DatatokenFactory.load('1')
