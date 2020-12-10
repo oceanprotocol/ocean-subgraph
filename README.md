@@ -7,12 +7,21 @@
 [![Build Status](https://travis-ci.com/oceanprotocol/ocean-subgraph.svg&branch=main)](https://travis-ci.com/oceanprotocol/ocean.js)
 [![js oceanprotocol](https://img.shields.io/badge/js-oceanprotocol-7b1173.svg)](https://github.com/oceanprotocol/eslint-config-oceanprotocol)
 
+- [🏄 Get Started](#-get-started)
 - [🦑 Development](#-development)
 - [✨ Code Style](#-code-style)
 - [⬆️ Releases](#️-releases)
 - [🛳 Production](#-production)
 - [⬆️ Deployment](#️-deployment)
 - [🏛 License](#-license)
+
+## 🏄 Get Started
+
+This subgraph is deployed for all networks the Ocean Protocol contracts are deployed to:
+
+- [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com)
+- [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
+- [subgraph.rinkeby.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
 
 ## 🦑 Development
 
@@ -32,15 +41,9 @@ cd graph-node/docker
 # Update this line in the `docker-compose.yml` file with your Infura ProjectId
 #   ethereum: 'mainnet:https://mainnet.infura.io/v3/INFURA_PROJECT_ID'
 docker-compose up
-
 ```
 
-Note: making contract calls using Infura fails with `missing trie node` errors.
-The fix requires editing `ethereum_adapter.rs` line 434 to use the latest block
-instead of a specific block number.
-Replace:
-`web3.eth().call(req, Some(block_id)).then(|result| {`
-with `web3.eth().call(req, Some(BlockNumber::Latest.into())).then(|result| {`
+Note: making contract calls using Infura fails with `missing trie node` errors. The fix requires editing `ethereum_adapter.rs` line 434 to use the latest block instead of a specific block number. Replace: `web3.eth().call(req, Some(block_id)).then(|result| {` with `web3.eth().call(req, Some(BlockNumber::Latest.into())).then(|result| {`
 
 To run the graph-node with this fix it must be run from source.
 
@@ -65,7 +68,6 @@ npm i
 npm run codegen
 npm run create:local
 npm run deploy:local
-
 ```
 
 - You can edit the event handler code and then run `npm run deploy:local`
