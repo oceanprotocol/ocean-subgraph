@@ -2,24 +2,62 @@
   "name": "ocean-subgraph",
   "version": "0.1.0",
   "scripts": {
+    "start": "",
     "create": "graph create oceanprotocol/ocean-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
     "deploy": "graph deploy oceanprotocol/ocean-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy:beta": "graph deploy oceanprotocol/ocean-subgraph-beta --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy:local": "graph deploy oceanprotocol/ocean-subgraph subgraph.yaml --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy:local": "graph deploy oceanprotocol/ocean-subgraph subgraph.yaml --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "test": "npm run lint && npm run type-check",
+    "lint": "eslint --ignore-path .gitignore --ext .js --ext .ts --ext .tsx .",
+    "format": "prettier --ignore-path .gitignore './**/*.{css,yml,js,ts,tsx,json,yaml}' --write",
+    "type-check": "tsc --noEmit",
+    "release": "release-it --non-interactive",
+    "changelog": "auto-changelog -p"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.18.0",
-    "@graphprotocol/graph-ts": "^0.18.1"
+    "@graphprotocol/graph-cli": "^0.19.0",
+    "@graphprotocol/graph-ts": "^0.19.0",
+    "@release-it/bumper": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
+    "auto-changelog": "^2.2.1",
+    "eslint": "^7.15.0",
+    "eslint-config-oceanprotocol": "^1.5.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-prettier": "^3.2.0",
+    "prettier": "^2.2.1",
+    "release-it": "^14.2.2",
+    "typescript": "^4.1.2"
   },
-  "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "babel-register": "^6.26.0",
-    "keytar": "^5.0.0",
-    "truffle": "^5.1.0",
-    "truffle-contract": "^4.0.5",
-    "truffle-hdwallet-provider": "^1.0.4"
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oceanprotocol/ocean-subgraph.git"
+  },
+  "license": "Apache-2.0",
+  "release-it": {
+    "hooks": {
+      "after:bump": "npm run changelog"
+    },
+    "plugins": {
+      "@release-it/bumper": {
+        "out": [
+          "package.json",
+          "package-lock.json"
+        ]
+      }
+    },
+    "git": {
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false
+    }
   }
 }

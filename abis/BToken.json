@@ -497,23 +497,15 @@
   "ast": {
     "absolutePath": "/home/travis/build/oceanprotocol/ocean-contracts/contracts/balancer/BToken.sol",
     "exportedSymbols": {
-      "BToken": [
-        4285
-      ],
-      "BTokenBase": [
-        3979
-      ]
+      "BToken": [4285],
+      "BTokenBase": [3979]
     },
     "id": 4286,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 3780,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "643:22:7"
       },
@@ -560,19 +552,12 @@
             "src": "1468:4:7"
           }
         ],
-        "contractDependencies": [
-          280,
-          1422
-        ],
+        "contractDependencies": [280, 1422],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 3979,
-        "linearizedBaseContracts": [
-          3979,
-          1422,
-          280
-        ],
+        "linearizedBaseContracts": [3979, 1422, 280],
         "name": "BTokenBase",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -1617,10 +1602,7 @@
                       "id": 3855,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2056:7:7",
                       "typeDescriptions": {
@@ -2312,10 +2294,7 @@
                       "id": 3908,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2410:7:7",
                       "typeDescriptions": {
@@ -3312,23 +3291,12 @@
             "src": "2843:6:7"
           }
         ],
-        "contractDependencies": [
-          280,
-          1422,
-          3979,
-          6537
-        ],
+        "contractDependencies": [280, 1422, 3979, 6537],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 4285,
-        "linearizedBaseContracts": [
-          4285,
-          6537,
-          3979,
-          1422,
-          280
-        ],
+        "linearizedBaseContracts": [4285, 6537, 3979, 1422, 280],
         "name": "BToken",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -4299,9 +4267,7 @@
                       "id": 4070,
                       "name": "Approval",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536
-                      ],
+                      "overloadedDeclarations": [6536],
                       "referencedDeclaration": 6536,
                       "src": "3696:8:7",
                       "typeDescriptions": {
@@ -4852,9 +4818,7 @@
                       "id": 4106,
                       "name": "Approval",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536
-                      ],
+                      "overloadedDeclarations": [6536],
                       "referencedDeclaration": 6536,
                       "src": "3926:8:7",
                       "typeDescriptions": {
@@ -5019,9 +4983,7 @@
               "src": "4087:315:7",
               "statements": [
                 {
-                  "assignments": [
-                    4131
-                  ],
+                  "assignments": [4131],
                   "declarations": [
                     {
                       "constant": false,
@@ -5639,9 +5601,7 @@
                       "id": 4166,
                       "name": "Approval",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536
-                      ],
+                      "overloadedDeclarations": [6536],
                       "referencedDeclaration": 6536,
                       "src": "4320:8:7",
                       "typeDescriptions": {
@@ -6279,10 +6239,7 @@
                       "id": 4211,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "4683:7:7",
                       "typeDescriptions": {
@@ -7047,9 +7004,7 @@
                             "id": 4267,
                             "name": "Approval",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              6536
-                            ],
+                            "overloadedDeclarations": [6536],
                             "referencedDeclaration": 6536,
                             "src": "5017:8:7",
                             "typeDescriptions": {
@@ -7247,23 +7202,15 @@
   "legacyAST": {
     "absolutePath": "/home/travis/build/oceanprotocol/ocean-contracts/contracts/balancer/BToken.sol",
     "exportedSymbols": {
-      "BToken": [
-        4285
-      ],
-      "BTokenBase": [
-        3979
-      ]
+      "BToken": [4285],
+      "BTokenBase": [3979]
     },
     "id": 4286,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 3780,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "643:22:7"
       },
@@ -7310,19 +7257,12 @@
             "src": "1468:4:7"
           }
         ],
-        "contractDependencies": [
-          280,
-          1422
-        ],
+        "contractDependencies": [280, 1422],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 3979,
-        "linearizedBaseContracts": [
-          3979,
-          1422,
-          280
-        ],
+        "linearizedBaseContracts": [3979, 1422, 280],
         "name": "BTokenBase",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -8367,10 +8307,7 @@
                       "id": 3855,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2056:7:7",
                       "typeDescriptions": {
@@ -9062,10 +8999,7 @@
                       "id": 3908,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2410:7:7",
                       "typeDescriptions": {
@@ -10062,23 +9996,12 @@
             "src": "2843:6:7"
           }
         ],
-        "contractDependencies": [
-          280,
-          1422,
-          3979,
-          6537
-        ],
+        "contractDependencies": [280, 1422, 3979, 6537],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 4285,
-        "linearizedBaseContracts": [
-          4285,
-          6537,
-          3979,
-          1422,
-          280
-        ],
+        "linearizedBaseContracts": [4285, 6537, 3979, 1422, 280],
         "name": "BToken",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -11049,9 +10972,7 @@
                       "id": 4070,
                       "name": "Approval",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536
-                      ],
+                      "overloadedDeclarations": [6536],
                       "referencedDeclaration": 6536,
                       "src": "3696:8:7",
                       "typeDescriptions": {
@@ -11602,9 +11523,7 @@
                       "id": 4106,
                       "name": "Approval",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536
-                      ],
+                      "overloadedDeclarations": [6536],
                       "referencedDeclaration": 6536,
                       "src": "3926:8:7",
                       "typeDescriptions": {
@@ -11769,9 +11688,7 @@
               "src": "4087:315:7",
               "statements": [
                 {
-                  "assignments": [
-                    4131
-                  ],
+                  "assignments": [4131],
                   "declarations": [
                     {
                       "constant": false,
@@ -12389,9 +12306,7 @@
                       "id": 4166,
                       "name": "Approval",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536
-                      ],
+                      "overloadedDeclarations": [6536],
                       "referencedDeclaration": 6536,
                       "src": "4320:8:7",
                       "typeDescriptions": {
@@ -13029,10 +12944,7 @@
                       "id": 4211,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "4683:7:7",
                       "typeDescriptions": {
@@ -13797,9 +13709,7 @@
                             "id": 4267,
                             "name": "Approval",
                             "nodeType": "Identifier",
-                            "overloadedDeclarations": [
-                              6536
-                            ],
+                            "overloadedDeclarations": [6536],
                             "referencedDeclaration": 6536,
                             "src": "5017:8:7",
                             "typeDescriptions": {

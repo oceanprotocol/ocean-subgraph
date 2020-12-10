@@ -321,20 +321,14 @@
   "ast": {
     "absolutePath": "/home/travis/build/oceanprotocol/ocean-contracts/contracts/balancer/BFactory.sol",
     "exportedSymbols": {
-      "BFactory": [
-        376
-      ]
+      "BFactory": [376]
     },
     "id": 377,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 282,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "0:22:3"
       },
@@ -410,19 +404,12 @@
             "src": "679:8:3"
           }
         ],
-        "contractDependencies": [
-          280,
-          5731
-        ],
+        "contractDependencies": [280, 5731],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 376,
-        "linearizedBaseContracts": [
-          376,
-          5731,
-          280
-        ],
+        "linearizedBaseContracts": [376, 5731, 280],
         "name": "BFactory",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -726,10 +713,7 @@
                       "id": 308,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1176:7:3",
                       "typeDescriptions": {
@@ -1069,10 +1053,7 @@
                       "id": 333,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1637:7:3",
                       "typeDescriptions": {
@@ -1099,9 +1080,7 @@
                   "src": "1637:103:3"
                 },
                 {
-                  "assignments": [
-                    343
-                  ],
+                  "assignments": [343],
                   "declarations": [
                     {
                       "constant": false,
@@ -1419,10 +1398,7 @@
                       "id": 348,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1795:7:3",
                       "typeDescriptions": {
@@ -1671,20 +1647,14 @@
   "legacyAST": {
     "absolutePath": "/home/travis/build/oceanprotocol/ocean-contracts/contracts/balancer/BFactory.sol",
     "exportedSymbols": {
-      "BFactory": [
-        376
-      ]
+      "BFactory": [376]
     },
     "id": 377,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 282,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "0:22:3"
       },
@@ -1760,19 +1730,12 @@
             "src": "679:8:3"
           }
         ],
-        "contractDependencies": [
-          280,
-          5731
-        ],
+        "contractDependencies": [280, 5731],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 376,
-        "linearizedBaseContracts": [
-          376,
-          5731,
-          280
-        ],
+        "linearizedBaseContracts": [376, 5731, 280],
         "name": "BFactory",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -2076,10 +2039,7 @@
                       "id": 308,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1176:7:3",
                       "typeDescriptions": {
@@ -2419,10 +2379,7 @@
                       "id": 333,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1637:7:3",
                       "typeDescriptions": {
@@ -2449,9 +2406,7 @@
                   "src": "1637:103:3"
                 },
                 {
-                  "assignments": [
-                    343
-                  ],
+                  "assignments": [343],
                   "declarations": [
                     {
                       "constant": false,
@@ -2769,10 +2724,7 @@
                       "id": 348,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1795:7:3",
                       "typeDescriptions": {

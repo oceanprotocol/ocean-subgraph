@@ -33,22 +33,31 @@ export let ENABLE_DEBUG = false
 
 let network = dataSource.network()
 
-export let OCEAN: string = (network == 'mainnet')
-  ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
-  : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
+export let OCEAN: string =
+  network == 'mainnet'
+    ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
+    : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
 
-export function _debuglog(message: string, event: ethereum.Event, args: Array<string>): void {
+export function _debuglog(
+  message: string,
+  event: ethereum.Event,
+  args: Array<string>
+): void {
   if (event != null) {
     args.push(event.transaction.hash.toHex())
     args.push(event.address.toHex())
   }
-  for (let i=0; i < args.length; i++) {
+  for (let i = 0; i < args.length; i++) {
     message = message.concat(' {}')
   }
   log.info('@@@@@@ ' + message, args)
 }
 
-export function debuglog(message: string, event: ethereum.Event, args: Array<string>): void {
+export function debuglog(
+  message: string,
+  event: ethereum.Event,
+  args: Array<string>
+): void {
   if (!ENABLE_DEBUG) return
   _debuglog(message, event, args)
 }
@@ -56,17 +65,23 @@ export function debuglog(message: string, event: ethereum.Event, args: Array<str
 export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
   let bytes = Bytes.fromHexString(hexString.toString()).reverse() as Bytes
   let bi = BigInt.fromUnsignedBytes(bytes)
-  let scale = BigInt.fromI32(10).pow(decimals as u8).toBigDecimal()
+  let scale = BigInt.fromI32(10)
+    .pow(decimals as u8)
+    .toBigDecimal()
   return bi.divDecimal(scale)
 }
 
 export function bigIntToDecimal(amount: BigInt, decimals: i32): BigDecimal {
-  let scale = BigInt.fromI32(10).pow(decimals as u8).toBigDecimal()
+  let scale = BigInt.fromI32(10)
+    .pow(decimals as u8)
+    .toBigDecimal()
   return amount.toBigDecimal().div(scale)
 }
 
 export function tokenToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
-  let scale = BigInt.fromI32(10).pow(decimals as u8).toBigDecimal()
+  let scale = BigInt.fromI32(10)
+    .pow(decimals as u8)
+    .toBigDecimal()
   return amount.div(scale)
 }
 
@@ -74,16 +89,26 @@ export function decimalToBigInt(value: BigDecimal): BigInt {
   value.truncate(18)
   let scale = BigInt.fromI32(10).pow((value.exp.toI32() + 18) as u8)
   return value.digits.times(scale)
-
 }
 
-export function updatePoolTokenBalance(poolToken: PoolToken, balance: BigDecimal, source: string): void {
-  debuglog('########## updating poolToken balance (source, oldBalance, newBalance, poolId) ', null,
-    [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId])
+export function updatePoolTokenBalance(
+  poolToken: PoolToken,
+  balance: BigDecimal,
+  source: string
+): void {
+  debuglog(
+    '########## updating poolToken balance (source, oldBalance, newBalance, poolId) ',
+    null,
+    [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId]
+  )
   poolToken.balance = balance
 }
 
-export function createPoolShareEntity(id: string, pool: string, user: string): void {
+export function createPoolShareEntity(
+  id: string,
+  pool: string,
+  user: string
+): void {
   let poolShare = new PoolShare(id)
 
   createUserEntity(user)
@@ -94,12 +119,16 @@ export function createPoolShareEntity(id: string, pool: string, user: string): v
   poolShare.save()
 }
 
-export function createPoolTokenEntity(id: string, pool: string, address: string): void {
+export function createPoolTokenEntity(
+  id: string,
+  pool: string,
+  address: string
+): void {
   let datatoken = Datatoken.load(address)
 
   let poolToken = new PoolToken(id)
   poolToken.poolId = pool
-  poolToken.tokenId = datatoken ? datatoken.id: ''
+  poolToken.tokenId = datatoken ? datatoken.id : ''
   poolToken.tokenAddress = address
   poolToken.balance = ZERO_BD
   poolToken.denormWeight = ZERO_BD
@@ -107,10 +136,12 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
 }
 
 export function updatePoolTransactionToken(
-  poolTx: string, poolTokenId: string, amount: BigDecimal,
-  balance: BigDecimal, feeValue: BigDecimal
+  poolTx: string,
+  poolTokenId: string,
+  amount: BigDecimal,
+  balance: BigDecimal,
+  feeValue: BigDecimal
 ): void {
-
   let ptx = PoolTransaction.load(poolTx)
   let poolToken = PoolToken.load(poolTokenId)
   let pool = PoolEntity.load(poolToken.poolId)
@@ -143,21 +174,24 @@ export function updatePoolTransactionToken(
     ptx.datatokenReserve = ptxTokenValues.tokenReserve
     pool.datatokenReserve = ptxTokenValues.tokenReserve
   }
-  debuglog('########## updatePoolTransactionToken: ', null,
-    [
-      BigInt.fromI32(ptx.block).toString(),
-      BigInt.fromI32(ptx.timestamp).toString(),
-      ptxTokenValues.type,
-      ptxTokenValues.value.toString(),
-      ptxTokenValues.tokenReserve.toString(),
-      poolToken.poolId,
-    ])
+  debuglog('########## updatePoolTransactionToken: ', null, [
+    BigInt.fromI32(ptx.block).toString(),
+    BigInt.fromI32(ptx.timestamp).toString(),
+    ptxTokenValues.type,
+    ptxTokenValues.value.toString(),
+    ptxTokenValues.tokenReserve.toString(),
+    poolToken.poolId
+  ])
 
   ptx.save()
   pool.save()
 }
 
-export function createPoolTransaction(event: ethereum.Event, event_type: string, userAddress: string): void {
+export function createPoolTransaction(
+  event: ethereum.Event,
+  event_type: string,
+  userAddress: string
+): void {
   let poolId = event.address.toHex()
   let pool = PoolEntity.load(poolId)
   let ptx = event.transaction.hash.toHexString()
@@ -191,12 +225,16 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
 
   let p = Pool.bind(Address.fromString(poolId))
   let priceResult = p.try_calcInGivenOut(
-    decimalToBigInt(ocnToken.balance), decimalToBigInt(ocnToken.denormWeight),
-    decimalToBigInt(dtToken.balance), decimalToBigInt(dtToken.denormWeight),
-    ONE_BASE_18, decimalToBigInt(pool.swapFee)
+    decimalToBigInt(ocnToken.balance),
+    decimalToBigInt(ocnToken.denormWeight),
+    decimalToBigInt(dtToken.balance),
+    decimalToBigInt(dtToken.denormWeight),
+    ONE_BASE_18,
+    decimalToBigInt(pool.swapFee)
   )
   debuglog(
-    'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)', null,
+    'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)',
+    null,
     [
       decimalToBigInt(ocnToken.balance).toString(),
       decimalToBigInt(ocnToken.denormWeight).toString(),
@@ -207,10 +245,14 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
       priceResult.reverted ? 'failed' : priceResult.value.toString()
     ]
   )
-  poolTx.consumePrice = priceResult.reverted ? MINUS_1_BD : bigIntToDecimal(priceResult.value, 18)
+  poolTx.consumePrice = priceResult.reverted
+    ? MINUS_1_BD
+    : bigIntToDecimal(priceResult.value, 18)
   poolTx.spotPrice = calcSpotPrice(
-    ocnToken.balance, ocnToken.denormWeight,
-    dtToken.balance, dtToken.denormWeight,
+    ocnToken.balance,
+    ocnToken.denormWeight,
+    dtToken.balance,
+    dtToken.denormWeight,
     pool.swapFee
   )
 
@@ -221,10 +263,17 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
 
   pool.save()
 
-  debuglog('updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
+  debuglog(
+    'updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
     event,
-    ['createPoolTransaction', dtToken.balance.toString(), ocnToken.balance.toString(),
-      pool.datatokenReserve.toString(), pool.oceanReserve.toString()])
+    [
+      'createPoolTransaction',
+      dtToken.balance.toString(),
+      ocnToken.balance.toString(),
+      pool.datatokenReserve.toString(),
+      pool.oceanReserve.toString()
+    ]
+  )
 
   poolTx.tx = event.transaction.hash
   poolTx.event = event_type
@@ -233,27 +282,30 @@ export function createPoolTransaction(event: ethereum.Event, event_type: string,
   poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
 
-
-  debuglog('####################### poolTransaction: ', event,
-    [
-      BigInt.fromI32(poolTx.block).toString(),
-      BigInt.fromI32(poolTx.timestamp).toString(),
-      pool.oceanReserve.toString()
-    ])
+  debuglog('####################### poolTransaction: ', event, [
+    BigInt.fromI32(poolTx.block).toString(),
+    BigInt.fromI32(poolTx.timestamp).toString(),
+    pool.oceanReserve.toString()
+  ])
 
   poolTx.save()
 }
 
 export function calcSpotPrice(
-  balanceIn: BigDecimal, wIn: BigDecimal,
-  balanceOut: BigDecimal, wOut: BigDecimal,
+  balanceIn: BigDecimal,
+  wIn: BigDecimal,
+  balanceOut: BigDecimal,
+  wOut: BigDecimal,
   swapFee: BigDecimal
 ): BigDecimal {
   if (balanceIn <= ZERO_BD || balanceOut <= ZERO_BD) return MINUS_1_BD
-  debuglog('################ calcSpotPrice', null,
-    [balanceIn.toString(), wIn.toString(),
-     balanceOut.toString(), wOut.toString(),
-     swapFee.toString()])
+  debuglog('################ calcSpotPrice', null, [
+    balanceIn.toString(),
+    wIn.toString(),
+    balanceOut.toString(),
+    wOut.toString(),
+    swapFee.toString()
+  ])
 
   let numer = balanceIn.div(wIn)
   let denom = balanceOut.div(wOut)
@@ -263,8 +315,13 @@ export function calcSpotPrice(
   let scale = ONE_BD.div(ONE_BD.minus(swapFee))
   let price = ratio.times(scale)
   price.truncate(18)
-  debuglog('################ calcSpotPrice values:', null,
-    [numer.toString(), denom.toString(), ratio.toString(), scale.toString(), price.toString()])
+  debuglog('################ calcSpotPrice values:', null, [
+    numer.toString(),
+    denom.toString(),
+    ratio.toString(),
+    scale.toString(),
+    price.toString()
+  ])
   return price
 }
 
@@ -275,8 +332,14 @@ export function decrPoolCount(finalized: boolean): void {
   factory.save()
 }
 
-export function saveTokenTransaction(event: ethereum.Event, eventName: string): void {
-  let tx = event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString())
+export function saveTokenTransaction(
+  event: ethereum.Event,
+  eventName: string
+): void {
+  let tx = event.transaction.hash
+    .toHexString()
+    .concat('-')
+    .concat(event.logIndex.toString())
   let userAddress = event.transaction.from.toHex()
   let transaction = TokenTransaction.load(tx)
   if (transaction == null) {
@@ -302,7 +365,12 @@ export function createUserEntity(address: string): void {
   }
 }
 
-export function updateTokenBalance(id: string, token: string, user: string, amount: BigDecimal): void {
+export function updateTokenBalance(
+  id: string,
+  token: string,
+  user: string,
+  amount: BigDecimal
+): void {
   let tokenBalance = TokenBalance.load(id)
   if (tokenBalance == null) {
     tokenBalance = new TokenBalance(id)

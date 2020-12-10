@@ -3,11 +3,7 @@ import { TokenRegistered } from '../types/DTFactory/DTFactory'
 import { DatatokenFactory, Datatoken as DatatokenEntity } from '../types/schema'
 import { DataToken as DatatokenDataSource } from '../types/templates'
 
-import {
-  createUserEntity,
-  tokenToDecimal,
-  ZERO_BD,
-} from './helpers'
+import { createUserEntity, tokenToDecimal, ZERO_BD } from './helpers'
 import { log } from '@graphprotocol/graph-ts'
 
 export function handleNewToken(event: TokenRegistered): void {
@@ -20,7 +16,9 @@ export function handleNewToken(event: TokenRegistered): void {
   }
 
   let datatoken = new DatatokenEntity(event.params.tokenAddress.toHexString())
-  log.error('************************ handleNewToken: datatokenId {}', [datatoken.id.toString()])
+  log.error('************************ handleNewToken: datatokenId {}', [
+    datatoken.id.toString()
+  ])
 
   datatoken.factoryID = event.address.toHexString()
 

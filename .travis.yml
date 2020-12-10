@@ -1,0 +1,9 @@
+language: node_js
+node_js: node
+
+script:
+  # will run `npm ci` automatically here
+  - npm test
+
+notifications:
+  email: false

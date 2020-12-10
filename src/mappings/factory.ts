@@ -19,7 +19,9 @@ export function handleNewPool(event: BPoolRegistered): void {
   }
 
   let pool = new Pool(event.params.bpoolAddress.toHexString())
-  log.info('************************ handleNewPool: poolId {}', [pool.id.toString()])
+  log.info('************************ handleNewPool: poolId {}', [
+    pool.id.toString()
+  ])
 
   pool.factoryID = event.address.toHexString()
   pool.controller = event.params.registeredBy
