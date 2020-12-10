@@ -8,6 +8,7 @@
 [![js oceanprotocol](https://img.shields.io/badge/js-oceanprotocol-7b1173.svg)](https://github.com/oceanprotocol/eslint-config-oceanprotocol)
 
 - [🏄 Get Started](#-get-started)
+- [🧶 Example Queries](#-example-queries)
 - [🦑 Development](#-development)
 - [✨ Code Style](#-code-style)
 - [⬆️ Releases](#️-releases)
@@ -22,6 +23,52 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 - [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com)
 - [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
 - [subgraph.rinkeby.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
+
+## 🧶 Example Queries
+
+**All pools**
+
+```graphql
+{
+  pools(orderBy: oceanReserve, orderDirection: desc) {
+    consumePrice
+    datatokenReserve
+    oceanReserve
+    spotPrice
+    swapFee
+    transactionCount
+  }
+}
+```
+
+**All datatokens**
+
+```graphql
+{
+  datatokens {
+    address
+    symbol
+    name
+    cap
+    supply
+    publisher
+    holderCount
+  }
+}
+```
+
+**All pool transactions for a user**
+
+```graphql
+{
+  poolTransactions(
+    orderBy: timestamp
+    where: { userAddressStr: $userAddress }
+  ) {
+    poolAddressStr
+  }
+}
+```
 
 ## 🦑 Development
 
