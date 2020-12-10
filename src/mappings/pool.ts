@@ -152,7 +152,7 @@ export function _handleRebind(
   const pool = Pool.load(poolId)
   const decimals = BigInt.fromI32(18).toI32()
 
-  if (tokenAddress != OCEAN) {
+  if (tokenAddress !== OCEAN) {
     pool.datatokenAddress = tokenAddress
   }
   pool.tokenCount += BigInt.fromI32(1)
@@ -233,8 +233,7 @@ export function handleJoinPool(event: LOG_JOIN): void {
     return
   }
 
-  let datatoken: Datatoken | null
-  datatoken =
+  const datatoken: Datatoken =
     poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
   const decimals =
     datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
@@ -279,8 +278,7 @@ export function handleExitPool(event: LOG_EXIT): void {
     return
   }
 
-  let datatoken: Datatoken | null
-  datatoken =
+  const datatoken: Datatoken =
     poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
   const decimals =
     datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
@@ -408,8 +406,8 @@ export function handleTransfer(event: Transfer): void {
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-  const isMint = event.params.from.toHex() == ZERO_ADDRESS
-  const isBurn = event.params.to.toHex() == ZERO_ADDRESS
+  const isMint = event.params.from.toHex() === ZERO_ADDRESS
+  const isBurn = event.params.to.toHex() === ZERO_ADDRESS
 
   const poolShareFromId = poolId.concat('-').concat(event.params.from.toHex())
   let poolShareFrom = PoolShare.load(poolShareFromId)
