@@ -4,7 +4,8 @@ import {
   Bytes,
   dataSource,
   Address,
-  ethereum
+  ethereum,
+  log
 } from '@graphprotocol/graph-ts'
 
 import {
@@ -19,21 +20,21 @@ import {
   TokenTransaction,
   PoolTransactionTokenValues
 } from '../types/schema'
-import { log } from '@graphprotocol/graph-ts'
+
 import { Pool } from '../types/templates/Pool/Pool'
 
-export let ZERO_BD = BigDecimal.fromString('0.0')
-export let MINUS_1_BD = BigDecimal.fromString('-1.0')
-export let ONE_BD = BigDecimal.fromString('1.0')
+export const ZERO_BD = BigDecimal.fromString('0.0')
+export const MINUS_1_BD = BigDecimal.fromString('-1.0')
+export const ONE_BD = BigDecimal.fromString('1.0')
 
-export let ONE_BASE_18 = BigInt.fromI32(10).pow(18 as u8)
-export let BONE = BigDecimal.fromString('1000000000000000000')
+export const ONE_BASE_18 = BigInt.fromI32(10).pow(18 as u8)
+export const BONE = BigDecimal.fromString('1000000000000000000')
 
-export let ENABLE_DEBUG = false
+export const ENABLE_DEBUG = false
 
-let network = dataSource.network()
+const network = dataSource.network()
 
-export let OCEAN: string =
+export const OCEAN: string =
   network == 'mainnet'
     ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
     : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
@@ -62,24 +63,24 @@ export function debuglog(
   _debuglog(message, event, args)
 }
 
-export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
-  let bytes = Bytes.fromHexString(hexString.toString()).reverse() as Bytes
-  let bi = BigInt.fromUnsignedBytes(bytes)
-  let scale = BigInt.fromI32(10)
+export function hexToDecimal(hexString: string, decimals: i32): BigDecimal {
+  const bytes = Bytes.fromHexString(hexString.toString()).reverse() as Bytes
+  const bi = BigInt.fromUnsignedBytes(bytes)
+  const scale = BigInt.fromI32(10)
     .pow(decimals as u8)
     .toBigDecimal()
   return bi.divDecimal(scale)
 }
 
 export function bigIntToDecimal(amount: BigInt, decimals: i32): BigDecimal {
-  let scale = BigInt.fromI32(10)
+  const scale = BigInt.fromI32(10)
     .pow(decimals as u8)
     .toBigDecimal()
   return amount.toBigDecimal().div(scale)
 }
 
 export function tokenToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
-  let scale = BigInt.fromI32(10)
+  const scale = BigInt.fromI32(10)
     .pow(decimals as u8)
     .toBigDecimal()
   return amount.div(scale)
@@ -87,7 +88,7 @@ export function tokenToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
 
 export function decimalToBigInt(value: BigDecimal): BigInt {
   value.truncate(18)
-  let scale = BigInt.fromI32(10).pow((value.exp.toI32() + 18) as u8)
+  const scale = BigInt.fromI32(10).pow((value.exp.toI32() + 18) as u8)
   return value.digits.times(scale)
 }
 
@@ -109,7 +110,7 @@ export function createPoolShareEntity(
   pool: string,
   user: string
 ): void {
-  let poolShare = new PoolShare(id)
+  const poolShare = new PoolShare(id)
 
   createUserEntity(user)
 
@@ -124,9 +125,9 @@ export function createPoolTokenEntity(
   pool: string,
   address: string
 ): void {
-  let datatoken = Datatoken.load(address)
+  const datatoken = Datatoken.load(address)
 
-  let poolToken = new PoolToken(id)
+  const poolToken = new PoolToken(id)
   poolToken.poolId = pool
   poolToken.tokenId = datatoken ? datatoken.id : ''
   poolToken.tokenAddress = address
@@ -142,10 +143,10 @@ export function updatePoolTransactionToken(
   balance: BigDecimal,
   feeValue: BigDecimal
 ): void {
-  let ptx = PoolTransaction.load(poolTx)
-  let poolToken = PoolToken.load(poolTokenId)
-  let pool = PoolEntity.load(poolToken.poolId)
-  let ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
+  const ptx = PoolTransaction.load(poolTx)
+  const poolToken = PoolToken.load(poolTokenId)
+  const pool = PoolEntity.load(poolToken.poolId)
+  const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
   let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
   if (ptxTokenValues == null) {
     ptxTokenValues = new PoolTransactionTokenValues(ptxTokenValuesId)
@@ -192,12 +193,14 @@ export function createPoolTransaction(
   event_type: string,
   userAddress: string
 ): void {
-  let poolId = event.address.toHex()
-  let pool = PoolEntity.load(poolId)
-  let ptx = event.transaction.hash.toHexString()
+  const poolId = event.address.toHex()
+  const pool = PoolEntity.load(poolId)
+  const ptx = event.transaction.hash.toHexString()
 
-  let ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
-  let dtToken = PoolToken.load(poolId.concat('-').concat(pool.datatokenAddress))
+  const ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
+  const dtToken = PoolToken.load(
+    poolId.concat('-').concat(pool.datatokenAddress)
+  )
 
   if (ocnToken == null || dtToken == null) {
     return
@@ -223,8 +226,8 @@ export function createPoolTransaction(
   poolTx.datatokenReserve = dtToken.balance
   poolTx.oceanReserve = ocnToken.balance
 
-  let p = Pool.bind(Address.fromString(poolId))
-  let priceResult = p.try_calcInGivenOut(
+  const p = Pool.bind(Address.fromString(poolId))
+  const priceResult = p.try_calcInGivenOut(
     decimalToBigInt(ocnToken.balance),
     decimalToBigInt(ocnToken.denormWeight),
     decimalToBigInt(dtToken.balance),
@@ -307,13 +310,13 @@ export function calcSpotPrice(
     swapFee.toString()
   ])
 
-  let numer = balanceIn.div(wIn)
-  let denom = balanceOut.div(wOut)
+  const numer = balanceIn.div(wIn)
+  const denom = balanceOut.div(wOut)
   if (denom <= ZERO_BD) return MINUS_1_BD
 
-  let ratio = numer.div(denom)
-  let scale = ONE_BD.div(ONE_BD.minus(swapFee))
-  let price = ratio.times(scale)
+  const ratio = numer.div(denom)
+  const scale = ONE_BD.div(ONE_BD.minus(swapFee))
+  const price = ratio.times(scale)
   price.truncate(18)
   debuglog('################ calcSpotPrice values:', null, [
     numer.toString(),
@@ -326,7 +329,7 @@ export function calcSpotPrice(
 }
 
 export function decrPoolCount(finalized: boolean): void {
-  let factory = PoolFactory.load('1')
+  const factory = PoolFactory.load('1')
   factory.poolCount -= 1
   if (finalized) factory.finalizedPoolCount -= 1
   factory.save()
@@ -336,11 +339,11 @@ export function saveTokenTransaction(
   event: ethereum.Event,
   eventName: string
 ): void {
-  let tx = event.transaction.hash
+  const tx = event.transaction.hash
     .toHexString()
     .concat('-')
     .concat(event.logIndex.toString())
-  let userAddress = event.transaction.from.toHex()
+  const userAddress = event.transaction.from.toHex()
   let transaction = TokenTransaction.load(tx)
   if (transaction == null) {
     transaction = new TokenTransaction(tx)
@@ -360,7 +363,7 @@ export function saveTokenTransaction(
 
 export function createUserEntity(address: string): void {
   if (User.load(address) == null) {
-    let user = new User(address)
+    const user = new User(address)
     user.save()
   }
 }

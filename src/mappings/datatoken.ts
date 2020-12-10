@@ -1,6 +1,5 @@
-import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import { OrderStarted, Transfer } from '../types/templates/DataToken/DataToken'
-import { log } from '@graphprotocol/graph-ts'
 
 import { Datatoken, TokenBalance, TokenOrder } from '../types/schema'
 import {
@@ -16,24 +15,24 @@ import {
  ************************************/
 
 export function handleTransfer(event: Transfer): void {
-  let tokenId = event.address.toHex()
+  const tokenId = event.address.toHex()
 
-  let ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-  let amount = tokenToDecimal(event.params.value.toBigDecimal(), 18)
-  let tokenShareFrom = event.params.from.toHex()
-  let tokenShareTo = event.params.to.toHex()
-  let tokenBalanceFromId = tokenId.concat('-').concat(tokenShareFrom)
-  let tokenBalanceToId = tokenId.concat('-').concat(tokenShareTo)
+  const amount = tokenToDecimal(event.params.value.toBigDecimal(), 18)
+  const tokenShareFrom = event.params.from.toHex()
+  const tokenShareTo = event.params.to.toHex()
+  const tokenBalanceFromId = tokenId.concat('-').concat(tokenShareFrom)
+  const tokenBalanceToId = tokenId.concat('-').concat(tokenShareTo)
   let tokenBalanceFrom = TokenBalance.load(tokenBalanceFromId)
   let tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
   let oldBalanceFrom = BigDecimal.fromString('0.0')
   let oldBalanceTo = BigDecimal.fromString('0.0')
 
-  let isMint = tokenShareFrom == ZERO_ADDRESS
-  let isBurn = tokenShareTo == ZERO_ADDRESS
+  const isMint = tokenShareFrom == ZERO_ADDRESS
+  const isBurn = tokenShareTo == ZERO_ADDRESS
 
-  let datatoken = Datatoken.load(tokenId)
+  const datatoken = Datatoken.load(tokenId)
 
   if (isMint) {
     tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
@@ -90,16 +89,16 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleOrderStarted(event: OrderStarted): void {
-  let ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-  let tokenId = event.address.toHex()
-  let datatoken = Datatoken.load(tokenId)
+  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+  const tokenId = event.address.toHex()
+  const datatoken = Datatoken.load(tokenId)
   if (datatoken == null) return
 
-  let payer = event.params.payer.toHex()
+  const payer = event.params.payer.toHex()
   // let feeCollector = event.params.mrktFeeCollector
   // let marketFee = event.params.marketFee
-  let tx = event.transaction.hash
-  let orderId = tokenId
+  const tx = event.transaction.hash
+  const orderId = tokenId
     .concat('-')
     .concat(payer)
     .concat('-')

@@ -1,10 +1,9 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 import { TokenRegistered } from '../types/DTFactory/DTFactory'
 import { DatatokenFactory, Datatoken as DatatokenEntity } from '../types/schema'
 import { DataToken as DatatokenDataSource } from '../types/templates'
 
 import { createUserEntity, tokenToDecimal, ZERO_BD } from './helpers'
-import { log } from '@graphprotocol/graph-ts'
 
 export function handleNewToken(event: TokenRegistered): void {
   let factory = DatatokenFactory.load('1')
@@ -15,7 +14,7 @@ export function handleNewToken(event: TokenRegistered): void {
     factory.tokenCount = 0
   }
 
-  let datatoken = new DatatokenEntity(event.params.tokenAddress.toHexString())
+  const datatoken = new DatatokenEntity(event.params.tokenAddress.toHexString())
   log.error('************************ handleNewToken: datatokenId {}', [
     datatoken.id.toString()
   ])
