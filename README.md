@@ -45,7 +45,7 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 
 ```graphql
 {
-  datatokens {
+  datatokens(orderBy: createTime, orderDirection: desc) {
     address
     symbol
     name
@@ -57,13 +57,14 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 }
 ```
 
-**All pool transactions for a user**
+**All pool transactions for a given user**
 
 ```graphql
 {
   poolTransactions(
-    orderBy: timestamp
     where: { userAddressStr: $userAddress }
+    orderBy: timestamp
+    orderDirection: desc
   ) {
     poolAddressStr
   }
