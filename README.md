@@ -77,7 +77,6 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 
 ```bash
 npm i
-npm start
 ```
 
 - Install/run the Graph: `https://thegraph.com/docs/quick-start`
