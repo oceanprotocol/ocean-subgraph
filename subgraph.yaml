@@ -8,7 +8,7 @@ dataSources:
     name: Factory
     network: mainnet
     source:
-      address: "0xbe0083053744ECb871510C88dC0f6b77Da162706"
+      address: '0xbe0083053744ECb871510C88dC0f6b77Da162706'
       abi: Factory
       startBlock: 11105585
     mapping:
@@ -28,7 +28,7 @@ dataSources:
     name: DTFactory
     network: mainnet
     source:
-      address: "0x57317f97E9EA49eBd19f7c9bB7c180b8cDcbDeB9"
+      address: '0x57317f97E9EA49eBd19f7c9bB7c180b8cDcbDeB9'
       abi: DTFactory
       startBlock: 11105560
     mapping:
@@ -66,25 +66,25 @@ templates:
           file: ./abis/BToken.json
       eventHandlers:
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
-          topic0: "0x34e1990700000000000000000000000000000000000000000000000000000000"
+          topic0: '0x34e1990700000000000000000000000000000000000000000000000000000000'
           handler: handleSetSwapFee
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
-          topic0: "0x92eefe9b00000000000000000000000000000000000000000000000000000000"
+          topic0: '0x92eefe9b00000000000000000000000000000000000000000000000000000000'
           handler: handleSetController
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
-          topic0: "0x49b5955200000000000000000000000000000000000000000000000000000000"
+          topic0: '0x49b5955200000000000000000000000000000000000000000000000000000000'
           handler: handleSetPublicSwap
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
-          topic0: "0x4bb278f300000000000000000000000000000000000000000000000000000000"
+          topic0: '0x4bb278f300000000000000000000000000000000000000000000000000000000'
           handler: handleFinalize
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
-          topic0: "0xd1d7bc9100000000000000000000000000000000000000000000000000000000"
+          topic0: '0xd1d7bc9100000000000000000000000000000000000000000000000000000000'
           handler: handleSetup
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
-          topic0: "0x3fdddaa200000000000000000000000000000000000000000000000000000000"
+          topic0: '0x3fdddaa200000000000000000000000000000000000000000000000000000000'
           handler: handleRebind
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
-          topic0: "0xe4e1e53800000000000000000000000000000000000000000000000000000000"
+          topic0: '0xe4e1e53800000000000000000000000000000000000000000000000000000000'
           handler: handleRebind
         - event: LOG_JOIN(indexed address,indexed address,uint256)
           handler: handleJoinPool

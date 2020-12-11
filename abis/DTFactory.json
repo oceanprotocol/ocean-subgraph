@@ -157,20 +157,14 @@
   "ast": {
     "absolutePath": "/home/travis/build/oceanprotocol/ocean-contracts/contracts/DTFactory.sol",
     "exportedSymbols": {
-      "DTFactory": [
-        158
-      ]
+      "DTFactory": [158]
     },
     "id": 159,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 1,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "0:22:0"
       },
@@ -217,17 +211,12 @@
             "src": "651:8:0"
           }
         ],
-        "contractDependencies": [
-          5731
-        ],
+        "contractDependencies": [5731],
         "contractKind": "contract",
         "documentation": "@title DTFactory contract\n@author Ocean Protocol Team\n * @dev Implementation of Ocean DataTokens Factory\n *      DTFactory deploys DataToken proxy contracts.\n     New DataToken proxy contracts are links to the template contract's bytecode.\n     Proxy contract functionality is based on Ocean Protocol custom implementation of ERC1167 standard.",
         "fullyImplemented": true,
         "id": 158,
-        "linearizedBaseContracts": [
-          158,
-          5731
-        ],
+        "linearizedBaseContracts": [158, 5731],
         "name": "DTFactory",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -843,10 +832,7 @@
                       "id": 41,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1528:7:0",
                       "typeDescriptions": {
@@ -1139,10 +1125,7 @@
                       "id": 78,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2359:7:0",
                       "typeDescriptions": {
@@ -1375,10 +1358,7 @@
                       "id": 91,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2499:7:0",
                       "typeDescriptions": {
@@ -1405,9 +1385,7 @@
                   "src": "2499:124:0"
                 },
                 {
-                  "assignments": [
-                    101
-                  ],
+                  "assignments": [101],
                   "declarations": [
                     {
                       "constant": false,
@@ -1694,10 +1672,7 @@
                       "id": 106,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2695:7:0",
                       "typeDescriptions": {
@@ -2346,20 +2321,14 @@
   "legacyAST": {
     "absolutePath": "/home/travis/build/oceanprotocol/ocean-contracts/contracts/DTFactory.sol",
     "exportedSymbols": {
-      "DTFactory": [
-        158
-      ]
+      "DTFactory": [158]
     },
     "id": 159,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 1,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "0:22:0"
       },
@@ -2406,17 +2375,12 @@
             "src": "651:8:0"
           }
         ],
-        "contractDependencies": [
-          5731
-        ],
+        "contractDependencies": [5731],
         "contractKind": "contract",
         "documentation": "@title DTFactory contract\n@author Ocean Protocol Team\n * @dev Implementation of Ocean DataTokens Factory\n *      DTFactory deploys DataToken proxy contracts.\n     New DataToken proxy contracts are links to the template contract's bytecode.\n     Proxy contract functionality is based on Ocean Protocol custom implementation of ERC1167 standard.",
         "fullyImplemented": true,
         "id": 158,
-        "linearizedBaseContracts": [
-          158,
-          5731
-        ],
+        "linearizedBaseContracts": [158, 5731],
         "name": "DTFactory",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -3032,10 +2996,7 @@
                       "id": 41,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "1528:7:0",
                       "typeDescriptions": {
@@ -3328,10 +3289,7 @@
                       "id": 78,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2359:7:0",
                       "typeDescriptions": {
@@ -3564,10 +3522,7 @@
                       "id": 91,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2499:7:0",
                       "typeDescriptions": {
@@ -3594,9 +3549,7 @@
                   "src": "2499:124:0"
                 },
                 {
-                  "assignments": [
-                    101
-                  ],
+                  "assignments": [101],
                   "declarations": [
                     {
                       "constant": false,
@@ -3883,10 +3836,7 @@
                       "id": 106,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6555,
-                        6556
-                      ],
+                      "overloadedDeclarations": [6555, 6556],
                       "referencedDeclaration": 6556,
                       "src": "2695:7:0",
                       "typeDescriptions": {

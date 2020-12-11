@@ -1,14 +1,13 @@
-import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import { BPoolRegistered } from '../types/Factory/Factory'
 import { PoolFactory, Pool } from '../types/schema'
 import { Pool as PoolContract } from '../types/templates'
-import { ZERO_BD } from './helpers'
-import { log } from '@graphprotocol/graph-ts'
+import { ZERO_BD } from '../helpers'
 
 export function handleNewPool(event: BPoolRegistered): void {
   let factory = PoolFactory.load('1')
 
-  if (factory == null) {
+  if (factory === null) {
     factory = new PoolFactory('1')
     factory.totalLiquidity = ZERO_BD
     factory.totalSwapVolume = ZERO_BD
@@ -18,8 +17,10 @@ export function handleNewPool(event: BPoolRegistered): void {
     factory.finalizedPoolCount = 0
   }
 
-  let pool = new Pool(event.params.bpoolAddress.toHexString())
-  log.info('************************ handleNewPool: poolId {}', [pool.id.toString()])
+  const pool = new Pool(event.params.bpoolAddress.toHexString())
+  log.info('************************ handleNewPool: poolId {}', [
+    pool.id.toString()
+  ])
 
   pool.factoryID = event.address.toHexString()
   pool.controller = event.params.registeredBy
@@ -38,8 +39,8 @@ export function handleNewPool(event: BPoolRegistered): void {
 
   pool.datatokenReserve = ZERO_BD
   pool.oceanReserve = ZERO_BD
-  pool.spotPrice = ZERO_BD //: BigDecimal!
-  pool.consumePrice = ZERO_BD //: BigDecimal!
+  pool.spotPrice = ZERO_BD // : BigDecimal!
+  pool.consumePrice = ZERO_BD // : BigDecimal!
 
   pool.tokenCount = BigInt.fromI32(0)
   pool.holderCount = BigInt.fromI32(0)
