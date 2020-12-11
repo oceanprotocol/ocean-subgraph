@@ -1,6 +1,6 @@
 {
   "name": "ocean-subgraph",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
     "start": "",
     "create": "graph create oceanprotocol/ocean-subgraph --node https://api.thegraph.com/deploy/",
