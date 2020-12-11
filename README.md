@@ -71,6 +71,8 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 }
 ```
 
+> Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
+
 ## 🦑 Development
 
 ```bash
