@@ -12,6 +12,7 @@ export function handleNewPool(event: BPoolRegistered): void {
     factory.totalLiquidity = ZERO_BD
     factory.totalSwapVolume = ZERO_BD
     factory.totalSwapFee = ZERO_BD
+    factory.totalLockedValue = ZERO_BD
 
     factory.poolCount = 0
     factory.finalizedPoolCount = 0
@@ -36,6 +37,7 @@ export function handleNewPool(event: BPoolRegistered): void {
   pool.totalShares = ZERO_BD
   pool.totalSwapVolume = ZERO_BD
   pool.totalSwapFee = ZERO_BD
+  pool.lockedValue = ZERO_BD
 
   pool.datatokenReserve = ZERO_BD
   pool.oceanReserve = ZERO_BD
