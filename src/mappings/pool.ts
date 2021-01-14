@@ -5,7 +5,7 @@ import {
   LOG_EXIT,
   LOG_SWAP,
   Transfer
-} from '../types/templates/Pool/Pool'
+} from '../@types/templates/Pool/Pool'
 
 import {
   PoolFactory,
@@ -14,7 +14,7 @@ import {
   PoolShare,
   Datatoken,
   PoolTransaction
-} from '../types/schema'
+} from '../@types/schema'
 import {
   hexToDecimal,
   tokenToDecimal,

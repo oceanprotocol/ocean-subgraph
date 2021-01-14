@@ -1,3 +1,6 @@
+src/@types
+build
+
 # Logs
 logs
 *.log
