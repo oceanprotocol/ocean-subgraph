@@ -278,7 +278,7 @@ export function handleExitPool(event: LOG_EXIT): void {
     return
   }
 
-  const datatoken: Datatoken =
+  const datatoken: Datatoken | null =
     poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
   const decimals =
     datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
