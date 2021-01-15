@@ -19,9 +19,9 @@ import {
   TokenBalance,
   TokenTransaction,
   PoolTransactionTokenValues
-} from '../types/schema'
+} from './types/schema'
 
-import { Pool } from '../types/templates/Pool/Pool'
+import { Pool } from './types/templates/Pool/Pool'
 
 export const ZERO_BD = BigDecimal.fromString('0.0')
 export const MINUS_1_BD = BigDecimal.fromString('-1.0')
