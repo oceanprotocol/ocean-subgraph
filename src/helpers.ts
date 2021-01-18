@@ -238,6 +238,9 @@ export function createPoolTransaction(
   event_type: string,
   userAddress: string
 ): void {
+
+  debuglog('createPoolTransaction', event, [])
+
   const poolId = event.address.toHex()
   const pool = PoolEntity.load(poolId)
   const ptx = event.transaction.hash.toHexString()
