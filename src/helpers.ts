@@ -30,7 +30,7 @@ export const ONE_BD = BigDecimal.fromString('1.0')
 export const ONE_BASE_18 = BigInt.fromI32(10).pow(18 as u8)
 export const BONE = BigDecimal.fromString('1000000000000000000')
 
-export const ENABLE_DEBUG = false
+export const ENABLE_DEBUG = true
 
 const network = dataSource.network()
 
@@ -151,6 +151,9 @@ export function updatePoolTransactionToken(
   feeValue: BigDecimal
 ): void {
   const ptx = PoolTransaction.load(poolTx)
+  if (ptx == null) {
+    log.error('?????????????????????????? PoolTransaction not found for {}, pooltokenid {} ????????????????', [poolTx, poolTokenId])
+  }
   const poolToken = PoolToken.load(poolTokenId)
   const pool = PoolEntity.load(poolToken.poolId)
   const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
