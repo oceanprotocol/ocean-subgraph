@@ -151,9 +151,6 @@ export function updatePoolTransactionToken(
   feeValue: BigDecimal
 ): void {
   const ptx = PoolTransaction.load(poolTx)
-  if (ptx == null) {
-    log.error('?????????????????????????? PoolTransaction not found for {}, pooltokenid {} ????????????????', [poolTx, poolTokenId])
-  }
   const poolToken = PoolToken.load(poolTokenId)
   const pool = PoolEntity.load(poolToken.poolId)
   const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
@@ -238,9 +235,6 @@ export function createPoolTransaction(
   event_type: string,
   userAddress: string
 ): void {
-
-  debuglog('createPoolTransaction', event, [])
-
   const poolId = event.address.toHex()
   const pool = PoolEntity.load(poolId)
   const ptx = event.transaction.hash.toHexString()
@@ -251,7 +245,6 @@ export function createPoolTransaction(
   )
 
   if (ocnToken == null || dtToken == null) {
-    debuglog('?????????????? no oceanToken or no dtToken: ', event, [poolId, ocnToken.id, poolId.concat('-').concat(pool.datatokenAddress)])
     return
   }
 
@@ -310,17 +303,15 @@ export function createPoolTransaction(
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
+  const lockedValue = pool.lockedValue
+  pool.lockedValue = pool.oceanReserve + (pool.datatokenReserve * pool.spotPrice)
+  let factory = PoolFactory.load('1')
+  factory.totalLockedValue = factory.totalLockedValue - lockedValue + pool.lockedValue
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
-  // const lockedValue = pool.lockedValue
-  // pool.lockedValue = pool.oceanReserve + (pool.datatokenReserve * pool.spotPrice)
-  // let factory = PoolFactory.load('1')
-  // factory.totalLockedValue = factory.totalLockedValue - lockedValue + pool.lockedValue
-
-
   pool.save()
-  // factory.save()
+  factory.save()
 
   debuglog(
     'updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
