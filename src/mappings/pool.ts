@@ -174,6 +174,12 @@ export function handleSetup(event: LOG_CALL): void {
   handleSetSwapFee(event, swapFee)
   handleFinalize(event)
   createPoolTransaction(event, 'setup', event.transaction.from.toHex())
+  const ptx = event.transaction.hash.toHexString()
+  let poolTx = PoolTransaction.load(ptx)
+  if (poolTx == null) {
+    debuglog('????????????????????????????/ no PoolTransaction ', event, [ptx])
+    return
+  }
 
   // update base token
   let amount = hexToDecimal(baseTokenAmount, 18)
