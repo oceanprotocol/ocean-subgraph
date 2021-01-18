@@ -303,15 +303,17 @@ export function createPoolTransaction(
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
-  const lockedValue = pool.lockedValue
-  pool.lockedValue = pool.oceanReserve + (pool.datatokenReserve * pool.spotPrice)
-  let factory = PoolFactory.load('1')
-  factory.totalLockedValue = factory.totalLockedValue - lockedValue + pool.lockedValue
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
+  // const lockedValue = pool.lockedValue
+  // pool.lockedValue = pool.oceanReserve + (pool.datatokenReserve * pool.spotPrice)
+  // let factory = PoolFactory.load('1')
+  // factory.totalLockedValue = factory.totalLockedValue - lockedValue + pool.lockedValue
+
+
   pool.save()
-  factory.save()
+  // factory.save()
 
   debuglog(
     'updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
