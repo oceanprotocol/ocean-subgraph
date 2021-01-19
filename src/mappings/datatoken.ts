@@ -29,8 +29,8 @@ export function handleTransfer(event: Transfer): void {
   let oldBalanceFrom = BigDecimal.fromString('0.0')
   let oldBalanceTo = BigDecimal.fromString('0.0')
 
-  const isMint = tokenShareFrom === ZERO_ADDRESS
-  const isBurn = tokenShareTo === ZERO_ADDRESS
+  const isMint = tokenShareFrom == ZERO_ADDRESS
+  const isBurn = tokenShareTo == ZERO_ADDRESS
 
   const datatoken = Datatoken.load(tokenId)
 

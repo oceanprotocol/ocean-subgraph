@@ -59,7 +59,7 @@ export function handleSetController(event: LOG_CALL): void {
 export function handleSetPublicSwap(event: LOG_CALL): void {
   const poolId = event.address.toHex()
   const pool = Pool.load(poolId)
-  pool.publicSwap = event.params.data.toHexString().slice(-1) === '1'
+  pool.publicSwap = event.params.data.toHexString().slice(-1) == '1'
   pool.save()
 }
 
@@ -131,6 +131,10 @@ export function handleRebind(event: LOG_CALL): void {
 }
 
 export function handleSetup(event: LOG_CALL): void {
+  if (PoolTransaction.load(event.transaction.hash.toHexString()) != null) {
+    return
+  }
+
   const poolId = event.address.toHex()
   debuglog('handleSetup: ', event, [])
   const data = event.params.data.toHexString()
@@ -204,7 +208,7 @@ export function handleJoinPool(event: LOG_JOIN): void {
   const poolId = event.address.toHex()
 
   const pool = Pool.load(poolId)
-  if (pool.finalized === false) {
+  if (pool.finalized == false) {
     return
   }
 
@@ -406,8 +410,8 @@ export function handleTransfer(event: Transfer): void {
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-  const isMint = event.params.from.toHex() === ZERO_ADDRESS
-  const isBurn = event.params.to.toHex() === ZERO_ADDRESS
+  const isMint = event.params.from.toHex() == ZERO_ADDRESS
+  const isBurn = event.params.to.toHex() == ZERO_ADDRESS
 
   const poolShareFromId = poolId.concat('-').concat(event.params.from.toHex())
   let poolShareFrom = PoolShare.load(poolShareFromId)
@@ -434,6 +438,8 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = value
       poolTx.sharesBalance = poolShareTo.balance
     }
+    debuglog('pool shares mint: (id, value, totalShares)', event, [poolId, value.toString(), pool.totalShares.toString()])
+
   } else if (isBurn) {
     if (poolShareFrom == null) {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
@@ -446,6 +452,7 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = -value
       poolTx.sharesBalance = poolShareFrom.balance
     }
+    debuglog('pool shares burn: (id, value, totalShares)', event, [poolId, value.toString(), pool.totalShares.toString()])
   } else {
     if (poolShareTo == null) {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())

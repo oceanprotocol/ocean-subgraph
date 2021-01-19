@@ -7,7 +7,7 @@ import { ZERO_BD } from '../helpers'
 export function handleNewPool(event: BPoolRegistered): void {
   let factory = PoolFactory.load('1')
 
-  if (factory === null) {
+  if (factory == null) {
     factory = new PoolFactory('1')
     factory.totalLiquidity = ZERO_BD
     factory.totalSwapVolume = ZERO_BD

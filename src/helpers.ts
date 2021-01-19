@@ -175,7 +175,7 @@ export function updatePoolTransactionToken(
 
   ptxTokenValues.save()
 
-  if (ptxTokenValues.tokenAddress === OCEAN) {
+  if (ptxTokenValues.tokenAddress == OCEAN) {
     ptx.oceanReserve = ptxTokenValues.tokenReserve
     pool.oceanReserve = ptxTokenValues.tokenReserve
   } else {
