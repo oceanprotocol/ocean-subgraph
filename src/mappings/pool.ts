@@ -86,7 +86,7 @@ export function _handleRebind(
   const pool = Pool.load(poolId)
   const decimals = BigInt.fromI32(18).toI32()
 
-  if (tokenAddress !== OCEAN) {
+  if (tokenAddress != OCEAN) {
     pool.datatokenAddress = tokenAddress
   }
   pool.tokenCount += BigInt.fromI32(1)
@@ -470,7 +470,7 @@ export function handleTransfer(event: Transfer): void {
   }
 
   if (
-    poolShareTo !== null &&
+    poolShareTo != null &&
     poolShareTo.balance.notEqual(ZERO_BD) &&
     poolShareToBalance.equals(ZERO_BD)
   ) {
@@ -478,7 +478,7 @@ export function handleTransfer(event: Transfer): void {
   }
 
   if (
-    poolShareFrom !== null &&
+    poolShareFrom != null &&
     poolShareFrom.balance.equals(ZERO_BD) &&
     poolShareFromBalance.notEqual(ZERO_BD)
   ) {
