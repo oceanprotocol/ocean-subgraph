@@ -34,10 +34,17 @@ export const ENABLE_DEBUG = true
 
 const network = dataSource.network()
 
-export const OCEAN: string =
-  network == 'mainnet'
-    ? '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
-    : '0x8967BCF84170c91B0d24D4302C2376283b0B3a07'
+export const OCEAN: string = getOceanAddress()
+
+function getOceanAddress(): string {
+  if (network == 'ropsten') {
+    return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
+  } else if (network == 'rinkeby') {
+    return '0x8967bcf84170c91b0d24d4302c2376283b0b3a07'
+  }
+  // network == 'mainnet'
+  return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
+}
 
 export function _debuglog(
   message: string,
