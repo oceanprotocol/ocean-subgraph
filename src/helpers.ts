@@ -34,8 +34,6 @@ export const ENABLE_DEBUG = true
 
 const network = dataSource.network()
 
-export const OCEAN: string = getOceanAddress()
-
 function getOceanAddress(): string {
   if (network == 'ropsten') {
     return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
@@ -45,6 +43,8 @@ function getOceanAddress(): string {
   // network == 'mainnet'
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
+
+export const OCEAN: string = getOceanAddress()
 
 export function _debuglog(
   message: string,
@@ -310,11 +310,10 @@ export function createPoolTransaction(
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
-  const { lockedValue } = pool
   pool.lockedValue = pool.oceanReserve + pool.datatokenReserve * pool.spotPrice
   const factory = PoolFactory.load('1')
   factory.totalLockedValue =
-    factory.totalLockedValue - lockedValue + pool.lockedValue
+    factory.totalLockedValue - pool.lockedValue + pool.lockedValue
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 

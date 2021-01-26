@@ -438,8 +438,11 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = value
       poolTx.sharesBalance = poolShareTo.balance
     }
-    debuglog('pool shares mint: (id, value, totalShares)', event, [poolId, value.toString(), pool.totalShares.toString()])
-
+    debuglog('pool shares mint: (id, value, totalShares)', event, [
+      poolId,
+      value.toString(),
+      pool.totalShares.toString()
+    ])
   } else if (isBurn) {
     if (poolShareFrom == null) {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
@@ -452,7 +455,11 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = -value
       poolTx.sharesBalance = poolShareFrom.balance
     }
-    debuglog('pool shares burn: (id, value, totalShares)', event, [poolId, value.toString(), pool.totalShares.toString()])
+    debuglog('pool shares burn: (id, value, totalShares)', event, [
+      poolId,
+      value.toString(),
+      pool.totalShares.toString()
+    ])
   } else {
     if (poolShareTo == null) {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
