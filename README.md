@@ -4,7 +4,7 @@
 
 > 🦀 Ocean Protocol Subgraph
 
-[![Build Status](https://travis-ci.com/oceanprotocol/ocean-subgraph.svg?branch=main)](https://travis-ci.com/oceanprotocol/ocean-subgraph)
+[![Build Status](https://github.com/oceanprotocol/ocean-subgraph/workflows/CI/badge.svg)](https://github.com/oceanprotocol/ocean-subgraph/actions)
 [![js oceanprotocol](https://img.shields.io/badge/js-oceanprotocol-7b1173.svg)](https://github.com/oceanprotocol/eslint-config-oceanprotocol)
 
 - [🏄 Get Started](#-get-started)
