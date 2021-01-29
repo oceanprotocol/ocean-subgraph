@@ -92,11 +92,13 @@ cd graph-node/docker
 docker-compose up
 ```
 
-Note: making contract calls using Infura fails with `missing trie node` errors. The fix requires editing `ethereum_adapter.rs` line 434 to use the latest block instead of a specific block number. Replace: `web3.eth().call(req, Some(block_id)).then(|result| {` with `web3.eth().call(req, Some(BlockNumber::Latest.into())).then(|result| {`
+Note: making contract calls using Infura fails with `missing trie node` errors. The fix requires 
+editing `ethereum_adapter.rs` line 434 to use the latest block instead of a specific block number. 
+Replace: `web3.eth().call(req, Some(block_id)).then(|result| {` with `web3.eth().call(req, Some(BlockNumber::Latest.into())).then(|result| {`
 
 To run the graph-node with this fix it must be run from source.
 
-First, delete the `graph-node` container from the `docker-compose.yml` file
+First, remove the `graph-node` container from the `docker-compose.yml` file
 then run `docker-compose up` to get the postgresql and ipfs services running.
 
 Now you can build and run the graph-node from source
@@ -108,25 +110,10 @@ cargo run -p graph-node --release > graphnode.log --
   --ipfs 127.0.0.1:5001
 ```
 
-- Once the graph node is ready, do the following to deploy the ocean-subgraph to the local graph-node
+To deploy the ocean-subgraph to graph-node, see the `Deployment` section below.
 
-```bash
-git clone https://github.com/oceanprotocol/ocean-subgraph/
-cd ocean-subgraph
-npm i
-npm run codegen
-npm run create:local
-npm run deploy:local
-```
+You can make changes to the event handlers and/or features and re-deploy, again see the `Deployment` section below.
 
-- You can edit the event handler code and then run `npm run deploy:local`
-  - Running deploy will fail if the code has no changes
-  - Sometimes deploy will fail no matter what, in this case:
-    - Stop the docker-compose run (`docker-compose down`)
-    - Delete the `ipfs` and `postgres` folders in `graph-node/docker/data`
-    - Restart docker-compose
-    - Run `npm run create:local` to create the ocean-subgraph
-    - Run `npm run deploy:local` to deploy the ocean-subgraph
 
 ## ✨ Code Style
 
@@ -142,7 +129,9 @@ npm run format
 
 ## ⬆️ Releases
 
-Releases are managed semi-automatically. They are always manually triggered from a developer's machine with release scripts. From a clean `main` branch you can run the release task bumping the version accordingly based on semantic versioning:
+Releases are managed semi-automatically. They are always manually triggered from a developer's 
+machine with release scripts. From a clean `main` branch you can run the release task bumping 
+the version accordingly based on semantic versioning:
 
 ```bash
 npm run release
@@ -162,6 +151,34 @@ For the GitHub releases steps a GitHub personal access token, exported as `GITHU
 ## 🛳 Production
 
 ## ⬆️ Deployment
+- Do the following to deploy the ocean-subgraph to a graph-node running locally:
+
+```bash
+git clone https://github.com/oceanprotocol/ocean-subgraph/
+cd ocean-subgraph
+npm i
+npm run codegen
+npm run create:local
+npm run deploy:local
+```
+
+The above will deploy to mainnet. To create/deploy to Rinkeby or Ropsten test net, 
+use :local-rinkeby or :local-ropsten with either create or deploy command.
+
+- You can edit the event handler code and then run `npm run deploy:local`
+  - Running deploy will fail if the code has no changes
+  - Sometimes deploy will fail no matter what, in this case:
+    - Stop the graph-node run (Ctrl+C)
+    - Stop the docker-compose run (`docker-compose down` or Ctrl+C)
+    - Delete the `ipfs` and `postgres` folders in `graph-node/docker/data` (`rm -rf ./docker/data/*`)
+    - Run `docker-compose up` to restart ipfs and postgres db 
+    - Run the graph-node as above (using the cargo command)
+    - Run `npm run create:local` to create the ocean-subgraph
+    - Run `npm run deploy:local` to deploy the ocean-subgraph
+
+
+Note: to deploy to one of the remote nodes run by Ocean,  you can do port-forwarding then the above `local` create/deploy will work as is.
+
 
 ## 🏛 License
 
