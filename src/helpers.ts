@@ -310,10 +310,11 @@ export function createPoolTransaction(
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
+  const oldLockedValue = pool.lockedValue
   pool.lockedValue = pool.oceanReserve + pool.datatokenReserve * pool.spotPrice
   const factory = PoolFactory.load('1')
   factory.totalLockedValue =
-    factory.totalLockedValue - pool.lockedValue + pool.lockedValue
+    factory.totalLockedValue - oldLockedValue + pool.lockedValue
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
