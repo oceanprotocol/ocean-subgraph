@@ -2,7 +2,8 @@ type PoolFactory @entity {
     id: ID!
 
     totalLockedValue: BigDecimal                        # total value from all pools expressed in OCEAN
-    totalLiquidity: BigDecimal!                         # All the pools liquidity value in Ocean
+
+    totalOceanLiquidity: BigDecimal!                    # Total of OCEAN liquidity from all pools
     totalSwapVolume: BigDecimal!                        # All the swap volume in Ocean
     totalSwapFee: BigDecimal!                           # All the swap fee in Ocean
 

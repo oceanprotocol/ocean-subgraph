@@ -9,7 +9,7 @@ export function handleNewPool(event: BPoolRegistered): void {
 
   if (factory == null) {
     factory = new PoolFactory('1')
-    factory.totalLiquidity = ZERO_BD
+    factory.totalOceanLiquidity = ZERO_BD
     factory.totalSwapVolume = ZERO_BD
     factory.totalSwapFee = ZERO_BD
     factory.totalLockedValue = ZERO_BD
