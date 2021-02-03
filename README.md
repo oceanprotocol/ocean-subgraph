@@ -84,7 +84,7 @@ Edit docker-compose and add your infura key & network
 
 Start :
 ```bash
-docker compose-up
+docker-compose up
 ```
 
 Switch to a new terminal:
