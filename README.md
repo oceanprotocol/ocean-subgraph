@@ -86,6 +86,10 @@ Start :
 ```bash
 docker-compose up
 ```
+To use with ifura key create a .env file (look at .env.example)
+```bash
+docker-compose --env-file .env up
+```
 
 Switch to a new terminal:
 

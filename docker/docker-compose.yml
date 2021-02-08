@@ -17,7 +17,7 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
-      ethereum: 'rinkeby:https://rinkeby.infura.io/v3/XXXX'
+      ethereum: 'rinkeby:https://rinkeby.infura.io/v3/${INFURA_PROJECT_ID}'
       RUST_LOG: info
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
@@ -29,7 +29,7 @@ services:
     image: postgres
     ports:
       - '5432:5432'
-    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements"]
+    command: ['postgres', '-cshared_preload_libraries=pg_stat_statements']
     environment:
       POSTGRES_USER: graph-node
       POSTGRES_PASSWORD: let-me-in
