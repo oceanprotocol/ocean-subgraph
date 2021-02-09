@@ -328,10 +328,10 @@ export function createPoolTransaction(
   const spotPrice = pool.spotPrice >= ZERO_BD ? pool.spotPrice : ZERO_BD
   pool.valueLocked = poolTx.oceanReserve + (poolTx.datatokenReserve * spotPrice)
   let factory = PoolFactory.load('1')
-  if (valueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
+  if (oldValueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
     log.warning(
       'EEEEEEEEEEEEEEEEE valueLocked < Zero: pool={}, oldVL={}, newVL={}, OCEAN={}, DT={}, spotPrice={}',
-      [pool.id, valueLocked.toString(), pool.valueLocked.toString(),
+      [pool.id, oldValueLocked.toString(), pool.valueLocked.toString(),
        poolTx.oceanReserve.toString(), poolTx.datatokenReserve.toString(),
        pool.spotPrice.toString()])
   }
