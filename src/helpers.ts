@@ -189,7 +189,7 @@ export function updatePoolTransactionToken(
   ptxTokenValues.save()
 
   if (ptxTokenValues.tokenAddress == OCEAN) {
-    let factory = PoolFactory.load('1')
+    const factory = PoolFactory.load('1')
     factory.totalOceanLiquidity = factory.totalOceanLiquidity + ptxTokenValues.tokenReserve - pool.oceanReserve
     if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
       log.warning(
@@ -327,7 +327,7 @@ export function createPoolTransaction(
   const oldValueLocked = pool.valueLocked
   const spotPrice = pool.spotPrice >= ZERO_BD ? pool.spotPrice : ZERO_BD
   pool.valueLocked = poolTx.oceanReserve + (poolTx.datatokenReserve * spotPrice)
-  let factory = PoolFactory.load('1')
+  const factory = PoolFactory.load('1')
   if (oldValueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
     log.warning(
       'EEEEEEEEEEEEEEEEE valueLocked < Zero: pool={}, oldVL={}, newVL={}, OCEAN={}, DT={}, spotPrice={}',
