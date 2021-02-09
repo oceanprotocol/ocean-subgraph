@@ -19,9 +19,9 @@ import {
   TokenBalance,
   TokenTransaction,
   PoolTransactionTokenValues
-} from './types/schema'
+} from './@types/schema'
 
-import { Pool } from './types/templates/Pool/Pool'
+import { Pool } from './@types/templates/Pool/Pool'
 
 export const ZERO_BD = BigDecimal.fromString('0.0')
 export const MINUS_1_BD = BigDecimal.fromString('-1.0')
@@ -34,8 +34,6 @@ export const ENABLE_DEBUG = true
 
 const network = dataSource.network()
 
-export const OCEAN: string = getOceanAddress()
-
 function getOceanAddress(): string {
   if (network == 'ropsten') {
     return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
@@ -45,6 +43,8 @@ function getOceanAddress(): string {
   // network == 'mainnet'
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
+
+export const OCEAN: string = getOceanAddress()
 
 export function _debuglog(
   message: string,
@@ -109,6 +109,12 @@ export function updatePoolTokenBalance(
     null,
     [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId]
   )
+  if (balance < ZERO_BD || poolToken.balance < ZERO_BD) {
+    log.warning(
+      'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
+      [poolToken.poolId, poolToken.tokenAddress.toString(), poolToken.balance.toString(), balance.toString()])
+  }
+
   poolToken.balance = balance
 }
 
@@ -183,8 +189,16 @@ export function updatePoolTransactionToken(
   ptxTokenValues.save()
 
   if (ptxTokenValues.tokenAddress == OCEAN) {
+    const factory = PoolFactory.load('1')
+    factory.totalOceanLiquidity = factory.totalOceanLiquidity + ptxTokenValues.tokenReserve - pool.oceanReserve
+    if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
+      log.warning(
+        'EEEEEEEEEEEEEEEEE totalOceanLiquidity or oceanReserve < Zero: pool={}, totOcnLiq={}, ocnRes={}',
+        [pool.id, factory.totalOceanLiquidity.toString(), pool.oceanReserve.toString()])
+    }
     ptx.oceanReserve = ptxTokenValues.tokenReserve
     pool.oceanReserve = ptxTokenValues.tokenReserve
+    factory.save()
   } else {
     ptx.datatokenReserve = ptxTokenValues.tokenReserve
     pool.datatokenReserve = ptxTokenValues.tokenReserve
@@ -310,10 +324,18 @@ export function createPoolTransaction(
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
-  const lockedValue = pool.lockedValue
-  pool.lockedValue = pool.oceanReserve + (pool.datatokenReserve * pool.spotPrice)
-  let factory = PoolFactory.load('1')
-  factory.totalLockedValue = factory.totalLockedValue - lockedValue + pool.lockedValue
+  const oldValueLocked = pool.valueLocked
+  const spotPrice = pool.spotPrice >= ZERO_BD ? pool.spotPrice : ZERO_BD
+  pool.valueLocked = poolTx.oceanReserve + (poolTx.datatokenReserve * spotPrice)
+  const factory = PoolFactory.load('1')
+  if (oldValueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
+    log.warning(
+      'EEEEEEEEEEEEEEEEE valueLocked < Zero: pool={}, oldVL={}, newVL={}, OCEAN={}, DT={}, spotPrice={}',
+      [pool.id, oldValueLocked.toString(), pool.valueLocked.toString(),
+       poolTx.oceanReserve.toString(), poolTx.datatokenReserve.toString(),
+       pool.spotPrice.toString()])
+  }
+  factory.totalValueLocked = factory.totalValueLocked - oldValueLocked + pool.valueLocked
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 

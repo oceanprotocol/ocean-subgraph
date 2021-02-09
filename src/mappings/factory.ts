@@ -1,7 +1,7 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
-import { BPoolRegistered } from '../types/Factory/Factory'
-import { PoolFactory, Pool } from '../types/schema'
-import { Pool as PoolContract } from '../types/templates'
+import { BPoolRegistered } from '../@types/Factory/Factory'
+import { PoolFactory, Pool } from '../@types/schema'
+import { Pool as PoolContract } from '../@types/templates'
 import { ZERO_BD } from '../helpers'
 
 export function handleNewPool(event: BPoolRegistered): void {
@@ -9,10 +9,10 @@ export function handleNewPool(event: BPoolRegistered): void {
 
   if (factory == null) {
     factory = new PoolFactory('1')
-    factory.totalLiquidity = ZERO_BD
+    factory.totalOceanLiquidity = ZERO_BD
     factory.totalSwapVolume = ZERO_BD
     factory.totalSwapFee = ZERO_BD
-    factory.totalLockedValue = ZERO_BD
+    factory.totalValueLocked = ZERO_BD
 
     factory.poolCount = 0
     factory.finalizedPoolCount = 0
@@ -37,7 +37,7 @@ export function handleNewPool(event: BPoolRegistered): void {
   pool.totalShares = ZERO_BD
   pool.totalSwapVolume = ZERO_BD
   pool.totalSwapFee = ZERO_BD
-  pool.lockedValue = ZERO_BD
+  pool.valueLocked = ZERO_BD
 
   pool.datatokenReserve = ZERO_BD
   pool.oceanReserve = ZERO_BD
