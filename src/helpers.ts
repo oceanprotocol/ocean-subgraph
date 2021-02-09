@@ -324,18 +324,18 @@ export function createPoolTransaction(
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
-  const lockedValue = pool.lockedValue
+  const valueLocked = pool.valueLocked
   const spotPrice = pool.spotPrice >= ZERO_BD ? pool.spotPrice : ZERO_BD
-  pool.lockedValue = poolTx.oceanReserve + (poolTx.datatokenReserve * spotPrice)
+  pool.valueLocked = poolTx.oceanReserve + (poolTx.datatokenReserve * spotPrice)
   let factory = PoolFactory.load('1')
-  if (lockedValue < ZERO_BD || pool.lockedValue < ZERO_BD) {
+  if (valueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
     log.warning(
       'EEEEEEEEEEEEEEEEE valueLocked < Zero: pool={}, oldVL={}, newVL={}, OCEAN={}, DT={}, spotPrice={}',
-      [pool.id, lockedValue.toString(), pool.lockedValue.toString(),
+      [pool.id, valueLocked.toString(), pool.valueLocked.toString(),
        poolTx.oceanReserve.toString(), poolTx.datatokenReserve.toString(),
        pool.spotPrice.toString()])
   }
-  factory.totalLockedValue = factory.totalLockedValue - lockedValue + pool.lockedValue
+  factory.totalValueLocked = factory.totalValueLocked - valueLocked + pool.valueLocked
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
