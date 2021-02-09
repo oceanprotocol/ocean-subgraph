@@ -18,11 +18,11 @@
 
 ## 🏄 Get Started
 
-This subgraph is deployed for all networks the Ocean Protocol contracts are deployed to:
+This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` namespace for all networks the Ocean Protocol contracts are deployed to:
 
-- [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com)
-- [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
-- [subgraph.rinkeby.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
+- [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [subgraph.rinkeby.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
 ## 🧶 Example Queries
 
@@ -75,27 +75,33 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 
 ## 🦑 Development
 
-Prepare the docker setup:
+First clone repo and install dependencies:
+
+```bash
+git clone https://github.com/oceanprotocol/ocean-subgraph/
+cd ocean-subgraph
+npm i
+```
+
+Developing and testing any change requires them to be deployed against a locally running graph-node and some other components running in Docker. Make sure you have Docker and Docker Compose installed on your machine, then prepare the Docker setup:
+
 ```bash
 cd docker
 ./setup.sh
 ```
-Edit docker-compose and add your infura key & network
 
-Start :
+Then add your Infura key as environment variable with a `.env` file, and start everything up with Docker Compose:
+
 ```bash
-docker-compose up
-```
-To use with ifura key create a .env file (look at .env.example)
-```bash
+# create .env and modify
+cp .env.example .env
+
 docker-compose --env-file .env up
 ```
 
-Switch to a new terminal:
+The default network for development is Rinkeby. If you want to switch to another network you have to modify the `docker/docker-compose.yml` file within `environment.ethereum`.
 
-To deploy the ocean-subgraph to graph-node, see the `Deployment` section below.
-
-You can make changes to the event handlers and/or features and re-deploy, again see the `Deployment` section below.
+You now have a local graph-node running and can start deploying your changes to it. To do so, follow the [Deployment instructions](#️-deployment).
 
 ## ✨ Code Style
 
@@ -133,12 +139,10 @@ For the GitHub releases steps a GitHub personal access token, exported as `GITHU
 ## 🛳 Production
 
 ## ⬆️ Deployment
-- Do the following to deploy the ocean-subgraph to a graph-node running locally:
+
+Do the following to deploy the ocean-subgraph to a graph-node running locally:
 
 ```bash
-git clone https://github.com/oceanprotocol/ocean-subgraph/
-cd ocean-subgraph
-npm i
 npm run codegen
 npm run create:local
 npm run deploy:local
