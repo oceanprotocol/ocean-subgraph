@@ -425,6 +425,8 @@ export function handleTransfer(event: Transfer): void {
   const pool = Pool.load(poolId)
   const poolTx = PoolTransaction.load(event.transaction.hash.toHexString())
   const value = tokenToDecimal(event.params.value.toBigDecimal(), 18)
+  debuglog('poolShare Transfer event: (from, to, value)', event,
+    [event.params.from.toHex(), event.params.to.toHex(), value.toString()])
 
   if (isMint) {
     if (poolShareTo == null) {
@@ -438,11 +440,17 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = value
       poolTx.sharesBalance = poolShareTo.balance
     }
-    debuglog('pool shares mint: (id, value, totalShares)', event, [
-      poolId,
-      value.toString(),
-      pool.totalShares.toString()
-    ])
+    debuglog(
+      'pool shares mint: (id, value, totalShares, shareToBalance, toAddress)',
+      event,
+      [
+        poolId,
+        value.toString(),
+        pool.totalShares.toString(),
+        poolShareTo.balance.toString(),
+        poolShareTo.userAddress
+      ]
+    )
   } else if (isBurn) {
     if (poolShareFrom == null) {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
@@ -455,11 +463,17 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = -value
       poolTx.sharesBalance = poolShareFrom.balance
     }
-    debuglog('pool shares burn: (id, value, totalShares)', event, [
-      poolId,
-      value.toString(),
-      pool.totalShares.toString()
-    ])
+    debuglog(
+      'pool shares burn: (id, value, totalShares, shareFromBalance, fromAddress)',
+      event,
+      [
+        poolId,
+        value.toString(),
+        pool.totalShares.toString(),
+        poolShareFrom.balance.toString(),
+        poolShareFrom.userAddress
+      ]
+    )
   } else {
     if (poolShareTo == null) {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
@@ -474,6 +488,13 @@ export function handleTransfer(event: Transfer): void {
     }
     poolShareFrom.balance -= value
     poolShareFrom.save()
+    debuglog(
+      'pool shares transfer: ' +
+      '(id, value, totalShares, shareToBalance, shareFromBalance, toAddress, fromAddress)', event,
+      [poolId, value.toString(), pool.totalShares.toString(),
+        poolShareTo.balance.toString(), poolShareFrom.balance.toString(),
+        poolShareTo.userAddress, poolShareFrom.userAddress
+      ])
   }
 
   if (

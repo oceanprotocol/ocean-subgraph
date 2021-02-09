@@ -93,26 +93,9 @@ docker-compose --env-file .env up
 
 Switch to a new terminal:
 
+To deploy the ocean-subgraph to graph-node, see the `Deployment` section below.
 
-- Once the graph node is ready, do the following to deploy the ocean-subgraph to the local graph-node
-
-```bash
-git clone https://github.com/oceanprotocol/ocean-subgraph/
-cd ocean-subgraph
-npm i
-npm run codegen
-npm run create:local-rinkeby
-npm run deploy:local-rinkeby
-```
-
-- You can edit the event handler code and then run `npm run deploy:local`
-  - Running deploy will fail if the code has no changes
-  - Sometimes deploy will fail no matter what, in this case:
-    - Stop the docker-compose run (`docker-compose down`)
-    - Delete the `ipfs` and `postgres` folders in `docker/data`
-    - Restart docker-compose
-    - Run `npm run create:local` to create the ocean-subgraph
-    - Run `npm run deploy:local` to deploy the ocean-subgraph
+You can make changes to the event handlers and/or features and re-deploy, again see the `Deployment` section below.
 
 ## ✨ Code Style
 
@@ -128,7 +111,9 @@ npm run format
 
 ## ⬆️ Releases
 
-Releases are managed semi-automatically. They are always manually triggered from a developer's machine with release scripts. From a clean `main` branch you can run the release task bumping the version accordingly based on semantic versioning:
+Releases are managed semi-automatically. They are always manually triggered from a developer's 
+machine with release scripts. From a clean `main` branch you can run the release task bumping 
+the version accordingly based on semantic versioning:
 
 ```bash
 npm run release
@@ -148,6 +133,32 @@ For the GitHub releases steps a GitHub personal access token, exported as `GITHU
 ## 🛳 Production
 
 ## ⬆️ Deployment
+- Do the following to deploy the ocean-subgraph to a graph-node running locally:
+
+```bash
+git clone https://github.com/oceanprotocol/ocean-subgraph/
+cd ocean-subgraph
+npm i
+npm run codegen
+npm run create:local
+npm run deploy:local
+```
+
+The above will deploy ocean-subgraph connecting to mainnet. To create/deploy subgraph connecting to Rinkeby or Ropsten test net, 
+use :local-rinkeby or :local-ropsten with either create or deploy command.
+
+- You can edit the event handler code and then run `npm run deploy:local`
+  - Running deploy will fail if the code has no changes
+  - Sometimes deploy will fail no matter what, in this case:
+    - Stop the docker-compose run (`docker-compose down` or Ctrl+C)
+      This should stop the graph-node, ipfs and postgres containers
+    - Delete the `ipfs` and `postgres` folders in `/docker/data` (`rm -rf ./docker/data/*`)
+    - Run `docker-compose up` to restart graph-node, ipfs and postgres
+    - Run `npm run create:local` to create the ocean-subgraph
+    - Run `npm run deploy:local` to deploy the ocean-subgraph
+
+Note: to deploy to one of the remote nodes run by Ocean,  you can do port-forwarding then using the 
+above `local` create/deploy commands will work as is.
 
 ## 🏛 License
 
