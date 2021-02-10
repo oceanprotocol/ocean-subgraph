@@ -21,7 +21,7 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 - [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
-- [subgraph.rinkeby.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [subgraph.rinkeby.oceanprotocol.com](https://subgraph.rinkeby.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
 ## 🧶 Example Queries
 
