@@ -11,18 +11,17 @@
 - [🧶 Example Queries](#-example-queries)
 - [🦑 Development](#-development)
 - [✨ Code Style](#-code-style)
-- [⬆️ Releases](#️-releases)
-- [🛳 Production](#-production)
+- [🛳 Releases](#️-releases)
 - [⬆️ Deployment](#️-deployment)
 - [🏛 License](#-license)
 
 ## 🏄 Get Started
 
-This subgraph is deployed for all networks the Ocean Protocol contracts are deployed to:
+This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` namespace for all networks the Ocean Protocol contracts are deployed to:
 
-- [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com)
-- [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
-- [subgraph.rinkeby.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com)
+- [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [subgraph.rinkeby.oceanprotocol.com](https://subgraph.rinkeby.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
 ## 🧶 Example Queries
 
@@ -75,27 +74,33 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 
 ## 🦑 Development
 
-Prepare the docker setup:
+First, clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/oceanprotocol/ocean-subgraph/
+cd ocean-subgraph
+npm i
+```
+
+Developing and testing any change requires them to be deployed against a locally running graph-node and some other components running in Docker. Make sure you have Docker and Docker Compose installed on your machine, then prepare the Docker setup:
+
 ```bash
 cd docker
 ./setup.sh
 ```
-Edit docker-compose and add your infura key & network
 
-Start :
+Then add your Infura key as environment variable with a `.env` file, and start everything up with Docker Compose:
+
 ```bash
-docker-compose up
-```
-To use with ifura key create a .env file (look at .env.example)
-```bash
+# create .env and modify
+cp .env.example .env
+
 docker-compose --env-file .env up
 ```
 
-Switch to a new terminal:
+The default network for development is set to Rinkeby. If you want to switch to another network you have to modify the `docker/docker-compose.yml` file within `environment.ethereum`.
 
-To deploy the ocean-subgraph to graph-node, see the `Deployment` section below.
-
-You can make changes to the event handlers and/or features and re-deploy, again see the `Deployment` section below.
+You now have a local graph-node running and can start deploying your changes to it. To do so, follow the [Deployment instructions](#️-deployment).
 
 ## ✨ Code Style
 
@@ -109,7 +114,7 @@ npm run lint
 npm run format
 ```
 
-## ⬆️ Releases
+## 🛳 Releases
 
 Releases are managed semi-automatically. They are always manually triggered from a developer's 
 machine with release scripts. From a clean `main` branch you can run the release task bumping 
@@ -130,35 +135,42 @@ The task does the following:
 
 For the GitHub releases steps a GitHub personal access token, exported as `GITHUB_TOKEN` is required. [Setup](https://github.com/release-it/release-it#github-releases)
 
-## 🛳 Production
-
 ## ⬆️ Deployment
-- Do the following to deploy the ocean-subgraph to a graph-node running locally:
+
+Do the following to deploy the ocean-subgraph to a graph-node running locally, pointed against `mainnet`:
 
 ```bash
-git clone https://github.com/oceanprotocol/ocean-subgraph/
-cd ocean-subgraph
-npm i
 npm run codegen
+
+# deploy
 npm run create:local
 npm run deploy:local
 ```
 
-The above will deploy ocean-subgraph connecting to mainnet. To create/deploy subgraph connecting to Rinkeby or Ropsten test net, 
-use :local-rinkeby or :local-ropsten with either create or deploy command.
+To deploy a subgraph connected to Rinkeby or Ropsten test networks, use instead:
 
-- You can edit the event handler code and then run `npm run deploy:local`
-  - Running deploy will fail if the code has no changes
-  - Sometimes deploy will fail no matter what, in this case:
-    - Stop the docker-compose run (`docker-compose down` or Ctrl+C)
+```bash
+# Rinkeby
+npm run create:local-rinkeby
+npm run deploy:local-rinkeby
+
+# Ropsten
+npm run create:local-ropsten
+npm run deploy:local-ropsten
+```
+
+You can edit the event handler code and then run `npm run deploy:local`, with some caveats:
+
+- Running deploy will fail if the code has no changes
+- Sometimes deploy will fail no matter what, in this case:
+  - Stop the docker-compose run (`docker-compose down` or Ctrl+C)
       This should stop the graph-node, ipfs and postgres containers
-    - Delete the `ipfs` and `postgres` folders in `/docker/data` (`rm -rf ./docker/data/*`)
-    - Run `docker-compose up` to restart graph-node, ipfs and postgres
-    - Run `npm run create:local` to create the ocean-subgraph
-    - Run `npm run deploy:local` to deploy the ocean-subgraph
+  - Delete the `ipfs` and `postgres` folders in `/docker/data` (`rm -rf ./docker/data/*`)
+  - Run `docker-compose up` to restart graph-node, ipfs and postgres
+  - Run `npm run create:local` to create the ocean-subgraph
+  - Run `npm run deploy:local` to deploy the ocean-subgraph
 
-Note: to deploy to one of the remote nodes run by Ocean,  you can do port-forwarding then using the 
-above `local` create/deploy commands will work as is.
+> To deploy to one of the remote nodes run by Ocean, you can do port-forwarding and the above `:local` commands will work as is.
 
 ## 🏛 License
 
