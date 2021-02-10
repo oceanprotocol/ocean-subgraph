@@ -5,17 +5,14 @@
   },
   "extends": [
     "oceanprotocol",
-    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "prettier/react",
-    "prettier/standard",
+    "prettier",
     "prettier/@typescript-eslint"
   ],
-  "plugins": ["@typescript-eslint", "prettier"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "no-use-before-define": "off",
+    "eqeqeq": "off",
     "@typescript-eslint/no-use-before-define": "error"
-  },
-  "env": { "es6": true, "node": true }
+  }
 }

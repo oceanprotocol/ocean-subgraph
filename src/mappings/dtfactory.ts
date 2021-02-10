@@ -1,7 +1,10 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
-import { TokenRegistered } from '../types/DTFactory/DTFactory'
-import { DatatokenFactory, Datatoken as DatatokenEntity } from '../types/schema'
-import { DataToken as DatatokenDataSource } from '../types/templates'
+import { TokenRegistered } from '../@types/DTFactory/DTFactory'
+import {
+  DatatokenFactory,
+  Datatoken as DatatokenEntity
+} from '../@types/schema'
+import { DataToken as DatatokenDataSource } from '../@types/templates'
 
 import { createUserEntity, tokenToDecimal, ZERO_BD } from '../helpers'
 

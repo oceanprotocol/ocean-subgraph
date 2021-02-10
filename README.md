@@ -4,7 +4,7 @@
 
 > 🦀 Ocean Protocol Subgraph
 
-[![Build Status](https://travis-ci.com/oceanprotocol/ocean-subgraph.svg?branch=main)](https://travis-ci.com/oceanprotocol/ocean-subgraph)
+[![Build Status](https://github.com/oceanprotocol/ocean-subgraph/workflows/CI/badge.svg)](https://github.com/oceanprotocol/ocean-subgraph/actions)
 [![js oceanprotocol](https://img.shields.io/badge/js-oceanprotocol-7b1173.svg)](https://github.com/oceanprotocol/eslint-config-oceanprotocol)
 
 - [🏄 Get Started](#-get-started)
@@ -75,45 +75,27 @@ This subgraph is deployed for all networks the Ocean Protocol contracts are depl
 
 ## 🦑 Development
 
+Prepare the docker setup:
 ```bash
-npm i
-```
-
-- Install/run the Graph: `https://thegraph.com/docs/quick-start`
-
-  - You can skip running ganache-cli and connect directly to `mainnet` using Infura
-
-```bash
-git clone https://github.com/graphprotocol/graph-node/
-cd graph-node/docker
+cd docker
 ./setup.sh
-# Update this line in the `docker-compose.yml` file with your Infura ProjectId
-#   ethereum: 'mainnet:https://mainnet.infura.io/v3/INFURA_PROJECT_ID'
+```
+Edit docker-compose and add your infura key & network
+
+Start :
+```bash
 docker-compose up
 ```
-
-Note: making contract calls using Infura fails with `missing trie node` errors. The fix requires 
-editing `ethereum_adapter.rs` line 434 to use the latest block instead of a specific block number. 
-Replace: `web3.eth().call(req, Some(block_id)).then(|result| {` with `web3.eth().call(req, Some(BlockNumber::Latest.into())).then(|result| {`
-
-To run the graph-node with this fix it must be run from source.
-
-First, remove the `graph-node` container from the `docker-compose.yml` file
-then run `docker-compose up` to get the postgresql and ipfs services running.
-
-Now you can build and run the graph-node from source
-
+To use with ifura key create a .env file (look at .env.example)
+```bash
+docker-compose --env-file .env up
 ```
-cargo run -p graph-node --release > graphnode.log --
-  --postgres-url postgres://graph-node:let-me-in@localhost:5432/graph-node
-  --ethereum-rpc mainnet:https://mainnet.infura.io/v3/INFURA_PROJECT_ID
-  --ipfs 127.0.0.1:5001
-```
+
+Switch to a new terminal:
 
 To deploy the ocean-subgraph to graph-node, see the `Deployment` section below.
 
 You can make changes to the event handlers and/or features and re-deploy, again see the `Deployment` section below.
-
 
 ## ✨ Code Style
 
@@ -162,23 +144,21 @@ npm run create:local
 npm run deploy:local
 ```
 
-The above will deploy to mainnet. To create/deploy to Rinkeby or Ropsten test net, 
+The above will deploy ocean-subgraph connecting to mainnet. To create/deploy subgraph connecting to Rinkeby or Ropsten test net, 
 use :local-rinkeby or :local-ropsten with either create or deploy command.
 
 - You can edit the event handler code and then run `npm run deploy:local`
   - Running deploy will fail if the code has no changes
   - Sometimes deploy will fail no matter what, in this case:
-    - Stop the graph-node run (Ctrl+C)
     - Stop the docker-compose run (`docker-compose down` or Ctrl+C)
-    - Delete the `ipfs` and `postgres` folders in `graph-node/docker/data` (`rm -rf ./docker/data/*`)
-    - Run `docker-compose up` to restart ipfs and postgres db 
-    - Run the graph-node as above (using the cargo command)
+      This should stop the graph-node, ipfs and postgres containers
+    - Delete the `ipfs` and `postgres` folders in `/docker/data` (`rm -rf ./docker/data/*`)
+    - Run `docker-compose up` to restart graph-node, ipfs and postgres
     - Run `npm run create:local` to create the ocean-subgraph
     - Run `npm run deploy:local` to deploy the ocean-subgraph
 
-
-Note: to deploy to one of the remote nodes run by Ocean,  you can do port-forwarding then the above `local` create/deploy will work as is.
-
+Note: to deploy to one of the remote nodes run by Ocean,  you can do port-forwarding then using the 
+above `local` create/deploy commands will work as is.
 
 ## 🏛 License
 
