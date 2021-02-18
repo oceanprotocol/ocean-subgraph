@@ -1,0 +1,118 @@
+specVersion: 0.0.2
+description: Ocean provides data sharing through IDOs
+repository: https://github.com/oceanprotocol/ocean-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Factory
+    network: polygon
+    source:
+      address: '0x69B6E54Ad2b3c2801d11d8Ad56ea1d892555b776'
+      abi: Factory
+      startBlock: 11005239
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/factory.ts
+      entities:
+        - PoolFactory
+      abis:
+        - name: Factory
+          file: ./abis/BFactory.json
+      eventHandlers:
+        - event: BPoolRegistered(address,indexed address)
+          handler: handleNewPool
+  - kind: ethereum/contract
+    name: DTFactory
+    network: rinkeby
+    source:
+      address: '0xF6410bf5d773C7a41ebFf972f38e7463FA242477'
+      abi: DTFactory
+      startBlock: 11005230
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/dtfactory.ts
+      entities:
+        - DatatokenFactory
+      abis:
+        - name: DTFactory
+          file: ./abis/DTFactory.json
+      eventHandlers:
+        - event: TokenRegistered(indexed address,string,string,uint256,indexed address,indexed string)
+          handler: handleNewToken
+templates:
+  - kind: ethereum/contract
+    name: Pool
+    network: rinkeby
+    source:
+      abi: Pool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/pool.ts
+      entities:
+        - Pool
+        - PoolFactory
+        - Swap
+      abis:
+        - name: Pool
+          file: ./abis/BPool.json
+        - name: BToken
+          file: ./abis/BToken.json
+      eventHandlers:
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x34e1990700000000000000000000000000000000000000000000000000000000'
+          handler: handleSetSwapFee
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x92eefe9b00000000000000000000000000000000000000000000000000000000'
+          handler: handleSetController
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x49b5955200000000000000000000000000000000000000000000000000000000'
+          handler: handleSetPublicSwap
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x4bb278f300000000000000000000000000000000000000000000000000000000'
+          handler: handleFinalize
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0xd1d7bc9100000000000000000000000000000000000000000000000000000000'
+          handler: handleSetup
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x3fdddaa200000000000000000000000000000000000000000000000000000000'
+          handler: handleRebind
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0xe4e1e53800000000000000000000000000000000000000000000000000000000'
+          handler: handleRebind
+        - event: LOG_JOIN(indexed address,indexed address,uint256)
+          handler: handleJoinPool
+        - event: LOG_EXIT(indexed address,indexed address,uint256)
+          handler: handleExitPool
+        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleSwap
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+
+  - kind: ethereum/contract
+    name: DataToken
+    network: rinkeby
+    source:
+      abi: DataToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/datatoken.ts
+      entities:
+        - DataToken
+        - DatatokenFactory
+      abis:
+        - name: DataToken
+          file: ./abis/DataTokenTemplate.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: OrderStarted(indexed address,indexed address,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleOrderStarted
