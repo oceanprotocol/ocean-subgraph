@@ -26,7 +26,7 @@ dataSources:
           handler: handleNewPool
   - kind: ethereum/contract
     name: DTFactory
-    network: rinkeby
+    network: polygon
     source:
       address: '0xF6410bf5d773C7a41ebFf972f38e7463FA242477'
       abi: DTFactory
@@ -47,7 +47,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: rinkeby
+    network: polygon
     source:
       abi: Pool
     mapping:
@@ -97,7 +97,7 @@ templates:
 
   - kind: ethereum/contract
     name: DataToken
-    network: rinkeby
+    network: polygon
     source:
       abi: DataToken
     mapping:
