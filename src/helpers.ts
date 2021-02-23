@@ -112,7 +112,13 @@ export function updatePoolTokenBalance(
   if (balance < ZERO_BD || poolToken.balance < ZERO_BD) {
     log.warning(
       'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
-      [poolToken.poolId, poolToken.tokenAddress.toString(), poolToken.balance.toString(), balance.toString()])
+      [
+        poolToken.poolId,
+        poolToken.tokenAddress.toString(),
+        poolToken.balance.toString(),
+        balance.toString()
+      ]
+    )
   }
 
   poolToken.balance = balance
@@ -190,11 +196,19 @@ export function updatePoolTransactionToken(
 
   if (ptxTokenValues.tokenAddress == OCEAN) {
     const factory = PoolFactory.load('1')
-    factory.totalOceanLiquidity = factory.totalOceanLiquidity + ptxTokenValues.tokenReserve - pool.oceanReserve
+    factory.totalOceanLiquidity =
+      factory.totalOceanLiquidity +
+      ptxTokenValues.tokenReserve -
+      pool.oceanReserve
     if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
       log.warning(
         'EEEEEEEEEEEEEEEEE totalOceanLiquidity or oceanReserve < Zero: pool={}, totOcnLiq={}, ocnRes={}',
-        [pool.id, factory.totalOceanLiquidity.toString(), pool.oceanReserve.toString()])
+        [
+          pool.id,
+          factory.totalOceanLiquidity.toString(),
+          pool.oceanReserve.toString()
+        ]
+      )
     }
     ptx.oceanReserve = ptxTokenValues.tokenReserve
     pool.oceanReserve = ptxTokenValues.tokenReserve
@@ -326,16 +340,23 @@ export function createPoolTransaction(
   pool.spotPrice = poolTx.spotPrice
   const oldValueLocked = pool.valueLocked
   const spotPrice = pool.spotPrice >= ZERO_BD ? pool.spotPrice : ZERO_BD
-  pool.valueLocked = poolTx.oceanReserve + (poolTx.datatokenReserve * spotPrice)
+  pool.valueLocked = poolTx.oceanReserve + poolTx.datatokenReserve * spotPrice
   const factory = PoolFactory.load('1')
   if (oldValueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
     log.warning(
       'EEEEEEEEEEEEEEEEE valueLocked < Zero: pool={}, oldVL={}, newVL={}, OCEAN={}, DT={}, spotPrice={}',
-      [pool.id, oldValueLocked.toString(), pool.valueLocked.toString(),
-       poolTx.oceanReserve.toString(), poolTx.datatokenReserve.toString(),
-       pool.spotPrice.toString()])
+      [
+        pool.id,
+        oldValueLocked.toString(),
+        pool.valueLocked.toString(),
+        poolTx.oceanReserve.toString(),
+        poolTx.datatokenReserve.toString(),
+        pool.spotPrice.toString()
+      ]
+    )
   }
-  factory.totalValueLocked = factory.totalValueLocked - oldValueLocked + pool.valueLocked
+  factory.totalValueLocked =
+    factory.totalValueLocked - oldValueLocked + pool.valueLocked
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
