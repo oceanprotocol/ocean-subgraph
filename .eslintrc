@@ -3,16 +3,12 @@
   "parserOptions": {
     "project": ["./tsconfig.json"]
   },
-  "extends": [
-    "oceanprotocol",
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
-    "prettier/@typescript-eslint"
-  ],
+  "extends": ["oceanprotocol", "plugin:prettier/recommended"],
   "plugins": ["@typescript-eslint"],
   "rules": {
     "no-use-before-define": "off",
     "eqeqeq": "off",
-    "@typescript-eslint/no-use-before-define": "error"
+    "@typescript-eslint/no-use-before-define": "error",
+    "no-undef": ["warn"]
   }
 }

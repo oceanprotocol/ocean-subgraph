@@ -425,8 +425,11 @@ export function handleTransfer(event: Transfer): void {
   const pool = Pool.load(poolId)
   const poolTx = PoolTransaction.load(event.transaction.hash.toHexString())
   const value = tokenToDecimal(event.params.value.toBigDecimal(), 18)
-  debuglog('poolShare Transfer event: (from, to, value)', event,
-    [event.params.from.toHex(), event.params.to.toHex(), value.toString()])
+  debuglog('poolShare Transfer event: (from, to, value)', event, [
+    event.params.from.toHex(),
+    event.params.to.toHex(),
+    value.toString()
+  ])
 
   if (isMint) {
     if (poolShareTo == null) {
@@ -490,11 +493,18 @@ export function handleTransfer(event: Transfer): void {
     poolShareFrom.save()
     debuglog(
       'pool shares transfer: ' +
-      '(id, value, totalShares, shareToBalance, shareFromBalance, toAddress, fromAddress)', event,
-      [poolId, value.toString(), pool.totalShares.toString(),
-        poolShareTo.balance.toString(), poolShareFrom.balance.toString(),
-        poolShareTo.userAddress, poolShareFrom.userAddress
-      ])
+        '(id, value, totalShares, shareToBalance, shareFromBalance, toAddress, fromAddress)',
+      event,
+      [
+        poolId,
+        value.toString(),
+        pool.totalShares.toString(),
+        poolShareTo.balance.toString(),
+        poolShareFrom.balance.toString(),
+        poolShareTo.userAddress,
+        poolShareFrom.userAddress
+      ]
+    )
   }
 
   if (
