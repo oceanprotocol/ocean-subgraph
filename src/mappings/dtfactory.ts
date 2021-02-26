@@ -18,7 +18,7 @@ export function handleNewToken(event: TokenRegistered): void {
   }
 
   const datatoken = new DatatokenEntity(event.params.tokenAddress.toHexString())
-  log.error('************************ handleNewToken: datatokenId {}', [
+  log.warning('************************ handleNewToken: datatokenId {}', [
     datatoken.id.toString()
   ])
 
