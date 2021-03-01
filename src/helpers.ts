@@ -382,7 +382,7 @@ export function createPoolTransaction(
   poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
 
-  log.warning('####################### poolTransactionCreate: ', [
+  debuglog('####################### poolTransaction: ', event, [
     ptx,
     BigInt.fromI32(poolTx.block).toString(),
     BigInt.fromI32(poolTx.timestamp).toString(),
