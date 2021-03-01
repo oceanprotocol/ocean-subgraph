@@ -35,12 +35,11 @@ export const ENABLE_DEBUG = true
 const network = dataSource.network()
 
 function getOceanAddress(): string {
-  if (network == 'ropsten') {
-    return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
-  } else if (network == 'rinkeby') {
-    return '0x8967bcf84170c91b0d24d4302c2376283b0b3a07'
-  }
-  // network == 'mainnet'
+  // switch is not working for some reason
+  if (network == 'ropsten') return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
+  if (network == 'rinkeby') return '0x8967bcf84170c91b0d24d4302c2376283b0b3a07'
+  if (network == 'polygon') return '0x282d8efce846a88b159800bd4130ad77443fa1a1'
+
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
 
@@ -169,6 +168,7 @@ export function updatePoolTransactionToken(
   balance: BigDecimal,
   feeValue: BigDecimal
 ): void {
+  log.warning('WWWWWWWWWW ---- started update ptx with id {}', [poolTx])
   const ptx = PoolTransaction.load(poolTx)
   const poolToken = PoolToken.load(poolTokenId)
   const pool = PoolEntity.load(poolToken.poolId)
@@ -217,14 +217,14 @@ export function updatePoolTransactionToken(
     ptx.datatokenReserve = ptxTokenValues.tokenReserve
     pool.datatokenReserve = ptxTokenValues.tokenReserve
   }
-  debuglog('########## updatePoolTransactionToken: ', null, [
-    BigInt.fromI32(ptx.block).toString(),
-    BigInt.fromI32(ptx.timestamp).toString(),
-    ptxTokenValues.type,
-    ptxTokenValues.value.toString(),
-    ptxTokenValues.tokenReserve.toString(),
-    poolToken.poolId
-  ])
+  // debuglog('########## updatePoolTransactionToken: ', null, [
+  //   BigInt.fromI32(ptx.block).toString(),
+  //   BigInt.fromI32(ptx.timestamp).toString(),
+  //   ptxTokenValues.type,
+  //   ptxTokenValues.value.toString(),
+  //   ptxTokenValues.tokenReserve.toString(),
+  //   poolToken.poolId
+  // ])
 
   ptx.save()
   pool.save()
@@ -278,7 +278,6 @@ export function createPoolTransaction(
   const dtToken = PoolToken.load(
     poolId.concat('-').concat(pool.datatokenAddress)
   )
-
   if (ocnToken == null || dtToken == null) {
     return
   }
@@ -313,7 +312,7 @@ export function createPoolTransaction(
     decimalToBigInt(pool.swapFee)
   )
   debuglog(
-    'args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)',
+    'createPoolTransaction args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)',
     null,
     [
       decimalToBigInt(ocnToken.balance).toString(),
@@ -384,6 +383,7 @@ export function createPoolTransaction(
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
 
   debuglog('####################### poolTransaction: ', event, [
+    ptx,
     BigInt.fromI32(poolTx.block).toString(),
     BigInt.fromI32(poolTx.timestamp).toString(),
     pool.oceanReserve.toString()
