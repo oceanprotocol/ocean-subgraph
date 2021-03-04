@@ -32,12 +32,14 @@ export function handleMetadataUpdated(event: MetadataUpdated): void {
   handleMetadataEvent(
     event,
     event.params.dataToken.toHexString(),
-    event.params.updatedBy.toHexString())
+    event.params.updatedBy.toHexString()
+  )
 }
 
 export function handleMetadataCreated(event: MetadataCreated): void {
   handleMetadataEvent(
     event,
     event.params.dataToken.toHexString(),
-    event.params.createdBy.toHexString())
+    event.params.createdBy.toHexString()
+  )
 }
