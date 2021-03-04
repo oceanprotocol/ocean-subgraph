@@ -1,12 +1,13 @@
-import {BigInt, ethereum} from '@graphprotocol/graph-ts'
+import { BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { MetadataUpdated, MetadataCreated } from '../@types/Metadata/Metadata'
 
-import {Datatoken, MetadataUpdate } from '../@types/schema'
+import { Datatoken, MetadataUpdate } from '../@types/schema'
 
 export function handleMetadataEvent(
-  event: ethereum.Event, dtAddress: string, updatedBy: string
+  event: ethereum.Event,
+  dtAddress: string,
+  updatedBy: string
 ): void {
-
   const datatoken = Datatoken.load(dtAddress)
 
   const tx = event.transaction.hash
@@ -21,17 +22,22 @@ export function handleMetadataEvent(
 
   metadataUpdate.save()
 
-  datatoken.metadataUpdateCount = datatoken.metadataUpdateCount.plus(BigInt.fromI32(1))
+  datatoken.metadataUpdateCount = datatoken.metadataUpdateCount.plus(
+    BigInt.fromI32(1)
+  )
   datatoken.save()
-
 }
 
 export function handleMetadataUpdated(event: MetadataUpdated): void {
   handleMetadataEvent(
-    event, event.params.dataToken.toHexString(), event.params.updatedBy.toHexString())
+    event,
+    event.params.dataToken.toHexString(),
+    event.params.updatedBy.toHexString())
 }
 
 export function handleMetadataCreated(event: MetadataCreated): void {
   handleMetadataEvent(
-    event, event.params.dataToken.toHexString(), event.params.createdBy.toHexString())
+    event,
+    event.params.dataToken.toHexString(),
+    event.params.createdBy.toHexString())
 }
