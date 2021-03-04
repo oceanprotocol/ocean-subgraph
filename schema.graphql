@@ -131,12 +131,26 @@ type Datatoken @entity {
 
     holderCount: BigInt!                               # Number of addresses holding a balance of datatoken
     orderCount: BigInt!                                 # Number of orders executed for this dataset
+    metadataUpdateCount: BigInt!
 
     createTime: Int!                                    # Block time datatoken was created
     tx: Bytes                                           # Datatoken creation transaction id
 
     balances: [TokenBalance!] @derivedFrom(field: "datatokenId")
     orders: [TokenOrder!] @derivedFrom(field: "datatokenId")
+    updates: [MetadataUpdate!] @derivedFrom(field: "datatokenId")  # list of MetadataUpdate objects
+}
+
+type MetadataUpdate @entity {
+    id: ID!                                             # update tx +  datatokenAddress
+    datatokenId: Datatoken!
+
+    datatokenAddress: String!
+    userAddress: String!
+
+    block: Int!
+    timestamp: Int!
+    tx: Bytes!
 }
 
 type TokenOrder @entity {

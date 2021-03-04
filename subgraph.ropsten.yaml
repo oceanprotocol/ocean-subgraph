@@ -44,6 +44,28 @@ dataSources:
       eventHandlers:
         - event: TokenRegistered(indexed address,string,string,uint256,indexed address,indexed string)
           handler: handleNewToken
+  - kind: ethereum/contract
+    name: Metadata
+    network: ropsten
+    source:
+      address: '0x3cd7Ef1F207E1a46AAd7D5d7F5f0A5cF081Fc726'
+      abi: Metadata
+      startBlock: 9227595
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/metadata.ts
+      entities:
+        - Metadata
+      abis:
+        - name: Metadata
+          file: ./abis/Metadata.json
+      eventHandlers:
+        - event: MetadataCreated(indexed address,indexed address,bytes,bytes)
+          handler: handleMetadataCreated
+        - event: MetadataUpdated(indexed address,indexed address,bytes,bytes)
+          handler: handleMetadataUpdated
 templates:
   - kind: ethereum/contract
     name: Pool

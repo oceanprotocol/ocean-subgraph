@@ -44,6 +44,28 @@ dataSources:
       eventHandlers:
         - event: TokenRegistered(indexed address,string,string,uint256,indexed address,indexed string)
           handler: handleNewToken
+  - kind: ethereum/contract
+    name: Metadata
+    network: polygon
+    source:
+      address: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8'
+      abi: Metadata
+      startBlock: 11005247
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/metadata.ts
+      entities:
+        - Metadata
+      abis:
+        - name: Metadata
+          file: ./abis/Metadata.json
+      eventHandlers:
+        - event: MetadataCreated(indexed address,indexed address,bytes,bytes)
+          handler: handleMetadataCreated
+        - event: MetadataUpdated(indexed address,indexed address,bytes,bytes)
+          handler: handleMetadataUpdated
 templates:
   - kind: ethereum/contract
     name: Pool

@@ -37,6 +37,7 @@ export function handleNewToken(event: TokenRegistered): void {
 
   datatoken.holderCount = BigInt.fromI32(0)
   datatoken.orderCount = BigInt.fromI32(0)
+  datatoken.metadataUpdateCount = BigInt.fromI32(0)
 
   datatoken.createTime = event.block.timestamp.toI32()
   datatoken.tx = event.transaction.hash
