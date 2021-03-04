@@ -138,6 +138,7 @@ type Datatoken @entity {
 
     balances: [TokenBalance!] @derivedFrom(field: "datatokenId")
     orders: [TokenOrder!] @derivedFrom(field: "datatokenId")
+    updates: [MetadataUpdate!] @derivedFrom(field: "datatokenId")
 }
 
 type MetadataUpdate @entity {
