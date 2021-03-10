@@ -66,6 +66,34 @@ dataSources:
           handler: handleMetadataCreated
         - event: MetadataUpdated(indexed address,indexed address,bytes,bytes)
           handler: handleMetadataUpdated
+  - kind: ethereum/contract
+    name: FixedRateExchange
+    network: ropsten
+    source:
+      address: '0xA7a711A09396DF82D9be46A26B48BafdB9BB4fA6'
+      abi: FixedRateExchange
+      startBlock: 9227595
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/fixedrateexchange.ts
+      entities:
+        - FixedRateExchange
+      abis:
+        - name: FixedRateExchange
+          file: ./abis/FixedRateExchange.json
+      eventHandlers:
+        - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
+          handler: handleExchangeCreated
+        - event: ExchangeActivated(indexed bytes32,indexed address)
+          handler: handleExchangeActivated
+        - event: ExchangeDeactivated(indexed bytes32,indexed address)
+          handler: handleExchangeDeactivated
+        - event: ExchangeRateChanged(indexed bytes32,indexed address,uint256)
+          handler: handleExchangeRateChanged
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256)
+          handler: handleSwapped
 templates:
   - kind: ethereum/contract
     name: Pool

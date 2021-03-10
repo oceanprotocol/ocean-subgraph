@@ -200,4 +200,39 @@ type User @entity {
     poolTransactionsTokenValues: [PoolTransactionTokenValues!] @derivedFrom(field: "userAddress")
     tokenTransactions: [TokenTransaction!]  @derivedFrom(field: "userAddress")
     orders: [TokenOrder!] @derivedFrom(field: "payer")
+    freSwaps: [FixedRateExchangeSwap!] @derivedFrom(field: "by")
+}
+
+type FixedRateExchange @entity {
+    id: ID!                                             # fixed rate exchange id
+    exchangeOwner: User!
+    datatoken: Datatoken!
+    baseToken: String!
+    rate: BigDecimal!
+    active: Boolean!
+    updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
+    swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
+}
+
+type FixedRateExchangeUpdate @entity {
+    id: ID!                                           
+    exchangeId: FixedRateExchange!
+    oldRate: BigDecimal!
+    newRate: BigDecimal!
+    oldActive: Boolean!
+    newActive: Boolean!
+    block: Int!
+    timestamp: Int!
+    tx: Bytes!
+}
+
+type FixedRateExchangeSwap @entity {
+    id: ID!                                           
+    exchangeId: FixedRateExchange!
+    by: User!
+    baseTokenAmount: BigDecimal!
+    dataTokenAmount: BigDecimal!
+    block: Int!
+    timestamp: Int!
+    tx: Bytes!
 }
