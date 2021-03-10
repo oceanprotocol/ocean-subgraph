@@ -30,15 +30,14 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedrateexchange.save()
 }
 
-function _processActiveUpdated(event: ethereum.Event, exchangeId: string, active: boolean): void {
+function _processActiveUpdated(
+  event: ethereum.Event,
+  exchangeId: string,
+  active: boolean
+): void {
   const tx = event.transaction.hash
-  const id = tx
-    .toHexString()
-    .concat('-')
-    .concat(exchangeId)
-  const fixedrateexchange = FixedRateExchange.load(
-    exchangeId
-  )
+  const id = tx.toHexString().concat('-').concat(exchangeId)
+  const fixedrateexchange = FixedRateExchange.load(exchangeId)
 
   const freupdate = new FixedRateExchangeUpdate(id)
   freupdate.exchangeId = exchangeId
@@ -57,19 +56,11 @@ function _processActiveUpdated(event: ethereum.Event, exchangeId: string, active
 }
 
 export function handleExchangeActivated(event: ExchangeActivated): void {
-  _processActiveUpdated(
-    event,
-    event.params.exchangeId.toHexString(),
-    true
-  )
+  _processActiveUpdated(event, event.params.exchangeId.toHexString(), true)
 }
 
 export function handleExchangeDeactivated(event: ExchangeDeactivated): void {
-  _processActiveUpdated(
-    event,
-    event.params.exchangeId.toHexString(),
-    false
-  )
+  _processActiveUpdated(event, event.params.exchangeId.toHexString(), false)
 }
 
 export function handleExchangeRateChanged(event: ExchangeRateChanged): void {
