@@ -1,17 +1,24 @@
-import { BigInt, ethereum } from '@graphprotocol/graph-ts'
-import { ExchangeCreated, ExchangeActivated, ExchangeDeactivated, ExchangeRateChanged, Swapped } from '../@types/FixedRateExchange/FixedRateExchange'
-
-import { Datatoken, User, FixedRateExchange, FixedRateExchangeUpdate, FixedRateExchangeSwap } from '../@types/schema'
-
+import { BigInt } from '@graphprotocol/graph-ts'
+import {
+  ExchangeCreated,
+  ExchangeActivated,
+  ExchangeDeactivated,
+  ExchangeRateChanged,
+  Swapped
+} from '../@types/FixedRateExchange/FixedRateExchange'
 
 import {
-  tokenToDecimal,
-} from '../helpers'
+  FixedRateExchange,
+  FixedRateExchangeUpdate,
+  FixedRateExchangeSwap
+} from '../@types/schema'
 
+import { tokenToDecimal } from '../helpers'
 
 export function handleExchangeCreated(event: ExchangeCreated): void {
-  const owner = event.params.exchangeOwner.toHexString()
-  const fixedrateexchange = new FixedRateExchange(event.params.exchangeId.toHexString())
+  const fixedrateexchange = new FixedRateExchange(
+    event.params.exchangeId.toHexString()
+  )
   fixedrateexchange.exchangeOwner = event.params.exchangeOwner.toHexString()
   fixedrateexchange.datatoken = event.params.dataToken.toHexString()
   fixedrateexchange.baseToken = event.params.baseToken.toHexString()
@@ -25,9 +32,14 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
 
 export function handleExchangeActivated(event: ExchangeActivated): void {
   const tx = event.transaction.hash
-  const id = tx.toHexString().concat('-').concat(event.params.exchangeId.toHexString())
-  const fixedrateexchange = FixedRateExchange.load(event.params.exchangeId.toHexString())
-  
+  const id = tx
+    .toHexString()
+    .concat('-')
+    .concat(event.params.exchangeId.toHexString())
+  const fixedrateexchange = FixedRateExchange.load(
+    event.params.exchangeId.toHexString()
+  )
+
   const freupdate = new FixedRateExchangeUpdate(id)
   freupdate.exchangeId = event.params.exchangeId.toHexString()
   freupdate.oldRate = fixedrateexchange.rate
@@ -44,8 +56,13 @@ export function handleExchangeActivated(event: ExchangeActivated): void {
 }
 export function handleExchangeDeactivated(event: ExchangeDeactivated): void {
   const tx = event.transaction.hash
-  const id = tx.toHexString().concat('-').concat(event.params.exchangeId.toHexString())
-  const fixedrateexchange = FixedRateExchange.load(event.params.exchangeId.toHexString())
+  const id = tx
+    .toHexString()
+    .concat('-')
+    .concat(event.params.exchangeId.toHexString())
+  const fixedrateexchange = FixedRateExchange.load(
+    event.params.exchangeId.toHexString()
+  )
 
   const freupdate = new FixedRateExchangeUpdate(id)
   freupdate.exchangeId = event.params.exchangeId.toHexString()
@@ -63,8 +80,13 @@ export function handleExchangeDeactivated(event: ExchangeDeactivated): void {
 }
 export function handleExchangeRateChanged(event: ExchangeRateChanged): void {
   const tx = event.transaction.hash
-  const id = tx.toHexString().concat('-').concat(event.params.exchangeId.toHexString())
-  const fixedrateexchange = FixedRateExchange.load(event.params.exchangeId.toHexString())
+  const id = tx
+    .toHexString()
+    .concat('-')
+    .concat(event.params.exchangeId.toHexString())
+  const fixedrateexchange = FixedRateExchange.load(
+    event.params.exchangeId.toHexString()
+  )
 
   const freupdate = new FixedRateExchangeUpdate(id)
   freupdate.exchangeId = event.params.exchangeId.toHexString()
@@ -88,7 +110,10 @@ export function handleExchangeRateChanged(event: ExchangeRateChanged): void {
 }
 export function handleSwapped(event: Swapped): void {
   const tx = event.transaction.hash
-  const id = tx.toHexString().concat('-').concat(event.params.exchangeId.toHexString())
+  const id = tx
+    .toHexString()
+    .concat('-')
+    .concat(event.params.exchangeId.toHexString())
   const freSwap = new FixedRateExchangeSwap(id)
   freSwap.exchangeId = event.params.exchangeId.toHexString()
   freSwap.by = event.params.by.toHexString()
@@ -105,5 +130,3 @@ export function handleSwapped(event: Swapped): void {
   freSwap.tx = tx
   freSwap.save()
 }
-
-
