@@ -52,7 +52,6 @@ function _processActiveUpdated(
 
   fixedrateexchange.active = active
   fixedrateexchange.save()
-
 }
 
 export function handleExchangeActivated(event: ExchangeActivated): void {
