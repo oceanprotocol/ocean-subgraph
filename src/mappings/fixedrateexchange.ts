@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, ethereum } from '@graphprotocol/graph-ts'
 import {
   ExchangeCreated,
   ExchangeActivated,
@@ -30,54 +30,48 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedrateexchange.save()
 }
 
+function _processActiveUpdated(event: ethereum.Event, exchangeId: string, active: boolean): void {
+  const tx = event.transaction.hash
+  const id = tx
+    .toHexString()
+    .concat('-')
+    .concat(exchangeId)
+  const fixedrateexchange = FixedRateExchange.load(
+    exchangeId
+  )
+
+  const freupdate = new FixedRateExchangeUpdate(id)
+  freupdate.exchangeId = exchangeId
+  freupdate.oldRate = fixedrateexchange.rate
+  freupdate.newRate = fixedrateexchange.rate
+  freupdate.oldActive = fixedrateexchange.active
+  freupdate.newActive = active
+  freupdate.block = event.block.number.toI32()
+  freupdate.timestamp = event.block.timestamp.toI32()
+  freupdate.tx = tx
+  freupdate.save()
+
+  fixedrateexchange.active = active
+  fixedrateexchange.save()
+
+}
+
 export function handleExchangeActivated(event: ExchangeActivated): void {
-  const tx = event.transaction.hash
-  const id = tx
-    .toHexString()
-    .concat('-')
-    .concat(event.params.exchangeId.toHexString())
-  const fixedrateexchange = FixedRateExchange.load(
-    event.params.exchangeId.toHexString()
+  _processActiveUpdated(
+    event,
+    event.params.exchangeId.toHexString(),
+    true
   )
-
-  const freupdate = new FixedRateExchangeUpdate(id)
-  freupdate.exchangeId = event.params.exchangeId.toHexString()
-  freupdate.oldRate = fixedrateexchange.rate
-  freupdate.newRate = fixedrateexchange.rate
-  freupdate.oldActive = fixedrateexchange.active
-  freupdate.newActive = true
-  freupdate.block = event.block.number.toI32()
-  freupdate.timestamp = event.block.timestamp.toI32()
-  freupdate.tx = tx
-  freupdate.save()
-
-  fixedrateexchange.active = true
-  fixedrateexchange.save()
 }
+
 export function handleExchangeDeactivated(event: ExchangeDeactivated): void {
-  const tx = event.transaction.hash
-  const id = tx
-    .toHexString()
-    .concat('-')
-    .concat(event.params.exchangeId.toHexString())
-  const fixedrateexchange = FixedRateExchange.load(
-    event.params.exchangeId.toHexString()
+  _processActiveUpdated(
+    event,
+    event.params.exchangeId.toHexString(),
+    false
   )
-
-  const freupdate = new FixedRateExchangeUpdate(id)
-  freupdate.exchangeId = event.params.exchangeId.toHexString()
-  freupdate.oldRate = fixedrateexchange.rate
-  freupdate.newRate = fixedrateexchange.rate
-  freupdate.oldActive = fixedrateexchange.active
-  freupdate.newActive = false
-  freupdate.block = event.block.number.toI32()
-  freupdate.timestamp = event.block.timestamp.toI32()
-  freupdate.tx = tx
-  freupdate.save()
-
-  fixedrateexchange.active = false
-  fixedrateexchange.save()
 }
+
 export function handleExchangeRateChanged(event: ExchangeRateChanged): void {
   const tx = event.transaction.hash
   const id = tx
@@ -89,7 +83,7 @@ export function handleExchangeRateChanged(event: ExchangeRateChanged): void {
   )
 
   const freupdate = new FixedRateExchangeUpdate(id)
-  freupdate.exchangeId = event.params.exchangeId.toHexString()
+  freupdate.exchangeId = fixedrateexchange.id
   freupdate.oldRate = fixedrateexchange.rate
   freupdate.newRate = tokenToDecimal(
     event.params.newRate.toBigDecimal(),
@@ -102,12 +96,10 @@ export function handleExchangeRateChanged(event: ExchangeRateChanged): void {
   freupdate.tx = tx
   freupdate.save()
 
-  fixedrateexchange.rate = tokenToDecimal(
-    event.params.newRate.toBigDecimal(),
-    BigInt.fromI32(18).toI32()
-  )
+  fixedrateexchange.rate = freupdate.newRate
   fixedrateexchange.save()
 }
+
 export function handleSwapped(event: Swapped): void {
   const tx = event.transaction.hash
   const id = tx
