@@ -27,7 +27,7 @@
     "@graphprotocol/graph-cli": "^0.20.0",
     "@graphprotocol/graph-ts": "^0.20.0",
     "@release-it/bumper": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
     "auto-changelog": "^2.2.1",
     "eslint": "^7.22.0",
