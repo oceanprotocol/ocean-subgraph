@@ -152,6 +152,16 @@ export function getTokenName(tokenAddress: Address): string {
   return nameValue
 }
 
+export function getTokenDecimals(tokenAddress: Address): i32 {
+  const contract = ERC20.bind(tokenAddress)
+  let decimals = 18
+  const decimalCall = contract.try_decimals()
+  if (!decimalCall.reverted) {
+    decimals = decimalCall.value
+  }
+  return decimals
+}
+
 export function updatePoolTokenBalance(
   poolToken: PoolToken,
   balance: BigDecimal,
@@ -214,6 +224,7 @@ export function createPoolTokenEntity(
   poolToken.denormWeight = ZERO_BD
   poolToken.symbol = getTokenSymbol(address)
   poolToken.name = getTokenName(address)
+  poolToken.decimals = getTokenDecimals(address)
   poolToken.save()
 }
 
