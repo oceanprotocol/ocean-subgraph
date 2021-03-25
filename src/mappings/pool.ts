@@ -237,8 +237,9 @@ export function handleJoinPool(event: LOG_JOIN): void {
     return
   }
 
-  const datatoken: Datatoken | null =
-    poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
+  const datatoken: Datatoken | null = poolToken.isDatatoken
+    ? Datatoken.load(poolToken.address)
+    : null
   const decimals =
     datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
   const tokenAmountIn = tokenToDecimal(
@@ -282,8 +283,9 @@ export function handleExitPool(event: LOG_EXIT): void {
     return
   }
 
-  const datatoken: Datatoken | null =
-    poolToken.tokenId != null ? Datatoken.load(poolToken.tokenId) : null
+  const datatoken: Datatoken | null = poolToken.isDatatoken
+    ? Datatoken.load(poolToken.address)
+    : null
   const decimals =
     datatoken == null ? BigInt.fromI32(18).toI32() : datatoken.decimals
   const tokenAmountOut = tokenToDecimal(

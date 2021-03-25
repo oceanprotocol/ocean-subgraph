@@ -56,8 +56,8 @@ type Pool @entity {
 type PoolToken @entity {
     id: ID!                                             # poolId + token address
     poolId: Pool!
-    tokenId: Datatoken
-    tokenAddress: String
+    isDatatoken: Boolean!
+    address: String
     balance: BigDecimal!
     denormWeight: BigDecimal!
     symbol: String

@@ -167,7 +167,7 @@ export function updatePoolTokenBalance(
       'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
       [
         poolToken.poolId,
-        poolToken.tokenAddress.toString(),
+        poolToken.address.toString(),
         poolToken.balance.toString(),
         balance.toString()
       ]
@@ -208,8 +208,8 @@ export function createPoolTokenEntity(
 
   const poolToken = new PoolToken(id)
   poolToken.poolId = pool
-  poolToken.tokenId = datatoken ? datatoken.id : ''
-  poolToken.tokenAddress = address.toHexString()
+  poolToken.isDatatoken = !!datatoken
+  poolToken.address = address.toHexString()
   poolToken.balance = ZERO_BD
   poolToken.denormWeight = ZERO_BD
   poolToken.symbol = getTokenSymbol(address)
@@ -228,7 +228,7 @@ export function updatePoolTransactionToken(
   const ptx = PoolTransaction.load(poolTx)
   const poolToken = PoolToken.load(poolTokenId)
   const pool = PoolEntity.load(poolToken.poolId)
-  const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
+  const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.address)
   let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
   if (ptxTokenValues == null) {
     ptxTokenValues = new PoolTransactionTokenValues(ptxTokenValuesId)
@@ -237,7 +237,7 @@ export function updatePoolTransactionToken(
   ptxTokenValues.poolToken = poolTokenId
   ptxTokenValues.poolAddress = poolToken.poolId
   ptxTokenValues.userAddress = ptx.userAddress
-  ptxTokenValues.tokenAddress = PoolToken.load(poolTokenId).tokenAddress
+  ptxTokenValues.tokenAddress = PoolToken.load(poolTokenId).address
 
   ptxTokenValues.value = amount
   ptxTokenValues.tokenReserve = balance
