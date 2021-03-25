@@ -167,6 +167,7 @@ type TokenOrder @entity {
 
     timestamp: Int!
     tx: Bytes
+    block: Int!
 }
 
 type TokenBalance @entity {

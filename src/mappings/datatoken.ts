@@ -121,6 +121,7 @@ export function handleOrderStarted(event: OrderStarted): void {
   }
   order.marketFee = tokenToDecimal(event.params.marketFee.toBigDecimal(), 18)
   order.tx = tx
+  order.block = event.block.number.toI32()
 
   order.save()
 
