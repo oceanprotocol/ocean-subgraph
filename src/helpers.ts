@@ -22,9 +22,9 @@ import {
 } from './@types/schema'
 
 import { Pool } from './@types/templates/Pool/Pool'
-import { ERC20 } from './@types/Factory/ERC20'
-import { ERC20SymbolBytes } from './@types/Factory/ERC20SymbolBytes'
-import { ERC20NameBytes } from './@types/Factory/ERC20NameBytes'
+import { ERC20 } from './@types/templates/Pool/ERC20'
+import { ERC20SymbolBytes } from './@types/templates/Pool/ERC20SymbolBytes'
+import { ERC20NameBytes } from './@types/templates/Pool/ERC20NameBytes'
 
 export const ZERO_BD = BigDecimal.fromString('0.0')
 export const MINUS_1_BD = BigDecimal.fromString('-1.0')
