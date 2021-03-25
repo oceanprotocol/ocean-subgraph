@@ -60,6 +60,8 @@ type PoolToken @entity {
     tokenAddress: String
     balance: BigDecimal!
     denormWeight: BigDecimal!
+    symbol: String
+    name: String
 }
 
 type PoolShare @entity {
