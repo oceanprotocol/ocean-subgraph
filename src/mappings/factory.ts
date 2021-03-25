@@ -13,7 +13,7 @@ export function handleNewPool(event: BPoolRegistered): void {
     factory.totalSwapVolume = ZERO_BD
     factory.totalSwapFee = ZERO_BD
     factory.totalValueLocked = ZERO_BD
-
+    factory.orderCount = BigInt.fromI32(0)
     factory.poolCount = 0
     factory.finalizedPoolCount = 0
   }

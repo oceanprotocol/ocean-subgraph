@@ -37,6 +37,7 @@ export function handleNewToken(event: TokenRegistered): void {
 
   datatoken.holderCount = BigInt.fromI32(0)
   datatoken.orderCount = BigInt.fromI32(0)
+  datatoken.orderVolume = BigInt.fromI32(0).toBigDecimal()
   datatoken.metadataUpdateCount = BigInt.fromI32(0)
 
   datatoken.createTime = event.block.timestamp.toI32()

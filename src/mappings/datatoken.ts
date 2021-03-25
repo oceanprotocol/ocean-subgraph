@@ -1,7 +1,12 @@
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 import { OrderStarted, Transfer } from '../@types/templates/DataToken/DataToken'
 
-import { Datatoken, TokenBalance, TokenOrder } from '../@types/schema'
+import {
+  Datatoken,
+  PoolFactory,
+  TokenBalance,
+  TokenOrder
+} from '../@types/schema'
 import {
   tokenToDecimal,
   updateTokenBalance,
@@ -124,8 +129,27 @@ export function handleOrderStarted(event: OrderStarted): void {
 
   order.save()
 
+  datatoken.orderVolume = datatoken.orderVolume.plus(order.amount)
   datatoken.orderCount = datatoken.orderCount.plus(BigInt.fromI32(1))
+
   datatoken.save()
 
   saveTokenTransaction(event, 'OrderStarted')
+
+  let factory = PoolFactory.load('1')
+
+  if (factory == null) {
+    factory = new PoolFactory('1')
+    factory.totalOceanLiquidity = ZERO_BD
+    factory.totalSwapVolume = ZERO_BD
+    factory.totalSwapFee = ZERO_BD
+    factory.totalValueLocked = ZERO_BD
+    factory.orderCount = BigInt.fromI32(0)
+    factory.poolCount = 0
+    factory.finalizedPoolCount = 0
+  }
+
+  factory.orderCount = factory.orderCount.plus(BigInt.fromI32(1))
+  factory.totalOrderVolume = factory.totalOrderVolume.plus(order.amount)
+  factory.save()
 }

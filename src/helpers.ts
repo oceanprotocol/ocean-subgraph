@@ -34,7 +34,7 @@ export const ENABLE_DEBUG = true
 
 const network = dataSource.network()
 
-function getOceanAddress(): string {
+export function getOceanAddress(): string {
   // switch is not working for some reason
   if (network == 'ropsten') return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
   if (network == 'rinkeby') return '0x8967bcf84170c91b0d24d4302c2376283b0b3a07'
@@ -123,6 +123,30 @@ export function updatePoolTokenBalance(
   poolToken.balance = balance
 }
 
+export function updatePoolSwapVolume(
+  pool: Pool,
+  swapAmount: BigDecimal
+  // source: string
+): void {
+  debuglog(
+    '########## updating poolToken balance (source, oldBalance, newBalance, poolId) ',
+    null,
+    [source, pool.totalSwapVolume.toString(), swapAmount.toString(), pool.id]
+  )
+  if (swapAmount < ZERO_BD || pool.totalSwapVolume < ZERO_BD) {
+    log.warning(
+      'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
+      [
+        pool.id,
+        poolToken.tokenAddress.toString(),
+        poolToken.balance.toString(),
+        swapAmount.toString()
+      ]
+    )
+  }
+
+  poolToken.swapBalanceOcean = poolToken.swapBalanceOcean.plus(swapAmount)
+}
 export function createUserEntity(address: string): void {
   if (User.load(address) == null) {
     const user = new User(address)

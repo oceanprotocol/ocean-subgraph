@@ -6,10 +6,11 @@ type PoolFactory @entity {
     totalOceanLiquidity: BigDecimal!                    # Total of OCEAN liquidity from all pools
     totalSwapVolume: BigDecimal!                        # All the swap volume in Ocean
     totalSwapFee: BigDecimal!                           # All the swap fee in Ocean
+    totalOrderVolume: BigDecimal
 
     poolCount: Int!                                     # Number of pools
     finalizedPoolCount: Int!                            # Number of finalized pools
-
+    orderCount: BigInt                                     # Number of total consumes
     pools: [Pool!] @derivedFrom(field: "factoryID")
 }
 
@@ -42,7 +43,7 @@ type Pool @entity {
     exitCount: BigInt!                                 # liquidity has been removed
     swapCount: BigInt!
     transactionCount: BigInt!                          # Number of transactions in this pool involving liquidity changes
-
+    
     datatokenAddress: String!
     createTime: Int!                                    # Block time pool was created
     tx: Bytes                                           # Pool creation transaction id
@@ -132,7 +133,8 @@ type Datatoken @entity {
     holderCount: BigInt!                               # Number of addresses holding a balance of datatoken
     orderCount: BigInt!                                 # Number of orders executed for this dataset
     metadataUpdateCount: BigInt!
-
+    
+    orderVolume: BigDecimal
     createTime: Int!                                    # Block time datatoken was created
     tx: Bytes                                           # Datatoken creation transaction id
 
