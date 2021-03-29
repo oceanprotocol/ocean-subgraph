@@ -3,6 +3,7 @@ import { OrderStarted, Transfer } from '../@types/templates/DataToken/DataToken'
 
 import {
   Datatoken,
+  Global,
   PoolFactory,
   TokenBalance,
   TokenOrder
@@ -12,7 +13,8 @@ import {
   updateTokenBalance,
   ZERO_BD,
   MINUS_1_BD,
-  saveTokenTransaction
+  saveTokenTransaction,
+  getGlobalStats
 } from '../helpers'
 
 /************************************
@@ -152,4 +154,8 @@ export function handleOrderStarted(event: OrderStarted): void {
   factory.orderCount = factory.orderCount.plus(BigInt.fromI32(1))
   factory.totalOrderVolume = factory.totalOrderVolume.plus(order.amount)
   factory.save()
+  const gStats: Global | null = getGlobalStats()
+  gStats.orderCount = factory.orderCount
+  gStats.totalOrderVolume = factory.totalOrderVolume
+  gStats.save()
 }

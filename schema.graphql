@@ -14,6 +14,16 @@ type PoolFactory @entity {
     pools: [Pool!] @derivedFrom(field: "factoryID")
 }
 
+type Global @entity {
+    id: ID!
+    totalValueLocked: BigDecimal                        # total value from all pools expressed in OCEAN
+    totalOceanLiquidity: BigDecimal!                    # Total of OCEAN liquidity from all pools
+    totalSwapVolume: BigDecimal!                        # All the swap volume in Ocean                  
+    totalOrderVolume: BigDecimal
+    orderCount: BigInt
+    poolCount: Int!       
+}
+
 type Pool @entity {
     id: ID!                                             # Pool address
     factoryID: PoolFactory!
@@ -238,3 +248,4 @@ type FixedRateExchangeSwap @entity {
     timestamp: Int!
     tx: Bytes!
 }
+

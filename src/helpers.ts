@@ -18,7 +18,8 @@ import {
   Datatoken,
   TokenBalance,
   TokenTransaction,
-  PoolTransactionTokenValues
+  PoolTransactionTokenValues,
+  Global
 } from './@types/schema'
 
 import { Pool } from './@types/templates/Pool/Pool'
@@ -44,6 +45,21 @@ export function getOceanAddress(): string {
 }
 
 export const OCEAN: string = getOceanAddress()
+
+export function getGlobalStats(): Global | null {
+  let gStats: Global | null = Global.load('1')
+  if (gStats == null) {
+    gStats = new Global('1')
+    gStats.totalOceanLiquidity = ZERO_BD
+    gStats.totalSwapVolume = ZERO_BD
+    gStats.totalValueLocked = ZERO_BD
+    gStats.totalOrderVolume = ZERO_BD
+    gStats.orderCount = BigInt.fromI32(0)
+    gStats.poolCount = 0
+  }
+
+  return gStats
+}
 
 export function _debuglog(
   message: string,
@@ -224,6 +240,10 @@ export function updatePoolTransactionToken(
       factory.totalOceanLiquidity +
       ptxTokenValues.tokenReserve -
       pool.oceanReserve
+    const gStats: Global | null = getGlobalStats()
+    gStats.totalOceanLiquidity = factory.totalOceanLiquidity
+
+    gStats.save()
     if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
       log.warning(
         'EEEEEEEEEEEEEEEEE totalOceanLiquidity or oceanReserve < Zero: pool={}, totOcnLiq={}, ocnRes={}',
@@ -380,6 +400,11 @@ export function createPoolTransaction(
   }
   factory.totalValueLocked =
     factory.totalValueLocked - oldValueLocked + pool.valueLocked
+
+  const gStats: Global | null = getGlobalStats()
+
+  gStats.totalValueLocked = factory.totalValueLocked
+  gStats.save()
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 

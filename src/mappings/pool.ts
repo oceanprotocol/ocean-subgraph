@@ -13,7 +13,8 @@ import {
   PoolToken,
   PoolShare,
   Datatoken,
-  PoolTransaction
+  PoolTransaction,
+  Global
 } from '../@types/schema'
 import {
   hexToDecimal,
@@ -28,7 +29,8 @@ import {
   OCEAN,
   debuglog,
   updatePoolTokenBalance,
-  getOceanAddress
+  getOceanAddress,
+  getGlobalStats
 } from '../helpers'
 
 /************************************
@@ -391,8 +393,13 @@ export function handleSwap(event: LOG_SWAP): void {
     pool.totalSwapVolume = pool.totalSwapVolume.plus(tokenAmountOut)
     factory.totalSwapVolume = factory.totalSwapVolume.plus(tokenAmountOut)
   }
+
   factory.save()
   pool.save()
+  const gStats: Global | null = getGlobalStats()
+  gStats.totalSwapVolume = factory.totalSwapVolume
+
+  gStats.save()
 
   createPoolTransaction(event, 'swap', event.params.caller.toHexString())
   updatePoolTransactionToken(
