@@ -1,0 +1,55 @@
+name: 'Integration tests'
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+      
+      - uses: actions/checkout@v2
+        name: Checkout Barge
+        with:
+          repository: "oceanprotocol/barge"
+          path: 'barge'
+      - name: Run Barge
+        working-directory: ${{ github.workspace }}/barge
+        run: |
+          git checkout feature/subgraph
+          bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
+          for i in $(seq 1 50); do
+            sleep 5
+            [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
+            done
+          ls -la "$HOME/.ocean/ocean-contracts/artifacts/"
+      - run: npm ci
+      - run: |
+          node ./scripts/generatebargesubgraph.js
+      # TODO: activate once this issue is solved:
+      # https://github.com/graphprotocol/graph-ts/issues/113
+      # - run: npm run type-check
+      - run: npm run codegen
+      - run: npm run build
+      - run: npm run create:local-barge
+      - run: npm run deploy:local-barge
+      - run: npm run test-integration
