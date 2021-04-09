@@ -10,6 +10,7 @@
 - [🏄 Get Started](#-get-started)
 - [🧶 Example Queries](#-example-queries)
 - [🦑 Development](#-development)
+- [🦑 Development on barge](#-development-on-barge)
 - [✨ Code Style](#-code-style)
 - [🛳 Releases](#️-releases)
 - [⬆️ Deployment](#️-deployment)
@@ -101,6 +102,47 @@ docker-compose --env-file .env up
 The default network for development is set to Rinkeby. If you want to switch to another network you have to modify the `docker/docker-compose.yml` file within `environment.ethereum`.
 
 You now have a local graph-node running and can start deploying your changes to it. To do so, follow the [Deployment instructions](#️-deployment).
+
+
+## 🦑 Development on Barge
+
+Run barge in another terminal
+```bash
+./start_ocean.sh --with-thegraph
+```
+
+Clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/oceanprotocol/ocean-subgraph/
+cd ocean-subgraph
+npm i
+```
+
+Generate the subgraph
+```bash
+npm run bargesetup
+```
+
+Do the following to deploy the ocean-subgraph to a graph-node running locally, pointed against `mainnet`:
+
+```bash
+npm run codegen
+
+# deploy
+npm run create:local
+npm run deploy:local
+```
+
+To deploy a subgraph connected to Barge, use:
+
+```bash
+npm run create:local-barge
+npm run deploy:local-barge
+```
+
+You now have a local graph-node running on http://localhost:9000
+
 
 ## ✨ Code Style
 
