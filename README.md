@@ -124,16 +124,6 @@ Generate the subgraph
 npm run bargesetup
 ```
 
-Do the following to deploy the ocean-subgraph to a graph-node running locally, pointed against `mainnet`:
-
-```bash
-npm run codegen
-
-# deploy
-npm run create:local
-npm run deploy:local
-```
-
 To deploy a subgraph connected to Barge, use:
 
 ```bash
