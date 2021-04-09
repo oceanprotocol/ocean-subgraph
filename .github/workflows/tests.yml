@@ -37,7 +37,7 @@ jobs:
         working-directory: ${{ github.workspace }}/barge
         run: |
           bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
-          for i in $(seq 1 50); do
+          for i in $(seq 1 500); do
             sleep 5
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
