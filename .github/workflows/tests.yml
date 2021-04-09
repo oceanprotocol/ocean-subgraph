@@ -41,7 +41,6 @@ jobs:
             sleep 5
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
-          ls -la "$HOME/.ocean/ocean-contracts/artifacts/"
           bash -x npm i
           bash -x npm run bargesetup
           bash -x npm run codegen
