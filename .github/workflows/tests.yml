@@ -32,10 +32,10 @@ jobs:
         with:
           repository: "oceanprotocol/barge"
           path: 'barge'
+          ref: feature/subgraph
       - name: Run Barge
         working-directory: ${{ github.workspace }}/barge
         run: |
-          git checkout feature/subgraph
           bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
           for i in $(seq 1 50); do
             sleep 5
