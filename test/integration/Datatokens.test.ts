@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import { assert, use } from 'chai'
 import spies from 'chai-spies'
 import Web3 from 'web3'
@@ -23,7 +24,7 @@ describe('Graph test flow', () => {
     ocean = await Ocean.getInstance(config)
     alice = (await ocean.accounts.list())[0]
   })
-/*
+  /*
   it('Check graph instance', async () => {
   const ethGraphQuery =
   '{"query":"  query Blocks{   blocks(first: 1, skip: 0, orderBy: number, orderDirection: desc, where: {number_gt: 9300000}) { id number timestamp  author  difficulty  gasUsed  gasLimit } }","variables":{},"operationName":"Blocks"}'
