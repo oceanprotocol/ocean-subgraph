@@ -42,6 +42,7 @@ jobs:
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
           ls -la "$HOME/.ocean/ocean-contracts/artifacts/"
+          bash -x npm i
           bash -x npm run bargesetup
           bash -x npm run codegen
           bash -x npm run build

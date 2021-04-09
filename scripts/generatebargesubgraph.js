@@ -3,13 +3,7 @@ var fs = require('fs')
 async function replaceContractAddresses() {
   // load barge addresses first
   const data = JSON.parse(fs.readFileSync(process.env.ADDRESS_FILE, 'utf8'))
-  const {
-    DTFactory,
-    BFactory,
-    FixedRateExchange,
-    Metadata,
-    Ocean
-  } = data.development
+  const { DTFactory, BFactory, FixedRateExchange, Metadata } = data.development
   let subgraph = fs.readFileSync('subgraph.yaml', 'utf8')
   if (!data) {
     return false
@@ -37,7 +31,6 @@ async function replaceContractAddresses() {
   // network
   subgraph = subgraph.replace(/network: mainnet/g, 'network: barge')
 
-  
   // startBlocks
   subgraph = subgraph.replace(/startBlock:[ 0-9].*/g, 'startBlock: 0')
 
