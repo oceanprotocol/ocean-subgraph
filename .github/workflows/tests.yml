@@ -42,14 +42,10 @@ jobs:
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
           ls -la "$HOME/.ocean/ocean-contracts/artifacts/"
-      - run: npm ci
-      - run: |
-          node ./scripts/generatebargesubgraph.js
-      # TODO: activate once this issue is solved:
-      # https://github.com/graphprotocol/graph-ts/issues/113
-      # - run: npm run type-check
-      - run: npm run codegen
-      - run: npm run build
-      - run: npm run create:local-barge
-      - run: npm run deploy:local-barge
-      - run: npm run test-integration
+          bash node ./scripts/generatebargesubgraph.js
+          bash -x npm run codegen
+          bash -x npm run build
+          bash -x npm run create:local-barge
+          bash -x npm run deploy:local-barge
+          bash -x npm run test-integration
+      
