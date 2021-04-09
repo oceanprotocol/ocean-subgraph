@@ -36,6 +36,8 @@ jobs:
       - run: npm ci
       - name: Run Barge
         working-directory: ${{ github.workspace }}/barge
+        env:
+          ADDRESS_FILE: ${HOME}/.ocean/ocean-contracts/artifacts/address.json
         run: |
           bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
           for i in $(seq 1 500); do
@@ -43,6 +45,8 @@ jobs:
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
       - run: npm run bargesetup
+        env:
+          ADDRESS_FILE: ${HOME}/.ocean/ocean-contracts/artifacts/address.json
       - run: npm run codegen
       - run: npm run build
       - run: npm run create:local-barge
