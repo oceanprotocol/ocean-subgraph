@@ -33,6 +33,7 @@ jobs:
           repository: "oceanprotocol/barge"
           path: 'barge'
           ref: feature/subgraph
+      - run: npm ci
       - name: Run Barge
         working-directory: ${{ github.workspace }}/barge
         run: |
@@ -41,11 +42,10 @@ jobs:
             sleep 5
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
-          bash -x npm i
-          bash -x npm run bargesetup
-          bash -x npm run codegen
-          bash -x npm run build
-          bash -x npm run create:local-barge
-          bash -x npm run deploy:local-barge
-          bash -x npm run test-integration
+      - run: npm run bargesetup
+      - run: npm run codegen
+      - run: npm run build
+      - run: npm run create:local-barge
+      - run: npm run deploy:local-barge
+      - run: npm run test-integration
       
