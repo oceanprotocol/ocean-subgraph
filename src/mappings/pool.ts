@@ -66,12 +66,14 @@ export function handleSetPublicSwap(event: LOG_CALL): void {
 export function handleFinalize(event: LOG_CALL): void {
   const poolId = event.address.toHex()
   const pool = Pool.load(poolId)
-  if(pool === null){
-    log.error("Cannot handle finalize for unknown pool {} ",[poolId])
+  if (pool === null) {
+    log.error('Cannot handle finalize for unknown pool {} ', [poolId])
     return
   }
-  if (pool.tokenCount == BigInt.fromI32(0)){
-    log.error("Cannot mark pool {} finalized, because we have 0 tokenCount",[poolId])
+  if (pool.tokenCount == BigInt.fromI32(0)) {
+    log.error('Cannot mark pool {} finalized, because we have 0 tokenCount', [
+      poolId
+    ])
     return
   }
   pool.finalized = true
@@ -165,7 +167,7 @@ export function handleSetup(event: LOG_CALL): void {
   const baseTokenWeight = data.slice(330, 394) // (74+(4*64),74+(5*64))
   const swapFee = data.slice(394) // (74+(5*64), END)
 
-  if(baseTokenAddress != OCEAN){
+  if (baseTokenAddress != OCEAN) {
     log.error('baseTokenAddress is not Ocean, but is {}', [baseTokenAddress])
     return
   }

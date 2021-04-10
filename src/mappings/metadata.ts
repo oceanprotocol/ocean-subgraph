@@ -10,7 +10,7 @@ export function handleMetadataEvent(
   created: boolean
 ): void {
   const datatoken = Datatoken.load(dtAddress)
-  if(datatoken){
+  if (datatoken) {
     const tx = event.transaction.hash
     const id = tx.toHexString().concat('-').concat(dtAddress)
     const metadataUpdate = new MetadataUpdate(id)

@@ -23,7 +23,10 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedrateexchange.datatoken = event.params.dataToken.toHexString()
   fixedrateexchange.baseToken = event.params.baseToken.toHexString()
   fixedrateexchange.active = false
-  log.info("for new exchange {} for rate {}",[event.params.exchangeId.toHexString(),event.params.fixedRate.toString()])
+  log.info('for new exchange {} for rate {}', [
+    event.params.exchangeId.toHexString(),
+    event.params.fixedRate.toString()
+  ])
   fixedrateexchange.rate = tokenToDecimal(
     event.params.fixedRate.toBigDecimal(),
     BigInt.fromI32(18).toI32()
@@ -72,15 +75,20 @@ export function handleExchangeRateChanged(event: ExchangeRateChanged): void {
   const fixedrateexchange = FixedRateExchange.load(
     event.params.exchangeId.toHexString()
   )
-  if(!fixedrateexchange){
-    log.error("Cannot update unknown FRE {}",[event.params.exchangeId.toHexString()])
+  if (!fixedrateexchange) {
+    log.error('Cannot update unknown FRE {}', [
+      event.params.exchangeId.toHexString()
+    ])
     return
   }
 
   const freupdate = new FixedRateExchangeUpdate(id)
   freupdate.exchangeId = fixedrateexchange.id
   freupdate.oldRate = fixedrateexchange.rate
-  log.info("for new exchange {} for rate {}",[id,event.params.newRate.toString()])
+  log.info('for new exchange {} for rate {}', [
+    id,
+    event.params.newRate.toString()
+  ])
   freupdate.newRate = tokenToDecimal(
     event.params.newRate.toBigDecimal(),
     BigInt.fromI32(18).toI32()

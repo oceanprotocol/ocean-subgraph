@@ -169,29 +169,26 @@ export function updatePoolTransactionToken(
   feeValue: BigDecimal
 ): void {
   log.warning('WWWWWWWWWW ---- started update ptx with id {}', [poolTx])
-  log.warning(
-    'updatePoolTransactionToken({}, {} , {} , {} , {}}',
-    [
-      poolTx,
-      poolTokenId,
-      amount.toString(),
-      balance.toString(),
-      feeValue.toString()
-    ]
-  )
+  log.warning('updatePoolTransactionToken({}, {} , {} , {} , {}}', [
+    poolTx,
+    poolTokenId,
+    amount.toString(),
+    balance.toString(),
+    feeValue.toString()
+  ])
   const ptx = PoolTransaction.load(poolTx)
   const poolToken = PoolToken.load(poolTokenId)
   const pool = PoolEntity.load(poolToken.poolId)
-  if(!ptx){ 
-    log.error('Cannot load PoolTransaction {}',[poolTx])
+  if (!ptx) {
+    log.error('Cannot load PoolTransaction {}', [poolTx])
     return
   }
-  if(!poolToken){ 
-    log.error('Cannot load PoolToken {}',[poolTokenId])
+  if (!poolToken) {
+    log.error('Cannot load PoolToken {}', [poolTokenId])
     return
   }
-  if(!pool){ 
-    log.error('Cannot load PoolEntity {}',[poolToken.poolId])
+  if (!pool) {
+    log.error('Cannot load PoolEntity {}', [poolToken.poolId])
     return
   }
   const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
