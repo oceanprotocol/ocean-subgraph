@@ -14,7 +14,7 @@ function sleep(ms: number) {
 }
 use(spies)
 
-describe('Graph test flow', () => {
+describe('Datatokens test flow', () => {
   let alice: Account
   let ocean: Ocean
 
@@ -24,19 +24,7 @@ describe('Graph test flow', () => {
     ocean = await Ocean.getInstance(config)
     alice = (await ocean.accounts.list())[0]
   })
-  /*
-  it('Check graph instance', async () => {
-  const ethGraphQuery =
-  '{"query":"  query Blocks{   blocks(first: 1, skip: 0, orderBy: number, orderDirection: desc, where: {number_gt: 9300000}) { id number timestamp  author  difficulty  gasUsed  gasLimit } }","variables":{},"operationName":"Blocks"}'
-  const response = await fetch(subgraphUrl, {
-    method: 'POST',
-    body: ethGraphQuery
-  })
-  console.
-const graphQuery =
-  '{"query":"  query Meta {   _meta {      block {        hash       number     }      deployment      hasIndexingErrors    }  }","variables":{},"operationName":"Meta"}'
 
-*/
   it('Alice publishes a datatoken and querys the graph', async () => {
     const datatoken = await ocean.datatokens.create('', alice.getId())
     const graphToken = datatoken.toLowerCase()
