@@ -1,4 +1,4 @@
-import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, Address, BigDecimal, log } from '@graphprotocol/graph-ts'
 import {
   LOG_CALL,
   LOG_JOIN,
@@ -66,6 +66,16 @@ export function handleSetPublicSwap(event: LOG_CALL): void {
 export function handleFinalize(event: LOG_CALL): void {
   const poolId = event.address.toHex()
   const pool = Pool.load(poolId)
+  if (pool === null) {
+    log.error('Cannot handle finalize for unknown pool {} ', [poolId])
+    return
+  }
+  if (pool.tokenCount == BigInt.fromI32(0)) {
+    log.error('Cannot mark pool {} finalized, because we have 0 tokenCount', [
+      poolId
+    ])
+    return
+  }
   pool.finalized = true
   pool.symbol = 'BPT'
   pool.publicSwap = true
@@ -157,6 +167,10 @@ export function handleSetup(event: LOG_CALL): void {
   const baseTokenWeight = data.slice(330, 394) // (74+(4*64),74+(5*64))
   const swapFee = data.slice(394) // (74+(5*64), END)
 
+  if (baseTokenAddress != OCEAN) {
+    log.error('baseTokenAddress is not Ocean, but is {}', [baseTokenAddress])
+    return
+  }
   const poolTokenId = poolId.concat('-').concat(baseTokenAddress)
   const poolToken = PoolToken.load(poolTokenId)
   if (poolToken != null) return

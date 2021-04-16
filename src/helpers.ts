@@ -169,13 +169,33 @@ export function updatePoolTransactionToken(
   feeValue: BigDecimal
 ): void {
   log.warning('WWWWWWWWWW ---- started update ptx with id {}', [poolTx])
+  log.warning('updatePoolTransactionToken({}, {} , {} , {} , {}}', [
+    poolTx,
+    poolTokenId,
+    amount.toString(),
+    balance.toString(),
+    feeValue.toString()
+  ])
   const ptx = PoolTransaction.load(poolTx)
   const poolToken = PoolToken.load(poolTokenId)
   const pool = PoolEntity.load(poolToken.poolId)
+  if (!ptx) {
+    log.error('Cannot load PoolTransaction {}', [poolTx])
+    return
+  }
+  if (!poolToken) {
+    log.error('Cannot load PoolToken {}', [poolTokenId])
+    return
+  }
+  if (!pool) {
+    log.error('Cannot load PoolEntity {}', [poolToken.poolId])
+    return
+  }
   const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
   let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
   if (ptxTokenValues == null) {
     ptxTokenValues = new PoolTransactionTokenValues(ptxTokenValuesId)
+    log.warning('created PoolTransactionTokenValues for {}', [ptxTokenValuesId])
   }
   ptxTokenValues.txId = poolTx
   ptxTokenValues.poolToken = poolTokenId
@@ -193,7 +213,7 @@ export function updatePoolTransactionToken(
   }
 
   ptxTokenValues.save()
-
+  log.warning('ptxTokenValues {} saved', [ptxTokenValues.id])
   if (ptxTokenValues.tokenAddress == OCEAN) {
     const factory = PoolFactory.load('1')
     factory.totalOceanLiquidity =
@@ -225,8 +245,9 @@ export function updatePoolTransactionToken(
   //   ptxTokenValues.tokenReserve.toString(),
   //   poolToken.poolId
   // ])
-
+  log.warning('saving ptx {} ', [ptx.id.toString()])
   ptx.save()
+  log.warning('saving pool {} ', [pool.id.toString()])
   pool.save()
 }
 
