@@ -39,6 +39,8 @@ function getOceanAddress(): string {
   if (network == 'ropsten') return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
   if (network == 'rinkeby') return '0x8967bcf84170c91b0d24d4302c2376283b0b3a07'
   if (network == 'polygon') return '0x282d8efce846a88b159800bd4130ad77443fa1a1'
+  if (network == 'moonbeamalpha')
+    return '0xd8992ed72c445c35cb4a2be468568ed1079357c8'
 
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
