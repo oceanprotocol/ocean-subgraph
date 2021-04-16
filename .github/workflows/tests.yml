@@ -32,7 +32,6 @@ jobs:
         with:
           repository: "oceanprotocol/barge"
           path: 'barge'
-          ref: feature/subgraph
       - run: npm ci
       - name: Run Barge
         working-directory: ${{ github.workspace }}/barge
