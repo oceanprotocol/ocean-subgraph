@@ -43,7 +43,7 @@
     "chai-spies": "^1.0.0",
     "eslint": "^7.24.0",
     "eslint-config-oceanprotocol": "^1.5.0",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-prettier": "^3.4.0",
     "mocha": "^8.3.2",
     "mock-local-storage": "^1.1.17",
