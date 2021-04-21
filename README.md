@@ -11,6 +11,7 @@
 - [🧶 Example Queries](#-example-queries)
 - [🦑 Development](#-development)
 - [🦑 Development on barge](#-development-on-barge)
+- [🧪 Testing](#-testing)
 - [✨ Code Style](#-code-style)
 - [🛳 Releases](#️-releases)
 - [⬆️ Deployment](#️-deployment)
@@ -106,10 +107,14 @@ You now have a local graph-node running and can start deploying your changes to 
 
 ## 🦑 Development on Barge
 
-Run barge in another terminal
+Clone (barge)[https://github.com/oceanprotocol/barge] and run it in another terminal:
 ```bash
+git clone https://github.com/oceanprotocol/barge.git
+cd barge
 ./start_ocean.sh --with-thegraph
 ```
+
+If you have cloned Barge previously, make sure you are using the latest version by running `git pull`.
 
 Clone the repo and install dependencies:
 
@@ -133,6 +138,16 @@ npm run deploy:local-barge
 
 You now have a local graph-node running on http://localhost:9000
 
+## 🧪 Testing
+
+- Please note: the `npm run test` command is currently not working due to (this issue)[https://github.com/graphprotocol/graph-ts/issues/113].
+
+To run the integration tests locally, first start up barge by following the instructions above, then run the following terminal commands from the ocean-subgraph folder: 
+
+```Bash
+export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
+npm run test-integration
+```
 
 ## ✨ Code Style
 
