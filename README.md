@@ -11,6 +11,7 @@
 - [🧶 Example Queries](#-example-queries)
 - [🦑 Development](#-development)
 - [🦑 Development on barge](#-development-on-barge)
+- [🧪 Testing](#-testing)
 - [✨ Code Style](#-code-style)
 - [🛳 Releases](#️-releases)
 - [⬆️ Deployment](#️-deployment)
@@ -133,6 +134,16 @@ npm run deploy:local-barge
 
 You now have a local graph-node running on http://localhost:9000
 
+## 🧪 Testing
+
+- Please note: the `npm run test` command is currently not working due to (this issue)[https://github.com/graphprotocol/graph-ts/issues/113].
+
+To run the integration tests locally, first start up barge by following the instructions above, then run the following terminal commands from the ocean-subgraph folder: 
+
+```Bash
+export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
+npm run test-integration
+```
 
 ## ✨ Code Style
 
