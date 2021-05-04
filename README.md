@@ -107,7 +107,9 @@ You now have a local graph-node running and can start deploying your changes to 
 
 ## 🦑 Development on Barge
 
+
 Clone [barge](https://github.com/oceanprotocol/barge) and run it in another terminal:
+
 ```bash
 git clone https://github.com/oceanprotocol/barge.git
 cd barge
