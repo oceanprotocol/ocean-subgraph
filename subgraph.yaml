@@ -183,5 +183,5 @@ templates:
         - name: Dispenser
           file: ./abis/Dispenser.json
       eventHandlers:
-        - event: TokensDispensed(indexed datatokenAddress,indexed userAddress,amount)
+        - event: TokensDispensed(indexed address,indexed address,uint256)
           handler: handleTokensDispensed
