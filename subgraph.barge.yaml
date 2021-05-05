@@ -8,7 +8,7 @@ dataSources:
     name: Factory
     network: barge
     source:
-      address: '0xD0A908Ba77d03974293d61113499e3effaDAaD56'
+      address: '0x4f7B4c79Bdc7d250f9916E4707a4ee994C976F43'
       abi: Factory
       startBlock: 0
     mapping:
@@ -28,7 +28,7 @@ dataSources:
     name: DTFactory
     network: barge
     source:
-      address: '0x716bf3c04DdE3474eFf0533D93483b1709C3642c'
+      address: '0xcd6300410f5EcAf1CE840bC0E6a35B57195F8E21'
       abi: DTFactory
       startBlock: 0
     mapping:
@@ -48,7 +48,7 @@ dataSources:
     name: Metadata
     network: barge
     source:
-      address: '0xa4AAAD7e75F9313EB5519B27f75fdE9e1F91B11e'
+      address: '0xB54dFAB3091446e0457eEB5Fba138f0D57b275f8'
       abi: Metadata
       startBlock: 0
     mapping:
@@ -70,7 +70,7 @@ dataSources:
     name: FixedRateExchange
     network: barge
     source:
-      address: '0xFBd5AaE13AE7628BE60e1190aa164C89876c2a26'
+      address: '0x51b68ef95D9dc6F09c07A30Bb57aa24FEe9a1622'
       abi: FixedRateExchange
       startBlock: 0
     mapping:

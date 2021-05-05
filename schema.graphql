@@ -238,8 +238,6 @@ type FixedRateExchangeSwap @entity {
     tx: Bytes!
 }
 
-type Gravatar @entity {
+type Dispenser @entity {
   id: ID!
-  owner: Bytes
-  displayName: String
 }
