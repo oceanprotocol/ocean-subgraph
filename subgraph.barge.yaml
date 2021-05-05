@@ -166,3 +166,22 @@ templates:
           handler: handleTransfer
         - event: OrderStarted(indexed address,indexed address,uint256,uint256,uint256,indexed address,uint256)
           handler: handleOrderStarted
+  
+  - kind: ethereum/contract
+    name: Dispenser
+    network: barge
+    source:
+      abi: Dispenser
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser
+      abis:
+        - name: Dispenser
+          file: ./abis/Dispenser.json
+      eventHandlers:
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleTokensDispensed
