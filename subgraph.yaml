@@ -178,8 +178,7 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/dispenser.ts
       entities:
-        - DataToken
-        - DatatokenFactory
+        - Dispenser
       abis:
         - name: Dispenser
           file: ./abis/Dispenser.json

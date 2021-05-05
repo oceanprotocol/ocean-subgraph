@@ -237,3 +237,9 @@ type FixedRateExchangeSwap @entity {
     timestamp: Int!
     tx: Bytes!
 }
+
+type Gravatar @entity {
+  id: ID!
+  owner: Bytes
+  displayName: String
+}
