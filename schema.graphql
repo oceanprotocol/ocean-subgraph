@@ -237,3 +237,7 @@ type FixedRateExchangeSwap @entity {
     timestamp: Int!
     tx: Bytes!
 }
+
+type Dispenser @entity {
+  id: ID!
+} 
