@@ -218,10 +218,9 @@ export function updatePoolTransactionToken(
   log.warning('ptxTokenValues {} saved', [ptxTokenValues.id])
   if (ptxTokenValues.tokenAddress == OCEAN) {
     const factory = PoolFactory.load('1')
-    factory.totalOceanLiquidity =
-      factory.totalOceanLiquidity +
-      ptxTokenValues.tokenReserve -
-      pool.oceanReserve
+    factory.totalOceanLiquidity = factory.totalOceanLiquidity
+      .plus(ptxTokenValues.tokenReserve)
+      .minus(pool.oceanReserve)
     if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
       log.warning(
         'EEEEEEEEEEEEEEEEE totalOceanLiquidity or oceanReserve < Zero: pool={}, totOcnLiq={}, ocnRes={}',
@@ -324,8 +323,24 @@ export function createPoolTransaction(
   // Initial reserve values, will be updated in `updatePoolTransactionToken`
   poolTx.datatokenReserve = dtToken.balance
   poolTx.oceanReserve = ocnToken.balance
+  debuglog('poolTX reserves:(dt, ocean)', null, [
+    poolTx.datatokenReserve.toString(),
+    poolTx.oceanReserve.toString()
+  ])
 
   const p = Pool.bind(Address.fromString(poolId))
+  debuglog(
+    'createPoolTransaction args sent to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee)',
+    null,
+    [
+      decimalToBigInt(ocnToken.balance).toString(),
+      decimalToBigInt(ocnToken.denormWeight).toString(),
+      decimalToBigInt(dtToken.balance).toString(),
+      decimalToBigInt(dtToken.denormWeight).toString(),
+      ONE_BASE_18.toString(),
+      decimalToBigInt(pool.swapFee).toString()
+    ]
+  )
   const priceResult = p.try_calcInGivenOut(
     decimalToBigInt(ocnToken.balance),
     decimalToBigInt(ocnToken.denormWeight),
@@ -334,35 +349,35 @@ export function createPoolTransaction(
     ONE_BASE_18,
     decimalToBigInt(pool.swapFee)
   )
-  debuglog(
-    'createPoolTransaction args to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee, result)',
-    null,
-    [
-      decimalToBigInt(ocnToken.balance).toString(),
-      decimalToBigInt(ocnToken.denormWeight).toString(),
-      decimalToBigInt(dtToken.balance).toString(),
-      decimalToBigInt(dtToken.denormWeight).toString(),
-      ONE_BASE_18.toString(),
-      decimalToBigInt(pool.swapFee).toString(),
-      priceResult.reverted ? 'failed' : priceResult.value.toString()
-    ]
-  )
+  debuglog('got results', null, [])
   poolTx.consumePrice = priceResult.reverted
     ? MINUS_1_BD
     : bigIntToDecimal(priceResult.value, 18)
-  poolTx.spotPrice = calcSpotPrice(
-    ocnToken.balance,
-    ocnToken.denormWeight,
-    dtToken.balance,
-    dtToken.denormWeight,
-    pool.swapFee
+  debuglog('calcInGivenOut:', null, [
+    priceResult.reverted ? 'failed' : priceResult.value.toString()
+  ])
+
+  const priceSpot = p.try_calcSpotPrice(
+    decimalToBigInt(ocnToken.balance),
+    decimalToBigInt(ocnToken.denormWeight),
+    decimalToBigInt(dtToken.balance),
+    decimalToBigInt(dtToken.denormWeight),
+    decimalToBigInt(pool.swapFee)
   )
+  poolTx.spotPrice = priceSpot.reverted
+    ? ZERO_BD
+    : bigIntToDecimal(priceSpot.value, 18)
+  debuglog('SpotPrice:', null, [
+    priceSpot.reverted ? 'failed' : priceSpot.value.toString()
+  ])
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
   const oldValueLocked = pool.valueLocked
   const spotPrice = pool.spotPrice >= ZERO_BD ? pool.spotPrice : ZERO_BD
-  pool.valueLocked = poolTx.oceanReserve + poolTx.datatokenReserve * spotPrice
+  pool.valueLocked = poolTx.oceanReserve.plus(
+    poolTx.datatokenReserve.times(spotPrice)
+  )
   const factory = PoolFactory.load('1')
   if (oldValueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
     log.warning(
@@ -377,8 +392,9 @@ export function createPoolTransaction(
       ]
     )
   }
-  factory.totalValueLocked =
-    factory.totalValueLocked - oldValueLocked + pool.valueLocked
+  factory.totalValueLocked = factory.totalValueLocked
+    .minus(oldValueLocked)
+    .plus(pool.valueLocked)
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
