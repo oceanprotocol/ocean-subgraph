@@ -562,6 +562,8 @@ export function handleGulp(event: LOG_CALL): void {
   const dtToken = PoolToken.load(
     poolId.concat('-').concat(pool.datatokenAddress)
   )
+  const ocnTokenBalance = ocnToken.balance
+  const dtTokenBalance = dtToken.balance
   // get the balances from the contract
   // for ocean
   if (ocnToken) {
@@ -579,7 +581,7 @@ export function handleGulp(event: LOG_CALL): void {
         updatePoolTransactionToken(
           ptx,
           ocnToken.id,
-          contractBalance.minus(ocnToken.balance),
+          contractBalance.minus(ocnTokenBalance),
           contractBalance,
           ZERO_BD
         )
@@ -604,7 +606,7 @@ export function handleGulp(event: LOG_CALL): void {
         updatePoolTransactionToken(
           ptx,
           dtToken.id,
-          contractBalance.minus(dtToken.balance),
+          contractBalance.minus(dtTokenBalance),
           contractBalance,
           ZERO_BD
         )
