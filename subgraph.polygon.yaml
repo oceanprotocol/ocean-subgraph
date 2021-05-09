@@ -94,6 +94,36 @@ dataSources:
           handler: handleExchangeRateChanged
         - event: Swapped(indexed bytes32,indexed address,uint256,uint256)
           handler: handleSwapped
+  - kind: ethereum/contract
+    name: Dispenser
+    network: polygon
+    source:
+      address: '0x30E4CC2C7A9c6aA2b2Ce93586E3Df24a3A00bcDD'
+      abi: Dispenser
+      startBlock: 14275634
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser
+      abis:
+        - name: Dispenser
+          file: ./abis/Dispenser.json
+      eventHandlers:
+        - event: Activated(indexed address)
+          handler: handleDispenserActivated
+        - event: Deactivated(indexed address)
+          handler: handleDispenserDeactivated
+        - event: AcceptedMinter(indexed address)
+          handler: handleDispenserAcceptedMinter
+        - event: RemovedMinter(indexed address)
+          handler: handleDispenserRemovedMinter
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleDispenserTokensDispensed
+        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
+          handler: handleDispenserOwnerWithdrawed      
 templates:
   - kind: ethereum/contract
     name: Pool

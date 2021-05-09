@@ -237,3 +237,29 @@ type FixedRateExchangeSwap @entity {
     timestamp: Int!
     tx: Bytes!
 }
+
+
+type Dispenser @entity {
+    id: ID!                                             # dispenser datatoken
+    active: Boolean!
+    owner: User!
+    minterApproved: Boolean!
+    isTrueMinter: Boolean!
+    maxTokens: BigDecimal!
+    maxBalance: BigDecimal!
+    balance: BigDecimal!
+    datatoken: Datatoken!
+    dispenses: [DispenserTransactions!] @derivedFrom(field: "dispenserId")
+}
+
+type DispenserTransactions @entity {
+    id: ID!                                           
+    dispenserId: Dispenser!
+    datatoken: Datatoken!
+    user: User!
+    amount: BigDecimal!
+    block: Int!
+    timestamp: Int!
+    tx: Bytes!
+    type: String!
+}
