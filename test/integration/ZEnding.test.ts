@@ -7,11 +7,20 @@ const web3 = new Web3('http://127.0.0.1:8545')
 const subgraphUrl =
   'http://localhost:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
 
+function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
 use(spies)
 
 describe('Ending tests', () => {
   let result: any
+  let lastblock
   it('Get Graph status', async () => {
+    await sleep(1000) // let graph ingest our last transactions
+    lastblock = await web3.eth.getBlockNumber()
     const query = {
       query: `query {
         _meta{hasIndexingErrors,
@@ -31,7 +40,6 @@ describe('Ending tests', () => {
     assert(result.data._meta.hasIndexingErrors == false)
   })
   it('Make sure that graph has synced to last block', async () => {
-    const lastblock = await web3.eth.getBlockNumber()
     assert(result.data._meta.block.number === lastblock)
   })
 })

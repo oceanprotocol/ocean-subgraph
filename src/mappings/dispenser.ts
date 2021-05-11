@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
 import {
   Activated,
   Deactivated,
@@ -9,24 +9,47 @@ import {
   Dispenser as DispenserEntity
 } from '../@types/Dispenser/Dispenser'
 
-import { Dispenser, DispenserTransactions } from '../@types/schema'
+import {
+  Dispenser,
+  DispenserTransactions,
+  User,
+  Datatoken
+} from '../@types/schema'
 
-import { tokenToDecimal } from '../helpers'
+import { tokenToDecimal, _debuglog } from '../helpers'
 
 function _processDispenserUpdate(
   event: ethereum.Event,
   datatoken: string,
   contractAddress: Address
 ): void {
+  _debuglog('Start processDispenserUpdate', null, [
+    datatoken,
+    contractAddress.toHexString()
+  ])
+  const dt = Datatoken.load(datatoken)
+  if (!dt) {
+    return
+  }
   let dispenser = Dispenser.load(datatoken)
-  if (!dispenser) dispenser = new Dispenser(datatoken)
+  if (!dispenser) {
+    _debuglog('Creating new dispenser', null, null)
+    dispenser = new Dispenser(datatoken)
+  }
   const dispenserEntity = DispenserEntity.bind(contractAddress)
+  _debuglog('Bound dispenser entity', null, null)
   const dispenserStatus = dispenserEntity.try_status(
     Address.fromString(datatoken)
   )
+  _debuglog('Got status', null, null)
   if (dispenserStatus.reverted) return
   dispenser.active = dispenserStatus.value.value0
-  dispenser.owner = dispenserStatus.value.value1.toString()
+  let owner = User.load(dispenserStatus.value.value1.toHexString())
+  if (!owner) {
+    owner = new User(dispenserStatus.value.value1.toHexString())
+    owner.save()
+  }
+  dispenser.owner = owner.id
   dispenser.minterApproved = dispenserStatus.value.value2
   dispenser.isTrueMinter = dispenserStatus.value.value3
   dispenser.maxTokens = tokenToDecimal(
@@ -41,10 +64,14 @@ function _processDispenserUpdate(
     dispenserStatus.value.value6.toBigDecimal(),
     18
   )
+  dispenser.datatoken = dt.id
   dispenser.save()
 }
 
 export function handleDispenserActivated(event: Activated): void {
+  _debuglog('Start handleDispenserActivated', event, [
+    event.params.datatokenAddress.toHexString()
+  ])
   _processDispenserUpdate(
     event,
     event.params.datatokenAddress.toHexString(),
@@ -80,6 +107,14 @@ export function handleDispenserTokensDispensed(event: TokensDispensed): void {
     event.params.datatokenAddress.toHexString(),
     event.address
   )
+  const dt = Datatoken.load(event.params.datatokenAddress.toHexString())
+  if (!dt) {
+    log.warning('Tokens dispensed, but no datatoken ? ', [
+      event.params.datatokenAddress.toHexString()
+    ])
+    return
+  }
+
   const tx = event.transaction.hash
   const id = tx
     .toHexString()
@@ -106,6 +141,14 @@ export function handleDispenserOwnerWithdrawed(event: OwnerWithdrawed): void {
     event.params.datatoken.toHexString(),
     event.address
   )
+  const dt = Datatoken.load(event.params.datatoken.toHexString())
+  if (!dt) {
+    log.warning('Tokens dispensed, but no datatoken ? ', [
+      event.params.datatoken.toHexString()
+    ])
+    return
+  }
+
   const tx = event.transaction.hash
   const id = tx
     .toHexString()
