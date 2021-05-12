@@ -118,12 +118,17 @@ cd barge
 
 If you have cloned Barge previously, make sure you are using the latest version by running `git pull`.
 
-Clone the repo and install dependencies:
+Switch back to your main terminal and clone the repo and install dependencies:
 
 ```bash
 git clone https://github.com/oceanprotocol/ocean-subgraph/
 cd ocean-subgraph
 npm i
+```
+
+Let the components know where to pickup the smartcontract addresses:
+```
+export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
 ```
 
 Generate the subgraph
