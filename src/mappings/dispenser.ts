@@ -11,7 +11,7 @@ import {
 
 import {
   Dispenser,
-  DispenserTransactions,
+  DispenserTransaction,
   User,
   Datatoken
 } from '../@types/schema'
@@ -120,7 +120,10 @@ export function handleDispenserTokensDispensed(event: TokensDispensed): void {
     .toHexString()
     .concat('-')
     .concat(event.params.datatokenAddress.toHexString())
-  const dispensers = new DispenserTransactions(id)
+  log.info('Created dispenser in handleDispenserTokensDispensed with id {}', [
+    id
+  ])
+  const dispensers = new DispenserTransaction(id)
   dispensers.dispenserId = event.params.datatokenAddress.toHexString()
   dispensers.datatoken = event.params.datatokenAddress.toHexString()
   dispensers.user = event.params.userAddress.toHexString()
@@ -154,7 +157,10 @@ export function handleDispenserOwnerWithdrawed(event: OwnerWithdrawed): void {
     .toHexString()
     .concat('-')
     .concat(event.params.datatoken.toHexString())
-  const dispensers = new DispenserTransactions(id)
+  log.info('Created dispenser in handleDispenserOwnerWithdrawed with id {} ', [
+    id
+  ])
+  const dispensers = new DispenserTransaction(id)
   dispensers.dispenserId = event.params.datatoken.toHexString()
   dispensers.datatoken = event.params.datatoken.toHexString()
   dispensers.user = event.params.owner.toHexString()
