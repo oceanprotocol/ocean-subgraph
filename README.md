@@ -133,6 +133,7 @@ export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
 
 Generate the subgraph
 ```bash
+npm run codegen
 npm run bargesetup
 ```
 
