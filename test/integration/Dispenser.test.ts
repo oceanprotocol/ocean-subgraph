@@ -105,7 +105,7 @@ describe('Dispenser test flow', () => {
       alice.getId()
     )
     assert(tx, 'Cannot make dispenser a minter')
-    await sleep(1000) // let graph ingest our transaction
+    await sleep(3000) // let graph ingest our transaction
     const status = await getDispenserStatusFromGraph(tokenAddress)
     assert(status.data.dispenser.datatoken.id === tokenAddress.toLowerCase())
     assert(status.data.dispenser.owner.id === alice.getId().toLowerCase())
