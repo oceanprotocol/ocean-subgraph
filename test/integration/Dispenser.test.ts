@@ -120,7 +120,7 @@ describe('Dispenser test flow', () => {
       '1'
     )
     assert(tx, 'Bob failed to get 1DT')
-    await sleep(1000) // let graph ingest our transaction
+    await sleep(3000) // let graph ingest our transaction
     const id = tx.transactionHash.toLowerCase()
     const query = {
       query: `query DispenserHistory {
@@ -136,14 +136,14 @@ describe('Dispenser test flow', () => {
       }
     }`
     }
-    console.log(query)
+
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
     const result = await response.json()
-    console.error(result)
-    // assert(result.data.type === 'dispense')
+
+    assert(result.data.dispenserTransactions[0].type === 'dispense')
   })
   it('Alice calls removeMinter role and checks if she is the new minter', async () => {
     const tx = await ocean.OceanDispenser.cancelMinter(
@@ -151,7 +151,7 @@ describe('Dispenser test flow', () => {
       alice.getId()
     )
     assert(tx, 'Cannot cancel minter role')
-    await sleep(1000) // let graph ingest our transaction
+    await sleep(3000) // let graph ingest our transaction
     const status = await getDispenserStatusFromGraph(tokenAddress)
     assert(status.data.dispenser.datatoken.id === tokenAddress.toLowerCase())
     assert(status.data.dispenser.owner.id === alice.getId().toLowerCase())
@@ -224,13 +224,12 @@ describe('Dispenser test flow', () => {
       }
     }`
     }
-    console.log(query)
+    // console.log(query)
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
     const result = await response.json()
-    console.error(result)
-    // assert(result.data.type === 'withdraw')
+    assert(result.data.dispenserTransactions[0].type === 'withdraw')
   })
 })
