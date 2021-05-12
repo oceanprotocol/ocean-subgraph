@@ -89,7 +89,7 @@ describe('Dispenser test flow', () => {
       alice.getId()
     )
     assert(tx, 'Cannot activate dispenser')
-    await sleep(1000) // let graph ingest our transaction
+    await sleep(3000) // let graph ingest our transaction
     const status = await getDispenserStatusFromGraph(tokenAddress)
     assert(status.data.dispenser.datatoken.id === tokenAddress.toLowerCase())
     assert(status.data.dispenser.owner.id === alice.getId().toLowerCase())
@@ -180,7 +180,7 @@ describe('Dispenser test flow', () => {
       alice.getId()
     )
     assert(tx, 'Cannot activate dispenser')
-    await sleep(1000) // let graph ingest our transaction
+    await sleep(3000) // let graph ingest our transaction
     const status = await getDispenserStatusFromGraph(tokenAddress2)
     assert(status.data.dispenser.datatoken.id === tokenAddress2.toLowerCase())
     assert(status.data.dispenser.owner.id === alice.getId().toLowerCase())
@@ -201,7 +201,7 @@ describe('Dispenser test flow', () => {
       alice.getId()
     )
     assert(tx, 'Alice failed to withdraw all her tokens')
-    await sleep(1000) // let graph ingest our transaction
+    await sleep(3000) // let graph ingest our transaction
     const status = await getDispenserStatusFromGraph(tokenAddress2)
     assert(status.data.dispenser.datatoken.id === tokenAddress2.toLowerCase())
     assert(status.data.dispenser.owner.id === alice.getId().toLowerCase())
