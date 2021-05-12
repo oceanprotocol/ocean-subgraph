@@ -126,6 +126,11 @@ cd ocean-subgraph
 npm i
 ```
 
+Let the components know where to pickup the smartcontract addresses:
+```
+export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
+```
+
 Generate the subgraph
 ```bash
 npm run bargesetup
