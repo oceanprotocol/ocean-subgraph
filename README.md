@@ -108,7 +108,7 @@ You now have a local graph-node running and can start deploying your changes to 
 ## 🦑 Development on Barge
 
 
-Clone [barge](https://github.com/oceanprotocol/barge) and run it in another terminal:
+1. Clone [barge](https://github.com/oceanprotocol/barge) and run it in another terminal:
 
 ```bash
 git clone https://github.com/oceanprotocol/barge.git
@@ -118,7 +118,7 @@ cd barge
 
 If you have cloned Barge previously, make sure you are using the latest version by running `git pull`.
 
-Switch back to your main terminal and clone the repo and install dependencies:
+2. Switch back to your main terminal and clone the repo and install dependencies:
 
 ```bash
 git clone https://github.com/oceanprotocol/ocean-subgraph/
@@ -126,24 +126,28 @@ cd ocean-subgraph
 npm i
 ```
 
-Let the components know where to pickup the smartcontract addresses:
+3. Let the components know where to pickup the smart contract addresses:
 ```
 export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
 ```
 
-Generate the subgraph
+4. Generate the subgraph
 ```bash
 npm run bargesetup
 ```
 
-To deploy a subgraph connected to Barge, use:
+5. To deploy a subgraph connected to Barge, use:
 
 ```bash
 npm run create:local-barge
 npm run deploy:local-barge
 ```
 
+- Alternatively, if you want to get the sub-graph quickly running on barge, you can run `npm run quickstart:barge` which combines steps 3-5 above.
+
 You now have a local graph-node running on http://localhost:9000
+
+
 
 ## 🧪 Testing
 
