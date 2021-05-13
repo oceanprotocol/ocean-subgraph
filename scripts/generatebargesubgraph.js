@@ -12,7 +12,9 @@ async function replaceContractAddresses() {
       // eslint-disable-next-line no-unused-vars
       FixedRateExchange,
       // eslint-disable-next-line no-unused-vars
-      Metadata
+      Metadata,
+      // eslint-disable-next-line no-unused-vars
+      Dispenser
     } = data.development
     let subgraph = fs.readFileSync('subgraph.yaml', 'utf8')
     if (!data) {
@@ -37,6 +39,11 @@ async function replaceContractAddresses() {
     subgraph = subgraph.replace(
       /0x608d05214E42722B94a54cF6114d4840FCfF84e1/g,
       FixedRateExchange
+    )
+    // dispenser
+    subgraph = subgraph.replace(
+      /0xDEfD0018969cd2d4E648209F876ADe184815f038/g,
+      Dispenser
     )
     // network
     subgraph = subgraph.replace(/network: mainnet/g, 'network: barge')
