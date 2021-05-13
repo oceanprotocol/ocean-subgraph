@@ -4,7 +4,8 @@ import {
   LOG_JOIN,
   LOG_EXIT,
   LOG_SWAP,
-  Transfer
+  Transfer,
+  Pool as PoolEntity
 } from '../@types/templates/Pool/Pool'
 
 import {
@@ -27,7 +28,8 @@ import {
   createPoolTransaction,
   OCEAN,
   debuglog,
-  updatePoolTokenBalance
+  updatePoolTokenBalance,
+  bigIntToDecimal
 } from '../helpers'
 
 /************************************
@@ -397,7 +399,6 @@ export function handleSwap(event: LOG_SWAP): void {
     pool.active = false
   }
   pool.save()
-
   createPoolTransaction(event, 'swap', event.params.caller.toHexString())
   updatePoolTransactionToken(
     ptx,
@@ -496,14 +497,14 @@ export function handleTransfer(event: Transfer): void {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
       poolShareTo = PoolShare.load(poolShareToId)
     }
-    poolShareTo.balance += value
+    poolShareTo.balance.plus(value)
     poolShareTo.save()
 
     if (poolShareFrom == null) {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
       poolShareFrom = PoolShare.load(poolShareFromId)
     }
-    poolShareFrom.balance -= value
+    poolShareFrom.balance.minus(value)
     poolShareFrom.save()
     debuglog(
       'pool shares transfer: ' +
@@ -526,7 +527,7 @@ export function handleTransfer(event: Transfer): void {
     poolShareTo.balance.notEqual(ZERO_BD) &&
     poolShareToBalance.equals(ZERO_BD)
   ) {
-    pool.holderCount += BigInt.fromI32(1)
+    pool.holderCount.plus(BigInt.fromI32(1))
   }
 
   if (
@@ -534,7 +535,7 @@ export function handleTransfer(event: Transfer): void {
     poolShareFrom.balance.equals(ZERO_BD) &&
     poolShareFromBalance.notEqual(ZERO_BD)
   ) {
-    pool.holderCount -= BigInt.fromI32(1)
+    pool.holderCount.plus(BigInt.fromI32(1))
   }
 
   if (poolTx != null) {
@@ -542,4 +543,74 @@ export function handleTransfer(event: Transfer): void {
   }
 
   pool.save()
+}
+
+/************************************
+ *********** GULP ************
+ ************************************/
+export function handleGulp(event: LOG_CALL): void {
+  const poolId = event.address.toHex()
+  const ptx = event.transaction.hash.toHexString()
+  // we need to check the contract balance & compare with our internal balances
+  const pool = Pool.load(poolId)
+  const poolEbtity = PoolEntity.bind(Address.fromString(poolId))
+  if (!pool) {
+    log.warning('Gulp called, but cannot load pool {}', [poolId])
+    return
+  }
+  const ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
+  const dtToken = PoolToken.load(
+    poolId.concat('-').concat(pool.datatokenAddress)
+  )
+  const ocnTokenBalance = ocnToken.balance
+  const dtTokenBalance = dtToken.balance
+  // get the balances from the contract
+  // for ocean
+  if (ocnToken) {
+    const balanceAttempt = poolEbtity.try_getBalance(Address.fromString(OCEAN))
+    if (!balanceAttempt.reverted) {
+      const contractBalance = bigIntToDecimal(balanceAttempt.value, 18)
+      if (
+        ocnToken.balance.notEqual(contractBalance) &&
+        contractBalance.ge(ZERO_BD)
+      ) {
+        // we have a difference.  let's absorb that
+        createPoolTransaction(event, 'gulp', event.params.caller.toHexString())
+        ocnToken.balance = contractBalance
+        ocnToken.save()
+        updatePoolTransactionToken(
+          ptx,
+          ocnToken.id,
+          contractBalance.minus(ocnTokenBalance),
+          contractBalance,
+          ZERO_BD
+        )
+      }
+    }
+  }
+  // for dt
+  if (dtToken) {
+    const balanceAttempt = poolEbtity.try_getBalance(
+      Address.fromString(pool.datatokenAddress)
+    )
+    if (!balanceAttempt.reverted) {
+      const contractBalance = bigIntToDecimal(balanceAttempt.value, 18)
+      if (
+        dtToken.balance.notEqual(contractBalance) &&
+        contractBalance.ge(ZERO_BD)
+      ) {
+        // we have a difference.  let's absorb that
+        createPoolTransaction(event, 'gulp', event.params.caller.toHexString())
+        dtToken.balance = contractBalance
+        dtToken.save()
+        updatePoolTransactionToken(
+          ptx,
+          dtToken.id,
+          contractBalance.minus(dtTokenBalance),
+          contractBalance,
+          ZERO_BD
+        )
+      }
+    }
+  }
 }
