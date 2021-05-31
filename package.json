@@ -53,7 +53,7 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "@oceanprotocol/lib": "^0.14.9",
+    "@oceanprotocol/lib": "^0.15.0",
     "cross-fetch": "^3.1.4"
   },
   "repository": {
