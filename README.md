@@ -4,8 +4,17 @@
 
 > 🦀 Ocean Protocol Subgraph
 
+<center>
+
 [![Build Status](https://github.com/oceanprotocol/ocean-subgraph/workflows/CI/badge.svg)](https://github.com/oceanprotocol/ocean-subgraph/actions)
+
+</center>
+
+<center>
+
 [![js oceanprotocol](https://img.shields.io/badge/js-oceanprotocol-7b1173.svg)](https://github.com/oceanprotocol/eslint-config-oceanprotocol)
+
+</center>
 
 - [🏄 Get Started](#-get-started)
 - [🧶 Example Queries](#-example-queries)
