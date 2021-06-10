@@ -101,7 +101,7 @@ export function _handleRebind(
   if (tokenAddress != OCEAN) {
     pool.datatokenAddress = tokenAddress
   }
-  pool.tokenCount += BigInt.fromI32(1)
+  pool.tokenCount = pool.tokenCount.plus(BigInt.fromI32(1))
   const address = Address.fromString(tokenAddress)
   const denormWeight = hexToDecimal(denormWeightStr, decimals)
   const poolTokenId = poolId.concat('-').concat(address.toHexString())
@@ -109,13 +109,13 @@ export function _handleRebind(
   if (poolToken == null) {
     createPoolTokenEntity(poolTokenId, poolId, address.toHexString())
     poolToken = PoolToken.load(poolTokenId)
-    pool.totalWeight += denormWeight
+    pool.totalWeight = pool.totalWeight.plus(denormWeight)
   } else {
     const oldWeight = poolToken.denormWeight
     if (denormWeight > oldWeight) {
-      pool.totalWeight = pool.totalWeight + (denormWeight - oldWeight)
+      pool.totalWeight = pool.totalWeight.plus(denormWeight).minus(oldWeight)
     } else {
-      pool.totalWeight = pool.totalWeight - (oldWeight - denormWeight)
+      pool.totalWeight = pool.totalWeight.minus(oldWeight).minus(denormWeight)
     }
   }
 
@@ -451,9 +451,9 @@ export function handleTransfer(event: Transfer): void {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
       poolShareTo = PoolShare.load(poolShareToId)
     }
-    poolShareTo.balance += value
+    poolShareTo.balance = poolShareTo.balance.plus(value)
     poolShareTo.save()
-    pool.totalShares += value
+    pool.totalShares = pool.totalShares.plus(value)
     if (poolTx != null) {
       poolTx.sharesTransferAmount = value
       poolTx.sharesBalance = poolShareTo.balance
@@ -474,11 +474,11 @@ export function handleTransfer(event: Transfer): void {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
       poolShareFrom = PoolShare.load(poolShareFromId)
     }
-    poolShareFrom.balance -= value
+    poolShareFrom.balance = poolShareFrom.balance.minus(value)
     poolShareFrom.save()
-    pool.totalShares -= value
+    pool.totalShares = pool.totalShares.minus(value)
     if (poolTx != null) {
-      poolTx.sharesTransferAmount = -value
+      poolTx.sharesTransferAmount = poolTx.sharesTransferAmount.minus(value)
       poolTx.sharesBalance = poolShareFrom.balance
     }
     debuglog(
@@ -497,14 +497,14 @@ export function handleTransfer(event: Transfer): void {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
       poolShareTo = PoolShare.load(poolShareToId)
     }
-    poolShareTo.balance.plus(value)
+    poolShareTo.balance = poolShareTo.balance.plus(value)
     poolShareTo.save()
 
     if (poolShareFrom == null) {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
       poolShareFrom = PoolShare.load(poolShareFromId)
     }
-    poolShareFrom.balance.minus(value)
+    poolShareFrom.balance = poolShareFrom.balance.minus(value)
     poolShareFrom.save()
     debuglog(
       'pool shares transfer: ' +
@@ -527,7 +527,7 @@ export function handleTransfer(event: Transfer): void {
     poolShareTo.balance.notEqual(ZERO_BD) &&
     poolShareToBalance.equals(ZERO_BD)
   ) {
-    pool.holderCount.plus(BigInt.fromI32(1))
+    pool.holderCount = pool.holderCount.plus(BigInt.fromI32(1))
   }
 
   if (
@@ -535,7 +535,7 @@ export function handleTransfer(event: Transfer): void {
     poolShareFrom.balance.equals(ZERO_BD) &&
     poolShareFromBalance.notEqual(ZERO_BD)
   ) {
-    pool.holderCount.plus(BigInt.fromI32(1))
+    pool.holderCount = pool.holderCount.plus(BigInt.fromI32(1))
   }
 
   if (poolTx != null) {
