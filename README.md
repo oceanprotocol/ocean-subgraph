@@ -4,14 +4,23 @@
 
 > 🦀 Ocean Protocol Subgraph
 
+<center>
+
 [![Build Status](https://github.com/oceanprotocol/ocean-subgraph/workflows/CI/badge.svg)](https://github.com/oceanprotocol/ocean-subgraph/actions)
+
+</center>
+
+<center>
+
 [![js oceanprotocol](https://img.shields.io/badge/js-oceanprotocol-7b1173.svg)](https://github.com/oceanprotocol/eslint-config-oceanprotocol)
 
+</center>
+
 - [🏄 Get Started](#-get-started)
-- [🧶 Example Queries](#-example-queries)
-- [🦑 Development](#-development)
-- [🦑 Development on barge](#-development-on-barge)
-- [🧪 Testing](#-testing)
+- [⛵ Example Queries](#-example-queries)
+- [🏊 Development](#-development)
+- [🏊 Development on barge](#-development-on-barge)
+- [🔍 Testing](#-testing)
 - [✨ Code Style](#-code-style)
 - [🛳 Releases](#️-releases)
 - [⬆️ Deployment](#️-deployment)
@@ -25,7 +34,7 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 - [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [subgraph.rinkeby.oceanprotocol.com](https://subgraph.rinkeby.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
-## 🧶 Example Queries
+## ⛵ Example Queries
 
 **All pools**
 
@@ -74,7 +83,7 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 > Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
 
-## 🦑 Development
+## 🏊 Development
 
 First, clone the repo and install dependencies:
 
@@ -105,7 +114,7 @@ The default network for development is set to Rinkeby. If you want to switch to 
 You now have a local graph-node running and can start deploying your changes to it. To do so, follow the [Deployment instructions](#️-deployment).
 
 
-## 🦑 Development on Barge
+## 🏊 Development on Barge
 
 
 1. Clone [barge](https://github.com/oceanprotocol/barge) and run it in another terminal:
@@ -150,7 +159,7 @@ You now have a local graph-node running on http://localhost:9000
 
 
 
-## 🧪 Testing
+## 🔍 Testing
 
 - Please note: the `npm run test` command is currently not working due to [this issue](https://github.com/graphprotocol/graph-ts/issues/113).
 
