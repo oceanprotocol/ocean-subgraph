@@ -41,7 +41,10 @@ function getOceanAddress(): string {
   if (network == 'polygon') return '0x282d8efce846a88b159800bd4130ad77443fa1a1'
   if (network == 'moonbeamalpha')
     return '0x3c21a90599b5b7f37014ca5bf30d3f1b73d7e391'
-
+  if (network == 'gaiaxtestnet')
+    return '0x80e63f73cac60c1662f27d2dfd2ea834acddbaa8'
+  if (network == 'mumbai') return '0xd8992ed72c445c35cb4a2be468568ed1079357c8'
+  if (network == 'bsc') return '0xdce07662ca8ebc241316a15b611c89711414dd1a'
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
 
