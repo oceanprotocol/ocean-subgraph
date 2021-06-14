@@ -37,7 +37,7 @@
     "changelog": "auto-changelog -p"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.20.0",
+    "@graphprotocol/graph-cli": "^0.20.1",
     "@graphprotocol/graph-ts": "^0.20.0",
     "@types/chai": "^4.2.18",
     "@types/chai-spies": "^1.0.3",
