@@ -42,7 +42,7 @@
     "@types/chai": "^4.2.19",
     "@types/chai-spies": "^1.0.3",
     "@types/mocha": "^8.2.2",
-    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.27.0",
     "auto-changelog": "^2.3.0",
     "chai": "^4.3.4",
