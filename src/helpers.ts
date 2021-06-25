@@ -62,7 +62,7 @@ export function _debuglog(
   for (let i = 0; i < args.length; i++) {
     message = message.concat(' {}')
   }
-  log.info('@@@@@@ ' + message, args)
+  log.debug('@@@@@@ ' + message, args)
 }
 
 export function debuglog(
