@@ -41,7 +41,7 @@
     "@graphprotocol/graph-ts": "^0.20.1",
     "@types/chai": "^4.2.19",
     "@types/chai-spies": "^1.0.3",
-    "@types/mocha": "^8.2.2",
+    "@types/mocha": "^8.2.3",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "@typescript-eslint/parser": "^4.28.0",
     "auto-changelog": "^2.3.0",
