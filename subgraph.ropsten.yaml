@@ -94,6 +94,36 @@ dataSources:
           handler: handleExchangeRateChanged
         - event: Swapped(indexed bytes32,indexed address,uint256,uint256)
           handler: handleSwapped
+  - kind: ethereum/contract
+    name: Dispenser
+    network: ropsten
+    source:
+      address: '0xc37F8341Ac6e4a94538302bCd4d49Cf0852D30C0'
+      abi: Dispenser
+      startBlock: 10201082
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser
+      abis:
+        - name: Dispenser
+          file: ./abis/Dispenser.json
+      eventHandlers:
+        - event: Activated(indexed address)
+          handler: handleDispenserActivated
+        - event: Deactivated(indexed address)
+          handler: handleDispenserDeactivated
+        - event: AcceptedMinter(indexed address)
+          handler: handleDispenserAcceptedMinter
+        - event: RemovedMinter(indexed address)
+          handler: handleDispenserRemovedMinter
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleDispenserTokensDispensed
+        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
+          handler: handleDispenserOwnerWithdrawed      
 templates:
   - kind: ethereum/contract
     name: Pool
@@ -142,6 +172,9 @@ templates:
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
           topic0: '0xe4e1e53800000000000000000000000000000000000000000000000000000000'
           handler: handleRebind
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x8c28cbe800000000000000000000000000000000000000000000000000000000'
+          handler: handleGulp
         - event: LOG_JOIN(indexed address,indexed address,uint256)
           handler: handleJoinPool
         - event: LOG_EXIT(indexed address,indexed address,uint256)
