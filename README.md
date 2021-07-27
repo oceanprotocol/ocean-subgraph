@@ -4,12 +4,23 @@
 
 > 🦀 Ocean Protocol Subgraph
 
+<center>
+
 [![Build Status](https://github.com/oceanprotocol/ocean-subgraph/workflows/CI/badge.svg)](https://github.com/oceanprotocol/ocean-subgraph/actions)
+
+</center>
+
+<center>
+
 [![js oceanprotocol](https://img.shields.io/badge/js-oceanprotocol-7b1173.svg)](https://github.com/oceanprotocol/eslint-config-oceanprotocol)
 
+</center>
+
 - [🏄 Get Started](#-get-started)
-- [🧶 Example Queries](#-example-queries)
-- [🦑 Development](#-development)
+- [⛵ Example Queries](#-example-queries)
+- [🏊 Development](#-development)
+- [🏊 Development on barge](#-development-on-barge)
+- [🔍 Testing](#-testing)
 - [✨ Code Style](#-code-style)
 - [🛳 Releases](#️-releases)
 - [⬆️ Deployment](#️-deployment)
@@ -22,8 +33,10 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 - [subgraph.mainnet.oceanprotocol.com](https://subgraph.mainnet.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [subgraph.ropsten.oceanprotocol.com](https://subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [subgraph.rinkeby.oceanprotocol.com](https://subgraph.rinkeby.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [subgraph.polygon.oceanprotocol.com](https://subgraph.polygon.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [subgraph.bsc.oceanprotocol.com](https://subgraph.bsc.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
-## 🧶 Example Queries
+## ⛵ Example Queries
 
 **All pools**
 
@@ -72,7 +85,7 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 > Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
 
-## 🦑 Development
+## 🏊 Development
 
 First, clone the repo and install dependencies:
 
@@ -101,6 +114,63 @@ docker-compose --env-file .env up
 The default network for development is set to Rinkeby. If you want to switch to another network you have to modify the `docker/docker-compose.yml` file within `environment.ethereum`.
 
 You now have a local graph-node running and can start deploying your changes to it. To do so, follow the [Deployment instructions](#️-deployment).
+
+
+## 🏊 Development on Barge
+
+
+1. Clone [barge](https://github.com/oceanprotocol/barge) and run it in another terminal:
+
+```bash
+git clone https://github.com/oceanprotocol/barge.git
+cd barge
+./start_ocean.sh --with-thegraph
+```
+
+If you have cloned Barge previously, make sure you are using the latest version by running `git pull`.
+
+2. Switch back to your main terminal and clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/oceanprotocol/ocean-subgraph/
+cd ocean-subgraph
+npm i
+```
+
+3. Let the components know where to pickup the smart contract addresses:
+```
+export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
+```
+
+4. Generate the subgraph
+```bash
+npm run codegen
+npm run bargesetup
+```
+
+5. To deploy a subgraph connected to Barge, use:
+
+```bash
+npm run create:local-barge
+npm run deploy:local-barge
+```
+
+- Alternatively, if you want to get the sub-graph quickly running on barge, you can run `npm run quickstart:barge` which combines steps 3-5 above.
+
+You now have a local graph-node running on http://localhost:9000
+
+
+
+## 🔍 Testing
+
+- Please note: the `npm run test` command is currently not working due to [this issue](https://github.com/graphprotocol/graph-ts/issues/113).
+
+To run the integration tests locally, first start up barge by following the instructions above, then run the following terminal commands from the ocean-subgraph folder: 
+
+```Bash
+export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
+npm run test-integration
+```
 
 ## ✨ Code Style
 

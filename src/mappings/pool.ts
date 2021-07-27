@@ -1,10 +1,11 @@
-import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, Address, BigDecimal, log } from '@graphprotocol/graph-ts'
 import {
   LOG_CALL,
   LOG_JOIN,
   LOG_EXIT,
   LOG_SWAP,
-  Transfer
+  Transfer,
+  Pool as PoolEntity
 } from '../@types/templates/Pool/Pool'
 
 import {
@@ -27,7 +28,8 @@ import {
   createPoolTransaction,
   OCEAN,
   debuglog,
-  updatePoolTokenBalance
+  updatePoolTokenBalance,
+  bigIntToDecimal
 } from '../helpers'
 
 /************************************
@@ -66,6 +68,16 @@ export function handleSetPublicSwap(event: LOG_CALL): void {
 export function handleFinalize(event: LOG_CALL): void {
   const poolId = event.address.toHex()
   const pool = Pool.load(poolId)
+  if (pool === null) {
+    log.error('Cannot handle finalize for unknown pool {} ', [poolId])
+    return
+  }
+  if (pool.tokenCount == BigInt.fromI32(0)) {
+    log.error('Cannot mark pool {} finalized, because we have 0 tokenCount', [
+      poolId
+    ])
+    return
+  }
   pool.finalized = true
   pool.symbol = 'BPT'
   pool.publicSwap = true
@@ -89,7 +101,7 @@ export function _handleRebind(
   if (tokenAddress != OCEAN) {
     pool.datatokenAddress = tokenAddress
   }
-  pool.tokenCount += BigInt.fromI32(1)
+  pool.tokenCount = pool.tokenCount.plus(BigInt.fromI32(1))
   const address = Address.fromString(tokenAddress)
   const denormWeight = hexToDecimal(denormWeightStr, decimals)
   const poolTokenId = poolId.concat('-').concat(address.toHexString())
@@ -97,13 +109,13 @@ export function _handleRebind(
   if (poolToken == null) {
     createPoolTokenEntity(poolTokenId, poolId, address)
     poolToken = PoolToken.load(poolTokenId)
-    pool.totalWeight += denormWeight
+    pool.totalWeight = pool.totalWeight.plus(denormWeight)
   } else {
     const oldWeight = poolToken.denormWeight
     if (denormWeight > oldWeight) {
-      pool.totalWeight = pool.totalWeight + (denormWeight - oldWeight)
+      pool.totalWeight = pool.totalWeight.plus(denormWeight).minus(oldWeight)
     } else {
-      pool.totalWeight = pool.totalWeight - (oldWeight - denormWeight)
+      pool.totalWeight = pool.totalWeight.minus(oldWeight).minus(denormWeight)
     }
   }
 
@@ -157,6 +169,10 @@ export function handleSetup(event: LOG_CALL): void {
   const baseTokenWeight = data.slice(330, 394) // (74+(4*64),74+(5*64))
   const swapFee = data.slice(394) // (74+(5*64), END)
 
+  if (baseTokenAddress != OCEAN) {
+    log.error('baseTokenAddress is not Ocean, but is {}', [baseTokenAddress])
+    return
+  }
   const poolTokenId = poolId.concat('-').concat(baseTokenAddress)
   const poolToken = PoolToken.load(poolTokenId)
   if (poolToken != null) return
@@ -385,7 +401,6 @@ export function handleSwap(event: LOG_SWAP): void {
     pool.active = false
   }
   pool.save()
-
   createPoolTransaction(event, 'swap', event.params.caller.toHexString())
   updatePoolTransactionToken(
     ptx,
@@ -438,9 +453,9 @@ export function handleTransfer(event: Transfer): void {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
       poolShareTo = PoolShare.load(poolShareToId)
     }
-    poolShareTo.balance += value
+    poolShareTo.balance = poolShareTo.balance.plus(value)
     poolShareTo.save()
-    pool.totalShares += value
+    pool.totalShares = pool.totalShares.plus(value)
     if (poolTx != null) {
       poolTx.sharesTransferAmount = value
       poolTx.sharesBalance = poolShareTo.balance
@@ -461,11 +476,11 @@ export function handleTransfer(event: Transfer): void {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
       poolShareFrom = PoolShare.load(poolShareFromId)
     }
-    poolShareFrom.balance -= value
+    poolShareFrom.balance = poolShareFrom.balance.minus(value)
     poolShareFrom.save()
-    pool.totalShares -= value
+    pool.totalShares = pool.totalShares.minus(value)
     if (poolTx != null) {
-      poolTx.sharesTransferAmount = -value
+      poolTx.sharesTransferAmount = poolTx.sharesTransferAmount.minus(value)
       poolTx.sharesBalance = poolShareFrom.balance
     }
     debuglog(
@@ -484,14 +499,14 @@ export function handleTransfer(event: Transfer): void {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
       poolShareTo = PoolShare.load(poolShareToId)
     }
-    poolShareTo.balance += value
+    poolShareTo.balance = poolShareTo.balance.plus(value)
     poolShareTo.save()
 
     if (poolShareFrom == null) {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
       poolShareFrom = PoolShare.load(poolShareFromId)
     }
-    poolShareFrom.balance -= value
+    poolShareFrom.balance = poolShareFrom.balance.minus(value)
     poolShareFrom.save()
     debuglog(
       'pool shares transfer: ' +
@@ -514,7 +529,7 @@ export function handleTransfer(event: Transfer): void {
     poolShareTo.balance.notEqual(ZERO_BD) &&
     poolShareToBalance.equals(ZERO_BD)
   ) {
-    pool.holderCount += BigInt.fromI32(1)
+    pool.holderCount = pool.holderCount.plus(BigInt.fromI32(1))
   }
 
   if (
@@ -522,7 +537,7 @@ export function handleTransfer(event: Transfer): void {
     poolShareFrom.balance.equals(ZERO_BD) &&
     poolShareFromBalance.notEqual(ZERO_BD)
   ) {
-    pool.holderCount -= BigInt.fromI32(1)
+    pool.holderCount = pool.holderCount.plus(BigInt.fromI32(1))
   }
 
   if (poolTx != null) {
@@ -530,4 +545,74 @@ export function handleTransfer(event: Transfer): void {
   }
 
   pool.save()
+}
+
+/************************************
+ *********** GULP ************
+ ************************************/
+export function handleGulp(event: LOG_CALL): void {
+  const poolId = event.address.toHex()
+  const ptx = event.transaction.hash.toHexString()
+  // we need to check the contract balance & compare with our internal balances
+  const pool = Pool.load(poolId)
+  const poolEbtity = PoolEntity.bind(Address.fromString(poolId))
+  if (!pool) {
+    log.warning('Gulp called, but cannot load pool {}', [poolId])
+    return
+  }
+  const ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
+  const dtToken = PoolToken.load(
+    poolId.concat('-').concat(pool.datatokenAddress)
+  )
+  const ocnTokenBalance = ocnToken.balance
+  const dtTokenBalance = dtToken.balance
+  // get the balances from the contract
+  // for ocean
+  if (ocnToken) {
+    const balanceAttempt = poolEbtity.try_getBalance(Address.fromString(OCEAN))
+    if (!balanceAttempt.reverted) {
+      const contractBalance = bigIntToDecimal(balanceAttempt.value, 18)
+      if (
+        ocnToken.balance.notEqual(contractBalance) &&
+        contractBalance.ge(ZERO_BD)
+      ) {
+        // we have a difference.  let's absorb that
+        createPoolTransaction(event, 'gulp', event.params.caller.toHexString())
+        ocnToken.balance = contractBalance
+        ocnToken.save()
+        updatePoolTransactionToken(
+          ptx,
+          ocnToken.id,
+          contractBalance.minus(ocnTokenBalance),
+          contractBalance,
+          ZERO_BD
+        )
+      }
+    }
+  }
+  // for dt
+  if (dtToken) {
+    const balanceAttempt = poolEbtity.try_getBalance(
+      Address.fromString(pool.datatokenAddress)
+    )
+    if (!balanceAttempt.reverted) {
+      const contractBalance = bigIntToDecimal(balanceAttempt.value, 18)
+      if (
+        dtToken.balance.notEqual(contractBalance) &&
+        contractBalance.ge(ZERO_BD)
+      ) {
+        // we have a difference.  let's absorb that
+        createPoolTransaction(event, 'gulp', event.params.caller.toHexString())
+        dtToken.balance = contractBalance
+        dtToken.save()
+        updatePoolTransactionToken(
+          ptx,
+          dtToken.id,
+          contractBalance.minus(dtTokenBalance),
+          contractBalance,
+          ZERO_BD
+        )
+      }
+    }
+  }
 }
