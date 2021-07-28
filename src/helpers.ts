@@ -224,6 +224,7 @@ export function createPoolTokenEntity(
   const poolToken = new PoolToken(id)
   poolToken.poolId = pool
   poolToken.isDatatoken = !!datatoken
+  poolToken.tokenId = datatoken ? datatoken.id : ''
   poolToken.address = address.toHexString()
   poolToken.balance = ZERO_BD
   poolToken.denormWeight = ZERO_BD
