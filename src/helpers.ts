@@ -22,6 +22,9 @@ import {
 } from './@types/schema'
 
 import { Pool } from './@types/templates/Pool/Pool'
+import { ERC20 } from './@types/templates/Pool/ERC20'
+import { ERC20SymbolBytes } from './@types/templates/Pool/ERC20SymbolBytes'
+import { ERC20NameBytes } from './@types/templates/Pool/ERC20NameBytes'
 
 export const ZERO_BD = BigDecimal.fromString('0.0')
 export const MINUS_1_BD = BigDecimal.fromString('-1.0')
@@ -103,6 +106,67 @@ export function decimalToBigInt(value: BigDecimal): BigInt {
   return value.digits.times(scale)
 }
 
+export function isNullEthValue(value: string): boolean {
+  return (
+    value ==
+    '0x0000000000000000000000000000000000000000000000000000000000000001'
+  )
+}
+
+export function getTokenSymbol(tokenAddress: Address): string {
+  const contract = ERC20.bind(tokenAddress)
+  const contractSymbolBytes = ERC20SymbolBytes.bind(tokenAddress)
+
+  // try types string and bytes32 for symbol
+  let symbolValue = 'unknown'
+  const symbolResult = contract.try_symbol()
+  if (symbolResult.reverted) {
+    const symbolResultBytes = contractSymbolBytes.try_symbol()
+    if (!symbolResultBytes.reverted) {
+      // for broken pairs that have no symbol function exposed
+      if (!isNullEthValue(symbolResultBytes.value.toHexString())) {
+        symbolValue = symbolResultBytes.value.toString()
+      }
+    }
+  } else {
+    symbolValue = symbolResult.value
+  }
+
+  return symbolValue
+}
+
+export function getTokenName(tokenAddress: Address): string {
+  const contract = ERC20.bind(tokenAddress)
+  const contractNameBytes = ERC20NameBytes.bind(tokenAddress)
+
+  // try types string and bytes32 for name
+  let nameValue = 'unknown'
+  const nameResult = contract.try_name()
+  if (nameResult.reverted) {
+    const nameResultBytes = contractNameBytes.try_name()
+    if (!nameResultBytes.reverted) {
+      // for broken exchanges that have no name function exposed
+      if (!isNullEthValue(nameResultBytes.value.toHexString())) {
+        nameValue = nameResultBytes.value.toString()
+      }
+    }
+  } else {
+    nameValue = nameResult.value
+  }
+
+  return nameValue
+}
+
+export function getTokenDecimals(tokenAddress: Address): i32 {
+  const contract = ERC20.bind(tokenAddress)
+  let decimals = 18
+  const decimalCall = contract.try_decimals()
+  if (!decimalCall.reverted) {
+    decimals = decimalCall.value
+  }
+  return decimals
+}
+
 export function updatePoolTokenBalance(
   poolToken: PoolToken,
   balance: BigDecimal,
@@ -118,7 +182,7 @@ export function updatePoolTokenBalance(
       'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
       [
         poolToken.poolId,
-        poolToken.tokenAddress.toString(),
+        poolToken.address.toString(),
         poolToken.balance.toString(),
         balance.toString()
       ]
@@ -153,16 +217,20 @@ export function createPoolShareEntity(
 export function createPoolTokenEntity(
   id: string,
   pool: string,
-  address: string
+  address: Address
 ): void {
-  const datatoken = Datatoken.load(address)
+  const datatoken = Datatoken.load(address.toHexString())
 
   const poolToken = new PoolToken(id)
   poolToken.poolId = pool
+  poolToken.isDatatoken = !!datatoken
   poolToken.tokenId = datatoken ? datatoken.id : ''
-  poolToken.tokenAddress = address
+  poolToken.address = address.toHexString()
   poolToken.balance = ZERO_BD
   poolToken.denormWeight = ZERO_BD
+  poolToken.symbol = getTokenSymbol(address)
+  poolToken.name = getTokenName(address)
+  poolToken.decimals = getTokenDecimals(address)
   poolToken.save()
 }
 
@@ -206,7 +274,7 @@ export function updatePoolTransactionToken(
   ptxTokenValues.poolToken = poolTokenId
   ptxTokenValues.poolAddress = poolToken.poolId
   ptxTokenValues.userAddress = ptx.userAddress
-  ptxTokenValues.tokenAddress = PoolToken.load(poolTokenId).tokenAddress
+  ptxTokenValues.tokenAddress = PoolToken.load(poolTokenId).address
 
   ptxTokenValues.value = amount
   ptxTokenValues.tokenReserve = balance

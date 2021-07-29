@@ -144,6 +144,12 @@ templates:
           file: ./abis/BPool.json
         - name: BToken
           file: ./abis/BToken.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
       eventHandlers:
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
           topic0: '0x34e1990700000000000000000000000000000000000000000000000000000000'

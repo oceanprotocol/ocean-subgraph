@@ -107,7 +107,7 @@ export function _handleRebind(
   const poolTokenId = poolId.concat('-').concat(address.toHexString())
   let poolToken = PoolToken.load(poolTokenId)
   if (poolToken == null) {
-    createPoolTokenEntity(poolTokenId, poolId, address.toHexString())
+    createPoolTokenEntity(poolTokenId, poolId, address)
     poolToken = PoolToken.load(poolTokenId)
     pool.totalWeight = pool.totalWeight.plus(denormWeight)
   } else {

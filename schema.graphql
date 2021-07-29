@@ -47,14 +47,22 @@ type Pool @entity {
     @derivedFrom(field: "poolAddress")
 }
 
+
 type PoolToken @entity {
-  id: ID! # poolId + token address
-  poolId: Pool!
-  tokenId: Datatoken
-  tokenAddress: String
-  balance: BigDecimal!
-  denormWeight: BigDecimal!
+    id: ID!                                             # poolId + token address
+    poolId: Pool!
+    isDatatoken: Boolean!
+    address: String
+    tokenId: Datatoken
+    tokenAddress: String
+    balance: BigDecimal!
+    denormWeight: BigDecimal!
+    symbol: String
+    name: String
+    decimals: Int
 }
+
+
 
 type PoolShare @entity {
   id: ID! # poolId + userAddress
