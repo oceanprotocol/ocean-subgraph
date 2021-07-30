@@ -50,11 +50,11 @@ jobs:
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
       - name: create and deploy subgraph
-          run: |
-            npm run codegen
-            npm run build
-            npm run create:local-barge
-            npm run deploy:local-barge
-            npm run test-integration
-          env:
-            ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
+        run: |
+          npm run codegen
+          npm run build
+          npm run create:local-barge
+          npm run deploy:local-barge
+        env:
+          ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
+      - run: npm run test-integration
