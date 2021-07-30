@@ -42,7 +42,12 @@ jobs:
           ADDRESS_FILE: ${HOME}/.ocean/ocean-contracts/artifacts/address.json
         run: |
           bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
-          cd .. && ./scripts/waitforcontracts.sh
+          for i in $(seq 1 500); do
+            sleep 5
+            [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
+            done
+          cat "barge/start_ocean.log"
+          cat "$HOME/.ocean/ocean-contracts/artifacts/address.json"
       - run: npm run bargesetup
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
