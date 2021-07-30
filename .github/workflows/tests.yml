@@ -11,7 +11,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy: max-parallel:1
+    strategy: 
+      max-parallel: 1
     steps:
       - uses: actions/checkout@v2
 
