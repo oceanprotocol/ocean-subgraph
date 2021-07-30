@@ -11,7 +11,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    strategy: max-parallel:1
     steps:
       - uses: actions/checkout@v2
 
@@ -28,11 +28,11 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-lint-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-lint-${{ env.cache-name }}-
-      
+
       - uses: actions/checkout@v2
         name: Checkout Barge
         with:
-          repository: "oceanprotocol/barge"
+          repository: 'oceanprotocol/barge'
           path: 'barge'
       - run: npm ci
       - name: Run Barge
@@ -55,4 +55,3 @@ jobs:
       - run: npm run test-integration
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
-      
