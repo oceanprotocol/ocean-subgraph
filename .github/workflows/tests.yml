@@ -46,7 +46,6 @@ jobs:
             sleep 5
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
-          cat "barge/start_ocean.log"
           cat "$HOME/.ocean/ocean-contracts/artifacts/address.json"
       - run: npm run bargesetup
         env:
