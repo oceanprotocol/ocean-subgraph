@@ -22,16 +22,12 @@ describe('Datatokens test flow', () => {
     const config = new ConfigHelper().getConfig('development')
     config.web3Provider = web3
     ocean = await Ocean.getInstance(config)
-    console.log('init ocean lib ', !!ocean)
     alice = (await ocean.accounts.list())[0]
   })
 
   it('Alice publishes a datatoken and querys the graph', async () => {
-    console.log('test 2 check ocean', !!ocean)
     const datatoken = await ocean.datatokens.create('', alice.getId())
-    console.log('token ok', !!datatoken)
     const graphToken = datatoken.toLowerCase()
-    console.log('graph token', graphToken)
     await sleep(1000) // let graph ingest our transaction
     const query = {
       query: `query {
@@ -42,7 +38,6 @@ describe('Datatokens test flow', () => {
       body: JSON.stringify(query)
     })
     const result = await response.json()
-    console.log('result data', result)
     assert(result.data.datatoken.id === graphToken)
   })
 })
