@@ -22,10 +22,12 @@ describe('Datatokens test flow', () => {
     const config = new ConfigHelper().getConfig('development')
     config.web3Provider = web3
     ocean = await Ocean.getInstance(config)
+    console.log('init ocean lib ', ocean)
     alice = (await ocean.accounts.list())[0]
   })
 
   it('Alice publishes a datatoken and querys the graph', async () => {
+    console.log('test 2 check ocean', ocean)
     const datatoken = await ocean.datatokens.create('', alice.getId())
     const graphToken = datatoken.toLowerCase()
     await sleep(1000) // let graph ingest our transaction
