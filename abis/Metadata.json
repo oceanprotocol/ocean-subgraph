@@ -110,20 +110,14 @@
   "ast": {
     "absolutePath": "/ocean/ocean-contracts/contracts/metadata/Metadata.sol",
     "exportedSymbols": {
-      "Metadata": [
-        5158
-      ]
+      "Metadata": [5158]
     },
     "id": 5159,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 5072,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "0:22:11"
       },
@@ -145,9 +139,7 @@
         "documentation": "@title Metadata\n \n@dev Metadata stands for Decentralized Document. It allows publishers\n     to publish their dataset metadata in decentralized way.\n     It follows the Ocean DID Document standard: \n     https://github.com/oceanprotocol/OEPs/blob/master/7/v0.2/README.md",
         "fullyImplemented": true,
         "id": 5158,
-        "linearizedBaseContracts": [
-          5158
-        ],
+        "linearizedBaseContracts": [5158],
         "name": "Metadata",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -408,9 +400,7 @@
               "src": "886:195:11",
               "statements": [
                 {
-                  "assignments": [
-                    5098
-                  ],
+                  "assignments": [5098],
                   "declarations": [
                     {
                       "constant": false,
@@ -625,10 +615,7 @@
                       "id": 5103,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536,
-                        6537
-                      ],
+                      "overloadedDeclarations": [6536, 6537],
                       "referencedDeclaration": 6537,
                       "src": "954:7:11",
                       "typeDescriptions": {
@@ -1248,20 +1235,14 @@
   "legacyAST": {
     "absolutePath": "/ocean/ocean-contracts/contracts/metadata/Metadata.sol",
     "exportedSymbols": {
-      "Metadata": [
-        5158
-      ]
+      "Metadata": [5158]
     },
     "id": 5159,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 5072,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".7"
-        ],
+        "literals": ["solidity", "0.5", ".7"],
         "nodeType": "PragmaDirective",
         "src": "0:22:11"
       },
@@ -1283,9 +1264,7 @@
         "documentation": "@title Metadata\n \n@dev Metadata stands for Decentralized Document. It allows publishers\n     to publish their dataset metadata in decentralized way.\n     It follows the Ocean DID Document standard: \n     https://github.com/oceanprotocol/OEPs/blob/master/7/v0.2/README.md",
         "fullyImplemented": true,
         "id": 5158,
-        "linearizedBaseContracts": [
-          5158
-        ],
+        "linearizedBaseContracts": [5158],
         "name": "Metadata",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -1546,9 +1525,7 @@
               "src": "886:195:11",
               "statements": [
                 {
-                  "assignments": [
-                    5098
-                  ],
+                  "assignments": [5098],
                   "declarations": [
                     {
                       "constant": false,
@@ -1763,10 +1740,7 @@
                       "id": 5103,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        6536,
-                        6537
-                      ],
+                      "overloadedDeclarations": [6536, 6537],
                       "referencedDeclaration": 6537,
                       "src": "954:7:11",
                       "typeDescriptions": {

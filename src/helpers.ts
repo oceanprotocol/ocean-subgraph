@@ -18,7 +18,8 @@ import {
   Datatoken,
   TokenBalance,
   TokenTransaction,
-  PoolTransactionTokenValues
+  PoolTransactionTokenValues,
+  Global
 } from './@types/schema'
 
 import { Pool } from './@types/templates/Pool/Pool'
@@ -37,7 +38,7 @@ export const ENABLE_DEBUG = true
 
 const network = dataSource.network()
 
-function getOceanAddress(): string {
+export function getOceanAddress(): string {
   // switch is not working for some reason
   if (network == 'ropsten') return '0x5e8dcb2afa23844bcc311b00ad1a0c30025aade9'
   if (network == 'rinkeby') return '0x8967bcf84170c91b0d24d4302c2376283b0b3a07'
@@ -52,6 +53,21 @@ function getOceanAddress(): string {
 }
 
 export const OCEAN: string = getOceanAddress()
+
+export function getGlobalStats(): Global | null {
+  let gStats: Global | null = Global.load('1')
+  if (gStats == null) {
+    gStats = new Global('1')
+    gStats.totalOceanLiquidity = ZERO_BD
+    gStats.totalSwapVolume = ZERO_BD
+    gStats.totalValueLocked = ZERO_BD
+    gStats.totalOrderVolume = ZERO_BD
+    gStats.orderCount = BigInt.fromI32(0)
+    gStats.poolCount = 0
+  }
+
+  return gStats
+}
 
 export function _debuglog(
   message: string,
@@ -192,6 +208,30 @@ export function updatePoolTokenBalance(
   poolToken.balance = balance
 }
 
+export function updatePoolSwapVolume(
+  pool: Pool,
+  swapAmount: BigDecimal
+  // source: string
+): void {
+  debuglog(
+    '########## updating poolToken balance (source, oldBalance, newBalance, poolId) ',
+    null,
+    [source, pool.totalSwapVolume.toString(), swapAmount.toString(), pool.id]
+  )
+  if (swapAmount < ZERO_BD || pool.totalSwapVolume < ZERO_BD) {
+    log.warning(
+      'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
+      [
+        pool.id,
+        poolToken.tokenAddress.toString(),
+        poolToken.balance.toString(),
+        swapAmount.toString()
+      ]
+    )
+  }
+
+  poolToken.swapBalanceOcean = poolToken.swapBalanceOcean.plus(swapAmount)
+}
 export function createUserEntity(address: string): void {
   if (User.load(address) == null) {
     const user = new User(address)
@@ -289,9 +329,15 @@ export function updatePoolTransactionToken(
   log.warning('ptxTokenValues {} saved', [ptxTokenValues.id])
   if (ptxTokenValues.tokenAddress == OCEAN) {
     const factory = PoolFactory.load('1')
+
     factory.totalOceanLiquidity = factory.totalOceanLiquidity
       .plus(ptxTokenValues.tokenReserve)
       .minus(pool.oceanReserve)
+
+    const gStats: Global | null = getGlobalStats()
+    gStats.totalOceanLiquidity = factory.totalOceanLiquidity
+
+    gStats.save()
     if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
       log.warning(
         'EEEEEEEEEEEEEEEEE totalOceanLiquidity or oceanReserve < Zero: pool={}, totOcnLiq={}, ocnRes={}',
@@ -466,6 +512,11 @@ export function createPoolTransaction(
   factory.totalValueLocked = factory.totalValueLocked
     .minus(oldValueLocked)
     .plus(pool.valueLocked)
+
+  const gStats: Global | null = getGlobalStats()
+
+  gStats.totalValueLocked = factory.totalValueLocked
+  gStats.save()
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 

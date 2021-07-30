@@ -1,50 +1,67 @@
 type PoolFactory @entity {
-  id: ID!
+    id: ID!
 
-  totalValueLocked: BigDecimal # total value from all pools expressed in OCEAN
-  totalOceanLiquidity: BigDecimal! # Total of OCEAN liquidity from all pools
-  totalSwapVolume: BigDecimal! # All the swap volume in Ocean
-  totalSwapFee: BigDecimal! # All the swap fee in Ocean
-  poolCount: Int! # Number of pools
-  finalizedPoolCount: Int! # Number of finalized pools
-  pools: [Pool!] @derivedFrom(field: "factoryID")
+    totalValueLocked: BigDecimal                        # total value from all pools expressed in OCEAN
+
+    totalOceanLiquidity: BigDecimal!                    # Total of OCEAN liquidity from all pools
+    totalSwapVolume: BigDecimal!                        # All the swap volume in Ocean
+    totalSwapFee: BigDecimal!                           # All the swap fee in Ocean
+    totalOrderVolume: BigDecimal
+
+    poolCount: Int!                                     # Number of pools
+    finalizedPoolCount: Int!                            # Number of finalized pools
+    orderCount: BigInt                                     # Number of total consumes
+    pools: [Pool!] @derivedFrom(field: "factoryID")
+}
+
+type Global @entity {
+    id: ID!
+    totalValueLocked: BigDecimal                        # total value from all pools expressed in OCEAN
+    totalOceanLiquidity: BigDecimal!                    # Total of OCEAN liquidity from all pools
+    totalSwapVolume: BigDecimal!                        # All the swap volume in Ocean                  
+    totalOrderVolume: BigDecimal
+    orderCount: BigInt
+    poolCount: Int!       
 }
 
 type Pool @entity {
-  id: ID! # Pool address
-  factoryID: PoolFactory!
-  controller: Bytes! # Controller address
-  publicSwap: Boolean! # isPublicSwap
-  finalized: Boolean! # isFinalized
-  symbol: String # Pool token symbol
-  name: String # Pool token name
-  cap: BigInt # Maximum supply if any
-  active: Boolean! # isActive
-  swapFee: BigDecimal! # Swap Fees
-  totalWeight: BigDecimal!
-  totalShares: BigDecimal! # Total pool token shares
-  totalSwapVolume: BigDecimal! # Total swap volume in OCEAN
-  totalSwapFee: BigDecimal! # Total swap fee in OCEAN
-  valueLocked: BigDecimal! # value locked in pool expressed in OCEAN (captures both Ocean and Datatoken)
-  datatokenReserve: BigDecimal! # Total pool reserve of Datatoken
-  oceanReserve: BigDecimal! # Total pool reserve of OCEAN
-  spotPrice: BigDecimal!
-  consumePrice: BigDecimal!
+    id: ID!                                             # Pool address
+    factoryID: PoolFactory!
+    controller: Bytes!                                  # Controller address
+    publicSwap: Boolean!                                # isPublicSwap
+    finalized: Boolean!                                 # isFinalized
+    symbol: String                                      # Pool token symbol
+    name: String                                        # Pool token name
+    cap: BigInt                                         # Maximum supply if any
+    active: Boolean!                                    # isActive
+    swapFee: BigDecimal!                                # Swap Fees
 
-  tokenCount: BigInt! # Number of tokens in the pool
-  holderCount: BigInt! # Number of addresses holding a positive balance of pool shares
-  joinCount: BigInt! # liquidity has been added
-  exitCount: BigInt! # liquidity has been removed
-  swapCount: BigInt!
-  transactionCount: BigInt! # Number of transactions in this pool involving liquidity changes
-  datatokenAddress: String!
-  createTime: Int! # Block time pool was created
-  tx: Bytes # Pool creation transaction id
-  tokens: [PoolToken!] @derivedFrom(field: "poolId")
-  shares: [PoolShare!] @derivedFrom(field: "poolId")
-  transactions: [PoolTransaction!] @derivedFrom(field: "poolAddress")
-  transactionsTokenValues: [PoolTransactionTokenValues!]
-    @derivedFrom(field: "poolAddress")
+    totalWeight: BigDecimal!
+    totalShares: BigDecimal!                            # Total pool token shares
+    totalSwapVolume: BigDecimal!                        # Total swap volume in OCEAN
+    totalSwapFee: BigDecimal!                           # Total swap fee in OCEAN
+
+    valueLocked: BigDecimal!                            # value locked in pool expressed in OCEAN (captures both Ocean and Datatoken)
+    datatokenReserve: BigDecimal!                       # Total pool reserve of Datatoken
+    oceanReserve: BigDecimal!                           # Total pool reserve of OCEAN
+    spotPrice: BigDecimal!
+    consumePrice: BigDecimal!
+
+    tokenCount: BigInt!                                # Number of tokens in the pool
+    holderCount: BigInt!                               # Number of addresses holding a positive balance of pool shares
+    joinCount: BigInt!                                 # liquidity has been added
+    exitCount: BigInt!                                 # liquidity has been removed
+    swapCount: BigInt!
+    transactionCount: BigInt!                          # Number of transactions in this pool involving liquidity changes
+    
+    datatokenAddress: String!
+    createTime: Int!                                    # Block time pool was created
+    tx: Bytes                                           # Pool creation transaction id
+
+    tokens: [PoolToken!] @derivedFrom(field: "poolId")
+    shares: [PoolShare!] @derivedFrom(field: "poolId")
+    transactions: [PoolTransaction!] @derivedFrom(field: "poolAddress")
+    transactionsTokenValues: [PoolTransactionTokenValues!] @derivedFrom(field: "poolAddress")
 }
 
 
@@ -118,27 +135,29 @@ type DatatokenFactory @entity {
 }
 
 type Datatoken @entity {
-  id: ID! # token address
-  factoryID: DatatokenFactory!
+    id: ID!                                             # token address
+    factoryID: DatatokenFactory!
 
-  symbol: String
-  name: String
-  decimals: Int!
-  address: String!
-  cap: BigDecimal!
-  supply: BigDecimal!
-  minter: User!
-  publisher: String!
+    symbol: String
+    name: String
+    decimals: Int!
+    address: String!
+    cap: BigDecimal!
+    supply: BigDecimal!
+    minter: User!
+    publisher: String!
 
-  holderCount: BigInt! # Number of addresses holding a balance of datatoken
-  orderCount: BigInt! # Number of orders executed for this dataset
-  metadataUpdateCount: BigInt!
+    holderCount: BigInt!                               # Number of addresses holding a balance of datatoken
+    orderCount: BigInt!                                 # Number of orders executed for this dataset
+    metadataUpdateCount: BigInt!
+    
+    orderVolume: BigDecimal
+    createTime: Int!                                    # Block time datatoken was created
+    tx: Bytes                                           # Datatoken creation transaction id
 
-  createTime: Int! # Block time datatoken was created
-  tx: Bytes # Datatoken creation transaction id
-  balances: [TokenBalance!] @derivedFrom(field: "datatokenId")
-  orders: [TokenOrder!] @derivedFrom(field: "datatokenId")
-  updates: [MetadataUpdate!] @derivedFrom(field: "datatokenId") # list of MetadataUpdate objects
+    balances: [TokenBalance!] @derivedFrom(field: "datatokenId")
+    orders: [TokenOrder!] @derivedFrom(field: "datatokenId")
+    updates: [MetadataUpdate!] @derivedFrom(field: "datatokenId")  # list of MetadataUpdate objects
 }
 
 type MetadataUpdate @entity {

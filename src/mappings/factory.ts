@@ -1,8 +1,8 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import { BPoolRegistered } from '../@types/Factory/Factory'
-import { PoolFactory, Pool } from '../@types/schema'
+import { PoolFactory, Pool, Global } from '../@types/schema'
 import { Pool as PoolContract } from '../@types/templates'
-import { ZERO_BD } from '../helpers'
+import { ZERO_BD, getGlobalStats } from '../helpers'
 
 export function handleNewPool(event: BPoolRegistered): void {
   let factory = PoolFactory.load('1')
@@ -13,7 +13,7 @@ export function handleNewPool(event: BPoolRegistered): void {
     factory.totalSwapVolume = ZERO_BD
     factory.totalSwapFee = ZERO_BD
     factory.totalValueLocked = ZERO_BD
-
+    factory.orderCount = BigInt.fromI32(0)
     factory.poolCount = 0
     factory.finalizedPoolCount = 0
   }
@@ -60,6 +60,9 @@ export function handleNewPool(event: BPoolRegistered): void {
 
   factory.poolCount = factory.poolCount + 1
   factory.save()
+  const gStats: Global | null = getGlobalStats()
+  gStats.poolCount = factory.poolCount
+  gStats.save()
 
   PoolContract.create(event.params.bpoolAddress)
 }
