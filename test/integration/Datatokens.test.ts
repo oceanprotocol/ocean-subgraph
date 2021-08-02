@@ -37,8 +37,9 @@ describe('Datatokens test flow', () => {
       method: 'POST',
       body: JSON.stringify(query)
     })
+    console.error(response)
     const result = await response.json()
-    console.log('graph result', result)
+    console.error(result)
     assert(result.data.datatoken.id === graphToken)
   })
 })
