@@ -19,6 +19,7 @@ describe('Datatokens test flow', () => {
   let ocean: Ocean
 
   it('Initialize Ocean Library', async () => {
+    await sleep(60000) // wait 1 min for graph
     const config = new ConfigHelper().getConfig('development')
     config.web3Provider = web3
     ocean = await Ocean.getInstance(config)
