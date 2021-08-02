@@ -6,7 +6,7 @@ import { Ocean, ConfigHelper, Account } from '@oceanprotocol/lib'
 const fetch = require('cross-fetch')
 const web3 = new Web3('http://127.0.0.1:8545')
 const subgraphUrl =
-  'http://localhost:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
+  'http://localhost:9020/subgraphs/name/oceanprotocol/ocean-subgraph'
 function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
