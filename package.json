@@ -20,7 +20,7 @@
     "deploy": "graph deploy oceanprotocol/ocean-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy:beta": "graph deploy oceanprotocol/ocean-subgraph-beta --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy:local": "graph deploy oceanprotocol/ocean-subgraph subgraph.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
-    "deploy:local-barge": "graph deploy oceanprotocol/ocean-subgraph subgraph.barge.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:9020",
+    "deploy:local-barge": "graph deploy oceanprotocol/ocean-subgraph subgraph.barge.yaml --product=hosted-service --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:9020",
     "deploy:local-rinkeby": "graph deploy oceanprotocol/ocean-subgraph subgraph.rinkeby.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-ropsten": "graph deploy oceanprotocol/ocean-subgraph subgraph.ropsten.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-polygon": "graph deploy oceanprotocol/ocean-subgraph subgraph.polygon.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
@@ -37,7 +37,7 @@
     "changelog": "auto-changelog -p"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.21.1",
+    "@graphprotocol/graph-cli": "^0.18.0",
     "@graphprotocol/graph-ts": "^0.20.1",
     "@types/chai": "^4.2.21",
     "@types/chai-spies": "^1.0.3",
