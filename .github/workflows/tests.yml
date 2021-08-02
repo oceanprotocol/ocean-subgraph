@@ -42,7 +42,7 @@ jobs:
           ADDRESS_FILE: ${HOME}/.ocean/ocean-contracts/artifacts/address.json
         run: |
           bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
-          for i in $(seq 1 500); do
+          for i in $(seq 1 1500); do
             sleep 5
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
