@@ -63,3 +63,4 @@ jobs:
       - run: npm run test-integration
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
+      - run: docker logs ocean_graph-node_1
