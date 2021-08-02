@@ -38,6 +38,7 @@ describe('Datatokens test flow', () => {
       body: JSON.stringify(query)
     })
     const result = await response.json()
+    console.log('graph result', result)
     assert(result.data.datatoken.id === graphToken)
   })
 })
