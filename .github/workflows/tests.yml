@@ -56,7 +56,7 @@ jobs:
           npm run build
           npm run create:local-barge
           npm run deploy:local-barge
-          sleep 10
+          sleep 20
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
       - run: docker logs ocean_graph-node_1
