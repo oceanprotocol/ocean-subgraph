@@ -11,26 +11,29 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    strategy: 
+      max-parallel: 1
     steps:
       - uses: actions/checkout@v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
-      
+          key: ${{ runner.os }}-lint-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-lint-${{ env.cache-name }}-
+
       - uses: actions/checkout@v2
         name: Checkout Barge
         with:
-          repository: "oceanprotocol/barge"
+          repository: 'oceanprotocol/barge'
           path: 'barge'
       - run: npm ci
       - name: Run Barge
@@ -39,18 +42,23 @@ jobs:
           ADDRESS_FILE: ${HOME}/.ocean/ocean-contracts/artifacts/address.json
         run: |
           bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
-          for i in $(seq 1 500); do
+          for i in $(seq 1 1500); do
             sleep 5
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
+          cat "$HOME/.ocean/ocean-contracts/artifacts/address.json"
       - run: npm run bargesetup
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
-      - run: npm run codegen
-      - run: npm run build
-      - run: npm run create:local-barge
-      - run: npm run deploy:local-barge
+      - name: create and deploy subgraph
+        run: |
+          npm run codegen
+          npm run build
+          npm run create:local-barge
+          npm run deploy:local-barge
+          sleep 20
+        env:
+          ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
       - run: npm run test-integration
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
-      

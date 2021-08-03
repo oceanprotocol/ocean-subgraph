@@ -6,7 +6,7 @@ import { Ocean, ConfigHelper, Account } from '@oceanprotocol/lib'
 const fetch = require('cross-fetch')
 const web3 = new Web3('http://127.0.0.1:8545')
 const subgraphUrl =
-  'http://localhost:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
+  'http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
 function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
@@ -19,6 +19,7 @@ describe('Datatokens test flow', () => {
   let ocean: Ocean
 
   it('Initialize Ocean Library', async () => {
+    // await sleep(60000) // wait 1 min for graph
     const config = new ConfigHelper().getConfig('development')
     config.web3Provider = web3
     ocean = await Ocean.getInstance(config)
