@@ -13,7 +13,7 @@ import {
   FixedRateExchangeSwap
 } from '../@types/schema'
 
-import { tokenToDecimal } from '../helpers'
+import { getTokenSymbol, tokenToDecimal } from '../helpers'
 
 export function handleExchangeCreated(event: ExchangeCreated): void {
   const fixedrateexchange = new FixedRateExchange(
@@ -22,7 +22,12 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedrateexchange.exchangeOwner = event.params.exchangeOwner.toHexString()
   fixedrateexchange.datatoken = event.params.dataToken.toHexString()
   fixedrateexchange.baseToken = event.params.baseToken.toHexString()
+  fixedrateexchange.baseTokenSymbol = getTokenSymbol(event.params.baseToken)
   fixedrateexchange.active = false
+  log.info('new exchange with datatoken {} and base token {} ', [
+    fixedrateexchange.datatoken,
+    fixedrateexchange.baseToken
+  ])
   log.info('for new exchange {} for rate {}', [
     event.params.exchangeId.toHexString(),
     event.params.fixedRate.toString()

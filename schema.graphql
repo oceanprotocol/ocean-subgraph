@@ -227,6 +227,7 @@ type FixedRateExchange @entity {
   exchangeOwner: User!
   datatoken: Datatoken!
   baseToken: String!
+  baseTokenSymbol: String!
   rate: BigDecimal!
   active: Boolean!
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")

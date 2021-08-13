@@ -29,7 +29,7 @@ describe('Datatokens test flow', () => {
   it('Alice publishes a datatoken and querys the graph', async () => {
     const datatoken = await ocean.datatokens.create('', alice.getId())
     const graphToken = datatoken.toLowerCase()
-    await sleep(1000) // let graph ingest our transaction
+    await sleep(3000) // let graph ingest our transaction
     const query = {
       query: `query {
         datatoken(id:"${graphToken}"){symbol,id}}`
