@@ -83,6 +83,12 @@ dataSources:
       abis:
         - name: FixedRateExchange
           file: ./abis/FixedRateExchange.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
       eventHandlers:
         - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
           handler: handleExchangeCreated
