@@ -43,7 +43,7 @@
     "@types/chai-spies": "^1.0.3",
     "@types/mocha": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
-    "@typescript-eslint/parser": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.2",
     "auto-changelog": "^2.3.0",
     "chai": "^4.3.4",
     "chai-spies": "^1.0.0",
