@@ -1,7 +1,16 @@
-import { BigInt, ethereum } from '@graphprotocol/graph-ts'
+import {
+  json,
+  BigInt,
+  ethereum,
+  log,
+  Bytes,
+  JSONValue,
+  JSONValueKind
+} from '@graphprotocol/graph-ts'
 import { MetadataUpdated, MetadataCreated } from '../@types/Metadata/Metadata'
 
 import { Datatoken, MetadataUpdate } from '../@types/schema'
+import { LZMA } from '../lzma/lzma'
 
 export function handleMetadataEvent(
   event: ethereum.Event,
@@ -36,8 +45,26 @@ export function handleMetadataUpdated(event: MetadataUpdated): void {
     false
   )
 }
+export function jsonToString(val: JSONValue | null): string {
+  if (val != null && val.kind === JSONValueKind.STRING) {
+    return val.toString()
+  }
+  return ''
+}
 
 export function handleMetadataCreated(event: MetadataCreated): void {
+  const lzma = new LZMA()
+  const data = lzma.decode(event.params.data)
+
+  const obj = json.fromBytes(data.data as Bytes).toObject()
+  const did = obj.get('id')
+  const name = obj.get('service.attributes.main.name')
+  log.info('!!!!!!!!!!!!!!!!!!!!! DECOMPRESSED DATA {} {} {}', [
+    name.toString(),
+    did.toString(),
+    (data.data as Bytes).toString()
+  ])
+
   handleMetadataEvent(
     event,
     event.params.dataToken.toHexString(),
