@@ -50,10 +50,10 @@ type Token @entity {
 
     factory: DatatokenFactory                             #
 
-    creator: String                                       # TODO
-    publisher: String                                     # TODO
-    minter: String                                        # TODO
-    editor: String                                        # TODO
+    creator: String                                       # TODO:
+    publisher: String                                     # TODO:
+    minter: String                                        # TODO:
+    editor: String                                        # TODO:
 
     holderCount: BigInt                                   # Number of addresses holding a balance of datatoken
     orderCount: BigInt                                    # Number of orders executed for this datatoken
@@ -67,37 +67,26 @@ type Token @entity {
 
 type Pool @entity {
     id: ID!                                             # Pool address
-    factoryID --> poolFactory: PoolFactory!         
+    poolFactory: PoolFactory!                           # Pool factory
     controller: Bytes!                                  # Controller address
-    publicSwap --> isPublicSwap: Boolean!                                # isPublicSwap
-    finalized --> isFinalized: Boolean!                                  # isFinalized
+    isPublicSwap: Boolean!                              # TODO : what is this?
+    isFinalized: Boolean!                               # only finalized pools are relevant to us
     
-    // will be able to change in v4, set by market or maybe by user
     symbol: String                                      # Pool token symbol
-    // will be a user inputed name
     name: String                                        # Pool token name
     cap: BigInt                                         # Maximum supply if any
-    active --> isActive: Boolean!                                    # isActive
+    isActive: Boolean!                                  # 
     swapFee: BigDecimal!                                # Swap Fees
 
-    totalWeight: BigDecimal!
+    totalWeight: BigDecimal!                            # TODO: What is this?
     totalShares: BigDecimal!                            # Total pool token shares
     totalSwapVolume: BigDecimal!                        # Total swap volume in main token
-    totalSwapFee: BigDecimal!                           # Total swap fee in main token
+    totalSwapFee: BigDecimal!                           # TODO: is this correct ? Total swap fee in main token 
 
-    valueLocked: BigDecimal!                            # value locked in pool expressed in main token (captures both Ocean and Datatoken)
-    //will be on token
-    datatokenReserve: BigDecimal!                       # Total pool reserve of Datatoken
-    // will be on token
-    mainTokenReserve: BigDecimal!                       # Total pool reserve of main token
+    totalValueLocked: BigDecimal!                            # value locked in pool expressed in main token (captures both Ocean and Datatoken)
 
     spotPrice: BigDecimal!
-    consumePrice: BigDecimal!
-
-    // remove
-    tokenCount: BigInt!                                # Number of tokens in the pool
-    // remove
-    holderCount: BigInt!                               # Number of addresses holding a positive balance of pool shares
+    consumePrice: BigDecimal!                           # TODO: still need?
 
     // what is the point of the counts, we never used them => remove
     joinCount: BigInt!                                 # liquidity has been added
@@ -388,3 +377,26 @@ type DispenserTransaction @entity {
   tx: Bytes!
   type: String!
 }
+
+
+type PoolSnapshotTokenValue @entity {
+  id: ID! # pool tx +  tokenAddress
+  tokenAddress: String!
+  value: BigDecimal!
+  tokenReserve: BigDecimal!
+  feeValue: BigDecimal! # Swap fee value in OCEAN
+  type: String!
+  poolSnapshot: PoolSnapshot! 
+}
+
+
+type PoolSnapshot @entity {
+  id: ID!
+  pool: Pool!
+  totalShares: BigDecimal!
+  swapVolume: BigDecimal!
+  swapFees: BigDecimal!
+  timestamp: Int!
+  tokens: [PoolSnapshotTokenValue!] @derivedFrom(field: "poolSnapshot")
+}
+
