@@ -304,12 +304,13 @@ export function updatePoolTransactionToken(
     log.error('Cannot load PoolEntity {}', [poolToken.poolId])
     return
   }
-  const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
+  const ptxTokenValuesId = poolTx.concat('-').concat(poolTokenId)
   let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
   if (ptxTokenValues == null) {
     ptxTokenValues = new PoolTransactionTokenValues(ptxTokenValuesId)
     log.warning('created PoolTransactionTokenValues for {}', [ptxTokenValuesId])
   }
+
   ptxTokenValues.txId = poolTx
   ptxTokenValues.poolToken = poolTokenId
   ptxTokenValues.poolAddress = poolToken.poolId
@@ -326,7 +327,10 @@ export function updatePoolTransactionToken(
   }
 
   ptxTokenValues.save()
-  log.warning('ptxTokenValues {} saved', [ptxTokenValues.id])
+  log.warning('ptxTokenValues {} saved {}', [
+    ptxTokenValues.id,
+    ptxTokenValues.type
+  ])
   if (ptxTokenValues.tokenAddress == OCEAN) {
     const factory = PoolFactory.load('1')
 
