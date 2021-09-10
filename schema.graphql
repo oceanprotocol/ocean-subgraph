@@ -1,9 +1,9 @@
 type PoolFactory @entity {
     id: ID!
-    totalValueLocked: [TokenValuePair]                    # total value locked represented in the base token                           
-    totalLiquidity: [TokenValuePair]                      # total liquidity for each base token 
-    totalSwapVolume: [TokenValuePair]                     # total swap volume for each base token
-    totalSwapFee: [TokenValuePair]                        # All the swap fee in Ocean
+    totalValueLocked: [TokenValue]                    # total value locked represented in the base token                           
+    totalLiquidity: [TokenValue]                      # total liquidity for each base token 
+    totalSwapVolume: [TokenValue]                     # total swap volume for each base token
+    totalSwapFee: [TokenValue]                        # All the swap fee in Ocean
 
     poolCount: Int!                                       # Number of pools
     finalizedPoolCount: Int!                              # Number of finalized pools
@@ -30,7 +30,7 @@ type Global @entity {
 }
 
 
-type TokenValuePair @entity {
+type TokenValue @entity {
 
    token : Token!
    value : BigDecimal!
@@ -62,8 +62,6 @@ type Token @entity {
     tx: Bytes                                             # Datatoken creation transaction id
     block: Int                                            # Block number when it was created
 }
-
-
 
 type Pool @entity {
     id: ID!                                             # Pool address
@@ -103,9 +101,7 @@ type Pool @entity {
 
     tokens: [PoolToken!] @derivedFrom(field: "poolId")
     shares: [PoolShare!] @derivedFrom(field: "poolId")
-    transactions: [PoolTransaction!] @derivedFrom(field: "poolAddress")
-    //this doesn't make sens, probably here because we had to link to pool
-    transactionsTokenValues: [PoolTransactionTokenValues!] @derivedFrom(field: "poolAddress")
+    transactions: [PoolTransaction!] @derivedFrom(field: "pool")
 }
 
 //PoolToken - all good as it is
@@ -122,7 +118,6 @@ type PoolToken @entity {
     decimals: Int                                       # should we keep this, it is found on token?
 }
 
-
 type PoolShare @entity {
   id: ID!                                                 # poolId + userAddress
   user: User!
@@ -132,42 +127,16 @@ type PoolShare @entity {
 
 // Will be replaced with a generic PoolTokenValue WIP
 
-type PoolTransactionTokenValues @entity {
-  id: ID! # pool tx +  tokenAddress
-  txId: PoolTransaction!
-
-  // should be an array of PoolToken
-  poolToken: PoolToken!
-  // not sure if needed
-  poolAddress: Pool!
-  //not sure if needed
-  userAddress: User!
-
-  // we will have the poolToken array, what will this be?
-  tokenAddress: String!
-
-  // value of what?
-  value: BigDecimal!
-
-  // should be an array if we keep this
-  tokenReserve: BigDecimal!
-  feeValue: BigDecimal! # Swap fee value in OCEAN
-  type: String!
-}
 
 type PoolTransaction @entity {
-  id: ID! # pool tx
-  poolAddress --> pool: Pool
-  userAddress --> user: User                                                         # User address that initiates the swap
-  poolAddressStr --> poolAddress: String!
-  userAddressStr --> userAddress: String!
+  id: ID!                                                    # pool tx
+  pool: Pool                                                 # Pool related to this tx
+  user: User                                                 # User that initiates the swap
 
-  sharesTransferAmount: BigDecimal! #
-  sharesBalance: BigDecimal!
+  sharesTransferAmount: BigDecimal!                          # Number of shares transfered
+  sharesBalance: BigDecimal!                                 # TODO: what is this?
 
-  spotPrice: BigDecimal!
-  // should not be here
-  consumePrice: BigDecimal!
+
   tx: Bytes!
   event: String
   block: Int!
@@ -175,20 +144,14 @@ type PoolTransaction @entity {
   gasUsed: BigDecimal!
   gasPrice: BigDecimal!
 
-// should be an array, we will not have only ocean, it will be the tokens array
-  oceanReserve: BigDecimal!
-  datatokenReserve: BigDecimal!
-
-  tokens: [PoolTransactionTokenValues!] @derivedFrom(field: "txId")
+  tokens: [TokenValue!]                                      # tokens transfered 
 }
 
 
-// we will have 2 dt factories ?
 type DatatokenFactory @entity {
   id: ID!
-
   tokenCount: Int! # Number of datatokens
-  datatokens: [Datatoken!] @derivedFrom(field: "factoryID")
+  datatokens: [Tokens!] @derivedFrom(field: "factory")
 }
 
 
