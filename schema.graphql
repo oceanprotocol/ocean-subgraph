@@ -13,6 +13,11 @@ type PoolFactory @entity {
     pools: [Pool!] @derivedFrom(field: "factoryID")
 }
 
+type DatatokenFactory @entity {
+  id: ID!
+  tokenCount: Int!                                        # Number of datatokens
+  datatokens: [Tokens!] @derivedFrom(field: "factory")
+}
 
 type Global @entity {
     id: ID!
@@ -29,14 +34,12 @@ type Global @entity {
     finalizedPoolCount: Int!                              # Number of finalized pools for all factories
 }
 
-
-type TokenValue @entity {
+type TokenValue {
 
    token : Token!
    value : BigDecimal!
 
 }
-
 
 type Token @entity {
     id: ID!                                               # 
@@ -104,8 +107,6 @@ type Pool @entity {
     transactions: [PoolTransaction!] @derivedFrom(field: "pool")
 }
 
-//PoolToken - all good as it is
-
 type PoolToken @entity {
     id: ID!                                             # poolId + token address
     pool: Pool!                                         # 
@@ -119,14 +120,11 @@ type PoolToken @entity {
 }
 
 type PoolShare @entity {
-  id: ID!                                                 # poolId + userAddress
+  id: ID!                                                    # poolId + userAddress
   user: User!
   pool: Pool!
   balance: BigDecimal!
 }
-
-// Will be replaced with a generic PoolTokenValue WIP
-
 
 type PoolTransaction @entity {
   id: ID!                                                    # pool tx
@@ -147,50 +145,9 @@ type PoolTransaction @entity {
   tokens: [TokenValue!]                                      # tokens transfered 
 }
 
-
-type DatatokenFactory @entity {
-  id: ID!
-  tokenCount: Int! # Number of datatokens
-  datatokens: [Tokens!] @derivedFrom(field: "factory")
-}
-
-
-type MetadataUpdate @entity {
-  id: ID! # update tx +  datatokenAddress
-  datatokenId: Datatoken!
-
-  datatokenAddress: String!
-  userAddress: String!
-
-//all fields from the market edit
-name 
-description
-author
-links
-timeout
-
-
-  block: Int!
-  timestamp: Int!
-  tx: Bytes!
-}
-
-type Asset {
-
-did
-name 
-description
-author
-services ? [ access, compute ] ?
-
-datatoken : Datatoken
-}
-
-
-
-type TokenOrder @entity {
-  id: ID! # datatokenId + userAddress + tx
-  datatokenId: Datatoken!
+type Order @entity {                                         # renamed from TokenOrder to Order
+  id: ID!                                                    # datatokenId + userAddress + tx
+  token: Token!
 
   consumer: User!
   payer: User!
@@ -204,18 +161,11 @@ type TokenOrder @entity {
   block: Int!
 }
 
-type TokenBalance @entity {
-  id: ID! # datatokenId + userAddress
-  userAddress: User!
-  datatokenId: Datatoken!
-  balance: BigDecimal!
-}
-
 type TokenTransaction @entity {
   id: ID! # Log ID
   event: String
-  datatokenAddress: Datatoken
-  userAddress: User
+  token: Token
+  user: User
 
   block: Int!
   gasUsed: BigDecimal!
@@ -226,26 +176,20 @@ type TokenTransaction @entity {
 
 type User @entity {
   id: ID!
-
-  sharesOwned: [PoolShare!] @derivedFrom(field: "userAddress")
-  tokenBalancesOwned: [TokenBalance!] @derivedFrom(field: "userAddress")
-  tokensOwned: [Datatoken!] @derivedFrom(field: "minter")
-  poolTransactions: [PoolTransaction!] @derivedFrom(field: "userAddress")
-  poolTransactionsTokenValues: [PoolTransactionTokenValues!]
-    @derivedFrom(field: "userAddress")
-  tokenTransactions: [TokenTransaction!] @derivedFrom(field: "userAddress")
-  orders: [TokenOrder!] @derivedFrom(field: "payer")
+  sharesOwned: [PoolShare!] @derivedFrom(field: "user")
+  tokenBalancesOwned: [TokenValue!]
+  tokensOwned: [Token!] @derivedFrom(field: "minter")
+  poolTransactions: [PoolTransaction!] @derivedFrom(field: "user")
+  tokenTransactions: [TokenTransaction!] @derivedFrom(field: "user")
+  orders: [Order!] @derivedFrom(field: "payer")
   freSwaps: [FixedRateExchangeSwap!] @derivedFrom(field: "by")
 }
 
 type FixedRateExchange @entity {
-  id: ID! # fixed rate exchange id
+  id: ID!                                                    # fixed rate exchange id
   exchangeOwner: User!
-  datatoken: Datatoken!
-  // will be a token not just an address
-  baseToken: String!
-  // no need for this, since it will be on token
-  baseTokenSymbol: String!
+  datatoken: Token!
+  baseToken: Token!
   rate: BigDecimal!
   active: Boolean!
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
@@ -320,5 +264,37 @@ type PoolSnapshot @entity {
   swapFees: BigDecimal!
   timestamp: Int!
   tokens: [PoolSnapshotTokenValue!] @derivedFrom(field: "poolSnapshot")
+}
+
+
+type MetadataUpdate @entity {
+  id: ID! # update tx +  datatokenAddress
+  datatokenId: Datatoken!
+
+  datatokenAddress: String!
+  userAddress: String!
+
+//all fields from the market edit
+name 
+description
+author
+links
+timeout
+
+
+  block: Int!
+  timestamp: Int!
+  tx: Bytes!
+}
+
+type Asset {
+
+did
+name 
+description
+author
+services ? [ access, compute ] ?
+
+datatoken : Datatoken
 }
 
