@@ -235,7 +235,7 @@ type Dispenser @entity {
 type DispenserTransaction @entity {
   id: ID!
   dispenserId: Dispenser!
-  datatoken: Datatoken!
+  datatoken: Token!
   user: User!
   amount: BigDecimal!
   block: Int!
@@ -246,11 +246,11 @@ type DispenserTransaction @entity {
 
 
 type PoolSnapshotTokenValue @entity {
-  id: ID! # pool tx +  tokenAddress
-  tokenAddress: String!
-  value: BigDecimal!
+  id: ID!                                                            # pool tx +  tokenAddress
+  token: Token!
+  value: BigDecimal!                                            
   tokenReserve: BigDecimal!
-  feeValue: BigDecimal! # Swap fee value in OCEAN
+  feeValue: BigDecimal!                                              # Swap fee value in OCEAN
   type: String!
   poolSnapshot: PoolSnapshot! 
 }
@@ -260,13 +260,15 @@ type PoolSnapshot @entity {
   id: ID!
   pool: Pool!
   totalShares: BigDecimal!
-  swapVolume: BigDecimal!
-  swapFees: BigDecimal!
-  timestamp: Int!
+  swapVolume: BigDecimal!                                             # swap value 24h
+  swapFees: BigDecimal!                                               # swap fee value 24h  
+  timestamp: Int!                                                     # date without time
+  spotPrice: BigDecimal!                                              # TODO: last spot price or first one?
   tokens: [PoolSnapshotTokenValue!] @derivedFrom(field: "poolSnapshot")
 }
 
 
+// shouldn't we move this to aquarius?
 type MetadataUpdate @entity {
   id: ID! # update tx +  datatokenAddress
   datatokenId: Datatoken!
@@ -274,27 +276,9 @@ type MetadataUpdate @entity {
   datatokenAddress: String!
   userAddress: String!
 
-//all fields from the market edit
-name 
-description
-author
-links
-timeout
 
 
   block: Int!
   timestamp: Int!
   tx: Bytes!
 }
-
-type Asset {
-
-did
-name 
-description
-author
-services ? [ access, compute ] ?
-
-datatoken : Datatoken
-}
-

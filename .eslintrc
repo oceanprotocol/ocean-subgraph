@@ -1,27 +1,14 @@
 {
   "parser": "@typescript-eslint/parser",
-  "root": true,
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "extends": ["oceanprotocol", "plugin:prettier/recommended"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "comma-spacing": [
-      "error",
-      {
-        "before": false,
-        "after": true
-      }
-    ],
-    "prefer-const": [
-      "off"
-    ],
-    "prettier/prettier": "error",
-    "mocha-no-only/mocha-no-only": [
-      "error"
-    ],
+    "no-use-before-define": "off",
+    "eqeqeq": "off",
+    "@typescript-eslint/no-use-before-define": "error",
+    "no-undef": ["warn"]
   }
 }
