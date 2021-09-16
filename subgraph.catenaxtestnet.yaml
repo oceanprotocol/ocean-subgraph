@@ -1,0 +1,213 @@
+specVersion: 0.0.2
+description: Ocean provides data sharing through IDOs
+repository: https://github.com/oceanprotocol/ocean-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Factory
+    network: catenaxtestnet
+    source:
+      address: '0x3C5605202eD47C162450AE975415473e73F93072'
+      abi: Factory
+      startBlock: 9223
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/factory.ts
+      entities:
+        - PoolFactory
+      abis:
+        - name: Factory
+          file: ./abis/BFactory.json
+      eventHandlers:
+        - event: BPoolRegistered(address,indexed address)
+          handler: handleNewPool
+  - kind: ethereum/contract
+    name: DTFactory
+    network: catenaxtestnet
+    source:
+      address: '0x2112Eb973af1DBf83a4f11eda82f7a7527D7Fde5'
+      abi: DTFactory
+      startBlock: 9221
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/dtfactory.ts
+      entities:
+        - DatatokenFactory
+      abis:
+        - name: DTFactory
+          file: ./abis/DTFactory.json
+      eventHandlers:
+        - event: TokenRegistered(indexed address,string,string,uint256,indexed address,indexed string)
+          handler: handleNewToken
+  - kind: ethereum/contract
+    name: Metadata
+    network: catenaxtestnet
+    source:
+      address: '0xDEfD0018969cd2d4E648209F876ADe184815f038'
+      abi: Metadata
+      startBlock: 9225
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/metadata.ts
+      entities:
+        - Metadata
+      abis:
+        - name: Metadata
+          file: ./abis/Metadata.json
+      eventHandlers:
+        - event: MetadataCreated(indexed address,indexed address,bytes,bytes)
+          handler: handleMetadataCreated
+        - event: MetadataUpdated(indexed address,indexed address,bytes,bytes)
+          handler: handleMetadataUpdated
+  - kind: ethereum/contract
+    name: FixedRateExchange
+    network: catenaxtestnet
+    source:
+      address: '0x30E4CC2C7A9c6aA2b2Ce93586E3Df24a3A00bcDD'
+      abi: FixedRateExchange
+      startBlock: 9224
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/fixedrateexchange.ts
+      entities:
+        - FixedRateExchange
+      abis:
+        - name: FixedRateExchange
+          file: ./abis/FixedRateExchange.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+      eventHandlers:
+        - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
+          handler: handleExchangeCreated
+        - event: ExchangeActivated(indexed bytes32,indexed address)
+          handler: handleExchangeActivated
+        - event: ExchangeDeactivated(indexed bytes32,indexed address)
+          handler: handleExchangeDeactivated
+        - event: ExchangeRateChanged(indexed bytes32,indexed address,uint256)
+          handler: handleExchangeRateChanged
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256)
+          handler: handleSwapped
+  - kind: ethereum/contract
+    name: Dispenser
+    network: catenaxtestnet
+    source:
+      address: '0x9C9eE07b8Ce907D2f9244F8317C1Ed29A3193bAe'
+      abi: Dispenser
+      startBlock: 9226
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser
+      abis:
+        - name: Dispenser
+          file: ./abis/Dispenser.json
+      eventHandlers:
+        - event: Activated(indexed address)
+          handler: handleDispenserActivated
+        - event: Deactivated(indexed address)
+          handler: handleDispenserDeactivated
+        - event: AcceptedMinter(indexed address)
+          handler: handleDispenserAcceptedMinter
+        - event: RemovedMinter(indexed address)
+          handler: handleDispenserRemovedMinter
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleDispenserTokensDispensed
+        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
+          handler: handleDispenserOwnerWithdrawed
+templates:
+  - kind: ethereum/contract
+    name: Pool
+    network: catenaxtestnet
+    source:
+      abi: Pool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/pool.ts
+      entities:
+        - Pool
+        - PoolFactory
+        - Swap
+      abis:
+        - name: Pool
+          file: ./abis/BPool.json
+        - name: BToken
+          file: ./abis/BToken.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+      eventHandlers:
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x34e1990700000000000000000000000000000000000000000000000000000000'
+          handler: handleSetSwapFee
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x92eefe9b00000000000000000000000000000000000000000000000000000000'
+          handler: handleSetController
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x49b5955200000000000000000000000000000000000000000000000000000000'
+          handler: handleSetPublicSwap
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x4bb278f300000000000000000000000000000000000000000000000000000000'
+          handler: handleFinalize
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0xd1d7bc9100000000000000000000000000000000000000000000000000000000'
+          handler: handleSetup
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x3fdddaa200000000000000000000000000000000000000000000000000000000'
+          handler: handleRebind
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0xe4e1e53800000000000000000000000000000000000000000000000000000000'
+          handler: handleRebind
+        - event: LOG_CALL(indexed bytes4,indexed address,bytes)
+          topic0: '0x8c28cbe800000000000000000000000000000000000000000000000000000000'
+          handler: handleGulp
+        - event: LOG_JOIN(indexed address,indexed address,uint256)
+          handler: handleJoinPool
+        - event: LOG_EXIT(indexed address,indexed address,uint256)
+          handler: handleExitPool
+        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleSwap
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+
+  - kind: ethereum/contract
+    name: DataToken
+    network: catenaxtestnet
+    source:
+      abi: DataToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/datatoken.ts
+      entities:
+        - DataToken
+        - DatatokenFactory
+      abis:
+        - name: DataToken
+          file: ./abis/DataTokenTemplate.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: OrderStarted(indexed address,indexed address,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleOrderStarted
