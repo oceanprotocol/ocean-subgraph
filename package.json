@@ -13,6 +13,7 @@
     "create:local-polygon": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-moonbeamalpha": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-gaiaxtestnet": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
+    "create:local-catenaxtestnet": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-mumbai": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-bsc": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen --output-dir src/@types",
@@ -26,6 +27,7 @@
     "deploy:local-polygon": "graph deploy oceanprotocol/ocean-subgraph subgraph.polygon.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-moonbeamalpha": "graph deploy oceanprotocol/ocean-subgraph subgraph.moonbeamalpha.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-gaiaxtestnet": "graph deploy oceanprotocol/ocean-subgraph subgraph.gaiaxtestnet.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
+    "deploy:local-catenaxtestnet": "graph deploy oceanprotocol/ocean-subgraph subgraph.gaiaxtestnet.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-mumbai": "graph deploy oceanprotocol/ocean-subgraph subgraph.mumbai.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-bsc": "graph deploy oceanprotocol/ocean-subgraph subgraph.bsc.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "test": "npm run codegen && npm run lint && npm run type-check",
@@ -59,7 +61,7 @@
     "typescript": "^4.4.3"
   },
   "dependencies": {
-    "@oceanprotocol/lib": "^0.17.3",
+    "@oceanprotocol/lib": "^0.17.4",
     "cross-fetch": "^3.1.4"
   },
   "repository": {

@@ -47,6 +47,8 @@ export function getOceanAddress(): string {
     return '0xf6410bf5d773c7a41ebff972f38e7463fa242477'
   if (network == 'gaiaxtestnet')
     return '0x80e63f73cac60c1662f27d2dfd2ea834acddbaa8'
+  if (network == 'catenaxtestnet')
+    return '0x80e63f73cac60c1662f27d2dfd2ea834acddbaa8'
   if (network == 'mumbai') return '0xd8992ed72c445c35cb4a2be468568ed1079357c8'
   if (network == 'bsc') return '0xdce07662ca8ebc241316a15b611c89711414dd1a'
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
