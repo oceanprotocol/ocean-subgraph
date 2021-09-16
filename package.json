@@ -27,7 +27,7 @@
     "deploy:local-polygon": "graph deploy oceanprotocol/ocean-subgraph subgraph.polygon.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-moonbeamalpha": "graph deploy oceanprotocol/ocean-subgraph subgraph.moonbeamalpha.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-gaiaxtestnet": "graph deploy oceanprotocol/ocean-subgraph subgraph.gaiaxtestnet.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
-    "deploy:local-catenaxtestnet": "graph deploy oceanprotocol/ocean-subgraph subgraph.gaiaxtestnet.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
+    "deploy:local-catenaxtestnet": "graph deploy oceanprotocol/ocean-subgraph subgraph.catenaxtestnet.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-mumbai": "graph deploy oceanprotocol/ocean-subgraph subgraph.mumbai.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:local-bsc": "graph deploy oceanprotocol/ocean-subgraph subgraph.bsc.yaml --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "test": "npm run codegen && npm run lint && npm run type-check",
