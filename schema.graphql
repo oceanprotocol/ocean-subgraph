@@ -214,6 +214,7 @@ type User @entity {
   sharesOwned: [PoolShare!] @derivedFrom(field: "userAddress")
   tokenBalancesOwned: [TokenBalance!] @derivedFrom(field: "userAddress")
   tokensOwned: [Datatoken!] @derivedFrom(field: "minter")
+  nrSales: Int
   poolTransactions: [PoolTransaction!] @derivedFrom(field: "userAddress")
   poolTransactionsTokenValues: [PoolTransactionTokenValues!]
     @derivedFrom(field: "userAddress")
