@@ -51,6 +51,12 @@ export function getOceanAddress(): string {
     return '0x80e63f73cac60c1662f27d2dfd2ea834acddbaa8'
   if (network == 'mumbai') return '0xd8992ed72c445c35cb4a2be468568ed1079357c8'
   if (network == 'bsc') return '0xdce07662ca8ebc241316a15b611c89711414dd1a'
+  if (network == 'celoalfajores')
+    return '0xd8992ed72c445c35cb4a2be468568ed1079357c8'
+  if (network == 'energyweb')
+    return '0x593122aae80a6fc3183b2ac0c4ab3336debee528'
+  if (network == 'moonriver')
+    return '0x99c409e5f62e4bd2ac142f17cafb6810b8f0baae'
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
 
