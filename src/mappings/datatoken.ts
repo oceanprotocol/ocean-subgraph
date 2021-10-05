@@ -6,7 +6,8 @@ import {
   Global,
   PoolFactory,
   TokenBalance,
-  TokenOrder
+  TokenOrder,
+  User
 } from '../@types/schema'
 import {
   tokenToDecimal,
@@ -155,6 +156,11 @@ export function handleOrderStarted(event: OrderStarted): void {
   factory.orderCount = factory.orderCount.plus(BigInt.fromI32(1))
   factory.totalOrderVolume = factory.totalOrderVolume.plus(order.amount)
   factory.save()
+
+  const user = User.load(datatoken.minter)
+  user.nrSales = user.nrSales + 1
+  user.save()
+
   const gStats: Global | null = getGlobalStats()
   gStats.orderCount = factory.orderCount
   gStats.totalOrderVolume = factory.totalOrderVolume

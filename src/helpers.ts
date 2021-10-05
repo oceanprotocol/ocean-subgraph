@@ -237,6 +237,7 @@ export function updatePoolSwapVolume(
 export function createUserEntity(address: string): void {
   if (User.load(address) == null) {
     const user = new User(address)
+    user.nrSales = 0
     user.save()
   }
 }
