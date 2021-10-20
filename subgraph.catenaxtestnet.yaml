@@ -13,7 +13,7 @@ dataSources:
       startBlock: 9223
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
@@ -33,7 +33,7 @@ dataSources:
       startBlock: 9221
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/dtfactory.ts
       entities:
@@ -53,7 +53,7 @@ dataSources:
       startBlock: 9225
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/metadata.ts
       entities:
@@ -75,7 +75,7 @@ dataSources:
       startBlock: 9224
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/fixedrateexchange.ts
       entities:
@@ -109,7 +109,7 @@ dataSources:
       startBlock: 9226
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/dispenser.ts
       entities:
@@ -138,7 +138,7 @@ templates:
       abi: Pool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/pool.ts
       entities:
@@ -197,7 +197,7 @@ templates:
       abi: DataToken
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/datatoken.ts
       entities:

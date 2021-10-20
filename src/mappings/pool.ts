@@ -28,7 +28,6 @@ import {
   updatePoolTransactionToken,
   createPoolTransaction,
   OCEAN,
-  debuglog,
   updatePoolTokenBalance,
   getOceanAddress,
   getGlobalStats,
@@ -151,7 +150,6 @@ export function handleSetup(event: LOG_CALL): void {
   }
 
   const poolId = event.address.toHex()
-  debuglog('handleSetup: ', event, [])
   const data = event.params.data.toHexString()
   // First 2 chars are 0x
   // Next there is 8 chars
@@ -236,11 +234,6 @@ export function handleJoinPool(event: LOG_JOIN): void {
   const ptx = event.transaction.hash.toHexString()
   const poolTx = PoolTransaction.load(ptx)
   if (poolTx != null) {
-    debuglog(
-      '!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  JOIN JOIN JOIN !!!!!!!!!!!! PoolTransaction EXISTS: ',
-      event,
-      []
-    )
     return
   }
 
@@ -248,11 +241,6 @@ export function handleJoinPool(event: LOG_JOIN): void {
   const poolTokenId = poolId.concat('-').concat(address)
   const poolToken = PoolToken.load(poolTokenId)
   if (poolToken == null) {
-    debuglog(
-      '!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  JOIN JOIN JOIN !!!!!!!!!!!! NO PoolToken: ',
-      event,
-      [address, poolTokenId]
-    )
     return
   }
 
@@ -268,11 +256,6 @@ export function handleJoinPool(event: LOG_JOIN): void {
     poolToken as PoolToken,
     poolToken.balance.plus(tokenAmountIn),
     'handleJoinPool'
-  )
-  debuglog(
-    '!!!!!!!!!!!!!!!!!!    JOIN JOIN JOIN : (token, amountIn, amountIn) ',
-    event,
-    [address, tokenAmountIn.toString(), event.params.tokenAmountIn.toString()]
   )
 
   poolToken.save()
@@ -293,11 +276,6 @@ export function handleExitPool(event: LOG_EXIT): void {
   const poolTokenId = poolId.concat('-').concat(address.toString())
   const poolToken = PoolToken.load(poolTokenId)
   if (!poolToken) {
-    debuglog(
-      '!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  EXIT EXIT EXIT !!!!!!!!!!!! NO PoolToken: ',
-      event,
-      [address, poolTokenId]
-    )
     return
   }
 
@@ -312,11 +290,6 @@ export function handleExitPool(event: LOG_EXIT): void {
   const newAmount = poolToken.balance.minus(tokenAmountOut)
   updatePoolTokenBalance(poolToken as PoolToken, newAmount, 'handleExitPool')
   poolToken.save()
-  debuglog(
-    '!!!!!!!!!!!!!!!!!!    EXIT EXIT EXIT : (token, amountOut, amountOut)',
-    event,
-    [address, tokenAmountOut.toString(), event.params.tokenAmountOut.toString()]
-  )
   const pool = Pool.load(poolId)
   pool.exitCount = pool.exitCount.plus(BigInt.fromI32(1))
   if (newAmount.equals(ZERO_BD)) {
@@ -347,11 +320,6 @@ export function handleSwap(event: LOG_SWAP): void {
   const poolTokenInId = poolId.concat('-').concat(tokenIn.toString())
   const poolTokenIn = PoolToken.load(poolTokenInId)
   if (!poolTokenIn) {
-    debuglog(
-      '!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!  SWAP SWAP SWAP !!!!!!!!!!!! NO PoolToken: ',
-      event,
-      [tokenIn, poolTokenInId]
-    )
     return
   }
   const dtIn = Datatoken.load(tokenIn)
@@ -382,18 +350,6 @@ export function handleSwap(event: LOG_SWAP): void {
     'handleSwap.tokenOut'
   )
   poolTokenOut.save()
-  debuglog(
-    '!!!!!!!!!!!!!!!!!!    SWAP SWAP SWAP : (tokenIn, tokenOut, amountIn, amountIn, amountOut, amountOut)',
-    event,
-    [
-      tokenIn,
-      tokenOut,
-      tokenAmountIn.toString(),
-      event.params.tokenAmountIn.toString(),
-      tokenAmountOut.toString(),
-      event.params.tokenAmountOut.toString()
-    ]
-  )
   const pool = Pool.load(poolId)
   const factory = PoolFactory.load('1')
 
@@ -458,11 +414,6 @@ export function handleTransfer(event: Transfer): void {
   const pool = Pool.load(poolId)
   const poolTx = PoolTransaction.load(event.transaction.hash.toHexString())
   const value = tokenToDecimal(event.params.value.toBigDecimal(), 18)
-  debuglog('poolShare Transfer event: (from, to, value)', event, [
-    event.params.from.toHex(),
-    event.params.to.toHex(),
-    value.toString()
-  ])
 
   if (isMint) {
     if (poolShareTo == null) {
@@ -476,17 +427,6 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = value
       poolTx.sharesBalance = poolShareTo.balance
     }
-    debuglog(
-      'pool shares mint: (id, value, totalShares, shareToBalance, toAddress)',
-      event,
-      [
-        poolId,
-        value.toString(),
-        pool.totalShares.toString(),
-        poolShareTo.balance.toString(),
-        poolShareTo.userAddress
-      ]
-    )
   } else if (isBurn) {
     if (poolShareFrom == null) {
       createPoolShareEntity(poolShareFromId, poolId, event.params.from.toHex())
@@ -499,17 +439,6 @@ export function handleTransfer(event: Transfer): void {
       poolTx.sharesTransferAmount = poolTx.sharesTransferAmount.minus(value)
       poolTx.sharesBalance = poolShareFrom.balance
     }
-    debuglog(
-      'pool shares burn: (id, value, totalShares, shareFromBalance, fromAddress)',
-      event,
-      [
-        poolId,
-        value.toString(),
-        pool.totalShares.toString(),
-        poolShareFrom.balance.toString(),
-        poolShareFrom.userAddress
-      ]
-    )
   } else {
     if (poolShareTo == null) {
       createPoolShareEntity(poolShareToId, poolId, event.params.to.toHex())
@@ -524,20 +453,6 @@ export function handleTransfer(event: Transfer): void {
     }
     poolShareFrom.balance = poolShareFrom.balance.minus(value)
     poolShareFrom.save()
-    debuglog(
-      'pool shares transfer: ' +
-        '(id, value, totalShares, shareToBalance, shareFromBalance, toAddress, fromAddress)',
-      event,
-      [
-        poolId,
-        value.toString(),
-        pool.totalShares.toString(),
-        poolShareTo.balance.toString(),
-        poolShareFrom.balance.toString(),
-        poolShareTo.userAddress,
-        poolShareFrom.userAddress
-      ]
-    )
   }
 
   if (

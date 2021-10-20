@@ -16,32 +16,25 @@ import {
   Datatoken
 } from '../@types/schema'
 
-import { tokenToDecimal, _debuglog } from '../helpers'
+import { tokenToDecimal } from '../helpers'
 
 function _processDispenserUpdate(
   event: ethereum.Event,
   datatoken: string,
   contractAddress: Address
 ): void {
-  _debuglog('Start processDispenserUpdate', null, [
-    datatoken,
-    contractAddress.toHexString()
-  ])
   const dt = Datatoken.load(datatoken)
   if (!dt) {
     return
   }
   let dispenser = Dispenser.load(datatoken)
   if (!dispenser) {
-    _debuglog('Creating new dispenser', null, null)
     dispenser = new Dispenser(datatoken)
   }
   const dispenserEntity = DispenserEntity.bind(contractAddress)
-  _debuglog('Bound dispenser entity', null, null)
   const dispenserStatus = dispenserEntity.try_status(
     Address.fromString(datatoken)
   )
-  _debuglog('Got status', null, null)
   if (dispenserStatus.reverted) return
   dispenser.active = dispenserStatus.value.value0
   let owner = User.load(dispenserStatus.value.value1.toHexString())
@@ -69,9 +62,6 @@ function _processDispenserUpdate(
 }
 
 export function handleDispenserActivated(event: Activated): void {
-  _debuglog('Start handleDispenserActivated', event, [
-    event.params.datatokenAddress.toHexString()
-  ])
   _processDispenserUpdate(
     event,
     event.params.datatokenAddress.toHexString(),

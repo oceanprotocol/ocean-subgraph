@@ -62,7 +62,7 @@ export function getOceanAddress(): string {
 
 export const OCEAN: string = getOceanAddress()
 
-export function getGlobalStats(): Global | null {
+export function getGlobalStats(): Global {
   let gStats: Global | null = Global.load('1')
   if (gStats == null) {
     gStats = new Global('1')
@@ -75,30 +75,6 @@ export function getGlobalStats(): Global | null {
   }
 
   return gStats
-}
-
-export function _debuglog(
-  message: string,
-  event: ethereum.Event,
-  args: Array<string>
-): void {
-  if (event != null) {
-    args.push(event.transaction.hash.toHex())
-    args.push(event.address.toHex())
-  }
-  for (let i = 0; i < args.length; i++) {
-    message = message.concat(' {}')
-  }
-  log.debug('@@@@@@ ' + message, args)
-}
-
-export function debuglog(
-  message: string,
-  event: ethereum.Event,
-  args: Array<string>
-): void {
-  if (!ENABLE_DEBUG) return
-  _debuglog(message, event, args)
 }
 
 export function hexToDecimal(hexString: string, decimals: i32): BigDecimal {
@@ -196,11 +172,6 @@ export function updatePoolTokenBalance(
   balance: BigDecimal,
   source: string
 ): void {
-  debuglog(
-    '########## updating poolToken balance (source, oldBalance, newBalance, poolId) ',
-    null,
-    [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId]
-  )
   if (balance < ZERO_BD || poolToken.balance < ZERO_BD) {
     log.warning(
       'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
@@ -221,11 +192,6 @@ export function updatePoolSwapVolume(
   swapAmount: BigDecimal
   // source: string
 ): void {
-  debuglog(
-    '########## updating poolToken balance (source, oldBalance, newBalance, poolId) ',
-    null,
-    [source, pool.totalSwapVolume.toString(), swapAmount.toString(), pool.id]
-  )
   if (swapAmount < ZERO_BD || pool.totalSwapVolume < ZERO_BD) {
     log.warning(
       'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
@@ -368,17 +334,7 @@ export function updatePoolTransactionToken(
     ptx.datatokenReserve = ptxTokenValues.tokenReserve
     pool.datatokenReserve = ptxTokenValues.tokenReserve
   }
-  // debuglog('########## updatePoolTransactionToken: ', null, [
-  //   BigInt.fromI32(ptx.block).toString(),
-  //   BigInt.fromI32(ptx.timestamp).toString(),
-  //   ptxTokenValues.type,
-  //   ptxTokenValues.value.toString(),
-  //   ptxTokenValues.tokenReserve.toString(),
-  //   poolToken.poolId
-  // ])
-  log.warning('saving ptx {} ', [ptx.id.toString()])
   ptx.save()
-  log.warning('saving pool {} ', [pool.id.toString()])
   pool.save()
 }
 
@@ -390,13 +346,6 @@ export function calcSpotPrice(
   swapFee: BigDecimal
 ): BigDecimal {
   if (balanceIn <= ZERO_BD || balanceOut <= ZERO_BD) return MINUS_1_BD
-  debuglog('################ calcSpotPrice', null, [
-    balanceIn.toString(),
-    wIn.toString(),
-    balanceOut.toString(),
-    wOut.toString(),
-    swapFee.toString()
-  ])
 
   const numer = balanceIn.div(wIn)
   const denom = balanceOut.div(wOut)
@@ -406,13 +355,6 @@ export function calcSpotPrice(
   const scale = ONE_BD.div(ONE_BD.minus(swapFee))
   const price = ratio.times(scale)
   price.truncate(18)
-  debuglog('################ calcSpotPrice values:', null, [
-    numer.toString(),
-    denom.toString(),
-    ratio.toString(),
-    scale.toString(),
-    price.toString()
-  ])
   return price
 }
 
@@ -453,24 +395,10 @@ export function createPoolTransaction(
   // Initial reserve values, will be updated in `updatePoolTransactionToken`
   poolTx.datatokenReserve = dtToken.balance
   poolTx.oceanReserve = ocnToken.balance
-  debuglog('poolTX reserves:(dt, ocean)', null, [
-    poolTx.datatokenReserve.toString(),
-    poolTx.oceanReserve.toString()
-  ])
+
 
   const p = Pool.bind(Address.fromString(poolId))
-  debuglog(
-    'createPoolTransaction args sent to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee)',
-    null,
-    [
-      decimalToBigInt(ocnToken.balance).toString(),
-      decimalToBigInt(ocnToken.denormWeight).toString(),
-      decimalToBigInt(dtToken.balance).toString(),
-      decimalToBigInt(dtToken.denormWeight).toString(),
-      ONE_BASE_18.toString(),
-      decimalToBigInt(pool.swapFee).toString()
-    ]
-  )
+
   const priceResult = p.try_calcInGivenOut(
     decimalToBigInt(ocnToken.balance),
     decimalToBigInt(ocnToken.denormWeight),
@@ -479,13 +407,10 @@ export function createPoolTransaction(
     ONE_BASE_18,
     decimalToBigInt(pool.swapFee)
   )
-  debuglog('got results', null, [])
+
   poolTx.consumePrice = priceResult.reverted
     ? MINUS_1_BD
     : bigIntToDecimal(priceResult.value, 18)
-  debuglog('calcInGivenOut:', null, [
-    priceResult.reverted ? 'failed' : priceResult.value.toString()
-  ])
 
   const priceSpot = p.try_calcSpotPrice(
     decimalToBigInt(ocnToken.balance),
@@ -497,9 +422,6 @@ export function createPoolTransaction(
   poolTx.spotPrice = priceSpot.reverted
     ? ZERO_BD
     : bigIntToDecimal(priceSpot.value, 18)
-  debuglog('SpotPrice:', null, [
-    priceSpot.reverted ? 'failed' : priceSpot.value.toString()
-  ])
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
@@ -536,17 +458,6 @@ export function createPoolTransaction(
   pool.save()
   factory.save()
 
-  debuglog(
-    'updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
-    event,
-    [
-      'createPoolTransaction',
-      dtToken.balance.toString(),
-      ocnToken.balance.toString(),
-      pool.datatokenReserve.toString(),
-      pool.oceanReserve.toString()
-    ]
-  )
 
   poolTx.tx = event.transaction.hash
   // eslint-disable-next-line camelcase
@@ -556,12 +467,6 @@ export function createPoolTransaction(
   poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
 
-  debuglog('####################### poolTransaction: ', event, [
-    ptx,
-    BigInt.fromI32(poolTx.block).toString(),
-    BigInt.fromI32(poolTx.timestamp).toString(),
-    pool.oceanReserve.toString()
-  ])
 
   poolTx.save()
 }
