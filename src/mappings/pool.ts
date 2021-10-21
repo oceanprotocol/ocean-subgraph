@@ -48,7 +48,7 @@ export function handleSetSwapFee(
   if (!swapFeeStr) {
     swapFeeStr = event.params.data.toHexString().slice(-40)
   }
-  pool.swapFee = hexToDecimal(swapFeeStr, 18)
+  if (swapFeeStr !== null) pool.swapFee = hexToDecimal(swapFeeStr, 18)
   pool.save()
 }
 
@@ -125,8 +125,9 @@ export function _handleRebind(
       pool.totalWeight = pool.totalWeight.minus(oldWeight).minus(denormWeight)
     }
   }
-
-  poolToken.denormWeight = denormWeight
+  if (!poolToken) return
+  poolToken.denormWeight =
+    denormWeight !== null ? denormWeight : BigDecimal.fromString('0')
   const balance = hexToDecimal(balanceStr, decimals)
   updatePoolTokenBalance(poolToken as PoolToken, balance, '_handleRebind')
 
@@ -208,18 +209,23 @@ export function handleSetup(event: LOG_CALL): void {
     event.transaction.hash.toHexString(),
     poolTokenId,
     amount,
-    PoolToken.load(poolTokenId).balance,
+    poolToken.balance,
     ZERO_BD
   )
   // update the datatoken
-  amount = hexToDecimal(dataTokenAmount, 18)
-  updatePoolTransactionToken(
-    event.transaction.hash.toHexString(),
-    poolId.concat('-').concat(dataTokenAddress),
-    amount,
-    PoolToken.load(poolId.concat('-').concat(dataTokenAddress)).balance,
-    ZERO_BD
+  const poolDataToken = PoolToken.load(
+    poolId.concat('-').concat(dataTokenAddress)
   )
+  if (poolDataToken !== null) {
+    amount = hexToDecimal(dataTokenAmount, 18)
+    updatePoolTransactionToken(
+      event.transaction.hash.toHexString(),
+      poolId.concat('-').concat(dataTokenAddress),
+      amount,
+      poolDataToken.balance,
+      ZERO_BD
+    )
+  }
 }
 
 /************************************

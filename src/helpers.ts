@@ -172,19 +172,10 @@ export function updatePoolTokenBalance(
   balance: BigDecimal,
   source: string
 ): void {
+  if (!poolToken) return
   if (balance < ZERO_BD || poolToken.balance < ZERO_BD) {
-    log.warning(
-      'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
-      [
-        poolToken.poolId,
-        poolToken.address.toString(),
-        poolToken.balance.toString(),
-        balance.toString()
-      ]
-    )
+    poolToken.balance = balance
   }
-
-  poolToken.balance = balance
 }
 
 export function updatePoolSwapVolume(
@@ -256,25 +247,19 @@ export function updatePoolTransactionToken(
   balance: BigDecimal,
   feeValue: BigDecimal
 ): void {
-  log.warning('WWWWWWWWWW ---- started update ptx with id {}', [poolTx])
-  log.warning('updatePoolTransactionToken({}, {} , {} , {} , {}}', [
-    poolTx,
-    poolTokenId,
-    amount.toString(),
-    balance.toString(),
-    feeValue.toString()
-  ])
   const ptx = PoolTransaction.load(poolTx)
   const poolToken = PoolToken.load(poolTokenId)
-  const pool = PoolEntity.load(poolToken.poolId)
+
   if (!ptx) {
     log.error('Cannot load PoolTransaction {}', [poolTx])
     return
   }
+
   if (!poolToken) {
     log.error('Cannot load PoolToken {}', [poolTokenId])
     return
   }
+  const pool = PoolEntity.load(poolToken.poolId)
   if (!pool) {
     log.error('Cannot load PoolEntity {}', [poolToken.poolId])
     return
@@ -286,11 +271,14 @@ export function updatePoolTransactionToken(
     log.warning('created PoolTransactionTokenValues for {}', [ptxTokenValuesId])
   }
 
+  if (!ptxTokenValues) return
+
   ptxTokenValues.txId = poolTx
   ptxTokenValues.poolToken = poolTokenId
   ptxTokenValues.poolAddress = poolToken.poolId
-  ptxTokenValues.userAddress = ptx.userAddress
-  ptxTokenValues.tokenAddress = PoolToken.load(poolTokenId).address
+  ptxTokenValues.userAddress = ptx.userAddress !== null ? ptx.userAddress : ''
+  if (poolToken.address !== null)
+    ptxTokenValues.tokenAddress = poolToken.address
 
   ptxTokenValues.value = amount
   ptxTokenValues.tokenReserve = balance
@@ -302,34 +290,25 @@ export function updatePoolTransactionToken(
   }
 
   ptxTokenValues.save()
-  log.warning('ptxTokenValues {} saved {}', [
-    ptxTokenValues.id,
-    ptxTokenValues.type
-  ])
+
   if (ptxTokenValues.tokenAddress == OCEAN) {
     const factory = PoolFactory.load('1')
+    if (factory !== null) {
+      factory.totalOceanLiquidity = factory.totalOceanLiquidity
+        .plus(ptxTokenValues.tokenReserve)
+        .minus(pool.oceanReserve)
 
-    factory.totalOceanLiquidity = factory.totalOceanLiquidity
-      .plus(ptxTokenValues.tokenReserve)
-      .minus(pool.oceanReserve)
+      const gStats: Global = getGlobalStats()
+      if (gStats !== null) {
+        gStats.totalOceanLiquidity = factory.totalOceanLiquidity
 
-    const gStats: Global | null = getGlobalStats()
-    gStats.totalOceanLiquidity = factory.totalOceanLiquidity
+        gStats.save()
+      }
 
-    gStats.save()
-    if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
-      log.warning(
-        'EEEEEEEEEEEEEEEEE totalOceanLiquidity or oceanReserve < Zero: pool={}, totOcnLiq={}, ocnRes={}',
-        [
-          pool.id,
-          factory.totalOceanLiquidity.toString(),
-          pool.oceanReserve.toString()
-        ]
-      )
+      ptx.oceanReserve = ptxTokenValues.tokenReserve
+      pool.oceanReserve = ptxTokenValues.tokenReserve
+      factory.save()
     }
-    ptx.oceanReserve = ptxTokenValues.tokenReserve
-    pool.oceanReserve = ptxTokenValues.tokenReserve
-    factory.save()
   } else {
     ptx.datatokenReserve = ptxTokenValues.tokenReserve
     pool.datatokenReserve = ptxTokenValues.tokenReserve
@@ -366,6 +345,7 @@ export function createPoolTransaction(
 ): void {
   const poolId = event.address.toHex()
   const pool = PoolEntity.load(poolId)
+  if (!pool) return
   const ptx = event.transaction.hash.toHexString()
 
   const ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
@@ -395,7 +375,6 @@ export function createPoolTransaction(
   // Initial reserve values, will be updated in `updatePoolTransactionToken`
   poolTx.datatokenReserve = dtToken.balance
   poolTx.oceanReserve = ocnToken.balance
-
 
   const p = Pool.bind(Address.fromString(poolId))
 
@@ -431,48 +410,40 @@ export function createPoolTransaction(
     poolTx.datatokenReserve.times(spotPrice)
   )
   const factory = PoolFactory.load('1')
-  if (oldValueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
-    log.warning(
-      'EEEEEEEEEEEEEEEEE valueLocked < Zero: pool={}, oldVL={}, newVL={}, OCEAN={}, DT={}, spotPrice={}',
-      [
-        pool.id,
-        oldValueLocked.toString(),
-        pool.valueLocked.toString(),
-        poolTx.oceanReserve.toString(),
-        poolTx.datatokenReserve.toString(),
-        pool.spotPrice.toString()
-      ]
-    )
+  if (!factory) return
+  if (factory.totalValueLocked !== null) {
+    const newTvl = factory.totalValueLocked
+      .minus(oldValueLocked)
+      .plus(pool.valueLocked)
+    if (newTvl !== null) factory.totalValueLocked = newTvl
   }
-  factory.totalValueLocked = factory.totalValueLocked
-    .minus(oldValueLocked)
-    .plus(pool.valueLocked)
 
-  const gStats: Global | null = getGlobalStats()
-
-  gStats.totalValueLocked = factory.totalValueLocked
-  gStats.save()
+  const gStats: Global = getGlobalStats()
+  if (gStats !== null) {
+    gStats.totalValueLocked = factory.totalValueLocked
+    gStats.save()
+  }
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
   pool.save()
   factory.save()
 
-
   poolTx.tx = event.transaction.hash
   // eslint-disable-next-line camelcase
   poolTx.event = event_type
   poolTx.block = event.block.number.toI32()
   poolTx.timestamp = event.block.timestamp.toI32()
-  poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
+  //  Property 'gasUsed' does not exist on type '~lib/@graphprotocol/graph-ts/chain/ethereum/ethereum.Transaction'
+  // poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
-
 
   poolTx.save()
 }
 
 export function decrPoolCount(finalized: boolean): void {
   const factory = PoolFactory.load('1')
+  if (!factory) return
   factory.poolCount -= 1
   if (finalized) factory.finalizedPoolCount -= 1
   factory.save()
