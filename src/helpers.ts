@@ -178,25 +178,6 @@ export function updatePoolTokenBalance(
   }
 }
 
-export function updatePoolSwapVolume(
-  pool: Pool,
-  swapAmount: BigDecimal
-  // source: string
-): void {
-  if (swapAmount < ZERO_BD || pool.totalSwapVolume < ZERO_BD) {
-    log.warning(
-      'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
-      [
-        pool.id,
-        poolToken.tokenAddress.toString(),
-        poolToken.balance.toString(),
-        swapAmount.toString()
-      ]
-    )
-  }
-
-  poolToken.swapBalanceOcean = poolToken.swapBalanceOcean.plus(swapAmount)
-}
 export function createUserEntity(address: string): void {
   if (User.load(address) == null) {
     const user = new User(address)
