@@ -467,7 +467,7 @@ export function saveTokenTransaction(
   transaction.event = eventName
   transaction.datatokenAddress = event.address.toHex()
   transaction.userAddress = userAddress
-  transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
+  // transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
   transaction.gasPrice = event.transaction.gasPrice.toBigDecimal()
   transaction.tx = event.transaction.hash
   transaction.timestamp = event.block.timestamp.toI32()
