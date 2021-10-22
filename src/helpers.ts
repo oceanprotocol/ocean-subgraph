@@ -276,9 +276,10 @@ export function updatePoolTransactionToken(
   ptxTokenValues.txId = poolTx
   ptxTokenValues.poolToken = poolTokenId
   ptxTokenValues.poolAddress = poolToken.poolId
-  ptxTokenValues.userAddress = ptx.userAddress !== null ? ptx.userAddress : ''
-  if (poolToken.address !== null)
-    ptxTokenValues.tokenAddress = poolToken.address
+  const ptxUserAddress = ptx.userAddress
+  ptxTokenValues.userAddress = ptxUserAddress ? ptxUserAddress : ''
+  const poolTokenAddress = poolToken.address
+  ptxTokenValues.tokenAddress = poolTokenAddress ? poolTokenAddress : ''
 
   ptxTokenValues.value = amount
   ptxTokenValues.tokenReserve = balance
@@ -412,10 +413,11 @@ export function createPoolTransaction(
   const factory = PoolFactory.load('1')
   if (!factory) return
   if (factory.totalValueLocked !== null) {
-    const newTvl = factory.totalValueLocked
-      .minus(oldValueLocked)
-      .plus(pool.valueLocked)
-    if (newTvl !== null) factory.totalValueLocked = newTvl
+    const tvl = factory.totalValueLocked
+
+    factory.totalValueLocked = tvl
+      ? tvl.minus(oldValueLocked).plus(pool.valueLocked)
+      : BigDecimal.fromString('0')
   }
 
   const gStats: Global = getGlobalStats()

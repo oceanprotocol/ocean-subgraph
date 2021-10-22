@@ -182,7 +182,7 @@ export function handleSetup(event: LOG_CALL): void {
   }
   const poolTokenId = poolId.concat('-').concat(baseTokenAddress)
   const poolToken = PoolToken.load(poolTokenId)
-  if (poolToken != null) return
+  if (!poolToken) return
 
   _handleRebind(
     event,
@@ -205,11 +205,15 @@ export function handleSetup(event: LOG_CALL): void {
   // update base token
   let amount = hexToDecimal(baseTokenAmount, 18)
 
+  const poolTokenBalance = poolToken.balance
+  const balance = poolTokenBalance
+    ? poolTokenBalance
+    : BigDecimal.fromString('0')
   updatePoolTransactionToken(
     event.transaction.hash.toHexString(),
     poolTokenId,
     amount,
-    poolToken.balance,
+    balance,
     ZERO_BD
   )
   // update the datatoken

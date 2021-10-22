@@ -161,8 +161,10 @@ export function handleOrderStarted(event: OrderStarted): void {
   user.nrSales = user.nrSales + 1
   user.save()
 
-  const gStats: Global | null = getGlobalStats()
-  gStats.orderCount = factory.orderCount
-  gStats.totalOrderVolume = factory.totalOrderVolume
-  gStats.save()
+  const gStats: Global = getGlobalStats()
+  if (gStats !== null) {
+    gStats.orderCount = factory.orderCount
+    gStats.totalOrderVolume = factory.totalOrderVolume
+    gStats.save()
+  }
 }
