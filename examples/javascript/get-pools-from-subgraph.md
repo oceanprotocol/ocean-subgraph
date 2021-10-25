@@ -26,3 +26,9 @@ getAllPoolDatatokenAddresses(url).then(result => {
 });
 
 ```
+
+
+### Credits
+- German Navarro - Github user: gmanavarro - Discord user: Naga#2072
+- Axel Diaz - Github user: axeldiaz10 - Discord user: axeldiaz10#0085
+- Juan Arrillaga - Github user: jarrillaga - Discord user: juanarri#3482
