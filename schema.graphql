@@ -89,7 +89,7 @@ type Pool @entity {
     spotPrice: BigDecimal!
     consumePrice: BigDecimal!                           # TODO: still need?
 
-    // what is the point of the counts, we never used them => remove
+    # what is the point of the counts, we never used them => remove
     joinCount: BigInt!                                 # liquidity has been added
     exitCount: BigInt!                                 # liquidity has been removed
     swapCount: BigInt!
@@ -192,6 +192,7 @@ type FixedRateExchange @entity {
   baseToken: Token!
   rate: BigDecimal!
   active: Boolean!
+  suppy: Int!
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
   swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
 }
@@ -220,13 +221,13 @@ type FixedRateExchangeSwap @entity {
 }
 
 type Dispenser @entity {
-  id: ID! # dispenser datatoken
-  active: Boolean!
+  id: ID!                                   # it's the datatoken address
+  active: Boolean!                            
   owner: User!
   minterApproved: Boolean!
   isTrueMinter: Boolean!
-  maxTokens: BigDecimal!
-  maxBalance: BigDecimal!
+  maxTokens: BigDecimal!                    # max tokens that can be dispensed
+  maxBalance: BigDecimal!                   # max balance of requester. If the balance is higher, the dispense is rejected
   balance: BigDecimal!
   datatoken: Datatoken!
   dispenses: [DispenserTransaction!] @derivedFrom(field: "dispenserId")
@@ -268,7 +269,7 @@ type PoolSnapshot @entity {
 }
 
 
-// shouldn't we move this to aquarius?
+# shouldn't we move this to aquarius?
 type MetadataUpdate @entity {
   id: ID! # update tx +  datatokenAddress
   datatokenId: Datatoken!
