@@ -47,14 +47,22 @@ export function getOceanAddress(): string {
     return '0xf6410bf5d773c7a41ebff972f38e7463fa242477'
   if (network == 'gaiaxtestnet')
     return '0x80e63f73cac60c1662f27d2dfd2ea834acddbaa8'
+  if (network == 'catenaxtestnet')
+    return '0x80e63f73cac60c1662f27d2dfd2ea834acddbaa8'
   if (network == 'mumbai') return '0xd8992ed72c445c35cb4a2be468568ed1079357c8'
   if (network == 'bsc') return '0xdce07662ca8ebc241316a15b611c89711414dd1a'
+  if (network == 'celoalfajores')
+    return '0xd8992ed72c445c35cb4a2be468568ed1079357c8'
+  if (network == 'energyweb')
+    return '0x593122aae80a6fc3183b2ac0c4ab3336debee528'
+  if (network == 'moonriver')
+    return '0x99c409e5f62e4bd2ac142f17cafb6810b8f0baae'
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
 
 export const OCEAN: string = getOceanAddress()
 
-export function getGlobalStats(): Global | null {
+export function getGlobalStats(): Global {
   let gStats: Global | null = Global.load('1')
   if (gStats == null) {
     gStats = new Global('1')
@@ -67,30 +75,6 @@ export function getGlobalStats(): Global | null {
   }
 
   return gStats
-}
-
-export function _debuglog(
-  message: string,
-  event: ethereum.Event,
-  args: Array<string>
-): void {
-  if (event != null) {
-    args.push(event.transaction.hash.toHex())
-    args.push(event.address.toHex())
-  }
-  for (let i = 0; i < args.length; i++) {
-    message = message.concat(' {}')
-  }
-  log.debug('@@@@@@ ' + message, args)
-}
-
-export function debuglog(
-  message: string,
-  event: ethereum.Event,
-  args: Array<string>
-): void {
-  if (!ENABLE_DEBUG) return
-  _debuglog(message, event, args)
 }
 
 export function hexToDecimal(hexString: string, decimals: i32): BigDecimal {
@@ -188,53 +172,16 @@ export function updatePoolTokenBalance(
   balance: BigDecimal,
   source: string
 ): void {
-  debuglog(
-    '########## updating poolToken balance (source, oldBalance, newBalance, poolId) ',
-    null,
-    [source, poolToken.balance.toString(), balance.toString(), poolToken.poolId]
-  )
+  if (!poolToken) return
   if (balance < ZERO_BD || poolToken.balance < ZERO_BD) {
-    log.warning(
-      'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
-      [
-        poolToken.poolId,
-        poolToken.address.toString(),
-        poolToken.balance.toString(),
-        balance.toString()
-      ]
-    )
+    poolToken.balance = balance
   }
-
-  poolToken.balance = balance
 }
 
-export function updatePoolSwapVolume(
-  pool: Pool,
-  swapAmount: BigDecimal
-  // source: string
-): void {
-  debuglog(
-    '########## updating poolToken balance (source, oldBalance, newBalance, poolId) ',
-    null,
-    [source, pool.totalSwapVolume.toString(), swapAmount.toString(), pool.id]
-  )
-  if (swapAmount < ZERO_BD || pool.totalSwapVolume < ZERO_BD) {
-    log.warning(
-      'EEEEEEEEEEEEEEEEE poolToken.balance < Zero: pool={}, poolToken={}, oldBalance={}, newBalance={}',
-      [
-        pool.id,
-        poolToken.tokenAddress.toString(),
-        poolToken.balance.toString(),
-        swapAmount.toString()
-      ]
-    )
-  }
-
-  poolToken.swapBalanceOcean = poolToken.swapBalanceOcean.plus(swapAmount)
-}
 export function createUserEntity(address: string): void {
   if (User.load(address) == null) {
     const user = new User(address)
+    user.nrSales = 0
     user.save()
   }
 }
@@ -281,40 +228,39 @@ export function updatePoolTransactionToken(
   balance: BigDecimal,
   feeValue: BigDecimal
 ): void {
-  log.warning('WWWWWWWWWW ---- started update ptx with id {}', [poolTx])
-  log.warning('updatePoolTransactionToken({}, {} , {} , {} , {}}', [
-    poolTx,
-    poolTokenId,
-    amount.toString(),
-    balance.toString(),
-    feeValue.toString()
-  ])
   const ptx = PoolTransaction.load(poolTx)
   const poolToken = PoolToken.load(poolTokenId)
-  const pool = PoolEntity.load(poolToken.poolId)
+
   if (!ptx) {
     log.error('Cannot load PoolTransaction {}', [poolTx])
     return
   }
+
   if (!poolToken) {
     log.error('Cannot load PoolToken {}', [poolTokenId])
     return
   }
+  const pool = PoolEntity.load(poolToken.poolId)
   if (!pool) {
     log.error('Cannot load PoolEntity {}', [poolToken.poolId])
     return
   }
-  const ptxTokenValuesId = poolTx.concat('-').concat(poolToken.tokenAddress)
+  const ptxTokenValuesId = poolTx.concat('-').concat(poolTokenId)
   let ptxTokenValues = PoolTransactionTokenValues.load(ptxTokenValuesId)
   if (ptxTokenValues == null) {
     ptxTokenValues = new PoolTransactionTokenValues(ptxTokenValuesId)
     log.warning('created PoolTransactionTokenValues for {}', [ptxTokenValuesId])
   }
+
+  if (!ptxTokenValues) return
+
   ptxTokenValues.txId = poolTx
   ptxTokenValues.poolToken = poolTokenId
   ptxTokenValues.poolAddress = poolToken.poolId
-  ptxTokenValues.userAddress = ptx.userAddress
-  ptxTokenValues.tokenAddress = PoolToken.load(poolTokenId).address
+  const ptxUserAddress = ptx.userAddress
+  ptxTokenValues.userAddress = ptxUserAddress ? ptxUserAddress : ''
+  const poolTokenAddress = poolToken.address
+  ptxTokenValues.tokenAddress = poolTokenAddress ? poolTokenAddress : ''
 
   ptxTokenValues.value = amount
   ptxTokenValues.tokenReserve = balance
@@ -326,46 +272,30 @@ export function updatePoolTransactionToken(
   }
 
   ptxTokenValues.save()
-  log.warning('ptxTokenValues {} saved', [ptxTokenValues.id])
+
   if (ptxTokenValues.tokenAddress == OCEAN) {
     const factory = PoolFactory.load('1')
+    if (factory !== null) {
+      factory.totalOceanLiquidity = factory.totalOceanLiquidity
+        .plus(ptxTokenValues.tokenReserve)
+        .minus(pool.oceanReserve)
 
-    factory.totalOceanLiquidity = factory.totalOceanLiquidity
-      .plus(ptxTokenValues.tokenReserve)
-      .minus(pool.oceanReserve)
+      const gStats: Global = getGlobalStats()
+      if (gStats !== null) {
+        gStats.totalOceanLiquidity = factory.totalOceanLiquidity
 
-    const gStats: Global | null = getGlobalStats()
-    gStats.totalOceanLiquidity = factory.totalOceanLiquidity
+        gStats.save()
+      }
 
-    gStats.save()
-    if (factory.totalOceanLiquidity < ZERO_BD || pool.oceanReserve < ZERO_BD) {
-      log.warning(
-        'EEEEEEEEEEEEEEEEE totalOceanLiquidity or oceanReserve < Zero: pool={}, totOcnLiq={}, ocnRes={}',
-        [
-          pool.id,
-          factory.totalOceanLiquidity.toString(),
-          pool.oceanReserve.toString()
-        ]
-      )
+      ptx.oceanReserve = ptxTokenValues.tokenReserve
+      pool.oceanReserve = ptxTokenValues.tokenReserve
+      factory.save()
     }
-    ptx.oceanReserve = ptxTokenValues.tokenReserve
-    pool.oceanReserve = ptxTokenValues.tokenReserve
-    factory.save()
   } else {
     ptx.datatokenReserve = ptxTokenValues.tokenReserve
     pool.datatokenReserve = ptxTokenValues.tokenReserve
   }
-  // debuglog('########## updatePoolTransactionToken: ', null, [
-  //   BigInt.fromI32(ptx.block).toString(),
-  //   BigInt.fromI32(ptx.timestamp).toString(),
-  //   ptxTokenValues.type,
-  //   ptxTokenValues.value.toString(),
-  //   ptxTokenValues.tokenReserve.toString(),
-  //   poolToken.poolId
-  // ])
-  log.warning('saving ptx {} ', [ptx.id.toString()])
   ptx.save()
-  log.warning('saving pool {} ', [pool.id.toString()])
   pool.save()
 }
 
@@ -377,13 +307,6 @@ export function calcSpotPrice(
   swapFee: BigDecimal
 ): BigDecimal {
   if (balanceIn <= ZERO_BD || balanceOut <= ZERO_BD) return MINUS_1_BD
-  debuglog('################ calcSpotPrice', null, [
-    balanceIn.toString(),
-    wIn.toString(),
-    balanceOut.toString(),
-    wOut.toString(),
-    swapFee.toString()
-  ])
 
   const numer = balanceIn.div(wIn)
   const denom = balanceOut.div(wOut)
@@ -393,13 +316,6 @@ export function calcSpotPrice(
   const scale = ONE_BD.div(ONE_BD.minus(swapFee))
   const price = ratio.times(scale)
   price.truncate(18)
-  debuglog('################ calcSpotPrice values:', null, [
-    numer.toString(),
-    denom.toString(),
-    ratio.toString(),
-    scale.toString(),
-    price.toString()
-  ])
   return price
 }
 
@@ -411,6 +327,7 @@ export function createPoolTransaction(
 ): void {
   const poolId = event.address.toHex()
   const pool = PoolEntity.load(poolId)
+  if (!pool) return
   const ptx = event.transaction.hash.toHexString()
 
   const ocnToken = PoolToken.load(poolId.concat('-').concat(OCEAN))
@@ -440,24 +357,9 @@ export function createPoolTransaction(
   // Initial reserve values, will be updated in `updatePoolTransactionToken`
   poolTx.datatokenReserve = dtToken.balance
   poolTx.oceanReserve = ocnToken.balance
-  debuglog('poolTX reserves:(dt, ocean)', null, [
-    poolTx.datatokenReserve.toString(),
-    poolTx.oceanReserve.toString()
-  ])
 
   const p = Pool.bind(Address.fromString(poolId))
-  debuglog(
-    'createPoolTransaction args sent to calcInGivenOut (ocnBalance, ocnWeight, dtBalance, dtWeight, dtAmount, swapFee)',
-    null,
-    [
-      decimalToBigInt(ocnToken.balance).toString(),
-      decimalToBigInt(ocnToken.denormWeight).toString(),
-      decimalToBigInt(dtToken.balance).toString(),
-      decimalToBigInt(dtToken.denormWeight).toString(),
-      ONE_BASE_18.toString(),
-      decimalToBigInt(pool.swapFee).toString()
-    ]
-  )
+
   const priceResult = p.try_calcInGivenOut(
     decimalToBigInt(ocnToken.balance),
     decimalToBigInt(ocnToken.denormWeight),
@@ -466,13 +368,10 @@ export function createPoolTransaction(
     ONE_BASE_18,
     decimalToBigInt(pool.swapFee)
   )
-  debuglog('got results', null, [])
+
   poolTx.consumePrice = priceResult.reverted
     ? MINUS_1_BD
     : bigIntToDecimal(priceResult.value, 18)
-  debuglog('calcInGivenOut:', null, [
-    priceResult.reverted ? 'failed' : priceResult.value.toString()
-  ])
 
   const priceSpot = p.try_calcSpotPrice(
     decimalToBigInt(ocnToken.balance),
@@ -484,9 +383,6 @@ export function createPoolTransaction(
   poolTx.spotPrice = priceSpot.reverted
     ? ZERO_BD
     : bigIntToDecimal(priceSpot.value, 18)
-  debuglog('SpotPrice:', null, [
-    priceSpot.reverted ? 'failed' : priceSpot.value.toString()
-  ])
 
   pool.consumePrice = poolTx.consumePrice
   pool.spotPrice = poolTx.spotPrice
@@ -496,65 +392,41 @@ export function createPoolTransaction(
     poolTx.datatokenReserve.times(spotPrice)
   )
   const factory = PoolFactory.load('1')
-  if (oldValueLocked < ZERO_BD || pool.valueLocked < ZERO_BD) {
-    log.warning(
-      'EEEEEEEEEEEEEEEEE valueLocked < Zero: pool={}, oldVL={}, newVL={}, OCEAN={}, DT={}, spotPrice={}',
-      [
-        pool.id,
-        oldValueLocked.toString(),
-        pool.valueLocked.toString(),
-        poolTx.oceanReserve.toString(),
-        poolTx.datatokenReserve.toString(),
-        pool.spotPrice.toString()
-      ]
-    )
+  if (!factory) return
+  if (factory.totalValueLocked !== null) {
+    const tvl = factory.totalValueLocked
+
+    factory.totalValueLocked = tvl
+      ? tvl.minus(oldValueLocked).plus(pool.valueLocked)
+      : BigDecimal.fromString('0')
   }
-  factory.totalValueLocked = factory.totalValueLocked
-    .minus(oldValueLocked)
-    .plus(pool.valueLocked)
 
-  const gStats: Global | null = getGlobalStats()
-
-  gStats.totalValueLocked = factory.totalValueLocked
-  gStats.save()
+  const gStats: Global = getGlobalStats()
+  if (gStats !== null) {
+    gStats.totalValueLocked = factory.totalValueLocked
+    gStats.save()
+  }
 
   pool.transactionCount = pool.transactionCount.plus(BigInt.fromI32(1))
 
   pool.save()
   factory.save()
 
-  debuglog(
-    'updated pool reserves (source, dtBalance, ocnBalance, dtReserve, ocnReserve): ',
-    event,
-    [
-      'createPoolTransaction',
-      dtToken.balance.toString(),
-      ocnToken.balance.toString(),
-      pool.datatokenReserve.toString(),
-      pool.oceanReserve.toString()
-    ]
-  )
-
   poolTx.tx = event.transaction.hash
   // eslint-disable-next-line camelcase
   poolTx.event = event_type
   poolTx.block = event.block.number.toI32()
   poolTx.timestamp = event.block.timestamp.toI32()
-  poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
+  //  Property 'gasUsed' does not exist on type '~lib/@graphprotocol/graph-ts/chain/ethereum/ethereum.Transaction'
+  // poolTx.gasUsed = event.transaction.gasUsed.toBigDecimal()
   poolTx.gasPrice = event.transaction.gasPrice.toBigDecimal()
-
-  debuglog('####################### poolTransaction: ', event, [
-    ptx,
-    BigInt.fromI32(poolTx.block).toString(),
-    BigInt.fromI32(poolTx.timestamp).toString(),
-    pool.oceanReserve.toString()
-  ])
 
   poolTx.save()
 }
 
 export function decrPoolCount(finalized: boolean): void {
   const factory = PoolFactory.load('1')
+  if (!factory) return
   factory.poolCount -= 1
   if (finalized) factory.finalizedPoolCount -= 1
   factory.save()
@@ -576,7 +448,7 @@ export function saveTokenTransaction(
   transaction.event = eventName
   transaction.datatokenAddress = event.address.toHex()
   transaction.userAddress = userAddress
-  transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
+  // transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
   transaction.gasPrice = event.transaction.gasPrice.toBigDecimal()
   transaction.tx = event.transaction.hash
   transaction.timestamp = event.block.timestamp.toI32()

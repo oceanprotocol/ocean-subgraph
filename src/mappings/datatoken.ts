@@ -6,7 +6,8 @@ import {
   Global,
   PoolFactory,
   TokenBalance,
-  TokenOrder
+  TokenOrder,
+  User
 } from '../@types/schema'
 import {
   tokenToDecimal,
@@ -40,6 +41,7 @@ export function handleTransfer(event: Transfer): void {
   const isBurn = tokenShareTo == ZERO_ADDRESS
 
   const datatoken = Datatoken.load(tokenId)
+  if (!datatoken) return
 
   if (isMint) {
     tokenBalanceTo = TokenBalance.load(tokenBalanceToId)
@@ -99,7 +101,7 @@ export function handleOrderStarted(event: OrderStarted): void {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
   const tokenId = event.address.toHex()
   const datatoken = Datatoken.load(tokenId)
-  if (datatoken == null) return
+  if (!datatoken) return
 
   const payer = event.params.payer.toHex()
   // let feeCollector = event.params.mrktFeeCollector
@@ -114,6 +116,7 @@ export function handleOrderStarted(event: OrderStarted): void {
   if (order == null) {
     order = new TokenOrder(orderId)
   }
+  if (!order) return
   order.datatokenId = tokenId
   order.amount = tokenToDecimal(event.params.amount.toBigDecimal(), 18)
   order.consumer = event.params.consumer.toHex()
@@ -121,8 +124,8 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.serviceId = event.params.serviceId.toI32()
   order.timestamp = event.params.timestamp.toI32()
   if (
-    event.params.mrktFeeCollector != null &&
-    event.params.mrktFeeCollector.toHex() != ZERO_ADDRESS
+    event.params.mrktFeeCollector !== null &&
+    event.params.mrktFeeCollector.toHex() !== ZERO_ADDRESS
   ) {
     order.marketFeeCollector = event.params.mrktFeeCollector.toHexString()
   }
@@ -132,8 +135,15 @@ export function handleOrderStarted(event: OrderStarted): void {
 
   order.save()
 
-  datatoken.orderVolume = datatoken.orderVolume.plus(order.amount)
-  datatoken.orderCount = datatoken.orderCount.plus(BigInt.fromI32(1))
+  const orderVolume = datatoken.orderVolume
+  datatoken.orderVolume = orderVolume
+    ? orderVolume.plus(order.amount)
+    : BigDecimal.fromString('0')
+
+  const orderCount = datatoken.orderCount
+  datatoken.orderCount = orderCount
+    ? orderCount.plus(BigInt.fromI32(1))
+    : BigInt.fromI32(0)
 
   datatoken.save()
 
@@ -151,12 +161,28 @@ export function handleOrderStarted(event: OrderStarted): void {
     factory.poolCount = 0
     factory.finalizedPoolCount = 0
   }
+  if (factory !== null) {
+    const orderCount = factory.orderCount
+    factory.orderCount = orderCount
+      ? orderCount.plus(BigInt.fromI32(1))
+      : BigInt.fromI32(0)
+    const totalOrderValue = factory.totalOrderVolume
+    factory.totalOrderVolume = totalOrderValue
+      ? totalOrderValue.plus(order.amount)
+      : BigDecimal.fromString('0')
+    factory.save()
+  }
 
-  factory.orderCount = factory.orderCount.plus(BigInt.fromI32(1))
-  factory.totalOrderVolume = factory.totalOrderVolume.plus(order.amount)
-  factory.save()
-  const gStats: Global | null = getGlobalStats()
-  gStats.orderCount = factory.orderCount
-  gStats.totalOrderVolume = factory.totalOrderVolume
-  gStats.save()
+  const user = User.load(datatoken.minter)
+  if (user !== null) {
+    user.nrSales = user.nrSales + 1
+    user.save()
+  }
+
+  const gStats: Global = getGlobalStats()
+  if (gStats !== null) {
+    gStats.orderCount = factory.orderCount
+    gStats.totalOrderVolume = factory.totalOrderVolume
+    gStats.save()
+  }
 }

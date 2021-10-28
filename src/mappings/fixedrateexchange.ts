@@ -50,17 +50,19 @@ function _processActiveUpdated(
 
   const freupdate = new FixedRateExchangeUpdate(id)
   freupdate.exchangeId = exchangeId
-  freupdate.oldRate = fixedrateexchange.rate
-  freupdate.newRate = fixedrateexchange.rate
-  freupdate.oldActive = fixedrateexchange.active
+  if (fixedrateexchange) {
+    freupdate.oldRate = fixedrateexchange.rate
+    freupdate.newRate = fixedrateexchange.rate
+    freupdate.oldActive = fixedrateexchange.active
+    fixedrateexchange.active = active
+    fixedrateexchange.save()
+  }
+
   freupdate.newActive = active
   freupdate.block = event.block.number.toI32()
   freupdate.timestamp = event.block.timestamp.toI32()
   freupdate.tx = tx
   freupdate.save()
-
-  fixedrateexchange.active = active
-  fixedrateexchange.save()
 }
 
 export function handleExchangeActivated(event: ExchangeActivated): void {

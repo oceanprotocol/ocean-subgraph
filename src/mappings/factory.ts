@@ -61,8 +61,11 @@ export function handleNewPool(event: BPoolRegistered): void {
   factory.poolCount = factory.poolCount + 1
   factory.save()
   const gStats: Global | null = getGlobalStats()
-  gStats.poolCount = factory.poolCount
-  gStats.save()
+
+  if (gStats) {
+    gStats.poolCount = factory.poolCount
+    gStats.save()
+  }
 
   PoolContract.create(event.params.bpoolAddress)
 }

@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: moonbeamalpha
+    network: moonriver
     source:
-      address: '0xEF62FB495266C72a5212A11Dce8baa79Ec0ABeB1'
+      address: '0x4dD281EB67DED07E76E413Df16176D66ae69e240'
       abi: Factory
-      startBlock: 281776
+      startBlock: 637156
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -26,11 +26,11 @@ dataSources:
           handler: handleNewPool
   - kind: ethereum/contract
     name: DTFactory
-    network: moonbeamalpha
+    network: moonriver
     source:
-      address: '0x9C9eE07b8Ce907D2f9244F8317C1Ed29A3193bAe'
+      address: '0x1d535147a97bd87c8443125376E6671B60556E07'
       abi: DTFactory
-      startBlock: 281773
+      startBlock: 637150
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -46,11 +46,11 @@ dataSources:
           handler: handleNewToken
   - kind: ethereum/contract
     name: Metadata
-    network: moonbeamalpha
+    network: moonriver
     source:
-      address: '0x3c21a90599b5B7f37014cA5Bf30d3f1b73d7e391'
+      address: '0xe8c6Dc39602031A152440311e364818ba25C2Bc1'
       abi: Metadata
-      startBlock: 281778
+      startBlock: 637161
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -68,11 +68,11 @@ dataSources:
           handler: handleMetadataUpdated
   - kind: ethereum/contract
     name: FixedRateExchange
-    network: moonbeamalpha
+    network: moonriver
     source:
-      address: '0xc37F8341Ac6e4a94538302bCd4d49Cf0852D30C0'
+      address: '0xFe7967A5176fDAFa8DE109b3507016B885a82D6e'
       abi: FixedRateExchange
-      startBlock: 281777
+      startBlock: 637158
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -102,11 +102,11 @@ dataSources:
           handler: handleSwapped
   - kind: ethereum/contract
     name: Dispenser
-    network: moonbeamalpha
+    network: moonriver
     source:
-      address: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a'
+      address: '0xA4E108a4fa07C931cFe4bF2c1c6f9C1579d5a819'
       abi: Dispenser
-      startBlock: 281779
+      startBlock: 637162
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -133,7 +133,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: moonbeamalpha
+    network: moonriver
     source:
       abi: Pool
     mapping:
@@ -150,6 +150,12 @@ templates:
           file: ./abis/BPool.json
         - name: BToken
           file: ./abis/BToken.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
       eventHandlers:
         - event: LOG_CALL(indexed bytes4,indexed address,bytes)
           topic0: '0x34e1990700000000000000000000000000000000000000000000000000000000'
@@ -186,7 +192,7 @@ templates:
 
   - kind: ethereum/contract
     name: DataToken
-    network: moonbeamalpha
+    network: moonriver
     source:
       abi: DataToken
     mapping:
