@@ -4,46 +4,25 @@ var fs = require('fs')
 async function replaceContractAddresses() {
   // load barge addresses first
   try {
-    const data = JSON.parse(fs.readFileSync(process.env.ADDRESS_FILE, 'utf8'))
+    const data = JSON.parse(
+      fs.readFileSync(
+        '/home/mihai/.ocean/ocean-contracts/artifacts/address.json',
+        'utf8'
+      )
+    )
     const {
       DTFactory,
       // eslint-disable-next-line no-unused-vars
-      BFactory,
-      // eslint-disable-next-line no-unused-vars
-      FixedRateExchange,
-      // eslint-disable-next-line no-unused-vars
-      Metadata,
-      // eslint-disable-next-line no-unused-vars
-      Dispenser
+      ERC721Factory
     } = data.development
     let subgraph = fs.readFileSync('subgraph.yaml', 'utf8')
     if (!data) {
       return false
     }
-    // BFactory
+    // ERC721Factory
     subgraph = subgraph.replace(
-      /0xbe0083053744ECb871510C88dC0f6b77Da162706/g,
-      BFactory
-    )
-    // dt factory
-    subgraph = subgraph.replace(
-      /0x57317f97E9EA49eBd19f7c9bB7c180b8cDcbDeB9/g,
-      DTFactory
-    )
-    // metadata
-    subgraph = subgraph.replace(
-      /0x1a4b70d8c9DcA47cD6D0Fb3c52BB8634CA1C0Fdf/g,
-      Metadata
-    )
-    // fixed rate exchgage
-    subgraph = subgraph.replace(
-      /0x608d05214E42722B94a54cF6114d4840FCfF84e1/g,
-      FixedRateExchange
-    )
-    // dispenser
-    subgraph = subgraph.replace(
-      /0xDEfD0018969cd2d4E648209F876ADe184815f038/g,
-      Dispenser
+      /0x17d55A3501999FFBF9b0623cDB258611419d01F5/g,
+      ERC721Factory
     )
     // network
     subgraph = subgraph.replace(/network: mainnet/g, 'network: barge')

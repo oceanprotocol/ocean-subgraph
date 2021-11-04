@@ -14,9 +14,9 @@ import {
   DispenserTransaction,
   User,
   Datatoken
-} from '../@types/schema'
+} from '../../@types/schema'
 
-import { tokenToDecimal } from '../helpers'
+import { tokenToDecimal } from '../../helpers'
 
 function _processDispenserUpdate(
   event: ethereum.Event,
