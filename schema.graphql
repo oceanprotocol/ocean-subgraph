@@ -19,7 +19,7 @@ type Token @entity {
     holderCount: BigInt                                   # Number of addresses holding a balance of datatoken
     orderCount: BigInt                                    # Number of orders executed for this datatoken
 
-    createTime: Int                                       # Block time datatoken was created
+    createdTimestamp: Int                                       # Block time datatoken was created
     tx: Bytes                                             # Datatoken creation transaction id
     block: Int                                            # Block number when it was created
 }
@@ -46,7 +46,7 @@ type Nft @entity{
     metadataRole: [String!]                                  # addresses that can update the metadata
 
     template: String!                                       # template address
-    createTime: Int!                                        # Block time pool was created
+    createdTimestamp: Int!                                        # Block time pool was created
     tx: Bytes                                               # Pool creation transaction id
     block: Int                                              # Block number when it was created
 }
@@ -84,7 +84,7 @@ type Pool @entity {
     swapCount: BigInt!
     transactionCount: BigInt!                               # Number of transactions in this pool involving liquidity changes
    
-    createTime: Int!                                        # Block time pool was created
+    createdTimestamp: Int!                                        # Block time pool was created
     tx: Bytes                                               # Pool creation transaction id
     block: Int                                              # Block number when it was created
 
@@ -127,7 +127,7 @@ type PoolTransaction @entity {
   tx: Bytes!
   event: String
   block: Int!
-  timestamp: Int!
+  createdTimestamp: Int!
   gasUsed: BigDecimal!
   gasPrice: BigDecimal!
 
@@ -154,7 +154,7 @@ type Order @entity {                                         # renamed from Toke
   consumerMarketToken: Token                                  #
   consumerMarketAmmount: BigDecimal                           #call contract to get fee ammount
 
-  timestamp: Int!
+  createdTimestamp: Int!
   tx: Bytes
   block: Int!
 }
@@ -169,7 +169,7 @@ type TokenTransaction @entity {
   block: Int!
   gasUsed: BigDecimal!
   gasPrice: BigDecimal!
-  timestamp: Int!
+  createdTimestamp: Int!
   tx: Bytes!
 }
 
@@ -192,29 +192,33 @@ type FixedRateExchange @entity {
   active: Boolean!
   totalSwapValue: BigDecimal!                                # amount of total basetokens spent
   allowedSwapper: String                                     # address that is allowed to  swap tokens
-  supply: Int!
+  supply: BigInt!
   withMint: Boolean                                          # if the owner allowes the fre to mint
   isMinter: Boolean                                          # if the fre has the minter role on the datatoken 
 
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
   swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
+
+  createdTimestamp: Int!
+  tx: Bytes
+  block: Int!
 }
 
 type FixedRateExchangeUpdate @entity {
   id: ID!
   exchangeId: FixedRateExchange!
 
-  oldPrice: BigDecimal!
-  newPrice: BigDecimal!
+  oldPrice: BigDecimal
+  newPrice: BigDecimal
 
-  oldActive: Boolean!
-  newActive: Boolean!
+  oldActive: Boolean
+  newActive: Boolean
 
   oldAllowedSwapper: String
   newAllowedSwapper: String
 
   block: Int!
-  timestamp: Int!
+  createdTimestamp: Int!
   tx: Bytes!
 }
 
@@ -225,7 +229,7 @@ type FixedRateExchangeSwap @entity {
   baseTokenAmount: BigDecimal!
   dataTokenAmount: BigDecimal!
   block: Int!
-  timestamp: Int!
+  createdTimestamp: Int!
   tx: Bytes!
 }
 
@@ -237,6 +241,7 @@ type Dispenser @entity {
   owner: User!
   datatoken: Token!
 
+  allowedSwapper: String
   withMint: Boolean                                            # if the owner allowes the fre to mint
   isMinter: Boolean                                            # if the fre has the minter role on the datatoken 
   maxTokens: BigDecimal!                                       # max tokens that can be dispensed
@@ -247,14 +252,13 @@ type Dispenser @entity {
 }
 
 type DispenserTransaction @entity {
-  id: ID!
+  id: ID!                                                      
   dispenser: Dispenser!
-  datatoken: Token!
   user: User!
   amount: BigDecimal!
 
   block: Int!
-  timestamp: Int!
+  createdTimestamp: Int!
   tx: Bytes!
 }
 
@@ -264,7 +268,7 @@ type PoolSnapshot @entity {
   totalShares: BigDecimal!
   swapVolume: BigDecimal!                                             # swap value 24h
   swapFees: BigDecimal!                                               # swap fee value 24h  
-  timestamp: Int!                                                     # date without time
+  createdTimestamp: Int!                                                     # date without time
   spotPrice: BigDecimal!                                              # TODO: last spot price or first one?
   tokens: [PoolSnapshotTokenValue!] @derivedFrom(field: "poolSnapshot")
 }
@@ -300,6 +304,6 @@ type MetadataUpdate @entity {
   userAddress: String!
 
   block: Int!
-  timestamp: Int!
+  createdTimestamp: Int!
   tx: Bytes!
 }

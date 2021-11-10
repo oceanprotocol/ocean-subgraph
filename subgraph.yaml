@@ -46,6 +46,18 @@ dataSources:
       eventHandlers:
         - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
           handler: handleExchangeCreated
+        - event: ExchangeRateChanged(indexed bytes32,indexed address,uint256)
+          handler: handleRateChange
+        - event: ExchangeMintStateChanged(indexed bytes32,indexed address,bool)
+          handler: handleMintStateChanged
+        - event: ExchangeActivated(indexed bytes32,indexed address)
+          handler: handleActivated
+        - event: ExchangeDeactivated(indexed bytes32,indexed address)
+          handler: handleDeactivated
+        - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
+          handler: handleSwap
   - kind: ethereum/contract
     name: FactoryRouter 
     network: barge
@@ -66,6 +78,36 @@ dataSources:
       eventHandlers:
         - event: NewPool(indexed address,bool)
           handler: handleNewPool
+  - kind: ethereum/contract
+    name: Dispenser  
+    network: barge
+    source:
+      address: '0xb119b8895801111ff323ba63a77D4Fe78ED057a5'
+      abi: Dispenser  
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser  
+      abis:
+        - name: Dispenser
+          file: ./abis/Dispenser.json
+      eventHandlers:
+        - event: DispenserCreated(indexed address)
+          handler: handleNewDispenser
+        - event: DispenserActivated(indexed address)
+          handler: handleActivate
+        - event: DispenserDeactivated(indexed address)
+          handler: handleDeactivate
+        - event: DispenserAllowedSwapperChanged(indexed address,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleTokensDispensed
+        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
+          handler: handleOwnerWinthdraw
 templates:
   - name: ERC20Template
     kind: ethereum/contract
@@ -82,6 +124,8 @@ templates:
       abis:
         - name: ERC20Template
           file: ./abis/ERC20Template.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,indexed address,uint256)
           handler: handleOrderStarted

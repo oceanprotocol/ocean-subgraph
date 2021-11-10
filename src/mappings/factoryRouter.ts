@@ -4,7 +4,7 @@ import { Pool } from '../@types/schema'
 export function handleNewPool(event: NewPool): void {
   const newPool = new Pool(event.params.poolAddress.toHex())
 
-  newPool.createTime = event.block.timestamp.toI32()
+  newPool.createdTimestamp = event.block.timestamp.toI32()
   newPool.tx = event.transaction.hash
   newPool.block = event.block.number.toI32()
   newPool.save()
