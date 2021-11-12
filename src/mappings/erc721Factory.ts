@@ -1,6 +1,6 @@
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { Nft, Token } from '../@types/schema'
-import { ZERO_BD } from '../helpers'
+import { ZERO_BD } from './utils/constants'
 import { getUser } from './utils/userUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
