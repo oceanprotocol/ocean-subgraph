@@ -13,8 +13,8 @@ import {
   FixedRateExchangeSwap,
   FixedRateExchangeUpdate
 } from '../@types/schema'
-import { tokenToDecimal } from '../helpers'
 import { getFixedRateExchange, getUpdateOrSwapId } from './utils/fixedRateUtils'
+import { tokenToDecimal } from './utils/generic'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
@@ -146,8 +146,9 @@ export function handleSwap(event: Swapped): void {
 
   // reduce supply if the fixed rate is not minting tokens
   if (fixedRateExchange.isMinter || fixedRateExchange.withMint) {
-    fixedRateExchange.supply =
-      fixedRateExchange.supply - event.params.dataTokenSwappedAmount
+    fixedRateExchange.supply = fixedRateExchange.supply.minus(
+      event.params.dataTokenSwappedAmount
+    )
   }
 
   const swap = new FixedRateExchangeSwap(

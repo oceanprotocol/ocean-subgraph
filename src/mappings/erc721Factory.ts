@@ -1,6 +1,6 @@
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { Nft, Token } from '../@types/schema'
-import { ZERO_BD } from './utils/constants'
+import { decimal } from './utils/constants'
 import { getUser } from './utils/userUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
@@ -28,6 +28,6 @@ export function handleNewToken(event: TokenCreated): void {
 
   token.name = event.params.tokenName.toString()
   token.decimals = 18
-  token.supply = ZERO_BD
+  token.supply = decimal.ZERO_BD
   token.save()
 }

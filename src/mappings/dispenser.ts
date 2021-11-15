@@ -7,7 +7,7 @@ import {
 } from '../@types/Dispenser/Dispenser'
 import { DispenserCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { DispenserTransaction } from '../@types/schema'
-import { ZERO_BD } from './utils/constants'
+import { decimal } from './utils/constants'
 import { createDispenser, getDispenser } from './utils/dispenserUtils'
 import { getUser } from './utils/userUtils'
 
@@ -60,6 +60,6 @@ export function handleTokensDispensed(event: TokensDispensed): void {
 
 export function handleOwnerWinthdraw(event: OwnerWithdrawed): void {
   const dispenser = getDispenser(event.params.datatoken.toHex())
-  dispenser.balance = ZERO_BD
+  dispenser.balance = decimal.ZERO_BD
   dispenser.save()
 }

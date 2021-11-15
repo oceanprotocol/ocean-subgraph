@@ -18,7 +18,7 @@ export function handleNewPool(event: BPoolCreated): void {
   pool.datatoken = datatoken.id
 
   pool.owner = event.params.registeredBy.toHex()
-  
+
   pool.createdTimestamp = event.block.timestamp.toI32()
   pool.tx = event.transaction.hash
   pool.block = event.block.number.toI32()

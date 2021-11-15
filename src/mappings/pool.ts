@@ -1,6 +1,6 @@
 import { Pool, PoolTransaction } from '../@types/schema'
 import { LOG_JOIN } from '../@types/templates/BPool/BPool'
-import { integer, PoolTransactionType } from './utils/constants'
+import { integer } from './utils/constants'
 import { gweiToEth } from './utils/generic'
 import { getUser } from './utils/userUtils'
 
@@ -17,7 +17,6 @@ export function handleJoin(event: LOG_JOIN): void {
   const user = getUser(event.params.caller.toHex())
   poolTx.user = user.id
   poolTx.pool = pool.id
-  poolTx.type = PoolTransactionType.JOIN
 
   poolTx.timestamp = event.block.timestamp.toI32()
   poolTx.tx = event.transaction.hash

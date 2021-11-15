@@ -1,29 +1,43 @@
 type Token @entity {
-    id: ID!                                               # 
-    symbol: String                                        #
-    name: String                                          #
-    decimals: Int!                                        #
-    address: String!                                      #
-    cap: BigDecimal                                       #
-    supply: BigDecimal                                    #
-    isDatatoken: Boolean!                                 #
-    
-    owner: String                                         # address of ERC721 that owns the token, valid only for datatokens
-    minter: [User!]                                       # array of addresses with minter role, can be user wallet address, dispenser etc.
-    feeManager: String                                    # TODO: maybe we change name , depends on audit results . It's the address that collects the payments (NOT fees)
-    publishMarketFeeAddress: String                       # address of the market where the datatoken was created. This address collects market fees.
-    publishMarketFeeToken: String                         # adreess of fee token (can be Ocean, ETH, etc.)
-    publishMarketFeeAmmount: BigDecimal                   # fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals.                     
-    templateId: Int                                       # template ID of the datatoken
-    
-    holderCount: BigInt                                   # Number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts
-    orderCount: BigInt                                    # Number of orders executed for this datatoken
 
-    createdTimestamp: Int                                       # Block time datatoken was created
-    tx: Bytes                                             # Datatoken creation transaction id
-    block: Int                                            # Block number when it was created
+    id: ID!                                               
+    symbol: String                                      
+    name: String                                          
+    decimals: Int!                                        
+    address: String!                                      
+    cap: BigDecimal                                       
+    supply: BigDecimal                                    
+    isDatatoken: Boolean!                                 
+    
+    "address of ERC721 that owns the token, valid only for datatokens"
+    owner: String        
+    "array of addresses with minter role, can be user wallet address, dispenser etc."                                 
+    minter: [User!] 
+    "TODO: maybe we change name , depends on audit results . It's the address that collects the payments (NOT fees)"                                      
+    feeManager: String             
+    "address of the market where the datatoken was created. This address collects market fees."                       
+    publishMarketFeeAddress: String  
+    "adreess of fee token (can be Ocean, ETH, etc.)"                     
+    publishMarketFeeToken: String            
+    "fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
+    publishMarketFeeAmmount: BigDecimal         
+    "template ID of the datatoken"                               
+    templateId: Int                                       
+
+    "number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts"
+    holderCount: BigInt   
+    "number of orders executed for this datatoken"                                
+    orderCount: BigInt                                    
+
+    "block time datatoken was created"
+    createdTimestamp: Int        
+    "datatoken creation transaction id"                         
+    tx: Bytes        
+    "block number when it was created"                                   
+    block: Int                                            
 }
 
+"utility type"
 type TokenValuePair @entity {
    id : ID!
    token : Token!
@@ -31,64 +45,100 @@ type TokenValuePair @entity {
 }
 
 type Nft @entity{
-    id: ID!                                                # nft address
-    symbol: String!                                        #
-    name: String!                                          #
-    tokenUri: String!                                      #
-    owner: String!                                         # owner of the nft
-    address: String!                                       #
-    providerUrl: String                                    # provider url that can decrypt the ddo 
-    assetState: Int!                                       # state of the asset (described in docs)
+    "nft address"
+    id: ID!                                                
+    symbol: String!                                       
+    name: String!                                          
+    tokenUri: String! 
+    "address of the owner of the nft"                                     
+    owner: String!     
+    "same as id, it's just for easy discoverability"                                    
+    address: String!     
+    "provider url that can decrypt the ddo"                                  
+    providerUrl: String  
+    "state of the asset (described in docs)"                                  
+    assetState: Int!                                       
 
     managerRole: [String!]
     erc20DeployerRole: [String!]
     storeUpdateRole: [String!] 
-    metadataRole: [String!]                                  # addresses that can update the metadata
+    "addresses that can update the metadata"
+    metadataRole: [String!]                                 
 
-    template: String!                                       # template address
-    createdTimestamp: Int!                                        # Block time pool was created
-    tx: Bytes                                               # Pool creation transaction id
-    block: Int                                              # Block number when it was created
+    "template address"
+    template: String!           
+
+
+    "block time nft was created"
+    createdTimestamp: Int!                                  
+    "nft creation transaction id"
+    tx: Bytes   
+    "block number when it was created"                                            
+    block: Int                                              
 }
 
 type Pool @entity {
-    id: ID!                                                 # Pool address
-    owner: String!                                          # Owner address, pool controller
-
-    isPublicSwap: Boolean!                                  # if swap/trade is activated, probably always true
-    isFinalized: Boolean!                                   # only finalized pools are relevant to us
+    "pool address"
+    id: ID!              
+    "owner address, pool controller"                                   
+    owner: String! 
+    "if swap/trade is activated, probably always true"                                         
+    isPublicSwap: Boolean!     
+    "only finalized pools are relevant to us"                             
+    isFinalized: Boolean!                                   
     
-    symbol: String                                          # Pool token symbol
-    name: String                                            # Pool token name
-    cap: BigDecimal                                         # Maximum supply if any, converted from wei
-    isActive: Boolean!                                      # pool is active
+    "pool token symbol"
+    symbol: String      
+    "pool token name"                                    
+    name: String    
+    "maximum supply if any, converted from wei"                                        
+    cap: BigDecimal            
+    "pool is active"                            
+    isActive: Boolean!                                      
 
-    baseToken: PoolToken! @derivedFrom(field: "pool")
-    datatoken: PoolToken! @derivedFrom(field: "pool")
-    poolFee: BigDecimal!                                    # Pool Fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT
-    opfFee: BigDecimal!                                     # OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP
-    marketFee: BigDecimal!                                  # Market fee percent, fee that goes to the market where the pool was created : SWAP
-    totalPoolFee: [TokenValuePair!]!                            # actual value of fee collected in both tokens
-    totalOpfFee: [TokenValuePair!]!                             # actual value of fee collected in both tokens
-    totalMarketFee: [TokenValuePair!]!                          # actual value of fee collected in both tokens  
+    baseToken: PoolToken! 
+    datatoken: PoolToken!
+    "pool Fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
+    poolFee: BigDecimal! 
+    "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                    
+    opfFee: BigDecimal!   
+    "market fee percent, fee that goes to the market where the pool was created : SWAP"                                  
+    marketFee: BigDecimal!     
+    "actual value of fee collected in both tokens"                             
+    totalPoolFee: [TokenValuePair!]!  
+    "actual value of fee collected in both tokens"                          
+    totalOpfFee: [TokenValuePair!]!   
+    "actual value of fee collected in both tokens"                          
+    totalMarketFee: [TokenValuePair!]!                            
 
-    currentOpfFee: [TokenValuePair!]!                           # fee after collection totalFee - colectedFee
-    currentMarketFee: [TokenValuePair!]!                        # fee after collection totalFee - colectedFee  
+    "fee after collection =  totalFee - colectedFee"
+    currentOpfFee: [TokenValuePair!]!     
+    "fee after collection totalFee - colectedFee"                      
+    currentMarketFee: [TokenValuePair!]!                        
 
-    totalWeight: BigDecimal!                                # it's always 100 
-    totalShares: BigDecimal!                                # Total pool token shares
-    totalSwapVolume: [TokenValuePair!]!                         # total tokens that were swaped
+    "it's always 100 TODO: should be removed, seems redundant"
+    totalWeight: BigDecimal!     
+    "total pool token shares"                           
+    totalShares: BigDecimal!   
+    "total tokens that were swaped"                             
+    totalSwapVolume: [TokenValuePair!]!                         
 
-    spotPrice: BigDecimal!                                  # spot price
+    spotPrice: BigDecimal!                                  
 
-    joinCount: BigInt!                                      # liquidity has been added
-    exitCount: BigInt!                                      # liquidity has been removed
+    "count for when liquidity has been added"
+    joinCount: BigInt!                 
+    "count for when liquidity has been removed"                     
+    exitCount: BigInt!                                      
     swapCount: BigInt!
-    transactionCount: BigInt!                               # Number of transactions in this pool involving liquidity changes
+    "number of transactions in this pool involving liquidity changes"
+    transactionCount: BigInt!                               
    
-    createdTimestamp: Int!                                        # Block time pool was created
-    tx: Bytes                                               # Pool creation transaction id
-    block: Int                                              # Block number when it was created
+    "block time when pool was created"
+    createdTimestamp: Int!      
+    "pool creation transaction id"                            
+    tx: Bytes    
+    "block number when it was created"                                          
+    block: Int                                              
 
     shares: [PoolShare!] @derivedFrom(field: "pool")
     transactions: [PoolTransaction!] @derivedFrom(field: "pool")
@@ -96,32 +146,48 @@ type Pool @entity {
 
 # should not pe @entity
 type PoolToken @entity {
-    id: ID!                                                 # poolId + token address
-    pool: Pool!                                             # 
+    "pool address + token address"
+    id: ID!                                                
+    pool: Pool!                                             
     token: Token!
-    balance: BigDecimal!                                    # balance of the token in this pool
-    denormWeight: BigDecimal!                               # weight of token in the pool (50% for our pools)
+    "balance of the token in this pool"
+    balance: BigDecimal!         
+    "weight of token in the pool (50% for ocean bpools)"                            
+    denormWeight: BigDecimal!                              
 }
 
 # we will need to track pool share tx between users -  bpool transfer tx event
 type PoolShare @entity {
-  id: ID!                                                   # poolId + userAddress
+  "poolAddress + userAddress"
+  id: ID!                                                   
   user: User!
   pool: Pool!
   balance: BigDecimal!
 }
 
+ enum PoolTransactionType {
+  JOIN,
+  EXIT,
+  SWAP,
+  SETUP
+}
 
 type PoolTransaction @entity {
-  id: ID!                                                    # tx + caller
-  pool: Pool!                                                # Pool related to this tx
-  user: User!                                                # User that initiates the tx
-  type: Int                                                  # 0 - JOIN, 1 - EXIT , 2 - SWAP, maybe change to enum
+  "tx address + caller address" 
+  id: ID!        
+  "pool related to this tx"                                            
+  pool: Pool!   
+  "user that initiates the tx"                                             
+  user: User!                                              
+  type: PoolTransactionType                                                  
   
-  sharesTransferAmount: BigDecimal                           # Number of shares transfered
+  "number of shares transfered"
+  sharesTransferAmount: BigDecimal                           
  
-  poolFee: BigDecimal!                                       # Pool Fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT
-  opfFee: BigDecimal!                                        # OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP
+  "pool fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
+  poolFee: BigDecimal!     
+  "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                  
+  opfFee: BigDecimal!                                        
   marketFee: BigDecimal!  
   
   event: String                                              # TODO: what is this?
@@ -130,11 +196,14 @@ type PoolTransaction @entity {
   block: Int!
   timestamp: Int!
 
-  gasLimit: BigDecimal!                                      
-  gasPrice: BigDecimal!                                      # in eth
+  gasLimit: BigDecimal!  
+  "price expressed in eth"                                    
+  gasPrice: BigDecimal!                                      
 
   # change to baseToken and dataToken
-  baseToken: TokenValuePair                               # tokens transfered , if value is negative it means it was removed, 
+  "base tokens transfered , if value is negative it means it was removed"
+  baseToken: TokenValuePair        
+  "datatokens transfered , if value is negative it means it was removed"                        
   datatoken: TokenValuePair
 }
 
@@ -187,17 +256,22 @@ type User @entity {
 }
 
 type FixedRateExchange @entity {
-  id: ID!                                                    # fixed rate exchange id
+  "fixed rate exchange id"
+  id: ID!                                                    
   owner: User!
   datatoken: Token!
   baseToken: Token!
   price: BigDecimal!
   active: Boolean!
-  totalSwapValue: BigDecimal!                                # amount of total basetokens spent
-  allowedSwapper: String                                     # address that is allowed to  swap tokens
+  "amount of total basetokens spent"
+  totalSwapValue: BigDecimal!  
+  "address that is allowed to  swap tokens"                              
+  allowedSwapper: String                                     
   supply: BigInt!
-  withMint: Boolean                                          # if the owner allowes the fre to mint
-  isMinter: Boolean                                          # if the fre has the minter role on the datatoken 
+  "if the owner allowes the fre to mint"
+  withMint: Boolean  
+  "if the fre has the minter role on the datatoken"                                        
+  isMinter: Boolean                                          
 
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
   swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
@@ -236,19 +310,22 @@ type FixedRateExchangeSwap @entity {
   tx: Bytes!
 }
 
-# since in the template that we will use minterApproved is sort of "bundled" with isTrueMinter i think we should have only one field here to easily check if dispenser cand mint
 
 type Dispenser @entity {
-  id: ID!                                                      # it's the datatoken address
+  "datatoken address"
+  id: ID!                                                      
   active: Boolean!                            
   owner: User!
   datatoken: Token!
 
   allowedSwapper: String
-  isMinter: Boolean                                            # if the fre has the minter role on the datatoken 
-  maxTokens: BigDecimal!                                       # max tokens that can be dispensed
-  maxBalance: BigDecimal!                                      # max balance of requester. If the balance is higher, the dispense is rejected
-  balance: BigDecimal!                                         # how many tokens are left
+  isMinter: Boolean   
+  "max tokens that can be dispensed"                                         
+  maxTokens: BigDecimal! 
+  "max balance of requester. If the balance is higher, the dispense is rejected"                              
+  maxBalance: BigDecimal!    
+  "how many tokens are left"                                   
+  balance: BigDecimal!                                         
   
   dispenses: [DispenserTransaction!] @derivedFrom(field: "dispenser")
 }
@@ -268,9 +345,12 @@ type PoolSnapshot @entity {
   id: ID!
   pool: Pool!
   totalShares: BigDecimal!
-  swapVolume: BigDecimal!                                             # swap value 24h
-  swapFees: BigDecimal!                                               # swap fee value 24h  
-  createdTimestamp: Int!                                                     # date without time
+  "swap value 24h"
+  swapVolume: BigDecimal!   
+  "swap fee value 24h"                                          
+  swapFees: BigDecimal! 
+  "date without time"                                              
+  createdTimestamp: Int!                                          
   spotPrice: BigDecimal!                                              # TODO: last spot price or first one?
   tokens: [PoolSnapshotTokenValue!] @derivedFrom(field: "poolSnapshot")
 }
@@ -286,15 +366,22 @@ type PoolSnapshotTokenValue @entity {
 type Global @entity {
     id: ID!
 
-    totalValueLocked: [TokenValuePair!]                      # total value locked represented in the base token , basically 2x liqudity for each base token
-    totalLiquidity: [TokenValuePair!]                        # total liquidity for each base token 
-    totalSwapVolume: [TokenValuePair!]                       # total swap volume for each base token. pools and fre             
+    "total value locked represented in the base token , basically 2x liqudity for each base token"
+    totalValueLocked: [TokenValuePair!]    
+    "total liquidity for each base token"                  
+    totalLiquidity: [TokenValuePair!]                        
+    "total swap volume for each base token. pools and fre"
+    totalSwapVolume: [TokenValuePair!]                                
      
-    orderCount: BigInt                                      # Number of total consumes, pools + fre
+    "number of total consumes, pools + fre"
+    orderCount: BigInt                                     
 
-    poolCount: Int!                                         # Number of pools for all factories
-    finalizedPoolCount: Int!                                # Number of finalized pools for all factories
-    totalOrderVolume: BigDecimal                            # probably remove due to inconsistencies and imposibility to calculate
+    "number of pools for all factories"
+    poolCount: Int!       
+    "number of finalized pools for all factories"                                  
+    finalizedPoolCount: Int!                   
+    "probably remove due to inconsistencies and imposibility to calculate"             
+    totalOrderVolume: BigDecimal                            
 }
 
 
