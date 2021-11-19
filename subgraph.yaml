@@ -22,9 +22,9 @@ dataSources:
         - name: ERC721Factory
           file: ./abis/ERC721Factory.json
       eventHandlers:
-        - event: NFTCreated(indexed address,indexed address,indexed string,address)
+        - event: NFTCreated(indexed address,indexed address,string,address,string,string)
           handler: handleNftCreated
-        - event: TokenCreated(indexed address,indexed address,indexed string)
+        - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
   - kind: ethereum/contract
     name: FixedRateExchange
@@ -59,11 +59,11 @@ dataSources:
         - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
           handler: handleSwap
   - kind: ethereum/contract
-    name: Dispenser  
+    name: Dispenser
     network: barge
     source:
       address: '0xb119b8895801111ff323ba63a77D4Fe78ED057a5'
-      abi: Dispenser  
+      abi: Dispenser
       startBlock: 0
     mapping:
       kind: ethereum/events
@@ -71,12 +71,12 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/dispenser.ts
       entities:
-        - Dispenser  
+        - Dispenser
       abis:
         - name: Dispenser
           file: ./abis/Dispenser.json
       eventHandlers:
-        - event: DispenserCreated(indexed address)
+        - event: DispenserCreated(indexed address,indexed address,uint256,uint256,address)
           handler: handleNewDispenser
         - event: DispenserActivated(indexed address)
           handler: handleActivate
@@ -124,38 +124,40 @@ templates:
         - event: CleanedPermissions(indexed address,uint256,uint256)
           handler: handleCleanPermissions
   - kind: ethereum/contract
-    name: BFactory 
+    name: BFactory
     network: barge
     source:
-      abi: BFactory 
+      abi: BFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/poolFactory.ts
       entities:
-        - BFactory 
+        - BFactory
       abis:
-        - name: BFactory 
+        - name: BFactory
           file: ./abis/BFactory.json
       eventHandlers:
         - event: BPoolCreated(indexed address,indexed address,indexed address,address,address,address)
           handler: handleNewPool
   - kind: ethereum/contract
-    name: BPool 
+    name: BPool
     network: barge
     source:
-      abi: BPool 
+      abi: BPool
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/pool.ts
       entities:
-        - BPool 
+        - BPool
       abis:
-        - name: BPool 
+        - name: BPool
           file: ./abis/BPool.json
+        - name: BToken
+          file: ./abis/BToken.json
       eventHandlers:
         - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256)
           handler: handleSwap
@@ -163,5 +165,12 @@ templates:
           handler: handleJoin
         - event: LOG_EXIT(indexed address,indexed address,uint256,uint256)
           handler: handleExit
+        - event: LOG_SETUP(indexed address,indexed address,uint256,uint256,indexed address,uint256,uint256)
+          handler: handleSetup
         - event: LOG_BPT(uint256)
           handler: handleBpt
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlerBptTransfer      
+
+features:
+  - nonFatalErrors

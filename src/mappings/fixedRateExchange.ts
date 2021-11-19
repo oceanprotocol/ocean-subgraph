@@ -14,7 +14,7 @@ import {
   FixedRateExchangeUpdate
 } from '../@types/schema'
 import { getFixedRateExchange, getUpdateOrSwapId } from './utils/fixedRateUtils'
-import { tokenToDecimal } from './utils/generic'
+import { weiToDecimal } from './utils/generic'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
@@ -29,7 +29,7 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   // fixedRateExchange.baseTokenSymbol = getTokenSymbol(event.params.baseToken)
   fixedRateExchange.active = false
 
-  fixedRateExchange.price = tokenToDecimal(
+  fixedRateExchange.price = weiToDecimal(
     event.params.fixedRate.toBigDecimal(),
     BigInt.fromI32(18).toI32()
   )
@@ -51,7 +51,7 @@ export function handleRateChange(event: ExchangeRateChanged): void {
   newExchangeUpdate.tx = event.transaction.hash
   newExchangeUpdate.block = event.block.number.toI32()
 
-  fixedRateExchange.price = tokenToDecimal(
+  fixedRateExchange.price = weiToDecimal(
     event.params.newRate.toBigDecimal(),
     BigInt.fromI32(18).toI32()
   )
@@ -166,11 +166,11 @@ export function handleSwap(event: Swapped): void {
 
   // we need to fetch the decimals of the base token
   const baseToken = getToken(fixedRateExchange.baseToken)
-  swap.baseTokenAmount = tokenToDecimal(
+  swap.baseTokenAmount = weiToDecimal(
     event.params.baseTokenSwappedAmount.toBigDecimal(),
     BigInt.fromI32(baseToken.decimals).toI32()
   )
-  swap.dataTokenAmount = tokenToDecimal(
+  swap.dataTokenAmount = weiToDecimal(
     event.params.dataTokenSwappedAmount.toBigDecimal(),
     BigInt.fromI32(18).toI32()
   )

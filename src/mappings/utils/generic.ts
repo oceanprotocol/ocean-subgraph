@@ -26,7 +26,7 @@ export function getOceanAddress(): string {
 
 export const OCEAN: string = getOceanAddress()
 
-export function tokenToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
+export function weiToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
   const scale = BigInt.fromI32(10)
     .pow(decimals as u8)
     .toBigDecimal()

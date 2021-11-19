@@ -1,5 +1,4 @@
 type Token @entity {
-
     id: ID!                                               
     symbol: String                                      
     name: String                                          
@@ -81,9 +80,7 @@ type Pool @entity {
     "pool address"
     id: ID!              
     "owner address, pool controller"                                   
-    owner: String! 
-    "if swap/trade is activated, probably always true"                                         
-    isPublicSwap: Boolean!     
+    owner: String!
     "only finalized pools are relevant to us"                             
     isFinalized: Boolean!                                   
     
@@ -92,9 +89,7 @@ type Pool @entity {
     "pool token name"                                    
     name: String    
     "maximum supply if any, converted from wei"                                        
-    cap: BigDecimal            
-    "pool is active"                            
-    isActive: Boolean!                                      
+    cap: BigDecimal                                              
 
     baseToken: PoolToken! 
     datatoken: PoolToken!
@@ -140,7 +135,7 @@ type Pool @entity {
     "block number when it was created"                                          
     block: Int                                              
 
-    shares: [PoolShare!] @derivedFrom(field: "pool")
+    shares: [PoolShares!] @derivedFrom(field: "pool")
     transactions: [PoolTransaction!] @derivedFrom(field: "pool")
 }
 
@@ -157,12 +152,12 @@ type PoolToken @entity {
 }
 
 # we will need to track pool share tx between users -  bpool transfer tx event
-type PoolShare @entity {
+type PoolShares @entity {
   "poolAddress + userAddress"
   id: ID!                                                   
   user: User!
   pool: Pool!
-  balance: BigDecimal!
+  shares: BigDecimal!
 }
 
  enum PoolTransactionType {
@@ -200,11 +195,14 @@ type PoolTransaction @entity {
   "price expressed in eth"                                    
   gasPrice: BigDecimal!                                      
 
-  # change to baseToken and dataToken
-  "base tokens transfered , if value is negative it means it was removed"
-  baseToken: TokenValuePair        
+  "base tokens transfered"
+  baseToken: TokenValuePair 
+  "number of tokens transfered"       
+  baseTokenValue: BigDecimal
   "datatokens transfered , if value is negative it means it was removed"                        
   datatoken: TokenValuePair
+  "number of tokens transfered, if value is negative it means it was removed"
+  datatokenValue: BigDecimal
 }
 
 type Order @entity {                                         # renamed from TokenOrder to Order
@@ -247,7 +245,7 @@ type TokenTransaction @entity {
 
 type User @entity {
   id: ID!
-  sharesOwned: [PoolShare!] @derivedFrom(field: "user")
+  sharesOwned: [PoolShares!] @derivedFrom(field: "user")
   tokenBalancesOwned: [TokenValuePair!]
   tokensOwned: [Token!] @derivedFrom(field: "minter")
   poolTransactions: [PoolTransaction!] @derivedFrom(field: "user")
@@ -363,7 +361,7 @@ type PoolSnapshotTokenValue @entity {
   poolSnapshot: PoolSnapshot! 
 }
 
-type Global @entity {
+type GlobalStats @entity {
     id: ID!
 
     "total value locked represented in the base token , basically 2x liqudity for each base token"

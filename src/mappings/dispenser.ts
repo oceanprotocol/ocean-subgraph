@@ -60,6 +60,6 @@ export function handleTokensDispensed(event: TokensDispensed): void {
 
 export function handleOwnerWinthdraw(event: OwnerWithdrawed): void {
   const dispenser = getDispenser(event.params.datatoken.toHex())
-  dispenser.balance = decimal.ZERO_BD
+  dispenser.balance = decimal.ZERO
   dispenser.save()
 }

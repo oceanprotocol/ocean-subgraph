@@ -9,7 +9,7 @@ export function handleNftCreated(event: NFTCreated): void {
   const user = getUser(event.params.admin.toHexString())
   nft.owner = user.id
   nft.address = event.params.newTokenAddress.toHexString()
-  nft.name = event.params.tokenName.toHex()
+  nft.name = event.params.tokenName
   nft.symbol = ''
   nft.createdTimestamp = event.block.timestamp.toI32()
   nft.tx = event.transaction.hash
@@ -26,8 +26,8 @@ export function handleNewToken(event: TokenCreated): void {
   token.tx = event.transaction.hash
   token.block = event.block.number.toI32()
 
-  token.name = event.params.tokenName.toString()
+  token.name = event.params.name
   token.decimals = 18
-  token.supply = decimal.ZERO_BD
+  token.supply = decimal.ZERO
   token.save()
 }

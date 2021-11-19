@@ -11,8 +11,15 @@ export namespace integer {
 }
 
 export namespace decimal {
-  export const ZERO_BD = BigDecimal.fromString('0.0')
-  export const MINUS_1_BD = BigDecimal.fromString('-1.0')
-  export const ONE_BD = BigDecimal.fromString('1.0')
+  export const ZERO = BigDecimal.fromString('0.0')
+  export const MINUS_1 = BigDecimal.fromString('-1.0')
+  export const ONE = BigDecimal.fromString('1.0')
   export const BONE = BigDecimal.fromString('1000000000000000000')
+}
+
+export enum PoolTransactionType {
+  JOIN = 'JOIN',
+  EXIT = 'EXIT',
+  SWAP = 'SWAP',
+  SETUP = 'SETUP'
 }
