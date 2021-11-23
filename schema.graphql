@@ -9,29 +9,38 @@ type Token @entity {
     isDatatoken: Boolean!                                 
     
     "address of ERC721 that owns the token, valid only for datatokens"
-    owner: String        
+    owner: String    
+
     "array of addresses with minter role, can be user wallet address, dispenser etc."                                 
     minter: [User!] 
+
     "TODO: maybe we change name , depends on audit results . It's the address that collects the payments (NOT fees)"                                      
-    feeManager: String             
+    feeManager: String   
+
     "address of the market where the datatoken was created. This address collects market fees."                       
-    publishMarketFeeAddress: String  
+    publishMarketFeeAddress: String 
+
     "adreess of fee token (can be Ocean, ETH, etc.)"                     
-    publishMarketFeeToken: String            
+    publishMarketFeeToken: String   
+
     "fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
-    publishMarketFeeAmmount: BigDecimal         
+    publishMarketFeeAmmount: BigDecimal   
+
     "template ID of the datatoken"                               
     templateId: Int                                       
 
     "number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts"
     holderCount: BigInt   
+
     "number of orders executed for this datatoken"                                
     orderCount: BigInt                                    
 
     "block time datatoken was created"
     createdTimestamp: Int        
+
     "datatoken creation transaction id"                         
     tx: Bytes        
+
     "block number when it was created"                                   
     block: Int                                            
 }
@@ -49,12 +58,16 @@ type Nft @entity{
     symbol: String!                                       
     name: String!                                          
     tokenUri: String! 
+
     "address of the owner of the nft"                                     
     owner: String!     
+
     "same as id, it's just for easy discoverability"                                    
     address: String!     
+
     "provider url that can decrypt the ddo"                                  
     providerUrl: String  
+
     "state of the asset (described in docs)"                                  
     assetState: Int!                                       
 
@@ -78,53 +91,67 @@ type Nft @entity{
 
 type Pool @entity {
     "pool address"
-    id: ID!              
+    id: ID!    
+
     "owner address, pool controller"                                   
     owner: String!
+
     "only finalized pools are relevant to us"                             
     isFinalized: Boolean!                                   
     
     "pool token symbol"
     symbol: String      
+
     "pool token name"                                    
     name: String    
+
     "maximum supply if any, converted from wei"                                        
     cap: BigDecimal                                              
 
     baseToken: PoolToken! 
     datatoken: PoolToken!
+
     "pool Fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
     poolFee: BigDecimal! 
+
     "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                    
     opfFee: BigDecimal!   
+
     "market fee percent, fee that goes to the market where the pool was created : SWAP"                                  
     marketFee: BigDecimal!     
+
     "actual value of fee collected in both tokens"                             
     totalPoolFee: [TokenValuePair!]!  
+
     "actual value of fee collected in both tokens"                          
     totalOpfFee: [TokenValuePair!]!   
+
     "actual value of fee collected in both tokens"                          
     totalMarketFee: [TokenValuePair!]!                            
 
     "fee after collection =  totalFee - colectedFee"
-    currentOpfFee: [TokenValuePair!]!     
-    "fee after collection totalFee - colectedFee"                      
-    currentMarketFee: [TokenValuePair!]!                        
+    availableOpfFee: [TokenValuePair!]!     
 
-    "it's always 100 TODO: should be removed, seems redundant"
-    totalWeight: BigDecimal!     
+    "fee after collection totalFee - colectedFee"                      
+    availableMarketFee: [TokenValuePair!]!                        
+
     "total pool token shares"                           
     totalShares: BigDecimal!   
+
     "total tokens that were swaped"                             
     totalSwapVolume: [TokenValuePair!]!                         
 
     spotPrice: BigDecimal!                                  
 
     "count for when liquidity has been added"
-    joinCount: BigInt!                 
+    joinCount: BigInt!             
+
     "count for when liquidity has been removed"                     
-    exitCount: BigInt!                                      
+    exitCount: BigInt!              
+
+    "count for when tokens were swapped"                             
     swapCount: BigInt!
+
     "number of transactions in this pool involving liquidity changes"
     transactionCount: BigInt!                               
    
@@ -181,15 +208,19 @@ type PoolTransaction @entity {
  
   "pool fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
   poolFee: BigDecimal!     
-  "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                  
-  opfFee: BigDecimal!                                        
-  marketFee: BigDecimal!  
-  
-  event: String                                              # TODO: what is this?
 
-  tx: Bytes!
-  block: Int!
-  timestamp: Int!
+  "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                  
+  opfFee: BigDecimal!        
+
+  "fee that goes to the publishing market"                                
+  marketFee: BigDecimal!  
+
+  "block time when pool was created"
+  createdTimestamp: Int!      
+  "pool creation transaction id"                            
+  tx: Bytes    
+  "block number when it was created"                                          
+  block: Int       
 
   gasLimit: BigDecimal!  
   "price expressed in eth"                                    
@@ -197,10 +228,13 @@ type PoolTransaction @entity {
 
   "base tokens transfered"
   baseToken: TokenValuePair 
+
   "number of tokens transfered"       
   baseTokenValue: BigDecimal
+
   "datatokens transfered , if value is negative it means it was removed"                        
   datatoken: TokenValuePair
+
   "number of tokens transfered, if value is negative it means it was removed"
   datatokenValue: BigDecimal
 }
