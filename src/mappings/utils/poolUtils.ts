@@ -98,3 +98,96 @@ export function calcSpotPrice(
 
   return price
 }
+
+
+export function getPoolSnapshotId(poolAddress: string, timestamp: i32): string {
+  const dayTimestamp = timestamp - (timestamp % DAY) // Todays Timestamp
+  return `${poolAddress}-${dayTimestamp}`
+}
+
+export function createPoolSnapshot(poolId: string, timestamp: i32): void {
+  log.warning('Start create Pool Snapshot: {}   {}', [
+    poolId,
+    timestamp.toString()
+  ])
+  const dayTimestamp = timestamp - (timestamp % DAY) // Todays Timestamp
+
+  const pool = PoolEntity.load(poolId)
+
+  log.warning('got pool {} {}', [pool.id, poolId])
+  // Save pool snapshot
+  const snapshotId = poolId + '-' + dayTimestamp.toString()
+
+  log.warning('Creatnig Pool Snapshot with id {} {} {}', [
+    snapshotId,
+    pool.totalShares.toString(),
+    pool.totalSwapFee.toString()
+  ])
+  const snapshot = new PoolSnapshot(snapshotId)
+
+  snapshot.pool = poolId
+
+  snapshot.totalShares = pool.totalShares
+  snapshot.swapVolume = ZERO_BD
+  snapshot.swapFees = pool.totalSwapFee
+  snapshot.timestamp = dayTimestamp
+  snapshot.save()
+}
+
+export function saveSwapToSnapshot(
+  poolAddress: string,
+  timestamp: i32,
+  volume: BigDecimal,
+  fees: BigDecimal
+): void {
+  const dayTimestamp = timestamp - (timestamp % DAY) // Todays timestamp
+
+  // Save pool snapshot
+  const snapshotId = poolAddress + '-' + dayTimestamp.toString()
+  const snapshot = PoolSnapshot.load(snapshotId)
+
+  if (!snapshot) {
+    return
+  }
+
+  snapshot.swapVolume = snapshot.swapVolume.plus(volume)
+  snapshot.swapFees = snapshot.swapFees.plus(fees)
+  snapshot.save()
+}
+
+export function updatePoolSnapshotToken(
+  poolAddress: string,
+  timestamp: i32,
+  poolTokenId: string,
+  amount: BigDecimal,
+  balance: BigDecimal,
+  feeValue: BigDecimal
+): void {
+  log.warning('Start create Pool Snapshot Token: {}   {}', [
+    poolAddress,
+    timestamp.toString()
+  ])
+  const dayTimestamp = timestamp - (timestamp % DAY) // Todays timestamp
+
+  const snapshotId = poolAddress + '-' + dayTimestamp.toString()
+  log.warning('Pool Snapshot Token: {} {} {} {}', [
+    amount.toString(),
+    balance.toString(),
+    feeValue.toString(),
+    snapshotId + '-' + poolTokenId
+  ])
+  const token = new PoolSnapshotTokenValue(snapshotId + '-' + poolTokenId)
+
+  token.poolSnapshot = snapshotId
+  token.value = amount
+  token.tokenReserve = balance
+  token.tokenAddress = poolTokenId
+  token.feeValue = feeValue
+  if (amount.lt(ZERO_BD)) {
+    token.type = 'out'
+  } else {
+    token.type = 'in'
+  }
+  log.warning('Snapshot Token ID: {}', [token.id])
+  token.save()
+}

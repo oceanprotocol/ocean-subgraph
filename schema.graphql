@@ -376,25 +376,24 @@ type DispenserTransaction @entity {
 type PoolSnapshot @entity {
   id: ID!
   pool: Pool!
+  "total pool shares at the end of the 24h interval"
   totalShares: BigDecimal!
   "swap value 24h"
   swapVolume: BigDecimal!   
   "swap fee value 24h"                                          
   swapFees: BigDecimal! 
   "date without time"                                              
-  createdTimestamp: Int!                                          
-  spotPrice: BigDecimal!                                              # TODO: last spot price or first one?
-  tokens: [PoolSnapshotTokenValue!] @derivedFrom(field: "poolSnapshot")
-}
+  createdTimestamp: Int!         
+  "last spot price in the 24h interval"                                 
+  spotPrice: BigDecimal!                                         
+  
+  baseToken: Token!
+  baseTokenLiquidity: BigDecimal!
 
-type PoolSnapshotTokenValue @entity {
-  id: ID!                                                            # pool tx +  tokenAddress
-  token: Token!
-  value: BigDecimal!                                            
-  tokenReserve: BigDecimal!                                          # how many tokens are left in pool
-  poolSnapshot: PoolSnapshot! 
-}
+  datatoken: Token!
+  datatokenLiquidity: BigDecimal! 
 
+}
 type GlobalStats @entity {
     id: ID!
 
