@@ -108,8 +108,13 @@ type Pool @entity {
     "maximum supply if any, converted from wei"                                        
     cap: BigDecimal                                              
 
-    baseToken: PoolToken! 
-    datatoken: PoolToken!
+    baseToken: Token! 
+    baseTokenLiquidity: BigDecimal!
+    baseTokenWeight: BigDecimal!
+    
+    datatoken: Token!
+    datatokenLiquidity: BigDecimal!
+    datatokenWeight: BigDecimal!
 
     "pool Fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
     poolFee: BigDecimal! 
@@ -166,18 +171,6 @@ type Pool @entity {
     transactions: [PoolTransaction!] @derivedFrom(field: "pool")
 }
 
-# should not pe @entity
-type PoolToken @entity {
-    "pool address + token address"
-    id: ID!                                                
-    pool: Pool!                                             
-    token: Token!
-    "balance of the token in this pool"
-    balance: BigDecimal!         
-    "weight of token in the pool (50% for ocean bpools)"                            
-    denormWeight: BigDecimal!                              
-}
-
 # we will need to track pool share tx between users -  bpool transfer tx event
 type PoolShares @entity {
   "poolAddress + userAddress"
@@ -216,7 +209,7 @@ type PoolTransaction @entity {
   marketFee: BigDecimal!  
 
   "block time when pool was created"
-  createdTimestamp: Int!      
+  timestamp: Int!      
   "pool creation transaction id"                            
   tx: Bytes    
   "block number when it was created"                                          
@@ -383,7 +376,7 @@ type PoolSnapshot @entity {
   "swap fee value 24h"                                          
   swapFees: BigDecimal! 
   "date without time"                                              
-  createdTimestamp: Int!         
+  date: Int!         
   "last spot price in the 24h interval"                                 
   spotPrice: BigDecimal!                                         
   

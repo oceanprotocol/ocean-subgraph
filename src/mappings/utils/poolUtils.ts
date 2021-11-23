@@ -2,11 +2,11 @@ import { Address, BigDecimal, ethereum } from '@graphprotocol/graph-ts'
 import {
   Pool,
   PoolShares,
-  PoolToken,
+  PoolSnapshot,
   PoolTransaction
 } from '../../@types/schema'
 import { BPool } from '../../@types/templates/BPool/BPool'
-import { PoolTransactionType } from './constants'
+import { DAY, decimal, PoolTransactionType } from './constants'
 import { gweiToEth, weiToDecimal } from './generic'
 
 export function getPoolSharesId(
@@ -62,26 +62,6 @@ export function getPool(poolAddress: string): Pool {
   return pool
 }
 
-export function getPoolTokenId(
-  poolAddress: string,
-  tokenAddress: string
-): string {
-  return `${poolAddress}-${tokenAddress}`
-}
-
-export function getPoolToken(
-  poolAddress: string,
-  tokenAddress: string
-): PoolToken {
-  let poolToken = PoolToken.load(getPoolTokenId(poolAddress, tokenAddress))
-  if (poolToken === null) {
-    poolToken = new PoolToken(getPoolTokenId(poolAddress, tokenAddress))
-    // TODO: add data to pooltoken
-  }
-
-  return poolToken
-}
-
 export function calcSpotPrice(
   poolAddress: string,
   baseTokenAddress: string,
@@ -99,95 +79,85 @@ export function calcSpotPrice(
   return price
 }
 
-
+export function getDateFromTimestamp(timestamp: i32): i32 {
+  // date without time
+  return timestamp - (timestamp % DAY)
+}
 export function getPoolSnapshotId(poolAddress: string, timestamp: i32): string {
-  const dayTimestamp = timestamp - (timestamp % DAY) // Todays Timestamp
-  return `${poolAddress}-${dayTimestamp}`
+  return `${poolAddress}-${getDateFromTimestamp(timestamp)}`
 }
 
-export function createPoolSnapshot(poolId: string, timestamp: i32): void {
-  log.warning('Start create Pool Snapshot: {}   {}', [
-    poolId,
-    timestamp.toString()
-  ])
-  const dayTimestamp = timestamp - (timestamp % DAY) // Todays Timestamp
+export function createPoolSnapshot(
+  poolAddress: string,
+  timestamp: i32
+): PoolSnapshot {
+  const snapshotId = getPoolSnapshotId(poolAddress, timestamp)
 
-  const pool = PoolEntity.load(poolId)
-
-  log.warning('got pool {} {}', [pool.id, poolId])
-  // Save pool snapshot
-  const snapshotId = poolId + '-' + dayTimestamp.toString()
-
-  log.warning('Creatnig Pool Snapshot with id {} {} {}', [
-    snapshotId,
-    pool.totalShares.toString(),
-    pool.totalSwapFee.toString()
-  ])
+  const pool = Pool.load(poolAddress)
   const snapshot = new PoolSnapshot(snapshotId)
 
-  snapshot.pool = poolId
+  snapshot.pool = poolAddress
 
   snapshot.totalShares = pool.totalShares
-  snapshot.swapVolume = ZERO_BD
-  snapshot.swapFees = pool.totalSwapFee
-  snapshot.timestamp = dayTimestamp
+  snapshot.swapVolume = decimal.ZERO
+  snapshot.swapFees = decimal.ZERO
+  snapshot.baseToken = pool.baseToken
+  //snapshot.baseTokenLiquidity = pool.baseToken
+  snapshot.datatoken = pool.datatoken
+  snapshot.datatokenLiquidity = decimal.ZERO
+
+  snapshot.date = getDateFromTimestamp(timestamp)
+  snapshot.spotPrice = pool.spotPrice
+
   snapshot.save()
+  return snapshot
 }
 
-export function saveSwapToSnapshot(
+export function getPoolSnapshot(
   poolAddress: string,
-  timestamp: i32,
-  volume: BigDecimal,
-  fees: BigDecimal
-): void {
-  const dayTimestamp = timestamp - (timestamp % DAY) // Todays timestamp
-
-  // Save pool snapshot
-  const snapshotId = poolAddress + '-' + dayTimestamp.toString()
-  const snapshot = PoolSnapshot.load(snapshotId)
-
-  if (!snapshot) {
-    return
+  timestamp: i32
+): PoolSnapshot {
+  let snapshot = PoolSnapshot.load(getPoolSnapshotId(poolAddress, timestamp))
+  if (snapshot === null) {
+    snapshot = createPoolSnapshot(poolAddress, timestamp)
   }
 
-  snapshot.swapVolume = snapshot.swapVolume.plus(volume)
-  snapshot.swapFees = snapshot.swapFees.plus(fees)
-  snapshot.save()
+  return snapshot
 }
 
-export function updatePoolSnapshotToken(
-  poolAddress: string,
-  timestamp: i32,
-  poolTokenId: string,
-  amount: BigDecimal,
-  balance: BigDecimal,
-  feeValue: BigDecimal
-): void {
-  log.warning('Start create Pool Snapshot Token: {}   {}', [
-    poolAddress,
-    timestamp.toString()
-  ])
-  const dayTimestamp = timestamp - (timestamp % DAY) // Todays timestamp
+// export function updatePoolSnapshotToken(
+//   poolAddress: string,
+//   timestamp: i32,
+//   poolTokenId: string,
+//   amount: BigDecimal,
+//   balance: BigDecimal,
+//   feeValue: BigDecimal
+// ): void {
+//   log.warning('Start create Pool Snapshot Token: {}   {}', [
+//     poolAddress,
+//     timestamp.toString()
+//   ])
+//   const dayTimestamp = timestamp - (timestamp % DAY) // Todays timestamp
 
-  const snapshotId = poolAddress + '-' + dayTimestamp.toString()
-  log.warning('Pool Snapshot Token: {} {} {} {}', [
-    amount.toString(),
-    balance.toString(),
-    feeValue.toString(),
-    snapshotId + '-' + poolTokenId
-  ])
-  const token = new PoolSnapshotTokenValue(snapshotId + '-' + poolTokenId)
+//   const snapshotId = poolAddress + '-' + dayTimestamp.toString()
+//   log.warning('Pool Snapshot Token: {} {} {} {}', [
+//     amount.toString(),
+//     balance.toString(),
+//     feeValue.toString(),
+//     snapshotId + '-' + poolTokenId
+//   ])
+//   const token = new PoolSnapshotTokenValue(snapshotId + '-' + poolTokenId)
 
-  token.poolSnapshot = snapshotId
-  token.value = amount
-  token.tokenReserve = balance
-  token.tokenAddress = poolTokenId
-  token.feeValue = feeValue
-  if (amount.lt(ZERO_BD)) {
-    token.type = 'out'
-  } else {
-    token.type = 'in'
-  }
-  log.warning('Snapshot Token ID: {}', [token.id])
-  token.save()
-}
+//   token.poolSnapshot = snapshotId
+//   token.value = amount
+//   token.tokenReserve = balance
+//   token.tokenAddress = poolTokenId
+//   token.feeValue = feeValue
+//   if (amount.lt(ZERO_BD)) {
+//     token.type = 'out'
+//   } else {
+//     token.type = 'in'
+//   }
+//   log.warning('Snapshot Token ID: {}', [token.id])
+//   token.save()
+// }

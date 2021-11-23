@@ -2,6 +2,8 @@ import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 
 export const ENABLE_DEBUG = true
 
+export const DAY = 24 * 60 * 60
+
 export namespace integer {
   export const NEGATIVE_ONE = BigInt.fromI32(-1)
   export const ZERO = BigInt.fromI32(0)

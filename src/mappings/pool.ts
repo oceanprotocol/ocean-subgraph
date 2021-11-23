@@ -12,9 +12,9 @@ import { weiToDecimal } from './utils/generic'
 import {
   calcSpotPrice,
   getPool,
-  getPoolToken,
   getPoolTransaction,
-  getPoolShares
+  getPoolShares,
+  getPoolSnapshot
 } from './utils/poolUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
@@ -28,7 +28,8 @@ export function handleJoin(event: LOG_JOIN): void {
   pool.transactionCount = pool.transactionCount.plus(integer.ONE)
   pool.joinCount = pool.joinCount.plus(integer.ONE)
 
-  // get token,  update pool transaction and update pool user liquidity
+  // get token,  update pool transaction, poolSnapshot
+  const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   const token = getToken(event.params.tokenIn.toHex())
   const ammount = weiToDecimal(
     event.params.tokenAmountIn.toBigDecimal(),
@@ -37,16 +38,22 @@ export function handleJoin(event: LOG_JOIN): void {
   if (token.isDatatoken) {
     poolTx.datatoken = token.id
     poolTx.datatokenValue = ammount
+
+    poolSnapshot.datatokenLiquidity =
+      poolSnapshot.datatokenLiquidity.plus(ammount)
+
+    pool.datatokenLiquidity.plus(ammount)
   } else {
     poolTx.baseToken = token.id
     poolTx.baseTokenValue = ammount
+
+    poolSnapshot.baseTokenLiquidity =
+      poolSnapshot.baseTokenLiquidity.plus(ammount)
+
+    pool.baseTokenLiquidity.plus(ammount)
   }
 
-  // update pool token
-  const poolToken = getPoolToken(pool.id, token.id)
-  poolToken.balance.plus(ammount)
-
-  poolToken.save()
+  poolSnapshot.save()
   poolTx.save()
   pool.save()
 }
@@ -61,6 +68,7 @@ export function handleExit(event: LOG_EXIT): void {
 
   // get token and update pool transaction, value is negative because this is an exit event.
   const token = getToken(event.params.tokenOut.toHex())
+  const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   const ammount = weiToDecimal(
     event.params.tokenAmountOut.toBigDecimal(),
     token.decimals
@@ -68,15 +76,22 @@ export function handleExit(event: LOG_EXIT): void {
   if (token.isDatatoken) {
     poolTx.datatoken = token.id
     poolTx.datatokenValue = ammount.neg()
+
+    poolSnapshot.datatokenLiquidity =
+      poolSnapshot.datatokenLiquidity.minus(ammount)
+
+    pool.datatokenLiquidity.minus(ammount)
   } else {
     poolTx.baseToken = token.id
     poolTx.baseTokenValue = ammount.neg()
+
+    poolSnapshot.baseTokenLiquidity =
+      poolSnapshot.baseTokenLiquidity.minus(ammount)
+
+    pool.baseTokenLiquidity.minus(ammount)
   }
 
-  const poolToken = getPoolToken(pool.id, token.id)
-  poolToken.balance.minus(ammount)
-
-  poolToken.save()
+  poolSnapshot.save()
   poolTx.save()
   pool.save()
 }
@@ -89,6 +104,7 @@ export function handleSwap(event: LOG_SWAP): void {
   pool.transactionCount = pool.transactionCount.plus(integer.ONE)
   pool.joinCount = pool.joinCount.plus(integer.ONE)
 
+  const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   // get token out and update pool transaction, value is negative
   const tokenOut = getToken(event.params.tokenOut.toHex())
   const ammountOut = weiToDecimal(
@@ -98,12 +114,20 @@ export function handleSwap(event: LOG_SWAP): void {
   if (tokenOut.isDatatoken) {
     poolTx.datatoken = tokenOut.id
     poolTx.datatokenValue = ammountOut.neg()
+
+    pool.datatokenLiquidity = pool.datatokenLiquidity.minus(ammountOut)
+
+    poolSnapshot.datatokenLiquidity =
+      poolSnapshot.datatokenLiquidity.minus(ammountOut)
   } else {
     poolTx.baseToken = tokenOut.id
     poolTx.baseTokenValue = ammountOut.neg()
+
+    pool.baseTokenLiquidity = pool.baseTokenLiquidity.minus(ammountOut)
+
+    poolSnapshot.baseTokenLiquidity =
+      poolSnapshot.baseTokenLiquidity.minus(ammountOut)
   }
-  const poolTokenOut = getPoolToken(pool.id, tokenOut.id)
-  poolTokenOut.balance.minus(ammountOut)
 
   // update pool token in
   const tokenIn = getToken(event.params.tokenIn.toHex())
@@ -114,12 +138,20 @@ export function handleSwap(event: LOG_SWAP): void {
   if (tokenIn.isDatatoken) {
     poolTx.datatoken = tokenIn.id
     poolTx.datatokenValue = ammountIn
+
+    pool.datatokenLiquidity = pool.datatokenLiquidity.plus(ammountIn)
+
+    poolSnapshot.datatokenLiquidity =
+      poolSnapshot.datatokenLiquidity.plus(ammountIn)
   } else {
     poolTx.baseToken = tokenIn.id
     poolTx.baseTokenValue = ammountIn
+
+    pool.baseTokenLiquidity = pool.baseTokenLiquidity.plus(ammountIn)
+
+    poolSnapshot.baseTokenLiquidity =
+      poolSnapshot.baseTokenLiquidity.plus(ammountIn)
   }
-  const poolTokenIn = getPoolToken(pool.id, tokenIn.id)
-  poolTokenIn.balance.plus(ammountIn)
 
   // update spot price
   const isTokenInDatatoken = tokenIn.isDatatoken
@@ -130,28 +162,28 @@ export function handleSwap(event: LOG_SWAP): void {
     isTokenInDatatoken ? tokenIn.decimals : tokenOut.decimals
   )
   pool.spotPrice = spotPrice
+  poolSnapshot.spotPrice = spotPrice
 
-  poolTokenIn.save()
-  poolTokenOut.save()
+  poolSnapshot.save()
   poolTx.save()
   pool.save()
 }
 
-// setup is just to set token weight and spotPrice , it will mostly be 50:50
+// setup is just to set token weight(it will mostly be 50:50) and spotPrice
 export function handleSetup(event: LOG_SETUP): void {
   const pool = getPool(event.address.toHex())
 
   const token = getToken(event.params.baseToken.toHex())
-  const baseToken = getPoolToken(pool.id, event.params.baseToken.toHex())
-  baseToken.denormWeight = weiToDecimal(
+  pool.baseToken = token.id
+  pool.baseTokenWeight = weiToDecimal(
     event.params.baseTokenWeight.toBigDecimal(),
     token.decimals
   )
-  baseToken.save()
 
   // decimals hardcoded because datatokens have 18 decimals
-  const datatoken = getPoolToken(pool.id, event.params.dataToken.toHex())
-  datatoken.denormWeight = weiToDecimal(
+  const datatoken = getToken(event.params.dataToken.toHex())
+  pool.datatoken = datatoken.id
+  pool.datatokenWeight = weiToDecimal(
     event.params.dataTokenWeight.toBigDecimal(),
     18
   )
