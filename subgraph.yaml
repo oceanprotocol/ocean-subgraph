@@ -104,6 +104,8 @@ templates:
       abis:
         - name: ERC20Template
           file: ./abis/ERC20Template.json
+        - name: ERC20TemplateEnterprise
+          file: ./abis/ERC20TemplateEnterprise.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: ERC20Roles
@@ -111,18 +113,8 @@ templates:
       eventHandlers:
         - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,indexed address,uint256)
           handler: handleOrderStarted
-        - event: MinterApproved(address,address)
-          handler: handleMinterApproved
-        - event: AddedMinter(indexed address,indexed address,uint256,uint256)
-          handler: handleAddMinter
-        - event: RemovedMinter(indexed address,indexed address,uint256,uint256)
-          handler: handleRemoveMinter
-        - event: AddedFeeManager(indexed address,indexed address,uint256,uint256)
-          handler: handlerAddFeeManager
-        - event: RemovedFeeManager(indexed address,indexed address,uint256,uint256)
-          handler: handlerRemoveFeeManager
-        - event: CleanedPermissions(indexed address,uint256,uint256)
-          handler: handleCleanPermissions
+        - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
+          handler: handlerNewPaymentCollector
   - kind: ethereum/contract
     name: BFactory
     network: barge
@@ -158,6 +150,8 @@ templates:
           file: ./abis/BPool.json
         - name: BToken
           file: ./abis/BToken.json
+        - name: BMath
+          file: ./abis/BMath.json
       eventHandlers:
         - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256)
           handler: handleSwap
@@ -171,6 +165,8 @@ templates:
           handler: handleBpt
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer      
+        - event: SWAP_FEES(uint,uint,uint,address)
+          handler: handlerSwapFees
 
 features:
   - nonFatalErrors
