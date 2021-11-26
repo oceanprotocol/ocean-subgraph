@@ -199,13 +199,13 @@ type PoolTransaction @entity {
   "number of shares transfered"
   sharesTransferAmount: BigDecimal                           
  
-  "pool fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
+  "pool fee value, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
   poolFee: BigDecimal!     
 
-  "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                  
+  "OPF Fee value, fee that goes to Ocean Protocol Foundation : SWAP"                                  
   opfFee: BigDecimal!        
 
-  "fee that goes to the publishing market"                                
+  "market fee value, fee that goes to the publishing market"                                
   marketFee: BigDecimal!  
 
   "block time when pool was created"
@@ -232,8 +232,9 @@ type PoolTransaction @entity {
   datatokenValue: BigDecimal
 }
 
-type Order @entity {                                         # renamed from TokenOrder to Order
-  id: ID!                                                    # datatokenId + userAddress + tx
+type Order @entity {  
+  "transaction hash - token address - from address"                                       
+  id: ID!                                                    
   token: Token!
 
   consumer: User!
@@ -243,11 +244,11 @@ type Order @entity {                                         # renamed from Toke
 
 
   # the fees will be updated from an event that will be created after (todo)
-  publishingMarketAddress: User
+  publishingMarket: User
   publishingMarketToken: Token                                #
   publishingMarketAmmount: BigDecimal                         #call contract to get fee ammount
 
-  consumerMarketAddress: User
+  consumerMarket: User
   consumerMarketToken: Token                                  #
   consumerMarketAmmount: BigDecimal                           #call contract to get fee ammount
 

@@ -98,7 +98,7 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/mappings/erc20Template.ts
+      file: ./src/mappings/erc20Templates.ts
       entities:
         - ERC20Template
       abis:
@@ -114,7 +114,11 @@ templates:
         - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,indexed address,uint256)
           handler: handleOrderStarted
         - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
-          handler: handlerNewPaymentCollector
+          handler: handleNewPaymentCollector
+        - event: PublishMarketFees(indexed address,indexed address,uint256)
+          handler: handlePublishMarketFees
+        - event: ConsumeMarketFees(indexed address,indexed address,uint256)
+          handler: handleConsumeMarketFees
   - kind: ethereum/contract
     name: BFactory
     network: barge
@@ -165,8 +169,8 @@ templates:
           handler: handleBpt
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer      
-        - event: SWAP_FEES(uint,uint,uint,address)
-          handler: handlerSwapFees
+        # - event: SWAP_FEES(uint,uint,uint,address)
+        #   handler: handlerSwapFees
 
 features:
   - nonFatalErrors

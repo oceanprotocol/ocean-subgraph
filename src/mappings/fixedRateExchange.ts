@@ -105,6 +105,7 @@ export function handleDeactivated(event: ExchangeDeactivated): void {
   )
   newExchangeUpdate.oldActive = fixedRateExchange.active
   newExchangeUpdate.newActive = false
+
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
   newExchangeUpdate.tx = event.transaction.hash
   newExchangeUpdate.block = event.block.number.toI32()
