@@ -58,7 +58,7 @@ type Nft @entity{
     symbol: String!                                       
     name: String!                                          
     tokenUri: String! 
-
+  
     "address of the owner of the nft"                                     
     owner: String!     
 
@@ -410,14 +410,17 @@ type GlobalStats @entity {
 }
 
 
-type MetadataUpdate @entity {
-  id: ID! # update tx +  datatokenAddress
-  datatoken: Token!
+type NftUpdate @entity {
+  id: ID! # update tx +  nft address
+  datatoken: Nft!
 
-  datatokenAddress: String!
+ "user that made the update"
   userAddress: String!
 
+  "state of the asset in this update"  
+  assetState: Int!
+
   block: Int!
-  createdTimestamp: Int!
+  timestamp: Int!
   tx: Bytes!
 }

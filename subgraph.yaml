@@ -171,6 +171,29 @@ templates:
           handler: handlerBptTransfer      
         # - event: SWAP_FEES(uint,uint,uint,address)
         #   handler: handlerSwapFees
-
+  - name: ERC721Template
+    kind: ethereum/contract
+    network: barge
+    source:
+      abi: ERC721Template
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/nftUpdate.ts
+      entities:
+        - ERC721Template
+      abis:
+        - name: ERC721Template
+          file: ./abis/ERC721Template.json
+      eventHandlers:
+        - event: MetadataCreated(indexed address,uint8,string,bytes,bytes,bytes,uint256,uint256)
+          handler: handleCreated
+        - event: MetadataUpdated(indexed address,uint8,string,bytes,bytes,bytes,uint256,uint256)
+          handler: handleUpdated
+        - event: MetadataState(indexed address,uint8,uint256,uint256)
+          handler: handleState
+        - event: TokenURIUpdate(indexed address,string,uint256,uint256,uint256)
+          handler: handleUriUpdate
 features:
   - nonFatalErrors
