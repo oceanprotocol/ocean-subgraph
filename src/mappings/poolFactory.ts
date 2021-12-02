@@ -1,5 +1,5 @@
-import { BPoolCreated } from '../@types/FactoryRouter/FactoryRouter'
 import { Pool } from '../@types/schema'
+import { BPoolCreated } from '../@types/templates/BFactory/BFactory'
 import { getToken } from './utils/tokenUtils'
 
 export function handleNewPool(event: BPoolCreated): void {

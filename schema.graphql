@@ -30,19 +30,19 @@ type Token @entity {
     templateId: Int                                       
 
     "number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts"
-    holderCount: BigInt   
+    holderCount: BigInt!   
 
     "number of orders executed for this datatoken"                                
-    orderCount: BigInt                                    
+    orderCount: BigInt!                                    
 
     "block time datatoken was created"
-    createdTimestamp: Int        
+    createdTimestamp: Int!        
 
     "datatoken creation transaction id"                         
     tx: String!        
 
     "block number when it was created"                                   
-    block: Int                                            
+    block: Int!                                            
 }
 
 "utility type"
@@ -194,7 +194,7 @@ type PoolTransaction @entity {
   pool: Pool!   
   "user that initiates the tx"                                             
   user: User!                                              
-  type: PoolTransactionType                                                  
+  type: PoolTransactionType!                                                  
   
   "number of shares transfered"
   sharesTransferAmount: BigDecimal                           

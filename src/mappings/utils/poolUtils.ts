@@ -19,7 +19,7 @@ export function getPoolSharesId(
 export function getPoolTransaction(
   event: ethereum.Event,
   userAddress: string,
-  type: PoolTransactionType
+  type: string
 ): PoolTransaction {
   let poolTx = PoolTransaction.load(event.transaction.hash.toHex())
 
@@ -32,7 +32,7 @@ export function getPoolTransaction(
     poolTx.type = type
 
     poolTx.timestamp = event.block.timestamp.toI32()
-    poolTx.tx = event.transaction.hash
+    poolTx.tx = event.transaction.hash.toHex()
     poolTx.block = event.block.number.toI32()
 
     poolTx.gasPrice = gweiToEth(event.transaction.gasPrice.toBigDecimal())
@@ -73,8 +73,8 @@ export function calcSpotPrice(
   const weiPrice = poolContract.try_getSpotPrice(
     Address.fromString(baseTokenAddress),
     Address.fromString(datatokenAddress)
-  ).reverted
-  const price = weiToDecimal(weiPrice, baseTokenDecimals)
+  ).value
+  const price = weiToDecimal(weiPrice.toBigDecimal(), baseTokenDecimals)
 
   return price
 }
@@ -93,7 +93,8 @@ export function createPoolSnapshot(
 ): PoolSnapshot {
   const snapshotId = getPoolSnapshotId(poolAddress, timestamp)
 
-  const pool = Pool.load(poolAddress)
+  const pool = getPool(poolAddress)
+
   const snapshot = new PoolSnapshot(snapshotId)
 
   snapshot.pool = poolAddress
@@ -102,7 +103,6 @@ export function createPoolSnapshot(
   snapshot.swapVolume = decimal.ZERO
   snapshot.swapFees = decimal.ZERO
   snapshot.baseToken = pool.baseToken
-  //snapshot.baseTokenLiquidity = pool.baseToken
   snapshot.datatoken = pool.datatoken
   snapshot.datatokenLiquidity = decimal.ZERO
 

@@ -1,7 +1,7 @@
-import { OrderStarted } from '../@types/ERC20Template/ERC20Template'
 import { Order } from '../@types/schema'
 import {
   ConsumeMarketFees,
+  OrderStarted,
   PublishMarketFees
 } from '../@types/templates/ERC20Template/ERC20Template'
 import { integer } from './utils/constants'
@@ -9,7 +9,11 @@ import { weiToDecimal } from './utils/generic'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
-function getOrderId(tx: string, tokenAddress: string, fromAddress: string) {
+function getOrderId(
+  tx: string,
+  tokenAddress: string,
+  fromAddress: string
+): string {
   return `${tx}-${tokenAddress}-${fromAddress}`
 }
 
@@ -37,7 +41,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     token.decimals
   )
 
-  order.serviceId = event.params.serviceId
+  order.serviceId = event.params.serviceId.toI32()
 
   const publishMarket = getUser(event.params.publishMarketAddress.toHex())
   order.publishingMarket = publishMarket.id
@@ -53,26 +57,26 @@ export function handleOrderStarted(event: OrderStarted): void {
   token.save()
 }
 
-export function handlePublishMarketFees(event: PublishMarketFees): void {
-  const order = Order.load(
-    getOrderId(
-      event.transaction.hash.toHex(),
-      event.address.toHex(),
-      event.transaction.from.toHex()
-    )
-  )
+// export function handlePublishMarketFees(event: PublishMarketFees): void {
+//   const order = Order.load(
+//     getOrderId(
+//       event.transaction.hash.toHex(),
+//       event.address.toHex(),
+//       event.transaction.from.toHex()
+//     )
+//   )
 
-  order.save()
-}
+//   order.save()
+// }
 
-export function handleConsumeMarketFees(event: ConsumeMarketFees): void {
-  const order = Order.load(
-    getOrderId(
-      event.transaction.hash.toHex(),
-      event.address.toHex(),
-      event.transaction.from.toHex()
-    )
-  )
+// export function handleConsumeMarketFees(event: ConsumeMarketFees): void {
+//   const order = Order.load(
+//     getOrderId(
+//       event.transaction.hash.toHex(),
+//       event.address.toHex(),
+//       event.transaction.from.toHex()
+//     )
+//   )
 
-  order.save()
-}
+//   order.save()
+// }

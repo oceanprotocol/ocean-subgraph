@@ -197,6 +197,11 @@ export function handleSetup(event: LOG_SETUP): void {
   )
   pool.spotPrice = spotPrice
   pool.isFinalized = true
+  const poolTx = PoolTransaction.load(event.transaction.hash.toHex())
+  if (poolTx) {
+    poolTx.type = PoolTransactionType.SETUP
+    poolTx.save()
+  }
 
   pool.save()
   datatoken.save()
@@ -211,17 +216,14 @@ export function handleBpt(event: LOG_BPT): void {
 
   const decimalBpt = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)
 
-  switch (poolTx.type) {
-    case PoolTransactionType.JOIN: {
-      poolShares.shares = poolShares.shares.plus(decimalBpt)
-      pool.totalShares.plus(decimalBpt)
-      break
-    }
-    case PoolTransactionType.EXIT: {
-      poolShares.shares = poolShares.shares.minus(decimalBpt)
-      pool.totalShares.minus(decimalBpt)
-      break
-    }
+  // for some reason switch is broken so reverting to good old if
+  if (poolTx.type === PoolTransactionType.JOIN) {
+    poolShares.shares = poolShares.shares.plus(decimalBpt)
+    pool.totalShares.plus(decimalBpt)
+  }
+  if (poolTx.type === PoolTransactionType.EXIT) {
+    poolShares.shares = poolShares.shares.minus(decimalBpt)
+    pool.totalShares.minus(decimalBpt)
   }
 
   poolShares.shares = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)

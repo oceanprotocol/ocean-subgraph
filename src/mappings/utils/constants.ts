@@ -19,16 +19,17 @@ export namespace decimal {
   export const BONE = BigDecimal.fromString('1000000000000000000')
 }
 
-export enum PoolTransactionType {
-  JOIN = 'JOIN',
-  EXIT = 'EXIT',
-  SWAP = 'SWAP',
-  SETUP = 'SETUP'
+// string enums don't work in wasm so this was the alternative, not optimal
+export namespace PoolTransactionType {
+  export const JOIN = 'JOIN'
+  export const EXIT = 'EXIT'
+  export const SWAP = 'SWAP'
+  export const SETUP = 'SETUP'
 }
 
-export enum NftUpdateType {
-  METADATA_CREATED = 'METADATA_CREATED',
-  METADATA_UPDATED = 'METADATA_UPDATED',
-  STATE_UPDATED = 'STATE_UPDATED',
-  TOKENURI_UPDATED = 'TOKENURI_UPDATED'
+export namespace NftUpdateType {
+  export const METADATA_CREATED = 'METADATA_CREATED'
+  export const METADATA_UPDATED = 'METADATA_UPDATED'
+  export const STATE_UPDATED = 'STATE_UPDATED'
+  export const TOKENURI_UPDATED = 'TOKENURI_UPDATED'
 }
