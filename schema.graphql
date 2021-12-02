@@ -39,7 +39,7 @@ type Token @entity {
     createdTimestamp: Int        
 
     "datatoken creation transaction id"                         
-    tx: Bytes        
+    tx: String!        
 
     "block number when it was created"                                   
     block: Int                                            
@@ -84,7 +84,7 @@ type Nft @entity{
     "block time nft was created"
     createdTimestamp: Int!                                  
     "nft creation transaction id"
-    tx: Bytes   
+    tx: String!   
     "block number when it was created"                                            
     block: Int                                              
 }
@@ -163,7 +163,7 @@ type Pool @entity {
     "block time when pool was created"
     createdTimestamp: Int!      
     "pool creation transaction id"                            
-    tx: Bytes    
+    tx: String!    
     "block number when it was created"                                          
     block: Int                                              
 
@@ -211,7 +211,7 @@ type PoolTransaction @entity {
   "block time when pool was created"
   timestamp: Int!      
   "pool creation transaction id"                            
-  tx: Bytes    
+  tx: String!    
   "block number when it was created"                                          
   block: Int       
 
@@ -253,7 +253,7 @@ type Order @entity {
   consumerMarketAmmount: BigDecimal                           #call contract to get fee ammount
 
   createdTimestamp: Int!
-  tx: Bytes
+  tx: String!
   block: Int!
 }
 
@@ -268,7 +268,7 @@ type TokenTransaction @entity {
   gasUsed: BigDecimal!
   gasPrice: BigDecimal!
   createdTimestamp: Int!
-  tx: Bytes!
+  tx: String!
 }
 
 type User @entity {
@@ -303,7 +303,7 @@ type FixedRateExchange @entity {
   swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
 
   createdTimestamp: Int!
-  tx: Bytes
+  tx: String!
   block: Int!
 }
 
@@ -322,7 +322,7 @@ type FixedRateExchangeUpdate @entity {
 
   block: Int!
   createdTimestamp: Int!
-  tx: Bytes!
+  tx: String!
 }
 
 type FixedRateExchangeSwap @entity {
@@ -333,7 +333,7 @@ type FixedRateExchangeSwap @entity {
   dataTokenAmount: BigDecimal!
   block: Int!
   createdTimestamp: Int!
-  tx: Bytes!
+  tx: String!
 }
 
 
@@ -364,7 +364,7 @@ type DispenserTransaction @entity {
 
   block: Int!
   createdTimestamp: Int!
-  tx: Bytes!
+  tx: String!
 }
 
 type PoolSnapshot @entity {
@@ -402,25 +402,36 @@ type GlobalStats @entity {
     orderCount: BigInt                                     
 
     "number of pools for all factories"
-    poolCount: Int!       
+    poolCount: Int!
     "number of finalized pools for all factories"                                  
-    finalizedPoolCount: Int!                   
+    finalizedPoolCount: Int!          
     "probably remove due to inconsistencies and imposibility to calculate"             
-    totalOrderVolume: BigDecimal                            
+    totalOrderVolume: BigDecimal
 }
 
 
+ enum NftUpdateType {
+  METADATA_CREATED,
+  METADATA_UPDATED,
+  STATE_UPDATED,
+  TOKENURI_UPDATED
+}
+
 type NftUpdate @entity {
   id: ID! # update tx +  nft address
-  datatoken: Nft!
+  
+  nft: Nft!
 
  "user that made the update"
   userAddress: String!
 
-  "state of the asset in this update"  
+  "state of the asset in this update"
   assetState: Int!
+
+  "type of the update: metadata created, metadata update, state update, token uri update"
+  type: NftUpdateType!
 
   block: Int!
   timestamp: Int!
-  tx: Bytes!
+  tx: String!
 }

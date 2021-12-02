@@ -53,7 +53,7 @@ export function handleTokensDispensed(event: TokensDispensed): void {
   dispenserTransaction.user = user.id
 
   dispenserTransaction.createdTimestamp = event.block.timestamp.toI32()
-  dispenserTransaction.tx = event.transaction.hash
+  dispenserTransaction.tx = event.transaction.hash.toHex()
   dispenserTransaction.block = event.block.number.toI32()
   dispenserTransaction.save()
 }

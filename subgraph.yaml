@@ -118,7 +118,7 @@ templates:
         - event: PublishMarketFees(indexed address,indexed address,uint256)
           handler: handlePublishMarketFees
         - event: ConsumeMarketFees(indexed address,indexed address,uint256)
-          handler: handleConsumeMarketFees
+          handler: handleConsumeMarketFees 
   - kind: ethereum/contract
     name: BFactory
     network: barge
@@ -194,6 +194,6 @@ templates:
         - event: MetadataState(indexed address,uint8,uint256,uint256)
           handler: handleState
         - event: TokenURIUpdate(indexed address,string,uint256,uint256,uint256)
-          handler: handleUriUpdate
+          handler: handleTokenUriUpdate
 features:
   - nonFatalErrors

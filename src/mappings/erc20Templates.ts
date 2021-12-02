@@ -46,7 +46,7 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.consumerMarket = consumeMarket.id
 
   order.createdTimestamp = event.block.timestamp.toI32()
-  order.tx = event.transaction.hash
+  order.tx = event.transaction.hash.toHex()
   order.block = event.block.number.toI32()
 
   order.save()

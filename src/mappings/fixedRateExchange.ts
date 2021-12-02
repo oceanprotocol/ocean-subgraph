@@ -48,7 +48,7 @@ export function handleRateChange(event: ExchangeRateChanged): void {
   )
   newExchangeUpdate.oldPrice = fixedRateExchange.price
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
-  newExchangeUpdate.tx = event.transaction.hash
+  newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
 
   fixedRateExchange.price = weiToDecimal(
@@ -84,7 +84,7 @@ export function handleActivated(event: ExchangeActivated): void {
   newExchangeUpdate.oldActive = fixedRateExchange.active
   newExchangeUpdate.newActive = true
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
-  newExchangeUpdate.tx = event.transaction.hash
+  newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
 
   fixedRateExchange.active = true
@@ -107,7 +107,7 @@ export function handleDeactivated(event: ExchangeDeactivated): void {
   newExchangeUpdate.newActive = false
 
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
-  newExchangeUpdate.tx = event.transaction.hash
+  newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
 
   fixedRateExchange.active = false
@@ -129,7 +129,7 @@ export function handleAllowedSwapperChanged(
   )
 
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
-  newExchangeUpdate.tx = event.transaction.hash
+  newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
   newExchangeUpdate.oldAllowedSwapper = fixedRateExchange.allowedSwapper
 
@@ -159,7 +159,7 @@ export function handleSwap(event: Swapped): void {
     )
   )
   swap.createdTimestamp = event.block.timestamp.toI32()
-  swap.tx = event.transaction.hash
+  swap.tx = event.transaction.hash.toHex()
   swap.block = event.block.number.toI32()
 
   swap.exchangeId = event.params.exchangeId.toHex()
