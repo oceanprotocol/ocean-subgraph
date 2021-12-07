@@ -1,7 +1,7 @@
 version: '3'
 services:
   graph-node:
-    image: oceanprotocol/graph-node:latest
+    image: graphprotocol/graph-node:v0.25.0
     ports:
       - '8000:8000'
       - '8001:8001'
@@ -17,7 +17,7 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
-      ethereum: 'barge:http://172.15.0.3:8545'
+      ethereum: 'rinkeby:https://rinkeby.infura.io/v3/${INFURA_PROJECT_ID}'
       RUST_LOG: info
   ipfs:
     image: ipfs/go-ipfs:v0.4.23

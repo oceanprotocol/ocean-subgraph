@@ -391,22 +391,20 @@ type PoolSnapshot @entity {
 type GlobalStats @entity {
     id: ID!
 
-    "total value locked represented in the base token , basically 2x liqudity for each base token"
-    totalValueLocked: [TokenValuePair!]    
     "total liquidity for each base token"                  
-    totalLiquidity: [TokenValuePair!]                        
+    totalLiquidity: [TokenValuePair!]!                        
     "total swap volume for each base token. pools and fre"
-    totalSwapVolume: [TokenValuePair!]                                
+    totalSwapVolume: [TokenValuePair!]!                                
      
-    "number of total consumes, pools + fre"
-    orderCount: BigInt                                     
+    "number of total consumes, pools + fre+ free"
+    orderCount: BigInt!                                    
 
-    "number of pools for all factories"
-    poolCount: Int!
-    "number of finalized pools for all factories"                                  
-    finalizedPoolCount: Int!          
-    "probably remove due to inconsistencies and imposibility to calculate"             
-    totalOrderVolume: BigDecimal
+    "total nfts created"
+    nftCount: BigInt!
+    "total datatokens created"
+    datatokenCount:BigInt!
+    "number of pools"
+    poolCount: Int!     
 }
 
 

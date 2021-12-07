@@ -6,7 +6,7 @@ import {
   PoolTransaction
 } from '../../@types/schema'
 import { BPool } from '../../@types/templates/BPool/BPool'
-import { DAY, decimal, PoolTransactionType } from './constants'
+import { DAY, decimal } from './constants'
 import { gweiToEth, weiToDecimal } from './generic'
 
 export function getPoolSharesId(
@@ -124,40 +124,3 @@ export function getPoolSnapshot(
 
   return snapshot
 }
-
-// export function updatePoolSnapshotToken(
-//   poolAddress: string,
-//   timestamp: i32,
-//   poolTokenId: string,
-//   amount: BigDecimal,
-//   balance: BigDecimal,
-//   feeValue: BigDecimal
-// ): void {
-//   log.warning('Start create Pool Snapshot Token: {}   {}', [
-//     poolAddress,
-//     timestamp.toString()
-//   ])
-//   const dayTimestamp = timestamp - (timestamp % DAY) // Todays timestamp
-
-//   const snapshotId = poolAddress + '-' + dayTimestamp.toString()
-//   log.warning('Pool Snapshot Token: {} {} {} {}', [
-//     amount.toString(),
-//     balance.toString(),
-//     feeValue.toString(),
-//     snapshotId + '-' + poolTokenId
-//   ])
-//   const token = new PoolSnapshotTokenValue(snapshotId + '-' + poolTokenId)
-
-//   token.poolSnapshot = snapshotId
-//   token.value = amount
-//   token.tokenReserve = balance
-//   token.tokenAddress = poolTokenId
-//   token.feeValue = feeValue
-//   if (amount.lt(ZERO_BD)) {
-//     token.type = 'out'
-//   } else {
-//     token.type = 'in'
-//   }
-//   log.warning('Snapshot Token ID: {}', [token.id])
-//   token.save()
-// }

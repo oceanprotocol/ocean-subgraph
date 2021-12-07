@@ -1,6 +1,7 @@
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { Nft, Token } from '../@types/schema'
-import { decimal } from './utils/constants'
+import { decimal, integer } from './utils/constants'
+import { getGlobalStats } from './utils/globalUtils'
 import { getUser } from './utils/userUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
@@ -15,6 +16,10 @@ export function handleNftCreated(event: NFTCreated): void {
   nft.tx = event.transaction.hash.toHex()
   nft.block = event.block.number.toI32()
 
+  const globalStats = getGlobalStats()
+  globalStats.nftCount = globalStats.nftCount.plus(integer.ONE)
+
+  globalStats.save()
   nft.save()
 }
 
@@ -29,5 +34,10 @@ export function handleNewToken(event: TokenCreated): void {
   token.name = event.params.name
   token.decimals = 18
   token.supply = decimal.ZERO
+
+  const globalStats = getGlobalStats()
+  globalStats.datatokenCount = globalStats.datatokenCount.plus(integer.ONE)
+
+  globalStats.save()
   token.save()
 }

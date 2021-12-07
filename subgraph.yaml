@@ -169,8 +169,6 @@ templates:
           handler: handleBpt
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer      
-        # - event: SWAP_FEES(uint,uint,uint,address)
-        #   handler: handlerSwapFees
   - name: ERC721Template
     kind: ethereum/contract
     network: barge

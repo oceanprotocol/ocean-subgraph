@@ -1,5 +1,7 @@
 import { Pool } from '../@types/schema'
 import { BPoolCreated } from '../@types/templates/BFactory/BFactory'
+import { integer } from './utils/constants'
+import { getGlobalStats } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 
 export function handleNewPool(event: BPoolCreated): void {
@@ -17,5 +19,8 @@ export function handleNewPool(event: BPoolCreated): void {
   pool.tx = event.transaction.hash.toHex()
   pool.block = event.block.number.toI32()
 
+  const globalStats = getGlobalStats()
+  globalStats.poolCount = globalStats.poolCount + 1
+  globalStats.save()
   pool.save()
 }
