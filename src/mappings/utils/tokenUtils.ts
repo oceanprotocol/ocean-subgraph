@@ -1,10 +1,11 @@
-import { Address } from '@graphprotocol/graph-ts'
+import { Address, log } from '@graphprotocol/graph-ts'
 import { Token } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
 import { integer } from './constants'
 import { getGlobalStats } from './globalUtils'
 
 export function createToken(address: string): Token {
+  log.debug('started creating token with address: {}', [address])
   const token = new Token(address)
   const contract = ERC20.bind(Address.fromString(address))
   token.name = contract.name()

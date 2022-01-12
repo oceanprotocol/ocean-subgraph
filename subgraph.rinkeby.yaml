@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: rinkeby
     source:
-      address: '0xa15024b732A8f2146423D14209eFd074e61964F3'
+      address: '0xeF6A78E22170817EB97E67e176d41358761F7dEd'
       abi: ERC721Factory
-      startBlock: 9759283
+      startBlock: 9928186
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -30,9 +30,9 @@ dataSources:
     name: FixedRateExchange
     network: rinkeby
     source:
-      address: '0x235C9bE4D23dCbd16c1Bf89ec839cb7C452FD9e9'
+      address: '0xd7C8B30cd1d7e8364Cc4B4c2C58D1712551c1C79'
       abi: FixedRateExchange
-      startBlock: 9759283
+      startBlock: 9928186
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -62,9 +62,9 @@ dataSources:
     name: Dispenser
     network: rinkeby
     source:
-      address: '0x5FFE6649C7562F3bee1ca114c7c3316BF4B45b50'
+      address: '0x0867d17a99459291D399aD58bD4d436dD3F8B387'
       abi: Dispenser
-      startBlock: 9759283 
+      startBlock: 9928186
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
