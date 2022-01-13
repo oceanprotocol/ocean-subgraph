@@ -1,3 +1,4 @@
+import { log } from '@graphprotocol/graph-ts'
 import {
   DispenserActivated,
   DispenserAllowedSwapperChanged,
@@ -6,13 +7,34 @@ import {
   TokensDispensed
 } from '../@types/Dispenser/Dispenser'
 import { DispenserCreated } from '../@types/ERC721Factory/ERC721Factory'
-import { DispenserTransaction } from '../@types/schema'
+import { Dispenser, DispenserTransaction } from '../@types/schema'
 import { decimal } from './utils/constants'
-import { createDispenser, getDispenser } from './utils/dispenserUtils'
+import { getDispenser } from './utils/dispenserUtils'
+import { weiToDecimal } from './utils/generic'
+import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
 export function handleNewDispenser(event: DispenserCreated): void {
-  createDispenser(event.params.datatokenAddress.toHex())
+  const dispenser = new Dispenser(event.params.datatokenAddress.toHex())
+  const token = getToken(event.params.datatokenAddress.toHex())
+  dispenser.token = token.id
+
+  dispenser.owner = event.params.owner.toHexString()
+  dispenser.maxBalance = weiToDecimal(
+    event.params.maxBalance.toBigDecimal(),
+    token.decimals
+  )
+  dispenser.maxTokens = weiToDecimal(
+    event.params.maxTokens.toBigDecimal(),
+    token.decimals
+  )
+  dispenser.active = true
+
+  dispenser.allowedSwapper = event.params.allowedSwapper.toHex()
+  dispenser.createdTimestamp = event.block.timestamp.toI32()
+  dispenser.tx = event.transaction.hash.toHex()
+  dispenser.block = event.block.number.toI32()
+  dispenser.save()
 }
 
 export function handleActivate(event: DispenserActivated): void {
