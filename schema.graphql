@@ -293,7 +293,6 @@ type FixedRateExchange @entity {
   totalSwapValue: BigDecimal!  
   "address that is allowed to  swap tokens"                              
   allowedSwapper: String                                     
-  supply: BigInt!
   "if the owner allowes the fre to mint"
   withMint: Boolean  
   "if the fre has the minter role on the datatoken"                                        

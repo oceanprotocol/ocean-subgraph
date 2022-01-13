@@ -43,6 +43,8 @@ dataSources:
       abis:
         - name: FixedRateExchange
           file: ./abis/FixedRateExchange.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
           handler: handleExchangeCreated
@@ -193,5 +195,3 @@ templates:
           handler: handleState
         - event: TokenURIUpdate(indexed address,string,uint256,uint256,uint256)
           handler: handleTokenUriUpdate
-features:
-  - nonFatalErrors

@@ -193,5 +193,3 @@ templates:
           handler: handleState
         - event: TokenURIUpdate(indexed address,string,uint256,uint256,uint256)
           handler: handleTokenUriUpdate
-features:
-  - nonFatalErrors
