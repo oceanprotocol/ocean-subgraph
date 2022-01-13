@@ -3,7 +3,7 @@ import { getToken } from './tokenUtils'
 
 export function createDispenser(address: string): Dispenser {
   const dispenser = new Dispenser(address)
-  dispenser.datatoken = getToken(address).id
+  dispenser.token = getToken(address).id
   dispenser.save()
   return dispenser
 }

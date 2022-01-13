@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -19,20 +19,32 @@ import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
 export function handleExchangeCreated(event: ExchangeCreated): void {
+  log.warning(
+    'handleExchangeCreated baseToken {} ; dataToken {} ; exchangeOwner {} ; fixedRate {}',
+    [
+      event.params.baseToken.toHexString(),
+      event.params.dataToken.toHexString(),
+      event.params.exchangeOwner.toHexString(),
+      event.params.fixedRate.toBigDecimal().toString()
+    ]
+  )
   const fixedRateExchange = new FixedRateExchange(
     event.params.exchangeId.toHexString()
   )
   const user = getUser(event.params.exchangeOwner.toHexString())
   fixedRateExchange.owner = user.id
-  fixedRateExchange.datatoken = event.params.dataToken.toHexString()
-  fixedRateExchange.baseToken = event.params.baseToken.toHexString()
-  // fixedRateExchange.baseTokenSymbol = getTokenSymbol(event.params.baseToken)
-  fixedRateExchange.active = false
+  fixedRateExchange.datatoken = getToken(
+    event.params.dataToken.toHexString()
+  ).id
+  fixedRateExchange.baseToken = getToken(
+    event.params.baseToken.toHexString()
+  ).id
 
-  fixedRateExchange.price = weiToDecimal(
-    event.params.fixedRate.toBigDecimal(),
-    BigInt.fromI32(18).toI32()
-  )
+  fixedRateExchange.active = false
+  fixedRateExchange.price = event.params.fixedRate.toBigDecimal()
+  fixedRateExchange.createdTimestamp = event.block.timestamp.toI32()
+  fixedRateExchange.tx = event.transaction.hash.toHex()
+  fixedRateExchange.block = event.block.number.toI32()
   fixedRateExchange.save()
 }
 
@@ -144,13 +156,6 @@ export function handleSwap(event: Swapped): void {
   const fixedRateExchange = getFixedRateExchange(
     event.params.exchangeId.toHex()
   )
-
-  // reduce supply if the fixed rate is not minting tokens
-  if (fixedRateExchange.isMinter || fixedRateExchange.withMint) {
-    fixedRateExchange.supply = fixedRateExchange.supply.minus(
-      event.params.dataTokenSwappedAmount
-    )
-  }
 
   const swap = new FixedRateExchangeSwap(
     getUpdateOrSwapId(
