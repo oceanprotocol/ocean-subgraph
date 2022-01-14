@@ -6,7 +6,7 @@ import {
   PoolTransaction
 } from '../../@types/schema'
 import { BPool } from '../../@types/templates/BPool/BPool'
-import { DAY, decimal } from './constants'
+import { DAY, decimal, integer } from './constants'
 import { gweiToEth, weiToDecimal } from './generic'
 
 export function getPoolSharesId(
@@ -72,7 +72,8 @@ export function calcSpotPrice(
   // tokenIn is always the baseToken and tokenOut is the datatoken because we want the spot price to be in baseToken eg: 1 DT = 0.5 OCEAN
   const weiPrice = poolContract.try_getSpotPrice(
     Address.fromString(baseTokenAddress),
-    Address.fromString(datatokenAddress)
+    Address.fromString(datatokenAddress),
+    integer.ZERO
   ).value
   const price = weiToDecimal(weiPrice.toBigDecimal(), baseTokenDecimals)
 

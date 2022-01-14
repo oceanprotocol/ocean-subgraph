@@ -46,7 +46,6 @@ export function getOpfCollectorAddress(): string {
   return '0x967da4048cd07ab37855c090aaf366e4ce1b9f48'
 }
 
-
 export const OCEAN: string = getOceanAddress()
 
 export function weiToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
@@ -57,5 +56,5 @@ export function weiToDecimal(amount: BigDecimal, decimals: i32): BigDecimal {
 }
 
 export function gweiToEth(ammount: BigDecimal): BigDecimal {
-  return ammount.div(BigDecimal.fromString('1.000.000.000'))
+  return ammount.div(BigDecimal.fromString('1000000000'))
 }
