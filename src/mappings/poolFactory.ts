@@ -1,9 +1,9 @@
 import { Pool } from '../@types/schema'
 import { BPoolCreated } from '../@types/templates/BFactory/BFactory'
-import { integer } from './utils/constants'
 import { getGlobalStats } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 
+// doesn't make sense
 export function handleNewPool(event: BPoolCreated): void {
   const pool = new Pool(event.params.newBPoolAddress.toHex())
 

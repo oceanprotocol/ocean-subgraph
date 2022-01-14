@@ -13,7 +13,7 @@ dataSources:
       startBlock: 9984045
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/erc721Factory.ts
       entities:
@@ -35,7 +35,7 @@ dataSources:
       startBlock: 9984045
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/fixedRateExchange.ts
       entities:
@@ -69,7 +69,7 @@ dataSources:
       startBlock: 9984045
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/dispenser.ts
       entities:
@@ -98,7 +98,7 @@ templates:
       abi: ERC20Template
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/erc20Templates.ts
       entities:
@@ -122,31 +122,13 @@ templates:
         - event: ConsumeMarketFees(indexed address,indexed address,uint256)
           handler: handleConsumeMarketFees 
   - kind: ethereum/contract
-    name: BFactory
-    network: rinkeby
-    source:
-      abi: BFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/poolFactory.ts
-      entities:
-        - BFactory
-      abis:
-        - name: BFactory
-          file: ./abis/BFactory.json
-      eventHandlers:
-        - event: BPoolCreated(indexed address,indexed address,indexed address,address,address,address)
-          handler: handleNewPool
-  - kind: ethereum/contract
     name: BPool
     network: rinkeby
     source:
       abi: BPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/pool.ts
       entities:
@@ -178,7 +160,7 @@ templates:
       abi: ERC721Template
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/nftUpdate.ts
       entities:

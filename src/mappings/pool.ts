@@ -1,3 +1,4 @@
+import { log } from '@graphprotocol/graph-ts'
 import { PoolTransaction } from '../@types/schema'
 import {
   LOG_BPT,
@@ -171,6 +172,7 @@ export function handleSwap(event: LOG_SWAP): void {
 
 // setup is just to set token weight(it will mostly be 50:50) and spotPrice
 export function handleSetup(event: LOG_SETUP): void {
+  log.warning('new Pool ', [])
   const pool = getPool(event.address.toHex())
 
   const token = getToken(event.params.baseToken.toHex())
