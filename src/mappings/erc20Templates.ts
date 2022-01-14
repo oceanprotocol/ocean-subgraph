@@ -1,5 +1,11 @@
 import { Order } from '../@types/schema'
-import { OrderStarted } from '../@types/templates/ERC20Template/ERC20Template'
+import {
+  ConsumeMarketFees,
+  NewPaymentCollector,
+  OrderStarted,
+  PublishMarketFees
+} from '../@types/templates/ERC20Template/ERC20Template'
+
 import { integer } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 import { getGlobalStats } from './utils/globalUtils'
@@ -57,6 +63,10 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.save()
   token.save()
 }
+
+export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
+export function handlePublishMarketFees(event: PublishMarketFees): void {}
+export function handleConsumeMarketFees(event: ConsumeMarketFees): void {}
 
 // export function handlePublishMarketFees(event: PublishMarketFees): void {
 //   const order = Order.load(

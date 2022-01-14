@@ -10,6 +10,7 @@ import {
 import { Transfer } from '../@types/templates/BPool/BToken'
 import { integer, PoolTransactionType } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
+import { getGlobalStats } from './utils/globalUtils'
 import {
   calcSpotPrice,
   getPool,
@@ -22,6 +23,7 @@ import { getUser } from './utils/userUtils'
 
 // kinda redundant code in join/swap/exit
 export function handleJoin(event: LOG_JOIN): void {
+  log.warning('handle join {}', [event.address.toHex()])
   const pool = getPool(event.address.toHex())
   const user = getUser(event.params.caller.toHex())
   const poolTx = getPoolTransaction(event, user.id, PoolTransactionType.JOIN)
@@ -36,6 +38,10 @@ export function handleJoin(event: LOG_JOIN): void {
     event.params.tokenAmountIn.toBigDecimal(),
     token.decimals
   )
+  log.warning('handle join ammount {} tokenAmountIn {}', [
+    ammount.toString(),
+    event.params.tokenAmountIn.toString()
+  ])
   if (token.isDatatoken) {
     poolTx.datatoken = token.id
     poolTx.datatokenValue = ammount
@@ -43,7 +49,7 @@ export function handleJoin(event: LOG_JOIN): void {
     poolSnapshot.datatokenLiquidity =
       poolSnapshot.datatokenLiquidity.plus(ammount)
 
-    pool.datatokenLiquidity.plus(ammount)
+    pool.datatokenLiquidity = pool.datatokenLiquidity.plus(ammount)
   } else {
     poolTx.baseToken = token.id
     poolTx.baseTokenValue = ammount
@@ -51,8 +57,13 @@ export function handleJoin(event: LOG_JOIN): void {
     poolSnapshot.baseTokenLiquidity =
       poolSnapshot.baseTokenLiquidity.plus(ammount)
 
-    pool.baseTokenLiquidity.plus(ammount)
+    pool.baseTokenLiquidity = pool.baseTokenLiquidity.plus(ammount)
   }
+
+  log.warning('handle join baseTokenLiquidity {} datatokenLiquidity {}', [
+    pool.baseTokenLiquidity.toString(),
+    pool.datatokenLiquidity.toString()
+  ])
 
   poolSnapshot.save()
   poolTx.save()
@@ -175,6 +186,7 @@ export function handleSetup(event: LOG_SETUP): void {
   log.warning('new Pool ', [])
   const pool = getPool(event.address.toHex())
 
+  pool.controller = event.params.caller.toHexString()
   const token = getToken(event.params.baseToken.toHex())
   pool.baseToken = token.id
   pool.baseTokenWeight = weiToDecimal(
@@ -205,6 +217,9 @@ export function handleSetup(event: LOG_SETUP): void {
     poolTx.save()
   }
 
+  const globalStats = getGlobalStats()
+  globalStats.poolCount = globalStats.poolCount + 1
+  globalStats.save()
   pool.save()
   datatoken.save()
 }

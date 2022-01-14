@@ -1,3 +1,4 @@
+import { log } from '@graphprotocol/graph-ts'
 import { Nft, NftUpdate } from '../@types/schema'
 import {
   MetadataCreated,
@@ -12,6 +13,7 @@ function getId(tx: string, nftAddress: string): string {
 }
 
 export function handleCreated(event: MetadataCreated): void {
+  log.warning('nft handleCreated {}', [event.address.toHex()])
   const nftAddress = event.address.toHex()
   const nft = Nft.load(nftAddress)
   if (!nft) return
