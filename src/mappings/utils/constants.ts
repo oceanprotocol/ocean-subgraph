@@ -1,6 +1,7 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 
 export const ENABLE_DEBUG = true
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export const DAY = 24 * 60 * 60
 

@@ -167,12 +167,12 @@ type Pool @entity {
     "block number when it was created"                                          
     block: Int                                              
 
-    shares: [PoolShares!] @derivedFrom(field: "pool")
+    shares: [PoolShare!] @derivedFrom(field: "pool")
     transactions: [PoolTransaction!] @derivedFrom(field: "pool")
 }
 
 # we will need to track pool share tx between users -  bpool transfer tx event
-type PoolShares @entity {
+type PoolShare @entity {
   "poolAddress + userAddress"
   id: ID!                                                   
   user: User!
@@ -197,7 +197,7 @@ type PoolTransaction @entity {
   type: PoolTransactionType!                                                  
   
   "number of shares transfered"
-  sharesTransferAmount: BigDecimal                           
+  sharesTransferAmount: BigDecimal!                           
  
   "pool fee value, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
   poolFee: BigDecimal!     
@@ -220,15 +220,15 @@ type PoolTransaction @entity {
   gasPrice: BigDecimal!                                      
 
   "base tokens transfered"
-  baseToken: TokenValuePair 
+  baseToken: Token 
 
-  "number of tokens transfered"       
+  "number of base tokens transfered, if value is negative it means it was removed"       
   baseTokenValue: BigDecimal
 
-  "datatokens transfered , if value is negative it means it was removed"                        
-  datatoken: TokenValuePair
+  "datatokens transfered"                        
+  datatoken: Token
 
-  "number of tokens transfered, if value is negative it means it was removed"
+  "number of datatokens transfered, if value is negative it means it was removed"
   datatokenValue: BigDecimal
 }
 
@@ -273,7 +273,7 @@ type TokenTransaction @entity {
 
 type User @entity {
   id: ID!
-  sharesOwned: [PoolShares!] @derivedFrom(field: "user")
+  sharesOwned: [PoolShare!] @derivedFrom(field: "user")
   tokenBalancesOwned: [TokenValuePair!]
   tokensOwned: [Token!] @derivedFrom(field: "minter")
   poolTransactions: [PoolTransaction!] @derivedFrom(field: "user")

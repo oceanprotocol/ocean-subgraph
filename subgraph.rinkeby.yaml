@@ -174,8 +174,8 @@ templates:
           handler: handleExit
         - event: LOG_SETUP(indexed address,indexed address,uint256,uint256,indexed address,uint256,uint256)
           handler: handleSetup
-
-
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlerBptTransfer
   - name: ERC721Template
     kind: ethereum/contract
     network: rinkeby

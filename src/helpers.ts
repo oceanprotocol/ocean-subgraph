@@ -1,5 +1,3 @@
-
-
 // export function getGlobalStats(): Global {
 //   let gStats: Global | null = Global.load('1')
 //   if (gStats == null) {

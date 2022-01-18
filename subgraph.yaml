@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: rinkeby
     source:
-      address: '0xe4B39C90355899DB8f625D879B44Fa9C5Cdde550'
+      address: '0x15087E3E9eAAAb37d32d9D06Fa4000309BD7Ee6D'
       abi: ERC721Factory
-      startBlock: 9984045
+      startBlock: 9989814
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -30,9 +30,9 @@ dataSources:
     name: FixedRateExchange
     network: rinkeby
     source:
-      address: '0x7084f7353bB7cfc92A65e7d23987Cb5D1A3Fb9b2'
+      address: '0xB5f34bd0B3E8e59447fD5a750F2dE4262BABE66C'
       abi: FixedRateExchange
-      startBlock: 9984045
+      startBlock: 9989814
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -64,9 +64,9 @@ dataSources:
     name: Dispenser
     network: rinkeby
     source:
-      address: '0xa8fFDd525835795C940370FB816f82a5F7F5F860'
+      address: '0x17b1760c20eAc7A2656412412F6020e6c00b78BD'
       abi: Dispenser
-      startBlock: 9984045
+      startBlock: 9989814
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -95,9 +95,9 @@ dataSources:
     name: FactoryRouter
     network: rinkeby
     source:
-      address: '0xAB4FD86E4aaAb2243463Cbe92CD5194C1593fb9A'
+      address: '0x31066E8eFe281C755dC21d828bdF30363D055baB'
       abi: FactoryRouter
-      startBlock: 9984045
+      startBlock: 9989814
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -163,6 +163,8 @@ templates:
           file: ./abis/BToken.json
         - name: BMath
           file: ./abis/BMath.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256)
           handler: handleSwap
@@ -172,8 +174,8 @@ templates:
           handler: handleExit
         - event: LOG_SETUP(indexed address,indexed address,uint256,uint256,indexed address,uint256,uint256)
           handler: handleSetup
-
-
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlerBptTransfer
   - name: ERC721Template
     kind: ethereum/contract
     network: rinkeby
