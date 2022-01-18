@@ -8,14 +8,14 @@ import {
   LOG_SWAP
 } from '../@types/templates/BPool/BPool'
 import { Transfer } from '../@types/templates/BPool/BToken'
-import { integer, PoolTransactionType } from './utils/constants'
+import { integer, PoolTransactionType, ZERO_ADDRESS } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 import { getGlobalStats } from './utils/globalUtils'
 import {
   calcSpotPrice,
   getPool,
   getPoolTransaction,
-  getPoolShares,
+  getPoolShare,
   getPoolSnapshot
 } from './utils/poolUtils'
 import { getToken } from './utils/tokenUtils'
@@ -183,7 +183,7 @@ export function handleSwap(event: LOG_SWAP): void {
 
 // setup is just to set token weight(it will mostly be 50:50) and spotPrice
 export function handleSetup(event: LOG_SETUP): void {
-  log.warning('new Pool ', [])
+  log.warning('new Pool from {} ', [event.transaction.from.toHexString()])
   const pool = getPool(event.address.toHex())
 
   pool.controller = event.params.caller.toHexString()
@@ -211,12 +211,21 @@ export function handleSetup(event: LOG_SETUP): void {
   )
   pool.spotPrice = spotPrice
   pool.isFinalized = true
-  const poolTx = PoolTransaction.load(event.transaction.hash.toHex())
-  if (poolTx) {
-    poolTx.type = PoolTransactionType.SETUP
-    poolTx.save()
-  }
+  // TODO: proper tx , add baseToken, datatoken
+  const fromUser = getUser(event.transaction.from.toHexString())
+  const poolTx = getPoolTransaction(
+    event,
+    fromUser.id,
+    PoolTransactionType.SETUP
+  )
+  poolTx.type = PoolTransactionType.SETUP
+  poolTx.baseToken = token.id
+  poolTx.datatoken = datatoken.id
+  const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
+  poolSnapshot.spotPrice = spotPrice
 
+  poolTx.save()
+  poolSnapshot.save()
   const globalStats = getGlobalStats()
   globalStats.poolCount = globalStats.poolCount + 1
   globalStats.save()
@@ -224,42 +233,86 @@ export function handleSetup(event: LOG_SETUP): void {
   datatoken.save()
 }
 
-export function handleBpt(event: LOG_BPT): void {
-  const pool = getPool(event.address.toHex())
-  const poolShares = getPoolShares(pool.id, event.transaction.from.toHex())
-  const poolTx = PoolTransaction.load(event.transaction.hash.toHex())
-  // TODO: should we return here if null? theoretically this should not be null since LOG_BPT is after the other events
-  if (!poolTx) return
+// export function handleBpt(event: LOG_BPT): void {
+//   log.warning('handleBpt from: {}', [event.transaction.from.toHexString()])
+//   const pool = getPool(event.address.toHex())
+//   const poolShares = getPoolShares(pool.id, event.transaction.from.toHex())
+//   const poolTx = PoolTransaction.load(event.transaction.hash.toHex())
+//   // TODO: should we return here if null? theoretically this should not be null since LOG_BPT is after the other events
+//   if (!poolTx) return
 
-  const decimalBpt = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)
+//   const decimalBpt = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)
 
-  // for some reason switch is broken so reverting to good old if
-  if (poolTx.type === PoolTransactionType.JOIN) {
-    poolShares.shares = poolShares.shares.plus(decimalBpt)
-    pool.totalShares.plus(decimalBpt)
-  }
-  if (poolTx.type === PoolTransactionType.EXIT) {
-    poolShares.shares = poolShares.shares.minus(decimalBpt)
-    pool.totalShares.minus(decimalBpt)
-  }
+//   // for some reason switch is broken so reverting to good old if
+//   if (poolTx.type === PoolTransactionType.JOIN) {
+//     poolShares.shares = poolShares.shares.plus(decimalBpt)
+//     pool.totalShares.plus(decimalBpt)
+//   }
+//   if (poolTx.type === PoolTransactionType.EXIT) {
+//     poolShares.shares = poolShares.shares.minus(decimalBpt)
+//     pool.totalShares.minus(decimalBpt)
+//   }
 
-  poolShares.shares = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)
+//   poolShares.shares = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)
 
-  pool.save()
-  poolShares.save()
-}
+//   pool.save()
+//   poolShares.save()
+// }
 
 export function handlerBptTransfer(event: Transfer): void {
-  const fromUser = getPoolShares(
-    event.address.toHex(),
-    event.params.src.toHex()
+  const fromAddress = event.params.src.toHexString()
+  const toAddress = event.params.dst.toHexString()
+  const poolAddress = event.address.toHex()
+  const caller = getUser(event.transaction.from.toHex())
+  const poolTx = getPoolTransaction(event, caller.id, PoolTransactionType.SWAP)
+  const poolSnapshot = getPoolSnapshot(
+    poolAddress,
+    event.block.timestamp.toI32()
   )
-  const toUser = getPoolShares(event.address.toHex(), event.params.dst.toHex())
+  log.warning('bpt transfer tx: {} from: {} |  to {} | ammount {} ', [
+    event.transaction.hash.toHex(),
+    fromAddress,
+    toAddress,
+    event.params.amt.toString()
+  ])
+
+  // btoken has 18 decimals
   const ammount = weiToDecimal(event.params.amt.toBigDecimal(), 18)
 
-  fromUser.shares = fromUser.shares.minus(ammount)
-  toUser.shares = toUser.shares.plus(ammount)
+  if (fromAddress != ZERO_ADDRESS && toAddress != ZERO_ADDRESS) {
+    poolTx.sharesTransferAmount = poolTx.sharesTransferAmount.plus(ammount)
+  }
 
-  fromUser.save()
-  toUser.save()
+  if (fromAddress == ZERO_ADDRESS) {
+    // add total
+    const pool = getPool(poolAddress)
+    pool.totalShares = pool.totalShares.plus(ammount)
+
+    // check tx?
+    poolSnapshot.totalShares = pool.totalShares
+    pool.save()
+  } else {
+    if (poolAddress != fromAddress) {
+      const fromUser = getPoolShare(poolAddress, fromAddress)
+      fromUser.shares = fromUser.shares.minus(ammount)
+      fromUser.save()
+    }
+  }
+
+  if (toAddress == ZERO_ADDRESS) {
+    // remove
+    const pool = getPool(poolAddress)
+    pool.totalShares = pool.totalShares.minus(ammount)
+    poolSnapshot.totalShares = pool.totalShares
+    pool.save()
+  } else {
+    if (poolAddress != toAddress) {
+      const toUser = getPoolShare(poolAddress, toAddress)
+      toUser.shares = toUser.shares.plus(ammount)
+      toUser.save()
+    }
+  }
+
+  poolTx.save()
+  poolSnapshot.save()
 }

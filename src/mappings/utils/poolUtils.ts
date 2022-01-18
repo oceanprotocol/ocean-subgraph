@@ -1,15 +1,16 @@
 import { Address, BigDecimal, ethereum } from '@graphprotocol/graph-ts'
 import {
   Pool,
-  PoolShares,
+  PoolShare,
   PoolSnapshot,
   PoolTransaction
 } from '../../@types/schema'
 import { BPool } from '../../@types/templates/BPool/BPool'
 import { DAY, decimal, integer } from './constants'
 import { gweiToEth, weiToDecimal } from './generic'
+import { getUser } from './userUtils'
 
-export function getPoolSharesId(
+export function getPoolShareId(
   poolAddress: string,
   userAddress: string
 ): string {
@@ -42,15 +43,18 @@ export function getPoolTransaction(
   return poolTx
 }
 
-export function getPoolShares(
+export function getPoolShare(
   poolAddress: string,
   userAddress: string
-): PoolShares {
-  let poolShares = PoolShares.load(getPoolSharesId(poolAddress, userAddress))
-  if (poolShares === null) {
-    poolShares = new PoolShares(getPoolSharesId(poolAddress, userAddress))
+): PoolShare {
+  let poolShare = PoolShare.load(getPoolShareId(poolAddress, userAddress))
+  if (poolShare === null) {
+    poolShare = new PoolShare(getPoolShareId(poolAddress, userAddress))
+    poolShare.user = getUser(userAddress).id
+    poolShare.pool = poolAddress
+    poolShare.save()
   }
-  return poolShares
+  return poolShare
 }
 
 export function getPool(poolAddress: string): Pool {

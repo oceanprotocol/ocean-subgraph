@@ -174,6 +174,29 @@ templates:
           handler: handleExit
         - event: LOG_SETUP(indexed address,indexed address,uint256,uint256,indexed address,uint256,uint256)
           handler: handleSetup
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlerBptTransfer
+
+  - name: BToken
+    kind: ethereum/contract
+    network: rinkeby
+    source:
+      abi: BToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/pool.ts
+      entities:
+        - BToken
+      abis:
+        - name: BToken
+          file: ./abis/BToken.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleSwap
 
 
   - name: ERC721Template
