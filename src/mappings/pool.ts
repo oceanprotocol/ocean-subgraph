@@ -1,7 +1,5 @@
 import { log } from '@graphprotocol/graph-ts'
-import { PoolTransaction } from '../@types/schema'
 import {
-  LOG_BPT,
   LOG_EXIT,
   LOG_JOIN,
   LOG_SETUP,
@@ -232,32 +230,6 @@ export function handleSetup(event: LOG_SETUP): void {
   pool.save()
   datatoken.save()
 }
-
-// export function handleBpt(event: LOG_BPT): void {
-//   log.warning('handleBpt from: {}', [event.transaction.from.toHexString()])
-//   const pool = getPool(event.address.toHex())
-//   const poolShares = getPoolShares(pool.id, event.transaction.from.toHex())
-//   const poolTx = PoolTransaction.load(event.transaction.hash.toHex())
-//   // TODO: should we return here if null? theoretically this should not be null since LOG_BPT is after the other events
-//   if (!poolTx) return
-
-//   const decimalBpt = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)
-
-//   // for some reason switch is broken so reverting to good old if
-//   if (poolTx.type === PoolTransactionType.JOIN) {
-//     poolShares.shares = poolShares.shares.plus(decimalBpt)
-//     pool.totalShares.plus(decimalBpt)
-//   }
-//   if (poolTx.type === PoolTransactionType.EXIT) {
-//     poolShares.shares = poolShares.shares.minus(decimalBpt)
-//     pool.totalShares.minus(decimalBpt)
-//   }
-
-//   poolShares.shares = weiToDecimal(event.params.bptAmount.toBigDecimal(), 18)
-
-//   pool.save()
-//   poolShares.save()
-// }
 
 export function handlerBptTransfer(event: Transfer): void {
   const fromAddress = event.params.src.toHexString()
