@@ -8,7 +8,7 @@ dataSources:
     name: ERC721Factory
     network: rinkeby
     source:
-      address: '0x15087E3E9eAAAb37d32d9D06Fa4000309BD7Ee6D'
+      address: '0x3405C797C132e3BC7BdD10A16b6394a2d71fE77a'
       abi: ERC721Factory
       startBlock: 9989814
     mapping:
@@ -30,7 +30,7 @@ dataSources:
     name: FixedRateExchange
     network: rinkeby
     source:
-      address: '0xB5f34bd0B3E8e59447fD5a750F2dE4262BABE66C'
+      address: '0x5FfBfa9cbC9BC1D0366E3B558825ABfc2889FA8e'
       abi: FixedRateExchange
       startBlock: 9989814
     mapping:
@@ -64,7 +64,7 @@ dataSources:
     name: Dispenser
     network: rinkeby
     source:
-      address: '0x17b1760c20eAc7A2656412412F6020e6c00b78BD'
+      address: '0x57f4A9C96f2c433B0eD2Dcf7A7460C90f555192F'
       abi: Dispenser
       startBlock: 9989814
     mapping:
@@ -95,7 +95,7 @@ dataSources:
     name: FactoryRouter
     network: rinkeby
     source:
-      address: '0x31066E8eFe281C755dC21d828bdF30363D055baB'
+      address: '0x9E70c93B69B0cFc784736d46D0C11F3c438DA587'
       abi: FactoryRouter
       startBlock: 9989814
     mapping:
