@@ -1,6 +1,5 @@
 import { Order } from '../@types/schema'
 import {
-  ConsumeMarketFees,
   NewPaymentCollector,
   OrderStarted,
   PublishMarketFees
@@ -44,13 +43,13 @@ export function handleOrderStarted(event: OrderStarted): void {
     token.decimals
   )
 
-  order.serviceId = event.params.serviceId.toI32()
+  order.serviceId = event.params.serviceIndex.toI32()
 
   const publishMarket = getUser(event.params.publishMarketAddress.toHex())
   order.publishingMarket = publishMarket.id
 
-  const consumeMarket = getUser(event.params.consumeFeeMarketAddress.toHex())
-  order.consumerMarket = consumeMarket.id
+  // const consumeMarket = getUser(event.params..toHex())
+  // order.consumerMarket = consumeMarket.id
 
   order.createdTimestamp = event.block.timestamp.toI32()
   order.tx = event.transaction.hash.toHex()
@@ -66,7 +65,6 @@ export function handleOrderStarted(event: OrderStarted): void {
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
 export function handlePublishMarketFees(event: PublishMarketFees): void {}
-export function handleConsumeMarketFees(event: ConsumeMarketFees): void {}
 
 // export function handlePublishMarketFees(event: PublishMarketFees): void {
 //   const order = Order.load(
