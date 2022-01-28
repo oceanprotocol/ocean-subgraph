@@ -1,3 +1,4 @@
+import { log } from '@graphprotocol/graph-ts'
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { Nft, Token } from '../@types/schema'
 import { ERC20Template, ERC721Template } from '../@types/templates'
@@ -7,13 +8,15 @@ import { getGlobalStats } from './utils/globalUtils'
 import { getUser } from './utils/userUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
+  log.warning('nft handleNftCreated {}', [event.params.tokenURI.toString()])
   const nft = new Nft(event.params.newTokenAddress.toHexString())
   ERC721Template.create(event.params.newTokenAddress)
   const user = getUser(event.params.admin.toHexString())
   nft.owner = user.id
   nft.address = event.params.newTokenAddress.toHexString()
   nft.name = event.params.tokenName
-  nft.symbol = ''
+  nft.symbol = event.params.symbol.toString()
+  nft.tokenUri = event.params.tokenURI.toString()
   nft.createdTimestamp = event.block.timestamp.toI32()
   nft.tx = event.transaction.hash.toHex()
   nft.block = event.block.number.toI32()

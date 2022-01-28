@@ -422,8 +422,11 @@ type GlobalStats @entity {
 
 type NftUpdate @entity {
   id: ID! # update tx +  nft address
-  
+  tokenUri: String! 
   nft: Nft!
+
+  "provider url that can decrypt the ddo"                                  
+  providerUrl: String  
 
  "user that made the update"
   userAddress: String!

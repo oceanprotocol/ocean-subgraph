@@ -13,13 +13,12 @@ function getId(tx: string, nftAddress: string): string {
 }
 
 export function handleCreated(event: MetadataCreated): void {
-  log.warning('nft handleCreated {}', [event.address.toHex()])
   const nftAddress = event.address.toHex()
   const nft = Nft.load(nftAddress)
   if (!nft) return
 
   nft.assetState = event.params.state
-
+  nft.providerUrl = event.params.decryptorUrl.toString()
   const nftUpdate = new NftUpdate(
     getId(event.transaction.hash.toHex(), nftAddress)
   )
@@ -27,6 +26,9 @@ export function handleCreated(event: MetadataCreated): void {
   nftUpdate.type = NftUpdateType.METADATA_CREATED
   nftUpdate.userAddress = event.params.createdBy.toHex()
   nftUpdate.assetState = event.params.state
+
+  nftUpdate.nft = nft.id
+  nftUpdate.providerUrl = nft.providerUrl
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
@@ -88,7 +90,7 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
 
   if (!nft) return
 
-  nft.tokenUri = event.params.tokenURI
+  nft.tokenUri = event.params.tokenURI.toString()
 
   const nftUpdate = new NftUpdate(
     getId(event.transaction.hash.toHex(), nftAddress)
@@ -96,7 +98,7 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
 
   nftUpdate.type = NftUpdateType.TOKENURI_UPDATED
   nftUpdate.userAddress = event.params.updatedBy.toHex()
-
+  nftUpdate.tokenUri = nft.tokenUri
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
   nftUpdate.block = event.block.number.toI32()

@@ -19,22 +19,13 @@ import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
 export function handleExchangeCreated(event: ExchangeCreated): void {
-  log.warning(
-    'handleExchangeCreated baseToken {} ; dataToken {} ; exchangeOwner {} ; fixedRate {}',
-    [
-      event.params.baseToken.toHexString(),
-      event.params.dataToken.toHexString(),
-      event.params.exchangeOwner.toHexString(),
-      event.params.fixedRate.toBigDecimal().toString()
-    ]
-  )
   const fixedRateExchange = new FixedRateExchange(
     event.params.exchangeId.toHexString()
   )
   const user = getUser(event.params.exchangeOwner.toHexString())
   fixedRateExchange.owner = user.id
   fixedRateExchange.datatoken = getToken(
-    event.params.dataToken.toHexString()
+    event.params.datatoken.toHexString()
   ).id
   fixedRateExchange.baseToken = getToken(
     event.params.baseToken.toHexString()
@@ -177,7 +168,7 @@ export function handleSwap(event: Swapped): void {
     BigInt.fromI32(baseToken.decimals).toI32()
   )
   swap.dataTokenAmount = weiToDecimal(
-    event.params.dataTokenSwappedAmount.toBigDecimal(),
+    event.params.datatokenSwappedAmount.toBigDecimal(),
     BigInt.fromI32(18).toI32()
   )
 
