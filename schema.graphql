@@ -35,6 +35,8 @@ type Token @entity {
     "number of orders executed for this datatoken"                                
     orderCount: BigInt!                                    
 
+    "orders created with the datatoken, only available for datatokens"
+    orders: [Order!] @derivedFrom(field:"datatoken")
 
     "fixed rate exchanges, only available for datatokens"
     fixedRateExchanges: [FixedRateExchange!] @derivedFrom(field:"datatoken")
