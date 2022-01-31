@@ -1,4 +1,3 @@
-import { log } from '@graphprotocol/graph-ts'
 import { Nft, NftUpdate } from '../@types/schema'
 import {
   MetadataCreated,
