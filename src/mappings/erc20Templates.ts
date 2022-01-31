@@ -29,7 +29,7 @@ export function handleOrderStarted(event: OrderStarted): void {
   )
 
   const token = getToken(event.address.toHex())
-  order.token = token.id
+  order.datatoken = token.id
   token.orderCount = token.orderCount.plus(integer.ONE)
 
   const consumer = getUser(event.params.consumer.toHex())
@@ -43,7 +43,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     token.decimals
   )
 
-  order.serviceId = event.params.serviceIndex.toI32()
+  order.serviceIndex = event.params.serviceIndex.toI32()
 
   const publishMarket = getUser(event.params.publishMarketAddress.toHex())
   order.publishingMarket = publishMarket.id
