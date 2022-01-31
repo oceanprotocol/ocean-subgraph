@@ -35,6 +35,16 @@ type Token @entity {
     "number of orders executed for this datatoken"                                
     orderCount: BigInt!                                    
 
+
+    "fixed rate exchanges, only available for datatokens"
+    fixedRateExchanges: [FixedRateExchange!] @derivedFrom(field:"datatoken")
+
+    "dispensers using this token"
+    dispensers: [Dispenser!] @derivedFrom(field:"token")
+
+    "pools, only available for datatokens"
+    pools: [Pool!] @derivedFrom(field:"datatoken")
+
     "block time datatoken was created"
     createdTimestamp: Int!        
 
@@ -235,12 +245,12 @@ type PoolTransaction @entity {
 type Order @entity {  
   "transaction hash - token address - from address"                                       
   id: ID!                                                    
-  token: Token!
+  datatoken: Token!
 
   consumer: User!
   payer: User!
   amount: BigDecimal!
-  serviceId: Int!
+  serviceIndex: Int!
 
 
   # the fees will be updated from an event that will be created after (todo)
