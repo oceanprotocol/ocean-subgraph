@@ -258,11 +258,11 @@ type Order @entity {
   # the fees will be updated from an event that will be created after (todo)
   publishingMarket: User
   publishingMarketToken: Token                                #
-  publishingMarketAmmount: BigDecimal                         #call contract to get fee ammount
+  publishingMarketAmmount: BigDecimal                         #call contract to get fee amount
 
   consumerMarket: User
   consumerMarketToken: Token                                  #
-  consumerMarketAmmount: BigDecimal                           #call contract to get fee ammount
+  consumerMarketAmmount: BigDecimal                           #call contract to get fee amount
 
   createdTimestamp: Int!
   tx: String!
@@ -299,6 +299,10 @@ type FixedRateExchange @entity {
   owner: User!
   datatoken: Token!
   baseToken: Token!
+  "amount of datatokens available to be sold, this is relevant if the exchange is not able to mint"
+  datatokenBalance: BigDecimal!
+  "amount of basetokens available to be collected by the owner"
+  baseTokenBalance: BigDecimal!
   price: BigDecimal!
   active: Boolean!
   "amount of total basetokens spent"

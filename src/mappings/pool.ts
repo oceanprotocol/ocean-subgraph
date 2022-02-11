@@ -1,4 +1,3 @@
-import { log } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
