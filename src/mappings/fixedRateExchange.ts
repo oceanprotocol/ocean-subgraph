@@ -1,4 +1,4 @@
-import { BigInt, log } from '@graphprotocol/graph-ts'
+import { BigInt } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -32,7 +32,10 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   ).id
 
   fixedRateExchange.active = false
-  fixedRateExchange.price = event.params.fixedRate.toBigDecimal()
+  fixedRateExchange.price = weiToDecimal(
+    event.params.fixedRate.toBigDecimal(),
+    BigInt.fromI32(18).toI32()
+  )
   fixedRateExchange.createdTimestamp = event.block.timestamp.toI32()
   fixedRateExchange.tx = event.transaction.hash.toHex()
   fixedRateExchange.block = event.block.number.toI32()
