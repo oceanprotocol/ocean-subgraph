@@ -39,6 +39,7 @@
     "test": "npm run codegen && npm run lint && npm run type-check",
     "test-integration": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/**/*.test.ts'",
     "lint": "eslint --ignore-path .gitignore --ext .js --ext .ts --ext .tsx .",
+    "lint:fix": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx . --fix",
     "format": "prettier --ignore-path .gitignore './**/*.{css,yml,js,ts,tsx,json,yaml}' --write",
     "type-check": "tsc --noEmit",
     "release": "release-it --non-interactive",
