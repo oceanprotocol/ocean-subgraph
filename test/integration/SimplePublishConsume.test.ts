@@ -9,7 +9,7 @@ import {
   NftCreateData,
   getHash,
   sleep
-} from '@oceanprotocol/lib/'
+} from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
 import { SHA256 } from 'crypto-js'
