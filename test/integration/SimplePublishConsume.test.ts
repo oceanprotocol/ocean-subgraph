@@ -129,7 +129,7 @@ describe('Simple Publish & consume test', async () => {
     // assert(resolvedDDO, 'Cannot fetch DDO from Aquarius')
 
     // graph tests here
-    sleep(20)
+    await sleep(2000)
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
