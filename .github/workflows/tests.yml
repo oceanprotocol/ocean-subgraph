@@ -64,7 +64,7 @@ jobs:
       
       - name: create and deploy subgraph
         run: |
-          npm run quickstart:barge
+          npm run quickstart:development
           sleep 20
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json

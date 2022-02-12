@@ -5,6 +5,7 @@ var addresses = require('@oceanprotocol/contracts/addresses/address.json')
 async function replaceContractAddresses() {
   // load addresses file first
   if (process.env.ADDRESS_FILE) {
+    console.log("Using custom ADDRESS_FILE instead of ocean-contracts npm dep")
     addresses = JSON.parse(fs.readFileSync(process.env.ADDRESS_FILE, 'utf8'))
   }
   console.log(process.argv)
