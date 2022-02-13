@@ -190,6 +190,8 @@ templates:
       abis:
         - name: ERC721Template
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
+        - name: ERC721RolesAddress
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC721RolesAddress.sol/ERC721RolesAddress.json
       eventHandlers:
         - event: MetadataCreated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
           handler: handleCreated
