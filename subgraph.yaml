@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721Factory
-    network: rinkeby
+    network: development
     source:
-      address: '0x65aCFbcf0576D5740d1a824afd1776E7D4034C3D'
+      address: '0xFF3a12191A703939b1466eC1Fc7679AbbFf88545'
       abi: ERC721Factory
-      startBlock: 10065057
+      startBlock: 243
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -20,7 +20,7 @@ dataSources:
         - ERC721Factory
       abis:
         - name: ERC721Factory
-          file: ./abis/ERC721Factory.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
       eventHandlers:
         - event: NFTCreated(indexed address,indexed address,string,address,string,string)
           handler: handleNftCreated
@@ -28,11 +28,11 @@ dataSources:
           handler: handleNewToken
   - kind: ethereum/contract
     name: FixedRateExchange
-    network: rinkeby
+    network: development
     source:
-      address: '0x40F63Ec24aDc291d41F63fBA356Dd9983197c83a'
+      address: '0x7256EdE4Bd3D79a8Cc03a2A74849506F5C90c614'
       abi: FixedRateExchange
-      startBlock: 10065057
+      startBlock: 243
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -42,7 +42,7 @@ dataSources:
         - FixedRateExchange
       abis:
         - name: FixedRateExchange
-          file: ./abis/FixedRateExchange.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
@@ -62,11 +62,11 @@ dataSources:
           handler: handleSwap
   - kind: ethereum/contract
     name: Dispenser
-    network: rinkeby
+    network: development
     source:
-      address: '0x5b18fbac5aA81B4a0CAF993afb69b2ADfC3E8833'
+      address: '0x7256EdE4Bd3D79a8Cc03a2A74849506F5C90c614'
       abi: Dispenser
-      startBlock: 10065057
+      startBlock: 243
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -76,7 +76,7 @@ dataSources:
         - Dispenser
       abis:
         - name: Dispenser
-          file: ./abis/Dispenser.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json
       eventHandlers:
         - event: DispenserCreated(indexed address,indexed address,uint256,uint256,address)
           handler: handleNewDispenser
@@ -93,11 +93,11 @@ dataSources:
 
   - kind: ethereum/contract
     name: FactoryRouter
-    network: rinkeby
+    network: development
     source:
-      address: '0x5a31C7e57D51fc0991C1315c66587e7a158c9c40'
+      address: '0x053dc56D2C6A87FB6CEb1063E4c1629B8Cc67F82'
       abi: FactoryRouter
-      startBlock: 10065057
+      startBlock: 243
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -107,7 +107,7 @@ dataSources:
         - FactoryRouter
       abis:
         - name: FactoryRouter
-          file: ./abis/FactoryRouter.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/FactoryRouter.sol/FactoryRouter.json
       eventHandlers:
         - event: NewPool(indexed address,bool)
           handler: handleNewPool
@@ -115,7 +115,7 @@ dataSources:
 templates:
   - name: ERC20Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC20Template
     mapping:
@@ -127,13 +127,13 @@ templates:
         - ERC20Template
       abis:
         - name: ERC20Template
-          file: ./abis/ERC20Template.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
         - name: ERC20TemplateEnterprise
-          file: ./abis/ERC20TemplateEnterprise.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: ERC20Roles
-          file: ./abis/ERC20Roles.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
       eventHandlers:
         - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
           handler: handleOrderStarted
@@ -144,7 +144,7 @@ templates:
   
   - name: BPool
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: BPool
     mapping:
@@ -156,11 +156,11 @@ templates:
         - BPool
       abis:
         - name: BPool
-          file: ./abis/BPool.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BPool.sol/BPool.json
         - name: BToken
-          file: ./abis/BToken.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BToken.sol/BToken.json
         - name: BMath
-          file: ./abis/BMath.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BMath.sol/BMath.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
@@ -174,9 +174,10 @@ templates:
           handler: handleSetup
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer
+  
   - name: ERC721Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC721Template
     mapping:
@@ -188,7 +189,7 @@ templates:
         - ERC721Template
       abis:
         - name: ERC721Template
-          file: ./abis/ERC721Template.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
       eventHandlers:
         - event: MetadataCreated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
           handler: handleCreated

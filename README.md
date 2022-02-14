@@ -137,27 +137,35 @@ cd ocean-subgraph
 npm i
 ```
 
-3. Let the components know where to pickup the smart contract addresses:
+3. If you use barge, then let the components know where to pickup the smart contract addresses. For production networks, skip this step
 ```
 export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
 ```
 
-4. Generate the subgraph
+4. Generate the subgraphs
 ```bash
+node ./scripts/generatenetworkssubgraphs.js
 npm run codegen
-npm run bargesetup
 ```
 
-5. To deploy a subgraph connected to Barge, use:
+To generate subgraph for just one network, add the network name as parameter
+```bash
+node ./scripts/generatenetworkssubgraphs.js rinkeby
+```
+
+5. To deploy a subgraph use:
+
+npm run create:local-[network]
+npm run deploy:local-[network]
 
 ```bash
-npm run create:local-barge
-npm run deploy:local-barge
+npm run create:local-development
+npm run deploy:local-development
 ```
 
 - Alternatively, if you want to get the sub-graph quickly running on barge, you can run `npm run quickstart:barge` which combines steps 3-5 above.
 
-You now have a local graph-node running on http://localhost:9000
+You now have a local graph-node running on http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph/graphql
 
 
 

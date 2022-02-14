@@ -1,0 +1,7 @@
+node_modules
+contracts
+.env.local
+.env
+build
+coverage
+__mocks__
