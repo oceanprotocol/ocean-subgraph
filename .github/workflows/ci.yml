@@ -33,5 +33,6 @@ jobs:
       # TODO: activate once this issue is solved:
       # https://github.com/graphprotocol/graph-ts/issues/113
       # - run: npm run type-check
+      - run: node ./scripts/generatenetworkssubgraphs.js development
       - run: npm run codegen
       - run: npm run build
