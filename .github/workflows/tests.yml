@@ -50,7 +50,7 @@ jobs:
       - name: Run Barge
         working-directory: ${{ github.workspace }}/barge
         run: |
-          bash -x start_ocean.sh --with-thegraph --no-dashboard 2>&1 > start_ocean.log &
+          bash -x start_ocean.sh --with-thegraph --skip-subgraph-deploy --no-dashboard 2>&1 > start_ocean.log &
  
       - run: npm ci
 
