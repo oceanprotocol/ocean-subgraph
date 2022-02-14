@@ -2,7 +2,7 @@ import { Order } from '../@types/schema'
 import {
   NewPaymentCollector,
   OrderStarted,
-  PublishMarketFees
+  PublishMarketFee
 } from '../@types/templates/ERC20Template/ERC20Template'
 
 import { integer } from './utils/constants'
@@ -64,7 +64,7 @@ export function handleOrderStarted(event: OrderStarted): void {
 }
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
-export function handlePublishMarketFees(event: PublishMarketFees): void {}
+export function handlePublishMarketFee(event: PublishMarketFee): void {}
 
 // export function handlePublishMarketFees(event: PublishMarketFees): void {
 //   const order = Order.load(

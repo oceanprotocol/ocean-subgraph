@@ -140,7 +140,7 @@ templates:
         - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
-          handler: handlePublishMarketFees
+          handler: handlePublishMarketFee
   
   - name: BPool
     kind: ethereum/contract
