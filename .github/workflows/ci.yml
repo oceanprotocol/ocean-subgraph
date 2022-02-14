@@ -34,5 +34,6 @@ jobs:
       # https://github.com/graphprotocol/graph-ts/issues/113
       # - run: npm run type-check
       - run: node ./scripts/generatenetworkssubgraphs.js development
+        working-directory:  ${{ github.workspace }}
       - run: npm run codegen
       - run: npm run build
