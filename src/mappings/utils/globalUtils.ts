@@ -1,6 +1,5 @@
 import { BigDecimal } from '@graphprotocol/graph-ts'
 import { GlobalStats } from '../../@types/schema'
-import { integer } from './constants'
 
 const GLOBAL_ID = '1'
 
@@ -14,37 +13,37 @@ export function getGlobalStats(): GlobalStats {
 }
 export function addOrder(): void {
   const globalStats = getGlobalStats()
-  globalStats.orderCount = globalStats.orderCount.plus(integer.ONE)
+  globalStats.orderCount = globalStats.orderCount + 1
   globalStats.save()
 }
 
 export function addDatatoken(): void {
   const globalStats = getGlobalStats()
-  globalStats.datatokenCount = globalStats.datatokenCount.plus(integer.ONE)
+  globalStats.datatokenCount = globalStats.datatokenCount + 1
   globalStats.save()
 }
 
 export function addNft(): void {
   const globalStats = getGlobalStats()
-  globalStats.nftCount = globalStats.nftCount.plus(integer.ONE)
+  globalStats.nftCount = globalStats.nftCount + 1
   globalStats.save()
 }
 
 export function addFixedRateExchange(): void {
   const globalStats = getGlobalStats()
-  globalStats.fixedCount = globalStats.fixedCount.plus(integer.ONE)
+  globalStats.fixedCount = globalStats.fixedCount + 1
   globalStats.save()
 }
 
 export function addDispenser(): void {
   const globalStats = getGlobalStats()
-  globalStats.dispenserCount = globalStats.dispenserCount.plus(integer.ONE)
+  globalStats.dispenserCount = globalStats.dispenserCount + 1
   globalStats.save()
 }
 
 export function addPool(): void {
   const globalStats = getGlobalStats()
-  globalStats.poolCount = globalStats.poolCount.plus(integer.ONE)
+  globalStats.poolCount = globalStats.poolCount + 1
   globalStats.save()
 }
 
