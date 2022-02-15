@@ -427,7 +427,7 @@ type GlobalTotalSwapPair @entity {
    value : BigDecimal!
 }
 
-type GlobalStats @entity {
+type GlobalStatistic @entity {
     id: ID!
 
     "total liquidity for each base token"                  

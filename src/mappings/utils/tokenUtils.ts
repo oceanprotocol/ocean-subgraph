@@ -1,8 +1,6 @@
 import { Address, log } from '@graphprotocol/graph-ts'
 import { Token } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
-import { integer } from './constants'
-import { getGlobalStats } from './globalUtils'
 
 export function createToken(address: string): Token {
   log.debug('started creating token with address: {}', [address])
@@ -13,10 +11,6 @@ export function createToken(address: string): Token {
   token.address = address
   token.isDatatoken = false
   token.decimals = contract.decimals()
-  const globalStats = getGlobalStats()
-  globalStats.datatokenCount = globalStats.datatokenCount.plus(integer.ONE)
-
-  globalStats.save()
   token.save()
   return token
 }

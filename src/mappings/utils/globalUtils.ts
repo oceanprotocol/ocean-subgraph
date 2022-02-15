@@ -1,12 +1,12 @@
 import { BigDecimal } from '@graphprotocol/graph-ts'
-import { GlobalStats } from '../../@types/schema'
+import { GlobalStatistic } from '../../@types/schema'
 
 const GLOBAL_ID = '1'
 
-export function getGlobalStats(): GlobalStats {
-  let globalStats = GlobalStats.load(GLOBAL_ID)
+export function getGlobalStats(): GlobalStatistic {
+  let globalStats = GlobalStatistic.load(GLOBAL_ID)
   if (!globalStats) {
-    globalStats = new GlobalStats(GLOBAL_ID)
+    globalStats = new GlobalStatistic(GLOBAL_ID)
     globalStats.save()
   }
   return globalStats
