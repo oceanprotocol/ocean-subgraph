@@ -15,6 +15,7 @@ import {
 } from '../@types/schema'
 import { getFixedRateExchange, getUpdateOrSwapId } from './utils/fixedRateUtils'
 import { weiToDecimal } from './utils/generic'
+import { addFixedRateExchange } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
@@ -40,6 +41,8 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedRateExchange.tx = event.transaction.hash.toHex()
   fixedRateExchange.block = event.block.number.toI32()
   fixedRateExchange.save()
+
+  addFixedRateExchange()
 }
 
 export function handleRateChange(event: ExchangeRateChanged): void {
