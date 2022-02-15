@@ -415,25 +415,37 @@ type PoolSnapshot @entity {
 type GlobalTotalLiquidityPair @entity {
    "address of the token"
    id : ID!
+   globalStatistic: GlobalStatistic!
    token : Token!
    value : BigDecimal!
 }
 
 "utility type"
-type GlobalTotalSwapPair @entity {
+type GlobalTotalPoolSwapPair @entity {
    "address of the token"
    id : ID!
+   globalStatistic: GlobalStatistic!
    token : Token!
    value : BigDecimal!
 }
-
+"utility type"
+type GlobalTotalFixedSwapPair @entity {
+   "address of the token"
+   id : ID!
+    globalStatistic: GlobalStatistic!
+   token : Token!
+   value : BigDecimal!
+}
 type GlobalStatistic @entity {
     id: ID!
 
-    "total liquidity for each base token"                  
-    totalLiquidity: [GlobalTotalLiquidityPair!]                       
-    "total swap volume for each base token. pools and fre"
-    totalSwapVolume: [GlobalTotalSwapPair!]                             
+    "total liquidity for each base token in pools"                  
+    totalLiquidity: [GlobalTotalLiquidityPair!]!   @derivedFrom(field: "globalStatistic")                      
+    "total swap volume for each base token in pools"
+    totalPoolSwapVolume: [GlobalTotalPoolSwapPair!]!  @derivedFrom(field: "globalStatistic")        
+
+    "total swap volume for each base token in fixed rate exchanges"
+    totalFixedSwapVolume: [GlobalTotalFixedSwapPair!]    @derivedFrom(field: "globalStatistic")                          
      
     "number of total orders. pool orders + fixed rate exchange orders + dispenser orders"
     orderCount: Int!                                    
