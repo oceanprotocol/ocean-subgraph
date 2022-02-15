@@ -1,0 +1,203 @@
+specVersion: 0.0.3
+description: Ocean provides data sharing through IDOs
+repository: https://github.com/oceanprotocol/ocean-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ERC721Factory
+    network: mumbai
+    source:
+      address: '0x78e1317186786591912A10a7aF2490B8B4697A93'
+      abi: ERC721Factory
+      startBlock: 24924910
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc721Factory.ts
+      entities:
+        - ERC721Factory
+      abis:
+        - name: ERC721Factory
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
+      eventHandlers:
+        - event: NFTCreated(indexed address,indexed address,string,address,string,string)
+          handler: handleNftCreated
+        - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
+          handler: handleNewToken
+  - kind: ethereum/contract
+    name: FixedRateExchange
+    network: mumbai
+    source:
+      address: '0x1706DF1f2d93558D1d77bEd49ccdB8B88fAfC306'
+      abi: FixedRateExchange
+      startBlock: 24924910
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/fixedRateExchange.ts
+      entities:
+        - FixedRateExchange
+      abis:
+        - name: FixedRateExchange
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
+          handler: handleExchangeCreated
+        - event: ExchangeRateChanged(indexed bytes32,indexed address,uint256)
+          handler: handleRateChange
+        - event: ExchangeMintStateChanged(indexed bytes32,indexed address,bool)
+          handler: handleMintStateChanged
+        - event: ExchangeActivated(indexed bytes32,indexed address)
+          handler: handleActivated
+        - event: ExchangeDeactivated(indexed bytes32,indexed address)
+          handler: handleDeactivated
+        - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
+          handler: handleSwap
+  - kind: ethereum/contract
+    name: Dispenser
+    network: mumbai
+    source:
+      address: '0x1706DF1f2d93558D1d77bEd49ccdB8B88fAfC306'
+      abi: Dispenser
+      startBlock: 24924910
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser
+      abis:
+        - name: Dispenser
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json
+      eventHandlers:
+        - event: DispenserCreated(indexed address,indexed address,uint256,uint256,address)
+          handler: handleNewDispenser
+        - event: DispenserActivated(indexed address)
+          handler: handleActivate
+        - event: DispenserDeactivated(indexed address)
+          handler: handleDeactivate
+        - event: DispenserAllowedSwapperChanged(indexed address,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleTokensDispensed
+        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
+          handler: handleOwnerWinthdraw
+
+  - kind: ethereum/contract
+    name: FactoryRouter
+    network: mumbai
+    source:
+      address: '0x8bA04715B1b210f710426b21A29887EEd4EA6751'
+      abi: FactoryRouter
+      startBlock: 24924910
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/factoryRouter.ts
+      entities:
+        - FactoryRouter
+      abis:
+        - name: FactoryRouter
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/FactoryRouter.sol/FactoryRouter.json
+      eventHandlers:
+        - event: NewPool(indexed address,bool)
+          handler: handleNewPool
+
+templates:
+  - name: ERC20Template
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: ERC20Template
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc20Templates.ts
+      entities:
+        - ERC20Template
+      abis:
+        - name: ERC20Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
+        - name: ERC20TemplateEnterprise
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20Roles
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+      eventHandlers:
+        - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleOrderStarted
+        - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
+          handler: handleNewPaymentCollector
+        - event: PublishMarketFee(indexed address,indexed address,uint256)
+          handler: handlePublishMarketFee
+  
+  - name: BPool
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: BPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/pool.ts
+      entities:
+        - BPool
+      abis:
+        - name: BPool
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BPool.sol/BPool.json
+        - name: BToken
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BToken.sol/BToken.json
+        - name: BMath
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BMath.sol/BMath.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleSwap
+        - event: LOG_JOIN(indexed address,indexed address,uint256,uint256)
+          handler: handleJoin
+        - event: LOG_EXIT(indexed address,indexed address,uint256,uint256)
+          handler: handleExit
+        - event: LOG_SETUP(indexed address,indexed address,uint256,uint256,indexed address,uint256,uint256)
+          handler: handleSetup
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlerBptTransfer
+  
+  - name: ERC721Template
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: ERC721Template
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/nftUpdate.ts
+      entities:
+        - ERC721Template
+      abis:
+        - name: ERC721Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
+        - name: ERC721RolesAddress
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC721RolesAddress.sol/ERC721RolesAddress.json
+      eventHandlers:
+        - event: MetadataCreated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
+          handler: handleCreated
+        - event: MetadataUpdated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
+          handler: handleUpdated
+        - event: MetadataState(indexed address,uint8,uint256,uint256)
+          handler: handleState
+        - event: TokenURIUpdate(indexed address,string,uint256,uint256,uint256)
+          handler: handleTokenUriUpdate
