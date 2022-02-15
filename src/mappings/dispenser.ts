@@ -10,6 +10,7 @@ import { Dispenser, DispenserTransaction } from '../@types/schema'
 import { decimal } from './utils/constants'
 import { getDispenser } from './utils/dispenserUtils'
 import { weiToDecimal } from './utils/generic'
+import { addDispenser } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
@@ -34,6 +35,8 @@ export function handleNewDispenser(event: DispenserCreated): void {
   dispenser.tx = event.transaction.hash.toHex()
   dispenser.block = event.block.number.toI32()
   dispenser.save()
+
+  addDispenser()
 }
 
 export function handleActivate(event: DispenserActivated): void {

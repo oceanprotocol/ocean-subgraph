@@ -4,7 +4,7 @@ export function getFixedRateExchange(exchangeId: string): FixedRateExchange {
   let fixedRateExhange = FixedRateExchange.load(exchangeId)
   if (fixedRateExhange === null) {
     fixedRateExhange = new FixedRateExchange(exchangeId)
-    // TODO: get data from contract and fill in new fixed rate exchange
+    // TODO: get data from contract and fill in new fixed rate exchange, this is just a worst case scenario. We shouldn't reach this code
     fixedRateExhange.save()
   }
 

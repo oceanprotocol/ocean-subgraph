@@ -59,6 +59,7 @@ type Token @entity {
 
 "utility type"
 type TokenValuePair @entity {
+   "address of the token"
    id : ID!
    token : Token!
    value : BigDecimal!
@@ -409,23 +410,46 @@ type PoolSnapshot @entity {
   datatokenLiquidity: BigDecimal! 
 
 }
+
+"utility type"
+type GlobalTotalLiquidityPair @entity {
+   "address of the token"
+   id : ID!
+   token : Token!
+   value : BigDecimal!
+}
+
+"utility type"
+type GlobalTotalSwapPair @entity {
+   "address of the token"
+   id : ID!
+   token : Token!
+   value : BigDecimal!
+}
+
 type GlobalStats @entity {
     id: ID!
 
     "total liquidity for each base token"                  
-    totalLiquidity: [TokenValuePair!]!                        
+    totalLiquidity: [GlobalTotalLiquidityPair!]                       
     "total swap volume for each base token. pools and fre"
-    totalSwapVolume: [TokenValuePair!]!                                
+    totalSwapVolume: [GlobalTotalSwapPair!]                             
      
-    "number of total consumes, pools + fre+ free"
-    orderCount: BigInt!                                    
+    "number of total orders. pool orders + fixed rate exchange orders + dispenser orders"
+    orderCount: Int!                                    
 
-    "total nfts created"
-    nftCount: BigInt!
-    "total datatokens created"
-    datatokenCount:BigInt!
+    "total nfts(erc721) created"
+    nftCount: Int!
+    "total datatokens (tokens with isDatatoken = true) created"
+    datatokenCount:Int!
     "number of pools"
     poolCount: Int!     
+    
+    "number of fixed rate exchanges"
+    fixedCount: Int!
+
+    "number of dispensers created"
+    dispenserCount: Int!
 }
 
 
