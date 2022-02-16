@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: ropsten
     source:
-      address: '0x79DaF605B05Fe2BFdD56e5fed3Aeb8797ECf54F0'
+      address: '0xf9FB1f54eA825734E3a77e73A3864f4B46C815d9'
       abi: ERC721Factory
-      startBlock: 11964929
+      startBlock: 11973964
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -30,9 +30,9 @@ dataSources:
     name: FixedRateExchange
     network: ropsten
     source:
-      address: '0x7DBDcF3579831ed30666817D53DA7f6D5bC9861F'
+      address: '0x8e1c4335E38710C36a5AF59A5d4222286aEA07Df'
       abi: FixedRateExchange
-      startBlock: 11964929
+      startBlock: 11973964
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -58,15 +58,15 @@ dataSources:
           handler: handleDeactivated
         - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
           handler: handleAllowedSwapperChanged
-        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
   - kind: ethereum/contract
     name: Dispenser
     network: ropsten
     source:
-      address: '0x7DBDcF3579831ed30666817D53DA7f6D5bC9861F'
+      address: '0x8e1c4335E38710C36a5AF59A5d4222286aEA07Df'
       abi: Dispenser
-      startBlock: 11964929
+      startBlock: 11973964
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -95,9 +95,9 @@ dataSources:
     name: FactoryRouter
     network: ropsten
     source:
-      address: '0x7708125AB73987c9Ff94F170F48149FCeAbB1864'
+      address: '0x153bE7bbcf91a6E2c5D30c78E6f6c3Bce7D1B046'
       abi: FactoryRouter
-      startBlock: 11964929
+      startBlock: 11973964
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: moonbase
     source:
-      address: '0x41cee92fEA5E07F8E3D1Eaf9A19dE3D83e24FA53'
+      address: '0xEcD0C3519a081e3924D6F3197f86980eA7dfCf71'
       abi: ERC721Factory
-      startBlock: 1701297
+      startBlock: 1708548
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -30,9 +30,9 @@ dataSources:
     name: FixedRateExchange
     network: moonbase
     source:
-      address: '0x1d535147a97bd87c8443125376E6671B60556E07'
+      address: '0x0Ee8b03Dafc868a0899ebE1c12d734D53A957250'
       abi: FixedRateExchange
-      startBlock: 1701297
+      startBlock: 1708548
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -58,15 +58,15 @@ dataSources:
           handler: handleDeactivated
         - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
           handler: handleAllowedSwapperChanged
-        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
   - kind: ethereum/contract
     name: Dispenser
     network: moonbase
     source:
-      address: '0x1d535147a97bd87c8443125376E6671B60556E07'
+      address: '0x0Ee8b03Dafc868a0899ebE1c12d734D53A957250'
       abi: Dispenser
-      startBlock: 1701297
+      startBlock: 1708548
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -95,9 +95,9 @@ dataSources:
     name: FactoryRouter
     network: moonbase
     source:
-      address: '0x98679D582AB3398C03D3308dEB9c7AeC50B52ded'
+      address: '0xA0329eFFa1370eAb1DC5998Db4292ae0F535a282'
       abi: FactoryRouter
-      startBlock: 1701297
+      startBlock: 1708548
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
