@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: mumbai
     source:
-      address: '0x78e1317186786591912A10a7aF2490B8B4697A93'
+      address: '0x9B9581B3928BFB3f670FE5af1CF58DAfAb509F6b'
       abi: ERC721Factory
-      startBlock: 24924910
+      startBlock: 24988725
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -30,9 +30,9 @@ dataSources:
     name: FixedRateExchange
     network: mumbai
     source:
-      address: '0x1706DF1f2d93558D1d77bEd49ccdB8B88fAfC306'
+      address: '0xA5BB079f8DE82E9B38dD5AE0918f9B1A514beaFA'
       abi: FixedRateExchange
-      startBlock: 24924910
+      startBlock: 24988725
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -58,15 +58,15 @@ dataSources:
           handler: handleDeactivated
         - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
           handler: handleAllowedSwapperChanged
-        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
   - kind: ethereum/contract
     name: Dispenser
     network: mumbai
     source:
-      address: '0x1706DF1f2d93558D1d77bEd49ccdB8B88fAfC306'
+      address: '0xA5BB079f8DE82E9B38dD5AE0918f9B1A514beaFA'
       abi: Dispenser
-      startBlock: 24924910
+      startBlock: 24988725
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -95,9 +95,9 @@ dataSources:
     name: FactoryRouter
     network: mumbai
     source:
-      address: '0x8bA04715B1b210f710426b21A29887EEd4EA6751'
+      address: '0x09c9a4010E106b9673DcD58AB021a2C84457f323'
       abi: FactoryRouter
-      startBlock: 24924910
+      startBlock: 24988725
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

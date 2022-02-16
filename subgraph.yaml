@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721Factory
-    network: rinkeby
+    network: development
     source:
-      address: '0x6Cd1A5ff1b882738D7D149F47F06f30E1D5f75b7'
+      address: '0x312213d6f6b5FCF9F56B7B8946A6C727Bf4Bc21f'
       abi: ERC721Factory
-      startBlock: 10166530
+      startBlock: 5
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -28,11 +28,11 @@ dataSources:
           handler: handleNewToken
   - kind: ethereum/contract
     name: FixedRateExchange
-    network: rinkeby
+    network: development
     source:
-      address: '0xEC6A90fF44255fE457D104CAFb28455505c77aDF'
+      address: '0x98b6901cE7C9fc65dBeeC98598136593EB7b4c6C'
       abi: FixedRateExchange
-      startBlock: 10166530
+      startBlock: 5
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -58,15 +58,15 @@ dataSources:
           handler: handleDeactivated
         - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
           handler: handleAllowedSwapperChanged
-        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
   - kind: ethereum/contract
     name: Dispenser
-    network: rinkeby
+    network: development
     source:
-      address: '0xEC6A90fF44255fE457D104CAFb28455505c77aDF'
+      address: '0x98b6901cE7C9fc65dBeeC98598136593EB7b4c6C'
       abi: Dispenser
-      startBlock: 10166530
+      startBlock: 5
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -93,11 +93,11 @@ dataSources:
 
   - kind: ethereum/contract
     name: FactoryRouter
-    network: rinkeby
+    network: development
     source:
-      address: '0x1C45A7493C3AfbFE94Ff92593eE8d5D734B22f62'
+      address: '0xBb0911124E680D65358Ac46C5404D4dF01F03e80'
       abi: FactoryRouter
-      startBlock: 10166530
+      startBlock: 5
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -115,7 +115,7 @@ dataSources:
 templates:
   - name: ERC20Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC20Template
     mapping:
@@ -144,7 +144,7 @@ templates:
   
   - name: BPool
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: BPool
     mapping:
@@ -177,7 +177,7 @@ templates:
   
   - name: ERC721Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC721Template
     mapping:

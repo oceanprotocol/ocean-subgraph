@@ -58,7 +58,7 @@ dataSources:
           handler: handleDeactivated
         - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
           handler: handleAllowedSwapperChanged
-        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256)
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
   - kind: ethereum/contract
     name: Dispenser
