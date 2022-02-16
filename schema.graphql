@@ -59,6 +59,7 @@ type Token @entity {
 
 "utility type"
 type TokenValuePair @entity {
+   "address of the token"
    id : ID!
    token : Token!
    value : BigDecimal!
@@ -128,29 +129,14 @@ type Pool @entity {
     datatokenLiquidity: BigDecimal!
     datatokenWeight: BigDecimal!
 
-    "pool Fee percent, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
-    poolFee: BigDecimal! 
+    "publisher market fee   : SWAP, JOIN , EXIT"
+    marketSwapFee: BigDecimal! 
+
+    "liquidity provider fee"
+    liquidityProviderFee: BigDecimal!
 
     "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                    
-    opfFee: BigDecimal!   
-
-    "market fee percent, fee that goes to the market where the pool was created : SWAP"                                  
-    marketFee: BigDecimal!     
-
-    "actual value of fee collected in both tokens"                             
-    totalPoolFee: [TokenValuePair!]!  
-
-    "actual value of fee collected in both tokens"                          
-    totalOpfFee: [TokenValuePair!]!   
-
-    "actual value of fee collected in both tokens"                          
-    totalMarketFee: [TokenValuePair!]!                            
-
-    "fee after collection =  totalFee - colectedFee"
-    availableOpfFee: [TokenValuePair!]!     
-
-    "fee after collection totalFee - colectedFee"                      
-    availableMarketFee: [TokenValuePair!]!                        
+    opcFee: BigDecimal!           
 
     "total pool token shares"                           
     totalShares: BigDecimal!   
@@ -217,15 +203,6 @@ type PoolTransaction @entity {
   "number of shares transfered"
   sharesTransferAmount: BigDecimal!                           
  
-  "pool fee value, fee goes to all liquidity providers : SWAP, JOIN , EXIT"
-  poolFee: BigDecimal!     
-
-  "OPF Fee value, fee that goes to Ocean Protocol Foundation : SWAP"                                  
-  opfFee: BigDecimal!        
-
-  "market fee value, fee that goes to the publishing market"                                
-  marketFee: BigDecimal!  
-
   "block time when pool was created"
   timestamp: Int!      
   "pool creation transaction id"                            
@@ -318,7 +295,9 @@ type FixedRateExchange @entity {
   "if the owner allowes the fre to mint"
   withMint: Boolean  
   "if the fre has the minter role on the datatoken"                                        
-  isMinter: Boolean                                          
+  isMinter: Boolean             
+
+  marketSwapFee: BigDecimal!
 
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
   swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
@@ -422,23 +401,58 @@ type PoolSnapshot @entity {
   datatokenLiquidity: BigDecimal! 
 
 }
-type GlobalStats @entity {
+
+"utility type"
+type GlobalTotalLiquidityPair @entity {
+   "address of the token"
+   id : ID!
+   globalStatistic: GlobalStatistic!
+   token : Token!
+   value : BigDecimal!
+}
+
+"utility type"
+type GlobalTotalPoolSwapPair @entity {
+   "address of the token"
+   id : ID!
+   globalStatistic: GlobalStatistic!
+   token : Token!
+   value : BigDecimal!
+}
+"utility type"
+type GlobalTotalFixedSwapPair @entity {
+   "address of the token"
+   id : ID!
+    globalStatistic: GlobalStatistic!
+   token : Token!
+   value : BigDecimal!
+}
+type GlobalStatistic @entity {
     id: ID!
 
-    "total liquidity for each base token"                  
-    totalLiquidity: [TokenValuePair!]!                        
-    "total swap volume for each base token. pools and fre"
-    totalSwapVolume: [TokenValuePair!]!                                
-     
-    "number of total consumes, pools + fre+ free"
-    orderCount: BigInt!                                    
+    "total liquidity for each base token in pools"                  
+    totalLiquidity: [GlobalTotalLiquidityPair!]!   @derivedFrom(field: "globalStatistic")                      
+    "total swap volume for each base token in pools"
+    totalPoolSwapVolume: [GlobalTotalPoolSwapPair!]!  @derivedFrom(field: "globalStatistic")        
 
-    "total nfts created"
-    nftCount: BigInt!
-    "total datatokens created"
-    datatokenCount:BigInt!
+    "total swap volume for each base token in fixed rate exchanges"
+    totalFixedSwapVolume: [GlobalTotalFixedSwapPair!]    @derivedFrom(field: "globalStatistic")                          
+     
+    "number of total orders. pool orders + fixed rate exchange orders + dispenser orders"
+    orderCount: Int!                                    
+
+    "total nfts(erc721) created"
+    nftCount: Int!
+    "total datatokens (tokens with isDatatoken = true) created"
+    datatokenCount:Int!
     "number of pools"
     poolCount: Int!     
+    
+    "number of fixed rate exchanges"
+    fixedCount: Int!
+
+    "number of dispensers created"
+    dispenserCount: Int!
 }
 
 

@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721Factory
-    network: __NETWORK__
+    network: rinkeby
     source:
-      address: __ERC721FACTORYADDRESS__
+      address: '0x804D4424C5D991030501112fd473cC8E1196f7B5'
       abi: ERC721Factory
-      startBlock: __STARTBLOCK__
+      startBlock: 10176994
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -28,11 +28,11 @@ dataSources:
           handler: handleNewToken
   - kind: ethereum/contract
     name: FixedRateExchange
-    network: __NETWORK__
+    network: rinkeby
     source:
-      address: __FIXEDRATEEXCHANGEADDRESS__
+      address: '0x32eC399A16AABcd0ecBcBc5a4fc3A568409a4911'
       abi: FixedRateExchange
-      startBlock: __STARTBLOCK__
+      startBlock: 10176994
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -62,11 +62,11 @@ dataSources:
           handler: handleSwap
   - kind: ethereum/contract
     name: Dispenser
-    network: __NETWORK__
+    network: rinkeby
     source:
-      address: __DISPENSERADDRESS__
+      address: '0x32eC399A16AABcd0ecBcBc5a4fc3A568409a4911'
       abi: Dispenser
-      startBlock: __STARTBLOCK__
+      startBlock: 10176994
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -93,11 +93,11 @@ dataSources:
 
   - kind: ethereum/contract
     name: FactoryRouter
-    network: __NETWORK__
+    network: rinkeby
     source:
-      address: __FACTORYROUTERADDRESS__
+      address: '0x25aF54F0979Aa4aAa53865C8D413048F6C96ce86'
       abi: FactoryRouter
-      startBlock: __STARTBLOCK__
+      startBlock: 10176994
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -115,7 +115,7 @@ dataSources:
 templates:
   - name: ERC20Template
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: ERC20Template
     mapping:
@@ -141,11 +141,10 @@ templates:
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
           handler: handlePublishMarketFee
-        - event: PublishMarketFeeChanged(address,address,address,uint256)
-          handler: handlePublishMarketFeeChanged
+  
   - name: BPool
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: BPool
     mapping:
@@ -175,12 +174,10 @@ templates:
           handler: handleSetup
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer
-        - event: PublishMarketFee(address,address,address,uint256)
-          handler: handlePublishMarketFee
   
   - name: ERC721Template
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: ERC721Template
     mapping:

@@ -6,7 +6,6 @@ import {
   TokenURIUpdate
 } from '../@types/templates/ERC721Template/ERC721Template'
 import { NftUpdateType } from './utils/constants'
-
 function getId(tx: string, nftAddress: string): string {
   return `${tx}-${nftAddress}`
 }

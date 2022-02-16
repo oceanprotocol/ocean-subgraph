@@ -8,7 +8,7 @@ import {
 
 import { integer } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
-import { getGlobalStats } from './utils/globalUtils'
+import { addOrder } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
@@ -56,12 +56,9 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.tx = event.transaction.hash.toHex()
   order.block = event.block.number.toI32()
 
-  const globalStats = getGlobalStats()
-  globalStats.orderCount = globalStats.orderCount.plus(integer.ONE)
-
-  globalStats.save()
   order.save()
   token.save()
+  addOrder()
 }
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {}

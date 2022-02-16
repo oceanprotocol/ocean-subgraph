@@ -8,7 +8,12 @@ import {
 import { Transfer } from '../@types/templates/BPool/BToken'
 import { integer, PoolTransactionType, ZERO_ADDRESS } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
-import { getGlobalStats } from './utils/globalUtils'
+import {
+  addLiquidity,
+  addPoolSwap,
+  getGlobalStats,
+  removeLiquidity
+} from './utils/globalUtils'
 import {
   calcSpotPrice,
   getPool,
@@ -51,6 +56,8 @@ export function handleJoin(event: LOG_JOIN): void {
       poolSnapshot.baseTokenLiquidity.plus(ammount)
 
     pool.baseTokenLiquidity = pool.baseTokenLiquidity.plus(ammount)
+
+    addLiquidity(token.id, ammount)
   }
 
   poolSnapshot.save()
@@ -89,6 +96,7 @@ export function handleExit(event: LOG_EXIT): void {
       poolSnapshot.baseTokenLiquidity.minus(ammount)
 
     pool.baseTokenLiquidity.minus(ammount)
+    removeLiquidity(token.id, ammount)
   }
 
   poolSnapshot.save()
@@ -127,6 +135,9 @@ export function handleSwap(event: LOG_SWAP): void {
 
     poolSnapshot.baseTokenLiquidity =
       poolSnapshot.baseTokenLiquidity.minus(ammountOut)
+
+    addPoolSwap(tokenOut.id, ammountOut)
+    removeLiquidity(tokenOut.id, ammountOut)
   }
 
   // update pool token in
@@ -151,6 +162,9 @@ export function handleSwap(event: LOG_SWAP): void {
 
     poolSnapshot.baseTokenLiquidity =
       poolSnapshot.baseTokenLiquidity.plus(ammountIn)
+
+    addLiquidity(tokenIn.id, ammountIn)
+    addPoolSwap(tokenIn.id, ammountIn)
   }
 
   // update spot price
