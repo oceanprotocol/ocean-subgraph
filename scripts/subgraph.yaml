@@ -141,7 +141,8 @@ templates:
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
           handler: handlePublishMarketFee
-  
+        - event: PublishMarketFeeChanged(address,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
   - name: BPool
     kind: ethereum/contract
     network: __NETWORK__
@@ -174,6 +175,8 @@ templates:
           handler: handleSetup
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer
+        - event: PublishMarketFee(address,address,address,uint256)
+          handler: handlePublishMarketFee
   
   - name: ERC721Template
     kind: ethereum/contract

@@ -2,7 +2,8 @@ import { Order } from '../@types/schema'
 import {
   NewPaymentCollector,
   OrderStarted,
-  PublishMarketFee
+  PublishMarketFee,
+  PublishMarketFeeChanged
 } from '../@types/templates/ERC20Template/ERC20Template'
 
 import { integer } from './utils/constants'
@@ -65,7 +66,17 @@ export function handleOrderStarted(event: OrderStarted): void {
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
 export function handlePublishMarketFee(event: PublishMarketFee): void {}
+export function handlePublishMarketFeeChanged(event: PublishMarketFeeChanged): void {
+  const token = getToken(event.address.toHex())
+  if(token != null){
+    token.publishMarketFeeAddress = event.params.PublishMarketFeeAddress.toHexString()
+    token.publishMarketFeeToken = event.params.PublishMarketFeeToken.toHexString()
+    token.publishMarketFeeAmmount = event.params.PublishMarketFeeAmount.toBigDecimal()
+    token.save()
+    // TODO - shold we have a history 
+  }
 
+}
 // export function handlePublishMarketFees(event: PublishMarketFees): void {
 //   const order = Order.load(
 //     getOrderId(

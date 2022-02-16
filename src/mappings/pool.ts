@@ -2,7 +2,8 @@ import {
   LOG_EXIT,
   LOG_JOIN,
   LOG_SETUP,
-  LOG_SWAP
+  LOG_SWAP,
+  PublishMarketFee
 } from '../@types/templates/BPool/BPool'
 import { Transfer } from '../@types/templates/BPool/BToken'
 import { integer, PoolTransactionType, ZERO_ADDRESS } from './utils/constants'
@@ -269,4 +270,10 @@ export function handlerBptTransfer(event: Transfer): void {
 
   poolTx.save()
   poolSnapshot.save()
+}
+
+export function handlePublishMarketFee(event: PublishMarketFee): void {
+  const pool = getPool(event.address.toHex())
+  
+
 }
