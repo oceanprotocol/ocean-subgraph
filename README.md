@@ -18,8 +18,8 @@
 
 - [🏄 Get Started](#-get-started)
 - [⛵ Example Queries](#-example-queries)
-- [🏊 Development](#-development)
 - [🏊 Development on barge](#-development-on-barge)
+- [🏊 Deploying graphs for live networks](#-Deploying-graphs-for-live-networks)
 - [🔍 Testing](#-testing)
 - [✨ Code Style](#-code-style)
 - [🛳 Releases](#️-releases)
