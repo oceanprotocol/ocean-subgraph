@@ -120,8 +120,8 @@ npm run codegen
 
 5. To deploy a subgraph use:
 
-npm run create:local
-npm run deploy:local
+npm run create:local-barge
+npm run deploy:local-barge
 
 ```bash
 npm run create:local
