@@ -128,7 +128,7 @@ npm run create:local
 npm run deploy:local
 ```
 
-- Alternatively, if you want to get the sub-graph quickly running on barge, you can run `npm run quickstart:barge` which combines steps 3-5 above.
+- Alternatively, if you want to get the sub-graph quickly running on barge, you can run `npm run quickstart:barge` which combines steps 4-5 above.
 
 You now have a local graph-node running on http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph/graphql
 
