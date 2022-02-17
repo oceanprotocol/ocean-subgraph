@@ -4,15 +4,15 @@ var addresses = require('@oceanprotocol/contracts/addresses/address.json')
 
 async function replaceContractAddresses() {
   // load addresses file first
-  if (!process.argv[2]){
-    console.error("Missing network..")
+  if (!process.argv[2]) {
+    console.error('Missing network..')
     return
   }
   if (process.env.ADDRESS_FILE) {
     console.log('Using custom ADDRESS_FILE instead of ocean-contracts npm dep')
     addresses = JSON.parse(fs.readFileSync(process.env.ADDRESS_FILE, 'utf8'))
   }
-  
+
   for (const network in addresses) {
     if (process.argv[2] != network) {
       console.log('Skipping ' + network)
