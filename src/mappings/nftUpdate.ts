@@ -17,6 +17,7 @@ export function handleCreated(event: MetadataCreated): void {
 
   nft.assetState = event.params.state
   nft.providerUrl = event.params.decryptorUrl.toString()
+
   const nftUpdate = new NftUpdate(
     getId(event.transaction.hash.toHex(), nftAddress)
   )

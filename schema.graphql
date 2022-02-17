@@ -99,7 +99,10 @@ type Nft @entity{
     "nft creation transaction id"
     tx: String!   
     "block number when it was created"                                            
-    block: Int                                              
+    block: Int  
+
+    "number of orders executed for all underlying datatokens"                                
+    orderCount: BigInt!                                              
 }
 
 type Pool @entity {

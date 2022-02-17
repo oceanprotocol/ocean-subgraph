@@ -1,4 +1,4 @@
-import { Order } from '../@types/schema'
+import { Order, Nft } from '../@types/schema'
 import { BigInt } from '@graphprotocol/graph-ts'
 import {
   NewPaymentCollector,
@@ -60,6 +60,13 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.save()
   token.save()
   addOrder()
+  if (token.nft) {
+    const nft = Nft.load(token.nft as string) as Nft
+    if (nft) {
+      nft.orderCount = nft.orderCount.plus(integer.ONE)
+      nft.save()
+    }
+  }
 }
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
