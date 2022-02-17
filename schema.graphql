@@ -281,6 +281,12 @@ type User @entity {
   poolTransactions: [PoolTransaction!] @derivedFrom(field: "user")
   orders: [Order!] @derivedFrom(field: "payer")
   freSwaps: [FixedRateExchangeSwap!] @derivedFrom(field: "by")
+  
+  "total number of orders made by this user"       
+  totalOrders: BigInt!
+
+  "total number of orders made on assets owned by this user"       
+  totalSales: BigInt!
 }
 
 type FixedRateExchange @entity {
