@@ -38,6 +38,8 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.consumer = consumer.id
 
   const payer = getUser(event.params.payer.toHex())
+  payer.totalOrders = payer.totalOrders.plus(integer.ONE)
+  payer.save()
   order.payer = payer.id
 
   order.amount = weiToDecimal(
@@ -66,6 +68,9 @@ export function handleOrderStarted(event: OrderStarted): void {
       nft.orderCount = nft.orderCount.plus(integer.ONE)
       nft.save()
     }
+    const owner = getUser(nft.owner)
+    owner.totalSales = owner.totalSales.plus(integer.ONE)
+    owner.save()
   }
 }
 
