@@ -295,7 +295,7 @@ export function handlePublishMarketFeeChanged(event: PublishMarketFeeChanged): v
     log.warning("Getting newMarketCollector for pool base {}",[event.params.newMarketCollector.toHexString()])
     pool.publishMarketFeeAddress = event.params.newMarketCollector.toHexString()
     log.warning("Getting swapFee for pool base {}",[event.params.swapFee.toHexString()])
-    pool.publishMarketSwapFeeAmmount = weiToDecimal(
+    pool.publishMarketSwapFee = weiToDecimal(
       event.params.swapFee.toBigDecimal(),
       BigInt.fromI32(18).toI32()
     )

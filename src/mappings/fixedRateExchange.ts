@@ -194,7 +194,7 @@ export function handlePublishMarketFeeChanged(event: PublishMarketFeeChanged): v
     log.warning("Getting publishMarketFeeAddress for fre base {}",[event.params.newMarketCollector.toHexString()])
     fixedRateExchange.publishMarketFeeAddress = event.params.newMarketCollector.toHexString()
     log.warning("Getting publishMarketSwapFeeAmmount for fre base {}",[event.params.swapFee.toString()])
-    fixedRateExchange.publishMarketSwapFeeAmmount = weiToDecimal(
+    fixedRateExchange.publishMarketSwapFee = weiToDecimal(
       event.params.swapFee.toBigDecimal(),
       BigInt.fromI32(18).toI32()
     )

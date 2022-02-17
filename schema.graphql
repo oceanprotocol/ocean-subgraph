@@ -172,7 +172,7 @@ type Pool @entity {
     publishMarketFeeAddress: String 
 
     "fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
-    publishMarketSwapFeeAmmount: BigDecimal   
+    publishMarketSwapFee: BigDecimal   
 
     "LP fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
     liquidityProviderSwapFee: BigDecimal   
@@ -314,7 +314,7 @@ type FixedRateExchange @entity {
   publishMarketFeeAddress: String 
 
     "fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
-  publishMarketSwapFeeAmmount: BigDecimal   
+  publishMarketSwapFee: BigDecimal   
 
 }
 

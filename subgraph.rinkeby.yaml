@@ -179,6 +179,8 @@ templates:
           handler: handlerBptTransfer
         - event: PublishMarketFeeChanged(address,address,uint256)
           handler: handlePublishMarketFeeChanged
+        - event: SwapFeeChanged(address,uint256)
+          handler: handleSwapFeeChanged
   
   - name: ERC721Template
     kind: ethereum/contract
