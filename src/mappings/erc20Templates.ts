@@ -1,6 +1,5 @@
 import { Order } from '../@types/schema'
 import { BigInt } from '@graphprotocol/graph-ts'
-import { log } from '@graphprotocol/graph-ts'
 import {
   NewPaymentCollector,
   OrderStarted,
@@ -65,23 +64,28 @@ export function handleOrderStarted(event: OrderStarted): void {
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
 export function handlePublishMarketFee(event: PublishMarketFee): void {}
-export function handlePublishMarketFeeChanged(event: PublishMarketFeeChanged): void {
+export function handlePublishMarketFeeChanged(
+  event: PublishMarketFeeChanged
+): void {
   const token = getToken(event.address.toHex())
-  log.warning("Getting token erc20 {}",[event.address.toHex()])
-  if(token != null){
-    log.warning("Getting publishMarketFeeAddress erc20 {}",[event.params.PublishMarketFeeAddress.toHexString()])
-    token.publishMarketFeeAddress = event.params.PublishMarketFeeAddress.toHexString()
-    log.warning("Getting publishMarketFeeToken erc20 {}",[event.params.PublishMarketFeeToken.toHexString()])
-    token.publishMarketFeeToken = event.params.PublishMarketFeeToken.toHexString()
-    log.warning("Getting PublishMarketFeeAmount erc20 {}",[event.params.PublishMarketFeeAmount.toString()])
-    let decimals=BigInt.fromI32(18).toI32()
-    if(token.publishMarketFeeToken != '0x0000000000000000000000000000000000000000')
-        decimals = BigInt.fromI32(token.decimals).toI32()
-    token.publishMarketFeeAmmount = weiToDecimal(event.params.PublishMarketFeeAmount.toBigDecimal(),decimals)
+  if (token != null) {
+    token.publishMarketFeeAddress =
+      event.params.PublishMarketFeeAddress.toHexString()
+    token.publishMarketFeeToken =
+      event.params.PublishMarketFeeToken.toHexString()
+    let decimals = BigInt.fromI32(18).toI32()
+    if (
+      token.publishMarketFeeToken !=
+      '0x0000000000000000000000000000000000000000'
+    )
+      decimals = BigInt.fromI32(token.decimals).toI32()
+    token.publishMarketFeeAmmount = weiToDecimal(
+      event.params.PublishMarketFeeAmount.toBigDecimal(),
+      decimals
+    )
     token.save()
-    // TODO - shold we have a history 
+    // TODO - shold we have a history
   }
-
 }
 // export function handlePublishMarketFees(event: PublishMarketFees): void {
 //   const order = Order.load(

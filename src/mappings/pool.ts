@@ -1,5 +1,4 @@
 import { BigInt } from '@graphprotocol/graph-ts'
-import { log } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -289,12 +288,12 @@ export function handlerBptTransfer(event: Transfer): void {
   poolSnapshot.save()
 }
 
-export function handlePublishMarketFeeChanged(event: PublishMarketFeeChanged): void {
+export function handlePublishMarketFeeChanged(
+  event: PublishMarketFeeChanged
+): void {
   const pool = getPool(event.address.toHex())
-  if(pool){
-    log.warning("Getting newMarketCollector for pool base {}",[event.params.newMarketCollector.toHexString()])
+  if (pool) {
     pool.publishMarketFeeAddress = event.params.newMarketCollector.toHexString()
-    log.warning("Getting swapFee for pool base {}",[event.params.swapFee.toHexString()])
     pool.publishMarketSwapFee = weiToDecimal(
       event.params.swapFee.toBigDecimal(),
       BigInt.fromI32(18).toI32()
@@ -305,8 +304,8 @@ export function handlePublishMarketFeeChanged(event: PublishMarketFeeChanged): v
 
 export function handleSwapFeeChanged(event: SwapFeeChanged): void {
   const pool = getPool(event.address.toHex())
-  if(pool){
-    pool.liquidityProviderSwapFee= weiToDecimal(
+  if (pool) {
+    pool.liquidityProviderSwapFee = weiToDecimal(
       event.params.amount.toBigDecimal(),
       BigInt.fromI32(18).toI32()
     )
