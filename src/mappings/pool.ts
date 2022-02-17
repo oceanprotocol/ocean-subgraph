@@ -1,8 +1,11 @@
+import { BigInt } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
   LOG_SETUP,
-  LOG_SWAP
+  LOG_SWAP,
+  PublishMarketFeeChanged,
+  SwapFeeChanged
 } from '../@types/templates/BPool/BPool'
 import { Transfer } from '../@types/templates/BPool/BToken'
 import { integer, PoolTransactionType, ZERO_ADDRESS } from './utils/constants'
@@ -283,4 +286,29 @@ export function handlerBptTransfer(event: Transfer): void {
 
   poolTx.save()
   poolSnapshot.save()
+}
+
+export function handlePublishMarketFeeChanged(
+  event: PublishMarketFeeChanged
+): void {
+  const pool = getPool(event.address.toHex())
+  if (pool) {
+    pool.publishMarketFeeAddress = event.params.newMarketCollector.toHexString()
+    pool.publishMarketSwapFee = weiToDecimal(
+      event.params.swapFee.toBigDecimal(),
+      BigInt.fromI32(18).toI32()
+    )
+    pool.save()
+  }
+}
+
+export function handleSwapFeeChanged(event: SwapFeeChanged): void {
+  const pool = getPool(event.address.toHex())
+  if (pool) {
+    pool.liquidityProviderSwapFee = weiToDecimal(
+      event.params.amount.toBigDecimal(),
+      BigInt.fromI32(18).toI32()
+    )
+    pool.save()
+  }
 }

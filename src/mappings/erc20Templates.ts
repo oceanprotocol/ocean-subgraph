@@ -1,8 +1,10 @@
 import { Order } from '../@types/schema'
+import { BigInt } from '@graphprotocol/graph-ts'
 import {
   NewPaymentCollector,
   OrderStarted,
-  PublishMarketFee
+  PublishMarketFee,
+  PublishMarketFeeChanged
 } from '../@types/templates/ERC20Template/ERC20Template'
 
 import { integer } from './utils/constants'
@@ -62,7 +64,29 @@ export function handleOrderStarted(event: OrderStarted): void {
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
 export function handlePublishMarketFee(event: PublishMarketFee): void {}
-
+export function handlePublishMarketFeeChanged(
+  event: PublishMarketFeeChanged
+): void {
+  const token = getToken(event.address.toHex())
+  if (token != null) {
+    token.publishMarketFeeAddress =
+      event.params.PublishMarketFeeAddress.toHexString()
+    token.publishMarketFeeToken =
+      event.params.PublishMarketFeeToken.toHexString()
+    let decimals = BigInt.fromI32(18).toI32()
+    if (
+      token.publishMarketFeeToken !=
+      '0x0000000000000000000000000000000000000000'
+    )
+      decimals = BigInt.fromI32(token.decimals).toI32()
+    token.publishMarketFeeAmmount = weiToDecimal(
+      event.params.PublishMarketFeeAmount.toBigDecimal(),
+      decimals
+    )
+    token.save()
+    // TODO - shold we have a history
+  }
+}
 // export function handlePublishMarketFees(event: PublishMarketFees): void {
 //   const order = Order.load(
 //     getOrderId(

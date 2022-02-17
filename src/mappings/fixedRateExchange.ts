@@ -6,7 +6,8 @@ import {
   ExchangeDeactivated,
   ExchangeMintStateChanged,
   ExchangeRateChanged,
-  Swapped
+  Swapped,
+  PublishMarketFeeChanged
 } from '../@types/FixedRateExchange/FixedRateExchange'
 import {
   FixedRateExchange,
@@ -179,4 +180,21 @@ export function handleSwap(event: Swapped): void {
   )
 
   swap.save()
+}
+
+export function handlePublishMarketFeeChanged(
+  event: PublishMarketFeeChanged
+): void {
+  const fixedRateExchange = getFixedRateExchange(
+    event.params.exchangeId.toHex()
+  )
+  if (fixedRateExchange) {
+    fixedRateExchange.publishMarketFeeAddress =
+      event.params.newMarketCollector.toHexString()
+    fixedRateExchange.publishMarketSwapFee = weiToDecimal(
+      event.params.swapFee.toBigDecimal(),
+      BigInt.fromI32(18).toI32()
+    )
+    fixedRateExchange.save()
+  }
 }

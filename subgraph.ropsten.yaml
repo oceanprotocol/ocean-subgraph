@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: ropsten
     source:
-      address: '0xf9FB1f54eA825734E3a77e73A3864f4B46C815d9'
+      address: '0x5D7a9F0c8E9E9af5674DEE832Cc97FC425b655Bc'
       abi: ERC721Factory
-      startBlock: 11973964
+      startBlock: 11978747
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -30,9 +30,9 @@ dataSources:
     name: FixedRateExchange
     network: ropsten
     source:
-      address: '0x8e1c4335E38710C36a5AF59A5d4222286aEA07Df'
+      address: '0x292f3108Fe22BaF215133fEc6Ad1a99312daC8E5'
       abi: FixedRateExchange
-      startBlock: 11973964
+      startBlock: 11978747
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -60,13 +60,15 @@ dataSources:
           handler: handleAllowedSwapperChanged
         - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
+        - event: PublishMarketFeeChanged(indexed bytes32,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
   - kind: ethereum/contract
     name: Dispenser
     network: ropsten
     source:
-      address: '0x8e1c4335E38710C36a5AF59A5d4222286aEA07Df'
+      address: '0x292f3108Fe22BaF215133fEc6Ad1a99312daC8E5'
       abi: Dispenser
-      startBlock: 11973964
+      startBlock: 11978747
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -95,9 +97,9 @@ dataSources:
     name: FactoryRouter
     network: ropsten
     source:
-      address: '0x153bE7bbcf91a6E2c5D30c78E6f6c3Bce7D1B046'
+      address: '0x9CF7215De4D862497CEdc86012EB3177044C523A'
       abi: FactoryRouter
-      startBlock: 11973964
+      startBlock: 11978747
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -141,7 +143,8 @@ templates:
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
           handler: handlePublishMarketFee
-  
+        - event: PublishMarketFeeChanged(address,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
   - name: BPool
     kind: ethereum/contract
     network: ropsten
@@ -174,6 +177,10 @@ templates:
           handler: handleSetup
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer
+        - event: PublishMarketFeeChanged(address,address,uint256)
+          handler: handlePublishMarketFeeChanged
+        - event: SwapFeeChanged(address,uint256)
+          handler: handleSwapFeeChanged
   
   - name: ERC721Template
     kind: ethereum/contract

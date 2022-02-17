@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: mumbai
     source:
-      address: '0x9B9581B3928BFB3f670FE5af1CF58DAfAb509F6b'
+      address: '0xf02e3163Dc3409D69D88D7AcDA613432E9A18741'
       abi: ERC721Factory
-      startBlock: 24988725
+      startBlock: 25018956
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -30,9 +30,9 @@ dataSources:
     name: FixedRateExchange
     network: mumbai
     source:
-      address: '0xA5BB079f8DE82E9B38dD5AE0918f9B1A514beaFA'
+      address: '0xB219578a03474dDE345AC50B93198E7bf3e2a4BF'
       abi: FixedRateExchange
-      startBlock: 24988725
+      startBlock: 25018956
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -60,13 +60,15 @@ dataSources:
           handler: handleAllowedSwapperChanged
         - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
+        - event: PublishMarketFeeChanged(indexed bytes32,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
   - kind: ethereum/contract
     name: Dispenser
     network: mumbai
     source:
-      address: '0xA5BB079f8DE82E9B38dD5AE0918f9B1A514beaFA'
+      address: '0xB219578a03474dDE345AC50B93198E7bf3e2a4BF'
       abi: Dispenser
-      startBlock: 24988725
+      startBlock: 25018956
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -95,9 +97,9 @@ dataSources:
     name: FactoryRouter
     network: mumbai
     source:
-      address: '0x09c9a4010E106b9673DcD58AB021a2C84457f323'
+      address: '0xf9FB1f54eA825734E3a77e73A3864f4B46C815d9'
       abi: FactoryRouter
-      startBlock: 24988725
+      startBlock: 25018956
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -141,7 +143,8 @@ templates:
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
           handler: handlePublishMarketFee
-  
+        - event: PublishMarketFeeChanged(address,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
   - name: BPool
     kind: ethereum/contract
     network: mumbai
@@ -174,6 +177,10 @@ templates:
           handler: handleSetup
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer
+        - event: PublishMarketFeeChanged(address,address,uint256)
+          handler: handlePublishMarketFeeChanged
+        - event: SwapFeeChanged(address,uint256)
+          handler: handleSwapFeeChanged
   
   - name: ERC721Template
     kind: ethereum/contract
