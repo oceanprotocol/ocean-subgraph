@@ -11,7 +11,7 @@ then
     sleep 2
   done
   export ADDRESS_FILE="/ocean-contracts/artifacts/address.json"
-  /usr/src/app/
+  cd /usr/src/app/
   npm run quickstart:barge
 fi
 tail -f /dev/null

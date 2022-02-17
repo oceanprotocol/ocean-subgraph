@@ -4,18 +4,22 @@ var addresses = require('@oceanprotocol/contracts/addresses/address.json')
 
 async function replaceContractAddresses() {
   // load addresses file first
+  if (!process.argv[2]) {
+    console.error('Missing network..')
+    return
+  }
   if (process.env.ADDRESS_FILE) {
     console.log('Using custom ADDRESS_FILE instead of ocean-contracts npm dep')
     addresses = JSON.parse(fs.readFileSync(process.env.ADDRESS_FILE, 'utf8'))
   }
-  console.log(process.argv)
+
   for (const network in addresses) {
-    if (process.argv[2] && process.argv[2] != network) {
+    if (process.argv[2] != network) {
       console.log('Skipping ' + network)
       continue
     }
-    console.log('Creating subgraph.' + network + '.yaml')
-    let subgraph = fs.readFileSync('./scripts/subgraph.yaml', 'utf8')
+    console.log('Creating subgraph.yaml for ' + network)
+    let subgraph = fs.readFileSync('./subgraph.template.yaml', 'utf8')
 
     subgraph = subgraph.replace(/__NETWORK__/g, network)
     subgraph = subgraph.replace(
@@ -38,9 +42,7 @@ async function replaceContractAddresses() {
       /__FACTORYROUTERADDRESS__/g,
       "'" + addresses[network].Router + "'"
     )
-    if (network != 'development')
-      fs.writeFileSync('subgraph.' + network + '.yaml', subgraph, 'utf8')
-    else fs.writeFileSync('subgraph.yaml', subgraph, 'utf8')
+    fs.writeFileSync('subgraph.yaml', subgraph, 'utf8')
   }
 }
 
