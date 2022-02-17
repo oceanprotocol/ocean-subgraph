@@ -85,35 +85,6 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 > Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
 
-## 🏊 Development
-
-First, clone the repo and install dependencies:
-
-```bash
-git clone https://github.com/oceanprotocol/ocean-subgraph/
-cd ocean-subgraph
-npm i
-```
-
-Developing and testing any change requires them to be deployed against a locally running graph-node and some other components running in Docker. Make sure you have Docker and Docker Compose installed on your machine, then prepare the Docker setup:
-
-```bash
-cd docker
-./setup.sh
-```
-
-Then add your Infura key as environment variable with a `.env` file, and start everything up with Docker Compose:
-
-```bash
-# create .env and modify
-cp .env.example .env
-
-docker-compose --env-file .env up
-```
-
-The default network for development is set to Rinkeby. If you want to switch to another network you have to modify the `docker/docker-compose.yml` file within `environment.ethereum`.
-
-You now have a local graph-node running and can start deploying your changes to it. To do so, follow the [Deployment instructions](#️-deployment).
 
 
 ## 🏊 Development on Barge
@@ -137,36 +108,47 @@ cd ocean-subgraph
 npm i
 ```
 
-3. If you use barge, then let the components know where to pickup the smart contract addresses. For production networks, skip this step
+3. Let the components know where to pickup the smart contract addresses. 
 ```
 export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
 ```
 
 4. Generate the subgraphs
 ```bash
-node ./scripts/generatenetworkssubgraphs.js
+node ./scripts/generatenetworkssubgraphs.js barge
 npm run codegen
-```
-
-To generate subgraph for just one network, add the network name as parameter
-```bash
-node ./scripts/generatenetworkssubgraphs.js rinkeby
 ```
 
 5. To deploy a subgraph use:
 
-npm run create:local-[network]
-npm run deploy:local-[network]
+npm run create:local
+npm run deploy:local
 
 ```bash
-npm run create:local-development
-npm run deploy:local-development
+npm run create:local
+npm run deploy:local
 ```
 
 - Alternatively, if you want to get the sub-graph quickly running on barge, you can run `npm run quickstart:barge` which combines steps 3-5 above.
 
 You now have a local graph-node running on http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph/graphql
 
+
+## 🏊 Deploying graphs for live networks
+
+
+1. Clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/oceanprotocol/ocean-subgraph/
+cd ocean-subgraph
+npm i
+```
+
+2. Generate & deploy on rinkeby
+```bash
+npm run quickstart:rinkeby
+```
 
 
 ## 🔍 Testing
