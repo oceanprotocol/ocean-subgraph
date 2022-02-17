@@ -1,4 +1,5 @@
 import { BigInt } from '@graphprotocol/graph-ts'
+import { log } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -6,7 +7,8 @@ import {
   ExchangeDeactivated,
   ExchangeMintStateChanged,
   ExchangeRateChanged,
-  Swapped
+  Swapped,
+  PublishMarketFeeChanged
 } from '../@types/FixedRateExchange/FixedRateExchange'
 import {
   FixedRateExchange,
@@ -179,4 +181,26 @@ export function handleSwap(event: Swapped): void {
   )
 
   swap.save()
+}
+
+
+export function handlePublishMarketFeeChanged(event: PublishMarketFeeChanged): void {
+  const fixedRateExchange = getFixedRateExchange(
+    event.params.exchangeId.toHex()
+  )
+  if(fixedRateExchange){
+    log.warning("Getting token for fre base {}",[fixedRateExchange.baseToken])
+    const baseToken = getToken(fixedRateExchange.baseToken)
+    log.warning("Getting publishMarketFeeAddress for fre base {}",[event.params.newMarketCollector.toHexString()])
+    fixedRateExchange.publishMarketFeeAddress = event.params.newMarketCollector.toHexString()
+    log.warning("Getting publishMarketSwapFeeAmmount for fre base {}",[event.params.swapFee.toString()])
+    fixedRateExchange.publishMarketSwapFeeAmmount = weiToDecimal(
+      event.params.swapFee.toBigDecimal(),
+      BigInt.fromI32(18).toI32()
+    )
+    fixedRateExchange.save()
+  }
+
+  
+
 }

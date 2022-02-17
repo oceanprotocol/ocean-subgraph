@@ -60,6 +60,8 @@ dataSources:
           handler: handleAllowedSwapperChanged
         - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
           handler: handleSwap
+        - event: PublishMarketFeeChanged(indexed bytes32,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
   - kind: ethereum/contract
     name: Dispenser
     network: development
@@ -141,7 +143,8 @@ templates:
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
           handler: handlePublishMarketFee
-  
+        - event: PublishMarketFeeChanged(address,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
   - name: BPool
     kind: ethereum/contract
     network: development
@@ -174,6 +177,10 @@ templates:
           handler: handleSetup
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlerBptTransfer
+        - event: PublishMarketFeeChanged(address,address,uint256)
+          handler: handlePublishMarketFeeChanged
+        - event: SwapFeeChanged(address,uint256)
+          handler: handleSwapFeeChanged
   
   - name: ERC721Template
     kind: ethereum/contract
