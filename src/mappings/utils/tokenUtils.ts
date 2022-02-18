@@ -14,7 +14,7 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   token.name = contract.name()
   token.symbol = contract.symbol()
   token.address = address.toHexString()
-  token.isDatatoken = false
+  token.isDatatoken = isDatatoken
   token.decimals = contract.decimals()
   token.save()
   return token
