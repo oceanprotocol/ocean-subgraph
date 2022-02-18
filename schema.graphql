@@ -470,6 +470,17 @@ type GlobalStatistic @entity {
     dispenserCount: Int!
 }
 
+type OPC @entity {
+    id: ID!
+    "fee in percent for swaps involving OPC approved tokens"
+    swapOceanFee: BigDecimal
+    "fee in percent for swaps involving non OPC approved tokens"
+    swapNonOceanFee: BigDecimal
+    "fee in percent taken by OPC from consumeFees"
+    consumeFee: BigDecimal
+    "fee in percent taken by OPC from providerFees"
+    providerFee: BigDecimal
+}
 
  enum NftUpdateType {
   METADATA_CREATED,
