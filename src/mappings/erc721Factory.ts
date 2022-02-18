@@ -43,3 +43,4 @@ export function handleNewToken(event: TokenCreated): void {
 
   token.save()
 }
+

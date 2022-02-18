@@ -3,7 +3,8 @@ import {
   GlobalStatistic,
   GlobalTotalFixedSwapPair,
   GlobalTotalLiquidityPair,
-  GlobalTotalPoolSwapPair
+  GlobalTotalPoolSwapPair,
+  OPC
 } from '../../@types/schema'
 
 const GLOBAL_ID = '1'
@@ -16,6 +17,17 @@ export function getGlobalStats(): GlobalStatistic {
   }
   return globalStats
 }
+
+
+export function getOPC(): OPC {
+  let globalStats = OPC.load(GLOBAL_ID)
+  if (!globalStats) {
+    globalStats = new OPC(GLOBAL_ID)
+    globalStats.save()
+  }
+  return globalStats
+}
+
 export function addOrder(): void {
   const globalStats = getGlobalStats()
   globalStats.orderCount = globalStats.orderCount + 1

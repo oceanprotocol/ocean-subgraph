@@ -119,6 +119,11 @@ dataSources:
       eventHandlers:
         - event: NewPool(indexed address,bool)
           handler: handleNewPool
+        - event: TokenAdded(indexed address,indexed address)
+          handler: handleTokenAdded
+        - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleOPCFeeChanged
+
 
 templates:
   - name: ERC20Template
