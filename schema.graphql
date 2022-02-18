@@ -11,11 +11,14 @@ type Token @entity {
     "address of ERC721 that owns the token, valid only for datatokens"
     nft: Nft    
 
-    "array of addresses with minter role, can be user wallet address, dispenser etc."                                 
-    minter: [User!] 
+    "array of addresses with minter role"                                 
+    minter: [String!] 
 
-    "TODO: maybe we change name , depends on audit results . It's the address that collects the payments (NOT fees)"                                      
-    feeManager: String   
+    "array of addresses with payment manager minter role"                                 
+    paymentManager: [String!] 
+
+    "address that collects the payments (NOT fees)"                                      
+    paymentCollector: String   
 
     "address of the market where the datatoken was created. This address collects market fees."                       
     publishMarketFeeAddress: String 
@@ -277,7 +280,6 @@ type User @entity {
   id: ID!
   sharesOwned: [PoolShare!] @derivedFrom(field: "user")
   tokenBalancesOwned: [TokenValuePair!]
-  tokensOwned: [Token!] @derivedFrom(field: "minter")
   poolTransactions: [PoolTransaction!] @derivedFrom(field: "user")
   orders: [Order!] @derivedFrom(field: "payer")
   freSwaps: [FixedRateExchangeSwap!] @derivedFrom(field: "by")

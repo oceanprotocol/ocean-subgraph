@@ -16,7 +16,7 @@ import { getUser } from './utils/userUtils'
 
 export function handleNewDispenser(event: DispenserCreated): void {
   const dispenser = new Dispenser(event.params.datatokenAddress.toHex())
-  const token = getToken(event.params.datatokenAddress.toHex())
+  const token = getToken(event.params.datatokenAddress, false)
   dispenser.token = token.id
 
   dispenser.owner = event.params.owner.toHexString()

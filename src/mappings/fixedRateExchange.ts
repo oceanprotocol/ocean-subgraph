@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -26,12 +26,8 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   )
   const user = getUser(event.params.exchangeOwner.toHexString())
   fixedRateExchange.owner = user.id
-  fixedRateExchange.datatoken = getToken(
-    event.params.datatoken.toHexString()
-  ).id
-  fixedRateExchange.baseToken = getToken(
-    event.params.baseToken.toHexString()
-  ).id
+  fixedRateExchange.datatoken = getToken(event.params.datatoken, true).id
+  fixedRateExchange.baseToken = getToken(event.params.baseToken, false).id
 
   fixedRateExchange.active = false
   fixedRateExchange.price = weiToDecimal(
@@ -169,7 +165,10 @@ export function handleSwap(event: Swapped): void {
   swap.by = getUser(event.params.by.toHex()).id
 
   // we need to fetch the decimals of the base token
-  const baseToken = getToken(fixedRateExchange.baseToken)
+  const baseToken = getToken(
+    Address.fromString(fixedRateExchange.baseToken),
+    false
+  )
   swap.baseTokenAmount = weiToDecimal(
     event.params.baseTokenSwappedAmount.toBigDecimal(),
     BigInt.fromI32(baseToken.decimals).toI32()

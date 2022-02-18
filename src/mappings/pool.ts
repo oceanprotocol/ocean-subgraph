@@ -37,7 +37,7 @@ export function handleJoin(event: LOG_JOIN): void {
 
   // get token,  update pool transaction, poolSnapshot
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
-  const token = getToken(event.params.tokenIn.toHex())
+  const token = getToken(event.params.tokenIn, false)
   const ammount = weiToDecimal(
     event.params.tokenAmountIn.toBigDecimal(),
     token.decimals
@@ -76,7 +76,7 @@ export function handleExit(event: LOG_EXIT): void {
   pool.joinCount = pool.joinCount.plus(integer.ONE)
 
   // get token and update pool transaction, value is negative because this is an exit event.
-  const token = getToken(event.params.tokenOut.toHex())
+  const token = getToken(event.params.tokenOut, false)
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   const ammount = weiToDecimal(
     event.params.tokenAmountOut.toBigDecimal(),
@@ -116,7 +116,8 @@ export function handleSwap(event: LOG_SWAP): void {
 
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   // get token out and update pool transaction, value is negative
-  const tokenOut = getToken(event.params.tokenOut.toHex())
+  const tokenOut = getToken(event.params.tokenOut, false)
+
   const ammountOut = weiToDecimal(
     event.params.tokenAmountOut.toBigDecimal(),
     tokenOut.decimals
@@ -143,7 +144,7 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update pool token in
-  const tokenIn = getToken(event.params.tokenIn.toHex())
+  const tokenIn = getToken(event.params.tokenIn, false)
   const ammountIn = weiToDecimal(
     event.params.tokenAmountIn.toBigDecimal(),
     tokenIn.decimals
@@ -190,7 +191,7 @@ export function handleSetup(event: LOG_SETUP): void {
   const pool = getPool(event.address.toHex())
 
   pool.controller = event.params.caller.toHexString()
-  const token = getToken(event.params.baseToken.toHex())
+  const token = getToken(event.params.baseToken, false)
   pool.baseToken = token.id
   pool.baseTokenWeight = weiToDecimal(
     event.params.baseTokenWeight.toBigDecimal(),
@@ -198,7 +199,7 @@ export function handleSetup(event: LOG_SETUP): void {
   )
 
   // decimals hardcoded because datatokens have 18 decimals
-  const datatoken = getToken(event.params.datatoken.toHex())
+  const datatoken = getToken(event.params.datatoken, true)
   pool.datatoken = datatoken.id
   pool.datatokenWeight = weiToDecimal(
     event.params.datatokenWeight.toBigDecimal(),
