@@ -89,8 +89,10 @@ export function handlePublishMarketFeeChanged(
     if (
       token.publishMarketFeeToken !=
       '0x0000000000000000000000000000000000000000'
-    )
+    ){
+      const token = getToken(event.params.PublishMarketFeeToken.toHexString())
       decimals = BigInt.fromI32(token.decimals).toI32()
+    }
     token.publishMarketFeeAmmount = weiToDecimal(
       event.params.PublishMarketFeeAmount.toBigDecimal(),
       decimals
