@@ -3,14 +3,25 @@ import {
   MetadataCreated,
   MetadataState,
   MetadataUpdated,
-  TokenURIUpdate
+  TokenURIUpdate,
+  AddedManager,
+  AddedTo725StoreList,
+  AddedToCreateERC20List,
+  AddedToMetadataList,
+  RemovedFrom725StoreList,
+  RemovedFromCreateERC20List,
+  RemovedFromMetadataList,
+  RemovedManager,
+  CleanedPermissions
 } from '../@types/templates/ERC721Template/ERC721Template'
 import { NftUpdateType } from './utils/constants'
+import { getNftToken } from './utils/tokenUtils'
+
 function getId(tx: string, nftAddress: string): string {
   return `${tx}-${nftAddress}`
 }
 
-export function handleCreated(event: MetadataCreated): void {
+export function handleMetadataCreated(event: MetadataCreated): void {
   const nftAddress = event.address.toHex()
   const nft = Nft.load(nftAddress)
   if (!nft) return
@@ -37,7 +48,7 @@ export function handleCreated(event: MetadataCreated): void {
   nft.save()
 }
 
-export function handleUpdated(event: MetadataUpdated): void {
+export function handleMetadataUpdated(event: MetadataUpdated): void {
   const nftAddress = event.address.toHex()
   const nft = Nft.load(nftAddress)
   if (!nft) return
@@ -60,7 +71,7 @@ export function handleUpdated(event: MetadataUpdated): void {
   nft.save()
 }
 
-export function handleState(event: MetadataState): void {
+export function handleMetadataState(event: MetadataState): void {
   const nftAddress = event.address.toHex()
   const nft = Nft.load(nftAddress)
   if (!nft) return
@@ -103,5 +114,134 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
   nftUpdate.block = event.block.number.toI32()
 
   nftUpdate.save()
+  nft.save()
+}
+
+// roles
+export function handleAddedManager(event: AddedManager): void {
+  const nft = getNftToken(event.address)
+  let existingRoles: string[]
+  if (!nft.managerRole) existingRoles = []
+  else existingRoles = nft.managerRole as string[]
+  if (!existingRoles.includes(event.params.user.toHexString()))
+    existingRoles.push(event.params.user.toHexString())
+  nft.managerRole = existingRoles
+  nft.save()
+}
+export function handleRemovedManager(event: RemovedManager): void {
+  const nft = getNftToken(event.address)
+  const newList: string[] = []
+  let existingRoles: string[]
+  if (!nft.managerRole) existingRoles = []
+  else existingRoles = nft.managerRole as string[]
+  if (!existingRoles || existingRoles.length < 1) return
+  while (existingRoles.length > 0) {
+    const role = existingRoles.shift().toString()
+    if (!role) break
+    if (role !== event.params.user.toHexString()) newList.push(role)
+  }
+  nft.managerRole = newList
+  nft.save()
+}
+
+// storeUpdater
+export function handleAddedTo725StoreList(event: AddedTo725StoreList): void {
+  const nft = getNftToken(event.address)
+  let existingRoles: string[]
+  if (!nft.storeUpdateRole) existingRoles = []
+  else existingRoles = nft.storeUpdateRole as string[]
+  if (!existingRoles.includes(event.params.user.toHexString()))
+    existingRoles.push(event.params.user.toHexString())
+  nft.storeUpdateRole = existingRoles
+  nft.save()
+}
+
+export function handleRemovedFrom725StoreList(
+  event: RemovedFrom725StoreList
+): void {
+  const nft = getNftToken(event.address)
+  const newList: string[] = []
+  let existingRoles: string[]
+  if (!nft.storeUpdateRole) existingRoles = []
+  else existingRoles = nft.storeUpdateRole as string[]
+  if (!existingRoles || existingRoles.length < 1) return
+  while (existingRoles.length > 0) {
+    const role = existingRoles.shift().toString()
+    if (!role) break
+    if (role !== event.params.user.toHexString()) newList.push(role)
+  }
+  nft.storeUpdateRole = newList
+  nft.save()
+}
+
+// erc20Deployer
+export function handleAddedToCreateERC20List(
+  event: AddedToCreateERC20List
+): void {
+  const nft = getNftToken(event.address)
+  let existingRoles: string[]
+  if (!nft.erc20DeployerRole) existingRoles = []
+  else existingRoles = nft.erc20DeployerRole as string[]
+  if (!existingRoles.includes(event.params.user.toHexString()))
+    existingRoles.push(event.params.user.toHexString())
+  nft.erc20DeployerRole = existingRoles
+  nft.save()
+}
+
+export function handleRemovedFromCreateERC20List(
+  event: RemovedFromCreateERC20List
+): void {
+  const nft = getNftToken(event.address)
+  const newList: string[] = []
+  let existingRoles: string[]
+  if (!nft.erc20DeployerRole) existingRoles = []
+  else existingRoles = nft.erc20DeployerRole as string[]
+  if (!existingRoles || existingRoles.length < 1) return
+  while (existingRoles.length > 0) {
+    const role = existingRoles.shift().toString()
+    if (!role) break
+    if (role !== event.params.user.toHexString()) newList.push(role)
+  }
+  nft.erc20DeployerRole = newList
+  nft.save()
+}
+
+// metadata updater
+export function handleAddedToMetadataList(event: AddedToMetadataList): void {
+  const nft = getNftToken(event.address)
+  let existingRoles: string[]
+  if (!nft.metadataRole) existingRoles = []
+  else existingRoles = nft.metadataRole as string[]
+  if (!existingRoles.includes(event.params.user.toHexString()))
+    existingRoles.push(event.params.user.toHexString())
+  nft.metadataRole = existingRoles
+  nft.save()
+}
+
+export function handleRemovedFromMetadataList(
+  event: RemovedFromMetadataList
+): void {
+  const nft = getNftToken(event.address)
+  const newList: string[] = []
+  let existingRoles: string[]
+  if (!nft.metadataRole) existingRoles = []
+  else existingRoles = nft.metadataRole as string[]
+  if (!existingRoles || existingRoles.length < 1) return
+  while (existingRoles.length > 0) {
+    const role = existingRoles.shift().toString()
+    if (!role) break
+    if (role !== event.params.user.toHexString()) newList.push(role)
+  }
+  nft.metadataRole = newList
+  nft.save()
+}
+
+export function handleCleanedPermissions(event: CleanedPermissions): void {
+  const nft = getNftToken(event.address)
+  const newList: string[] = []
+  nft.metadataRole = newList
+  nft.erc20DeployerRole = newList
+  nft.storeUpdateRole = newList
+  nft.managerRole = newList
   nft.save()
 }

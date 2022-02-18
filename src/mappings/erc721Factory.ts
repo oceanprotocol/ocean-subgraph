@@ -1,16 +1,15 @@
 import { log } from '@graphprotocol/graph-ts'
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
-import { Nft, Token } from '../@types/schema'
-import { ERC20Template, ERC721Template } from '../@types/templates'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
-import { addDatatoken, addNft } from './utils/globalUtils'
+
 import { getUser } from './utils/userUtils'
+import { getToken, getNftToken } from './utils/tokenUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
   log.warning('nft handleNftCreated {}', [event.params.tokenURI.toString()])
-  const nft = new Nft(event.params.newTokenAddress.toHexString())
-  ERC721Template.create(event.params.newTokenAddress)
+  // const nft = new Nft(event.params.newTokenAddress.toHexString())
+  const nft = getNftToken(event.params.newTokenAddress)
   const user = getUser(event.params.admin.toHexString())
   nft.owner = user.id
   nft.address = event.params.newTokenAddress.toHexString()
@@ -21,13 +20,13 @@ export function handleNftCreated(event: NFTCreated): void {
   nft.tx = event.transaction.hash.toHex()
   nft.block = event.block.number.toI32()
 
-  addNft()
   nft.save()
 }
 
 export function handleNewToken(event: TokenCreated): void {
-  const token = new Token(event.params.newTokenAddress.toHexString())
-  ERC20Template.create(event.params.newTokenAddress)
+  const token = getToken(event.params.newTokenAddress, true)
+  // const token = new Token(event.params.newTokenAddress.toHexString())
+
   token.isDatatoken = true
   token.address = event.params.newTokenAddress.toHexString()
   token.createdTimestamp = event.block.timestamp.toI32()
@@ -43,5 +42,4 @@ export function handleNewToken(event: TokenCreated): void {
   token.cap = weiToDecimal(event.params.cap.toBigDecimal(), 18)
 
   token.save()
-  addDatatoken()
 }

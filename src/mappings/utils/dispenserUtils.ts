@@ -1,9 +1,10 @@
 import { Dispenser } from '../../@types/schema'
 import { getToken } from './tokenUtils'
+import { Address } from '@graphprotocol/graph-ts'
 
 export function createDispenser(address: string): Dispenser {
   const dispenser = new Dispenser(address)
-  dispenser.token = getToken(address).id
+  dispenser.token = getToken(Address.fromString(address), true).id
   dispenser.save()
   return dispenser
 }

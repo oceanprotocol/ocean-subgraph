@@ -4,7 +4,12 @@ import {
   NewPaymentCollector,
   OrderStarted,
   PublishMarketFee,
-  PublishMarketFeeChanged
+  PublishMarketFeeChanged,
+  AddedMinter,
+  AddedPaymentManager,
+  RemovedMinter,
+  RemovedPaymentManager,
+  CleanedPermissions
 } from '../@types/templates/ERC20Template/ERC20Template'
 
 import { integer } from './utils/constants'
@@ -30,7 +35,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     )
   )
 
-  const token = getToken(event.address.toHex())
+  const token = getToken(event.address, true)
   order.datatoken = token.id
   token.orderCount = token.orderCount.plus(integer.ONE)
 
@@ -74,12 +79,11 @@ export function handleOrderStarted(event: OrderStarted): void {
   }
 }
 
-export function handleNewPaymentCollector(event: NewPaymentCollector): void {}
 export function handlePublishMarketFee(event: PublishMarketFee): void {}
 export function handlePublishMarketFeeChanged(
   event: PublishMarketFeeChanged
 ): void {
-  const token = getToken(event.address.toHex())
+  const token = getToken(event.address, true)
   if (token != null) {
     token.publishMarketFeeAddress =
       event.params.PublishMarketFeeAddress.toHexString()
@@ -89,8 +93,8 @@ export function handlePublishMarketFeeChanged(
     if (
       token.publishMarketFeeToken !=
       '0x0000000000000000000000000000000000000000'
-    ){
-      const token = getToken(event.params.PublishMarketFeeToken.toHexString())
+    ) {
+      const token = getToken(event.params.PublishMarketFeeToken, false)
       decimals = BigInt.fromI32(token.decimals).toI32()
     }
     token.publishMarketFeeAmmount = weiToDecimal(
@@ -101,6 +105,80 @@ export function handlePublishMarketFeeChanged(
     // TODO - shold we have a history
   }
 }
+
+// roles
+// roles
+export function handleAddedMinter(event: AddedMinter): void {
+  const token = getToken(event.address, true)
+  let existingRoles: string[]
+  if (!token.minter) existingRoles = []
+  else existingRoles = token.minter as string[]
+  if (!existingRoles.includes(event.params.user.toHexString()))
+    existingRoles.push(event.params.user.toHexString())
+  token.minter = existingRoles
+  token.save()
+}
+
+export function handleRemovedMinter(event: RemovedMinter): void {
+  const token = getToken(event.address, true)
+  const newList: string[] = []
+  let existingRoles: string[]
+  if (!token.minter) existingRoles = []
+  else existingRoles = token.minter as string[]
+  if (!existingRoles || existingRoles.length < 1) return
+  while (existingRoles.length > 0) {
+    const role = existingRoles.shift().toString()
+    if (!role) break
+    if (role !== event.params.user.toHexString()) newList.push(role)
+  }
+  token.minter = newList
+  token.save()
+}
+
+export function handleAddedPaymentManager(event: AddedPaymentManager): void {
+  const token = getToken(event.address, true)
+  let existingRoles: string[]
+  if (!token.paymentManager) existingRoles = []
+  else existingRoles = token.paymentManager as string[]
+  if (!existingRoles.includes(event.params.user.toHexString()))
+    existingRoles.push(event.params.user.toHexString())
+  token.paymentManager = existingRoles
+  token.save()
+}
+export function handleRemovedPaymentManager(
+  event: RemovedPaymentManager
+): void {
+  const token = getToken(event.address, true)
+  const newList: string[] = []
+  let existingRoles: string[]
+  if (!token.paymentManager) existingRoles = []
+  else existingRoles = token.paymentManager as string[]
+  if (!existingRoles || existingRoles.length < 1) return
+  while (existingRoles.length > 0) {
+    const role = existingRoles.shift().toString()
+    if (!role) break
+    if (role !== event.params.user.toHexString()) newList.push(role)
+  }
+  token.paymentManager = newList
+  token.save()
+}
+export function handleCleanedPermissions(event: CleanedPermissions): void {
+  const token = getToken(event.address, true)
+  const newList: string[] = []
+  token.paymentManager = newList
+  token.minter = newList
+  const nft = Nft.load(token.nft as string)
+  if (nft) token.paymentCollector = nft.owner
+  else token.paymentCollector = '0x0000000000000000000000000000000000000000'
+  token.save()
+}
+
+export function handleNewPaymentCollector(event: NewPaymentCollector): void {
+  const token = getToken(event.address, true)
+  token.paymentCollector = event.params._newPaymentCollector.toHexString()
+  token.save()
+}
+
 // export function handlePublishMarketFees(event: PublishMarketFees): void {
 //   const order = Order.load(
 //     getOrderId(

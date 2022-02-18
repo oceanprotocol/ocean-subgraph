@@ -21,6 +21,8 @@ dataSources:
       abis:
         - name: ERC721Factory
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: NFTCreated(indexed address,indexed address,string,address,string,string)
           handler: handleNftCreated
@@ -79,6 +81,8 @@ dataSources:
       abis:
         - name: Dispenser
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: DispenserCreated(indexed address,indexed address,uint256,uint256,address)
           handler: handleNewDispenser
@@ -110,6 +114,8 @@ dataSources:
       abis:
         - name: FactoryRouter
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/FactoryRouter.sol/FactoryRouter.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: NewPool(indexed address,bool)
           handler: handleNewPool
@@ -145,6 +151,17 @@ templates:
           handler: handlePublishMarketFee
         - event: PublishMarketFeeChanged(address,address,address,uint256)
           handler: handlePublishMarketFeeChanged
+        - event: AddedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedMinter
+        - event: AddedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedPaymentManager
+        - event: RemovedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedMinter
+        - event: RemovedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedPaymentManager
+        - event: CleanedPermissions(indexed address,uint256,uint256)
+          handler: handleCleanedPermissions
+
   - name: BPool
     kind: ethereum/contract
     network: __NETWORK__
@@ -199,12 +216,32 @@ templates:
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
         - name: ERC721RolesAddress
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC721RolesAddress.sol/ERC721RolesAddress.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: MetadataCreated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
-          handler: handleCreated
+          handler: handleMetadataCreated
         - event: MetadataUpdated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
-          handler: handleUpdated
+          handler: handleMetadataUpdated
         - event: MetadataState(indexed address,uint8,uint256,uint256)
-          handler: handleState
+          handler: handleMetadataState
         - event: TokenURIUpdate(indexed address,string,uint256,uint256,uint256)
           handler: handleTokenUriUpdate
+        - event: AddedManager(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedManager
+        - event: AddedTo725StoreList(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedTo725StoreList
+        - event: AddedToCreateERC20List(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedToCreateERC20List
+        - event: AddedToMetadataList(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedToMetadataList
+        - event: RemovedFrom725StoreList(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedFrom725StoreList
+        - event: RemovedFromCreateERC20List(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedFromCreateERC20List
+        - event: RemovedFromMetadataList(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedFromMetadataList
+        - event: RemovedManager(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedManager
+        - event: CleanedPermissions(indexed address,uint256,uint256)
+          handler: handleCleanedPermissions
