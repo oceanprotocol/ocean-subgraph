@@ -18,7 +18,6 @@ export function getGlobalStats(): GlobalStatistic {
   return globalStats
 }
 
-
 export function getOPC(): OPC {
   let globalStats = OPC.load(GLOBAL_ID)
   if (!globalStats) {
