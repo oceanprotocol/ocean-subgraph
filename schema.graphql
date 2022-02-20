@@ -437,6 +437,7 @@ type GlobalTotalPoolSwapPair @entity {
    globalStatistic: GlobalStatistic!
    token : Token!
    value : BigDecimal!
+   count: BigInt!
 }
 "utility type"
 type GlobalTotalFixedSwapPair @entity {
@@ -445,6 +446,7 @@ type GlobalTotalFixedSwapPair @entity {
     globalStatistic: GlobalStatistic!
    token : Token!
    value : BigDecimal!
+   count: BigInt!
 }
 type GlobalStatistic @entity {
     id: ID!

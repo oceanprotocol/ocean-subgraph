@@ -5,6 +5,7 @@ import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
 import { getToken, getNftToken } from './utils/tokenUtils'
+import { addDatatoken } from './utils/globalUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
   log.warning('nft handleNftCreated {}', [event.params.tokenURI.toString()])
@@ -42,4 +43,5 @@ export function handleNewToken(event: TokenCreated): void {
   token.cap = weiToDecimal(event.params.cap.toBigDecimal(), 18)
 
   token.save()
+  addDatatoken()
 }

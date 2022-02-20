@@ -21,7 +21,7 @@ import {
   updateFixedRateExchangeSupply
 } from './utils/fixedRateUtils'
 import { weiToDecimal } from './utils/generic'
-import { addFixedRateExchange } from './utils/globalUtils'
+import { addFixedRateExchange, addFixedSwap } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
@@ -188,6 +188,16 @@ export function handleSwap(event: Swapped): void {
 
   swap.save()
   updateFixedRateExchangeSupply(event.params.exchangeId, event.address)
+  if (event.params.tokenOutAddress.toHexString() == fixedRateExchange.datatoken)
+    addFixedSwap(
+      event.params.tokenOutAddress.toHexString(),
+      swap.dataTokenAmount
+    )
+  else
+    addFixedSwap(
+      event.params.tokenOutAddress.toHexString(),
+      swap.baseTokenAmount
+    )
 }
 
 export function handlePublishMarketFeeChanged(

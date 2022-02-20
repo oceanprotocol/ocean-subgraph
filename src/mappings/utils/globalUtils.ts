@@ -1,4 +1,4 @@
-import { BigDecimal } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import {
   GlobalStatistic,
   GlobalTotalFixedSwapPair,
@@ -71,6 +71,7 @@ export function addPoolSwap(tokenAddress: string, value: BigDecimal): void {
     poolSwapPair.token = tokenAddress
   }
   poolSwapPair.value = poolSwapPair.value.plus(value)
+  poolSwapPair.count = poolSwapPair.count.plus(BigInt.fromI32(1))
 
   poolSwapPair.save()
 }
@@ -83,7 +84,7 @@ export function addFixedSwap(tokenAddress: string, value: BigDecimal): void {
     fixedSwapPair.token = tokenAddress
   }
   fixedSwapPair.value = fixedSwapPair.value.plus(value)
-
+  fixedSwapPair.count = fixedSwapPair.count.plus(BigInt.fromI32(1))
   fixedSwapPair.save()
 }
 
