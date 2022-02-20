@@ -293,13 +293,17 @@ type User @entity {
 
 type FixedRateExchange @entity {
   "fixed rate exchange id"
-  id: ID!                                                    
+  id: ID!             
+  contract: String!
+  exchangeId: String!                                       
   owner: User!
   datatoken: Token!
   baseToken: Token!
   "amount of datatokens available to be sold, this is relevant if the exchange is not able to mint"
-  datatokenBalance: BigDecimal!
+  datatokenSupply: BigDecimal!
   "amount of basetokens available to be collected by the owner"
+  baseTokenSupply: BigDecimal!
+  datatokenBalance: BigDecimal!
   baseTokenBalance: BigDecimal!
   price: BigDecimal!
   active: Boolean!

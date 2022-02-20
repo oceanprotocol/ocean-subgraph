@@ -14,18 +14,27 @@ import {
   FixedRateExchangeSwap,
   FixedRateExchangeUpdate
 } from '../@types/schema'
-import { getFixedRateExchange, getUpdateOrSwapId } from './utils/fixedRateUtils'
+import {
+  getFixedRateExchange,
+  getUpdateOrSwapId,
+  getFixedRateGraphID,
+  updateFixedRateExchangeSupply
+} from './utils/fixedRateUtils'
 import { weiToDecimal } from './utils/generic'
 import { addFixedRateExchange } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
 export function handleExchangeCreated(event: ExchangeCreated): void {
-  const fixedRateExchange = new FixedRateExchange(
-    event.params.exchangeId.toHexString()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+  const fixedRateExchange = new FixedRateExchange(fixedRateId)
   const user = getUser(event.params.exchangeOwner.toHexString())
   fixedRateExchange.owner = user.id
+  fixedRateExchange.contract = event.address.toHexString()
+  fixedRateExchange.exchangeId = event.params.exchangeId.toHexString()
   fixedRateExchange.datatoken = getToken(event.params.datatoken, true).id
   fixedRateExchange.baseToken = getToken(event.params.baseToken, false).id
 
@@ -40,17 +49,18 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedRateExchange.save()
 
   addFixedRateExchange()
+  updateFixedRateExchangeSupply(event.params.exchangeId, event.address)
 }
 
 export function handleRateChange(event: ExchangeRateChanged): void {
-  const fixedRateExchange = getFixedRateExchange(
-    event.params.exchangeId.toHex()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(
-      event.transaction.hash.toHex(),
-      event.params.exchangeId.toHex()
-    )
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
   )
   newExchangeUpdate.oldPrice = fixedRateExchange.price
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
@@ -68,9 +78,11 @@ export function handleRateChange(event: ExchangeRateChanged): void {
 }
 
 export function handleMintStateChanged(event: ExchangeMintStateChanged): void {
-  const fixedRateExchange = getFixedRateExchange(
-    event.params.exchangeId.toHex()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
   fixedRateExchange.withMint = event.params.withMint
   fixedRateExchange.save()
 }
@@ -78,14 +90,13 @@ export function handleMintStateChanged(event: ExchangeMintStateChanged): void {
 // TODO: implement fre updates/history for changes
 
 export function handleActivated(event: ExchangeActivated): void {
-  const fixedRateExchange = getFixedRateExchange(
-    event.params.exchangeId.toHex()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(
-      event.transaction.hash.toHex(),
-      event.params.exchangeId.toHex()
-    )
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
   )
   newExchangeUpdate.oldActive = fixedRateExchange.active
   newExchangeUpdate.newActive = true
@@ -100,14 +111,13 @@ export function handleActivated(event: ExchangeActivated): void {
 }
 
 export function handleDeactivated(event: ExchangeDeactivated): void {
-  const fixedRateExchange = getFixedRateExchange(
-    event.params.exchangeId.toHex()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(
-      event.transaction.hash.toHex(),
-      event.params.exchangeId.toHex()
-    )
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
   )
   newExchangeUpdate.oldActive = fixedRateExchange.active
   newExchangeUpdate.newActive = false
@@ -124,14 +134,13 @@ export function handleDeactivated(event: ExchangeDeactivated): void {
 export function handleAllowedSwapperChanged(
   event: ExchangeAllowedSwapperChanged
 ): void {
-  const fixedRateExchange = getFixedRateExchange(
-    event.params.exchangeId.toHex()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(
-      event.transaction.hash.toHex(),
-      event.params.exchangeId.toHex()
-    )
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
   )
 
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
@@ -147,21 +156,20 @@ export function handleAllowedSwapperChanged(
 
 // TODO: implement market fee, opf fee
 export function handleSwap(event: Swapped): void {
-  const fixedRateExchange = getFixedRateExchange(
-    event.params.exchangeId.toHex()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
 
   const swap = new FixedRateExchangeSwap(
-    getUpdateOrSwapId(
-      event.transaction.hash.toHex(),
-      event.params.exchangeId.toHex()
-    )
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
   )
   swap.createdTimestamp = event.block.timestamp.toI32()
   swap.tx = event.transaction.hash.toHex()
   swap.block = event.block.number.toI32()
 
-  swap.exchangeId = event.params.exchangeId.toHex()
+  swap.exchangeId = fixedRateId
   swap.by = getUser(event.params.by.toHex()).id
 
   // we need to fetch the decimals of the base token
@@ -179,14 +187,17 @@ export function handleSwap(event: Swapped): void {
   )
 
   swap.save()
+  updateFixedRateExchangeSupply(event.params.exchangeId, event.address)
 }
 
 export function handlePublishMarketFeeChanged(
   event: PublishMarketFeeChanged
 ): void {
-  const fixedRateExchange = getFixedRateExchange(
-    event.params.exchangeId.toHex()
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
   )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
   if (fixedRateExchange) {
     fixedRateExchange.publishMarketFeeAddress =
       event.params.newMarketCollector.toHexString()

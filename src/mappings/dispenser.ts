@@ -8,14 +8,22 @@ import {
 import { DispenserCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { Dispenser, DispenserTransaction } from '../@types/schema'
 import { decimal } from './utils/constants'
-import { getDispenser } from './utils/dispenserUtils'
+import {
+  getDispenser,
+  getDispenserGraphID,
+  updateDispenserBalance
+} from './utils/dispenserUtils'
 import { weiToDecimal } from './utils/generic'
 import { addDispenser } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
 export function handleNewDispenser(event: DispenserCreated): void {
-  const dispenser = new Dispenser(event.params.datatokenAddress.toHex())
+  const dispenserID = getDispenserGraphID(
+    event.address,
+    event.params.datatokenAddress
+  )
+  const dispenser = new Dispenser(dispenserID)
   const token = getToken(event.params.datatokenAddress, false)
   dispenser.token = token.id
 
@@ -40,13 +48,21 @@ export function handleNewDispenser(event: DispenserCreated): void {
 }
 
 export function handleActivate(event: DispenserActivated): void {
-  const dispenser = getDispenser(event.params.datatokenAddress.toHex())
+  const dispenserID = getDispenserGraphID(
+    event.address,
+    event.params.datatokenAddress
+  )
+  const dispenser = getDispenser(dispenserID)
   dispenser.active = true
   dispenser.save()
 }
 
 export function handleDeactivate(event: DispenserDeactivated): void {
-  const dispenser = getDispenser(event.params.datatokenAddress.toHex())
+  const dispenserID = getDispenserGraphID(
+    event.address,
+    event.params.datatokenAddress
+  )
+  const dispenser = getDispenser(dispenserID)
   dispenser.active = true
   dispenser.save()
 }
@@ -54,22 +70,29 @@ export function handleDeactivate(event: DispenserDeactivated): void {
 export function handleAllowedSwapperChanged(
   event: DispenserAllowedSwapperChanged
 ): void {
-  const dispenser = getDispenser(event.params.datatoken.toHex())
+  const dispenserID = getDispenserGraphID(event.address, event.params.datatoken)
+  const dispenser = getDispenser(dispenserID)
   dispenser.allowedSwapper = event.params.newAllowedSwapper.toHex()
   dispenser.save()
 }
 
 export function handleTokensDispensed(event: TokensDispensed): void {
+  const dispenserID = getDispenserGraphID(
+    event.address,
+    event.params.datatokenAddress
+  )
   const id = event.transaction.hash
     .toHexString()
     .concat('-')
-    .concat(event.params.datatokenAddress.toHexString())
+    .concat(dispenserID)
 
   const dispenserTransaction = new DispenserTransaction(id)
-  const dispenser = getDispenser(event.params.datatokenAddress.toHex())
-  dispenser.balance = dispenser.balance.minus(
-    event.params.amount.toBigDecimal()
+  const dispenser = getDispenser(dispenserID)
+  dispenser.balance = updateDispenserBalance(
+    event.address,
+    event.params.datatokenAddress
   )
+
   dispenser.save()
 
   dispenserTransaction.dispenser = dispenser.id
@@ -79,11 +102,17 @@ export function handleTokensDispensed(event: TokensDispensed): void {
   dispenserTransaction.createdTimestamp = event.block.timestamp.toI32()
   dispenserTransaction.tx = event.transaction.hash.toHex()
   dispenserTransaction.block = event.block.number.toI32()
+  const token = getToken(event.params.datatokenAddress, true)
+  dispenserTransaction.amount = weiToDecimal(
+    event.params.amount.toBigDecimal(),
+    token.decimals
+  )
   dispenserTransaction.save()
 }
 
 export function handleOwnerWinthdraw(event: OwnerWithdrawed): void {
-  const dispenser = getDispenser(event.params.datatoken.toHex())
+  const dispenserID = getDispenserGraphID(event.address, event.params.datatoken)
+  const dispenser = getDispenser(dispenserID)
   dispenser.balance = decimal.ZERO
   dispenser.save()
 }
