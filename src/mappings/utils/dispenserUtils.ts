@@ -1,6 +1,6 @@
 import { Dispenser } from '../../@types/schema'
 import { getToken } from './tokenUtils'
-import { Address, BigDecimal } from '@graphprotocol/graph-ts'
+import { Address } from '@graphprotocol/graph-ts'
 import { weiToDecimal } from './generic'
 import { Dispenser as DispenserContract } from '../../@types/Dispenser/Dispenser'
 
@@ -25,16 +25,21 @@ export function getDispenser(dispenserID: string): Dispenser {
   return dispenser
 }
 
-export function updateDispenserBalance(
+export function updateDispenserDetails(
   contractAddress: Address,
   datatokenAddress: Address
-): BigDecimal {
+): void {
+  const dispenserID = getDispenserGraphID(contractAddress, datatokenAddress)
+  const dispenser = getDispenser(dispenserID)
   const contract = DispenserContract.bind(contractAddress)
   const dispenserDetails = contract.try_status(datatokenAddress)
-  if (dispenserDetails == null) return BigDecimal.fromString('0')
+  if (dispenserDetails == null) return
   const token = getToken(datatokenAddress, true)
-  return weiToDecimal(
+  dispenser.balance = weiToDecimal(
     dispenserDetails.value.value5.toBigDecimal(),
     token.decimals
   )
+  dispenser.isMinter = dispenserDetails.value.value2
+  dispenser.active = dispenserDetails.value.value0
+  dispenser.save()
 }

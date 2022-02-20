@@ -11,7 +11,7 @@ import { decimal } from './utils/constants'
 import {
   getDispenser,
   getDispenserGraphID,
-  updateDispenserBalance
+  updateDispenserDetails
 } from './utils/dispenserUtils'
 import { weiToDecimal } from './utils/generic'
 import { addDispenser } from './utils/globalUtils'
@@ -45,6 +45,7 @@ export function handleNewDispenser(event: DispenserCreated): void {
   dispenser.save()
 
   addDispenser()
+  updateDispenserDetails(event.address, event.params.datatokenAddress)
 }
 
 export function handleActivate(event: DispenserActivated): void {
@@ -88,13 +89,7 @@ export function handleTokensDispensed(event: TokensDispensed): void {
 
   const dispenserTransaction = new DispenserTransaction(id)
   const dispenser = getDispenser(dispenserID)
-  dispenser.balance = updateDispenserBalance(
-    event.address,
-    event.params.datatokenAddress
-  )
-
-  dispenser.save()
-
+  updateDispenserDetails(event.address, event.params.datatokenAddress)
   dispenserTransaction.dispenser = dispenser.id
   const user = getUser(event.params.userAddress.toHex())
   dispenserTransaction.user = user.id
