@@ -36,7 +36,7 @@ async function replaceContractAddresses() {
     )
     subgraph = subgraph.replace(
       /__DISPENSERADDRESS__/g,
-      "'" + addresses[network].FixedPrice + "'"
+      "'" + addresses[network].Dispenser + "'"
     )
     subgraph = subgraph.replace(
       /__FACTORYROUTERADDRESS__/g,
