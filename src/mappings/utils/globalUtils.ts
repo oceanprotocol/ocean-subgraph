@@ -37,7 +37,6 @@ export function getTemplates(): Template {
   return templates
 }
 
-
 export function addOrder(): void {
   const globalStats = getGlobalStats()
   globalStats.orderCount = globalStats.orderCount + 1
