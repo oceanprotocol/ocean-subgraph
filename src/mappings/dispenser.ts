@@ -4,7 +4,7 @@ import {
   DispenserDeactivated,
   OwnerWithdrawed,
   TokensDispensed
-} from '../@types/Dispenser/Dispenser'
+} from '../@types/templates/Dispenser/Dispenser'
 import { DispenserCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { Dispenser, DispenserTransaction } from '../@types/schema'
 import { decimal } from './utils/constants'
