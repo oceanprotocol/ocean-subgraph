@@ -4,7 +4,8 @@ import {
   GlobalTotalFixedSwapPair,
   GlobalTotalLiquidityPair,
   GlobalTotalPoolSwapPair,
-  OPC
+  OPC,
+  Template
 } from '../../@types/schema'
 
 const GLOBAL_ID = '1'
@@ -26,6 +27,16 @@ export function getOPC(): OPC {
   }
   return globalStats
 }
+
+export function getTemplates(): Template {
+  let templates = Template.load(GLOBAL_ID)
+  if (!templates) {
+    templates = new Template(GLOBAL_ID)
+    templates.save()
+  }
+  return templates
+}
+
 
 export function addOrder(): void {
   const globalStats = getGlobalStats()

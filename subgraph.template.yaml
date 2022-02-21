@@ -28,75 +28,7 @@ dataSources:
           handler: handleNftCreated
         - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
-  - kind: ethereum/contract
-    name: FixedRateExchange
-    network: __NETWORK__
-    source:
-      address: __FIXEDRATEEXCHANGEADDRESS__
-      abi: FixedRateExchange
-      startBlock: __STARTBLOCK__
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/fixedRateExchange.ts
-      entities:
-        - FixedRateExchange
-      abis:
-        - name: FixedRateExchange
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
-          handler: handleExchangeCreated
-        - event: ExchangeRateChanged(indexed bytes32,indexed address,uint256)
-          handler: handleRateChange
-        - event: ExchangeMintStateChanged(indexed bytes32,indexed address,bool)
-          handler: handleMintStateChanged
-        - event: ExchangeActivated(indexed bytes32,indexed address)
-          handler: handleActivated
-        - event: ExchangeDeactivated(indexed bytes32,indexed address)
-          handler: handleDeactivated
-        - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
-          handler: handleAllowedSwapperChanged
-        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
-          handler: handleSwap
-        - event: PublishMarketFeeChanged(indexed bytes32,address,address,uint256)
-          handler: handlePublishMarketFeeChanged
-  - kind: ethereum/contract
-    name: Dispenser
-    network: __NETWORK__
-    source:
-      address: __DISPENSERADDRESS__
-      abi: Dispenser
-      startBlock: __STARTBLOCK__
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/dispenser.ts
-      entities:
-        - Dispenser
-      abis:
-        - name: Dispenser
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: DispenserCreated(indexed address,indexed address,uint256,uint256,address)
-          handler: handleNewDispenser
-        - event: DispenserActivated(indexed address)
-          handler: handleActivate
-        - event: DispenserDeactivated(indexed address)
-          handler: handleDeactivate
-        - event: DispenserAllowedSwapperChanged(indexed address,indexed address)
-          handler: handleAllowedSwapperChanged
-        - event: TokensDispensed(indexed address,indexed address,uint256)
-          handler: handleTokensDispensed
-        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
-          handler: handleOwnerWinthdraw
-
+  
   - kind: ethereum/contract
     name: FactoryRouter
     network: __NETWORK__
@@ -121,11 +53,25 @@ dataSources:
           handler: handleNewPool
         - event: TokenAdded(indexed address,indexed address)
           handler: handleTokenAdded
+        - event: TokenRemoved(indexed address,indexed address)
+          handler: handleTokenRemoved
         - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
           handler: handleOPCFeeChanged
-
+        - event: SSContractAdded(indexed address,indexed address)
+          handler: handleSSContractAdded
+        - event: SSContractRemoved(indexed address,indexed address)
+          handler: handleSSContractRemoved
+        - event: FixedRateContractAdded(indexed address,indexed address)
+          handler: handleFixedRateContractAdded
+        - event: FixedRateContractRemoved(indexed address,indexed address)
+          handler: handleFixedRateContractRemoved
+        - event: DispenserContractAdded(indexed address,indexed address)
+          handler: handleDispenserContractAdded
+        - event: DispenserContractRemoved(indexed address,indexed address)
+          handler: handleDispenserContractRemoved
 
 templates:
+
   - name: ERC20Template
     kind: ethereum/contract
     network: __NETWORK__
@@ -203,7 +149,7 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: SwapFeeChanged(address,uint256)
           handler: handleSwapFeeChanged
-  
+
   - name: ERC721Template
     kind: ethereum/contract
     network: __NETWORK__
@@ -250,3 +196,69 @@ templates:
           handler: handleRemovedManager
         - event: CleanedPermissions(indexed address,uint256,uint256)
           handler: handleCleanedPermissions
+
+  - name: Dispenser
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      abi: Dispenser
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser
+      abis:
+        - name: Dispenser
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: DispenserCreated(indexed address,indexed address,uint256,uint256,address)
+          handler: handleNewDispenser
+        - event: DispenserActivated(indexed address)
+          handler: handleActivate
+        - event: DispenserDeactivated(indexed address)
+          handler: handleDeactivate
+        - event: DispenserAllowedSwapperChanged(indexed address,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleTokensDispensed
+        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
+          handler: handleOwnerWinthdraw
+
+  - name: FixedRateExchange
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      abi: FixedRateExchange
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/fixedRateExchange.ts
+      entities:
+        - FixedRateExchange
+      abis:
+        - name: FixedRateExchange
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
+          handler: handleExchangeCreated
+        - event: ExchangeRateChanged(indexed bytes32,indexed address,uint256)
+          handler: handleRateChange
+        - event: ExchangeMintStateChanged(indexed bytes32,indexed address,bool)
+          handler: handleMintStateChanged
+        - event: ExchangeActivated(indexed bytes32,indexed address)
+          handler: handleActivated
+        - event: ExchangeDeactivated(indexed bytes32,indexed address)
+          handler: handleDeactivated
+        - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
+          handler: handleSwap
+        - event: PublishMarketFeeChanged(indexed bytes32,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
