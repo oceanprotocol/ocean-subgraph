@@ -1,13 +1,20 @@
 import {
   NewPool,
   TokenAdded,
+  TokenRemoved,
   OPCFeeChanged,
-  FactoryRouter
+  FactoryRouter,
+  SSContractAdded,
+  SSContractRemoved,
+  FixedRateContractAdded,
+  FixedRateContractRemoved,
+  DispenserContractAdded,
+  DispenserContractRemoved
 } from '../@types/FactoryRouter/FactoryRouter'
 import { BigInt } from '@graphprotocol/graph-ts'
 import { Pool } from '../@types/schema'
-import { BPool } from '../@types/templates'
-import { addPool, getOPC } from './utils/globalUtils'
+import { BPool, FixedRateExchange, Dispenser } from '../@types/templates'
+import { addPool, getOPC, getTemplates } from './utils/globalUtils'
 import { weiToDecimal } from './utils/generic'
 
 export function handleNewPool(event: NewPool): void {
@@ -62,5 +69,119 @@ export function handleTokenAdded(event: TokenAdded): void {
   if (newProviderFee.reverted) return
   opc.consumeFee = weiToDecimal(newConsumeFee.value.toBigDecimal(), decimals)
   opc.providerFee = weiToDecimal(newProviderFee.value.toBigDecimal(), decimals)
+
+  // add token to approvedTokens
+  let existingTokens: string[]
+  if (!opc.approvedTokens) existingTokens = []
+  else existingTokens = opc.approvedTokens as string[]
+  if (!existingTokens.includes(event.params.token.toHexString()))
+    existingTokens.push(event.params.token.toHexString())
+  opc.approvedTokens = existingTokens
+
   opc.save()
+}
+
+export function handleTokenRemoved(event: TokenRemoved): void {
+  const opc = getOPC()
+  const newList: string[] = []
+  let existingTokens: string[]
+  if (!opc.approvedTokens) existingTokens = []
+  else existingTokens = opc.approvedTokens as string[]
+  if (!existingTokens || existingTokens.length < 1) return
+  while (existingTokens.length > 0) {
+    const role = existingTokens.shift().toString()
+    if (!role) break
+    if (role !== event.params.token.toHexString()) newList.push(role)
+  }
+  opc.approvedTokens = newList
+  opc.save()
+}
+
+export function handleSSContractAdded(event: SSContractAdded): void {
+  // add token to approvedTokens
+  const templates = getTemplates()
+  let existingContracts: string[]
+  if (!templates.ssTemplates) existingContracts = []
+  else existingContracts = templates.ssTemplates as string[]
+  if (!existingContracts.includes(event.params.contractAddress.toHexString()))
+    existingContracts.push(event.params.contractAddress.toHexString())
+  templates.ssTemplates = existingContracts
+  templates.save()
+}
+export function handleSSContractRemoved(event: SSContractRemoved): void {
+  const templates = getTemplates()
+  const newList: string[] = []
+  let existingContracts: string[]
+  if (!templates.ssTemplates) existingContracts = []
+  else existingContracts = templates.ssTemplates as string[]
+  if (!existingContracts || existingContracts.length < 1) return
+  while (existingContracts.length > 0) {
+    const role = existingContracts.shift().toString()
+    if (!role) break
+    if (role !== event.params.contractAddress.toHexString()) newList.push(role)
+  }
+  templates.ssTemplates = newList
+  templates.save()
+}
+export function handleFixedRateContractAdded(
+  event: FixedRateContractAdded
+): void {
+  FixedRateExchange.create(event.params.contractAddress)
+  // add token to approvedTokens
+  const templates = getTemplates()
+  let existingContracts: string[]
+  if (!templates.fixedRateTemplates) existingContracts = []
+  else existingContracts = templates.fixedRateTemplates as string[]
+  if (!existingContracts.includes(event.params.contractAddress.toHexString()))
+    existingContracts.push(event.params.contractAddress.toHexString())
+  templates.fixedRateTemplates = existingContracts
+  templates.save()
+}
+export function handleFixedRateContractRemoved(
+  event: FixedRateContractRemoved
+): void {
+  const templates = getTemplates()
+  const newList: string[] = []
+  let existingContracts: string[]
+  if (!templates.fixedRateTemplates) existingContracts = []
+  else existingContracts = templates.fixedRateTemplates as string[]
+  if (!existingContracts || existingContracts.length < 1) return
+  while (existingContracts.length > 0) {
+    const role = existingContracts.shift().toString()
+    if (!role) break
+    if (role !== event.params.contractAddress.toHexString()) newList.push(role)
+  }
+  templates.fixedRateTemplates = newList
+  templates.save()
+}
+export function handleDispenserContractAdded(
+  event: DispenserContractAdded
+): void {
+  Dispenser.create(event.params.contractAddress)
+
+  const templates = getTemplates()
+  let existingContracts: string[]
+  if (!templates.dispenserTemplates) existingContracts = []
+  else existingContracts = templates.dispenserTemplates as string[]
+  if (!existingContracts.includes(event.params.contractAddress.toHexString()))
+    existingContracts.push(event.params.contractAddress.toHexString())
+  templates.dispenserTemplates = existingContracts
+  templates.save()
+}
+export function handleDispenserContractRemoved(
+  event: DispenserContractRemoved
+): void {
+  const templates = getTemplates()
+  const newList: string[] = []
+  let existingContracts: string[]
+  if (!templates.dispenserTemplates) existingContracts = []
+  else existingContracts = templates.dispenserTemplates as string[]
+  if (!existingContracts || existingContracts.length < 1) return
+  while (existingContracts.length > 0) {
+    const role = existingContracts.shift().toString()
+    if (!role) break
+    if (role !== event.params.contractAddress.toHexString()) newList.push(role)
+  }
+  templates.dispenserTemplates = newList
+  templates.save()
 }

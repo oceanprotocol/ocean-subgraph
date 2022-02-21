@@ -365,7 +365,8 @@ type FixedRateExchangeSwap @entity {
 
 type Dispenser @entity {
   "token address"
-  id: ID!                                                      
+  id: ID!        
+  contract: String!                                              
   active: Boolean!   
   "if using the enterprise template the owner will always be the erc721 factory, for normal template it will a user"                         
   owner: String
@@ -486,6 +487,7 @@ type OPC @entity {
     consumeFee: BigDecimal
     "fee in percent taken by OPC from providerFees"
     providerFee: BigDecimal
+    approvedTokens: [String!]
 }
 
  enum NftUpdateType {
@@ -515,4 +517,12 @@ type NftUpdate @entity {
   block: Int!
   timestamp: Int!
   tx: String!
+}
+
+
+type Template @entity{
+  id: ID!
+  fixedRateTemplates: [String!]
+  dispenserTemplates: [String!]
+  ssTemplates: [String!]
 }

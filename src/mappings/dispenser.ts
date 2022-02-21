@@ -4,7 +4,7 @@ import {
   DispenserDeactivated,
   OwnerWithdrawed,
   TokensDispensed
-} from '../@types/Dispenser/Dispenser'
+} from '../@types/templates/Dispenser/Dispenser'
 import { DispenserCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { Dispenser, DispenserTransaction } from '../@types/schema'
 import { decimal } from './utils/constants'
@@ -26,6 +26,7 @@ export function handleNewDispenser(event: DispenserCreated): void {
   const dispenser = new Dispenser(dispenserID)
   const token = getToken(event.params.datatokenAddress, false)
   dispenser.token = token.id
+  dispenser.contract = event.address.toHexString()
 
   dispenser.owner = event.params.owner.toHexString()
   dispenser.maxBalance = weiToDecimal(

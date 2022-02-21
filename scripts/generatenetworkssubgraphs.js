@@ -31,14 +31,6 @@ async function replaceContractAddresses() {
       "'" + addresses[network].ERC721Factory + "'"
     )
     subgraph = subgraph.replace(
-      /__FIXEDRATEEXCHANGEADDRESS__/g,
-      "'" + addresses[network].FixedPrice + "'"
-    )
-    subgraph = subgraph.replace(
-      /__DISPENSERADDRESS__/g,
-      "'" + addresses[network].Dispenser + "'"
-    )
-    subgraph = subgraph.replace(
       /__FACTORYROUTERADDRESS__/g,
       "'" + addresses[network].Router + "'"
     )

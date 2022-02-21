@@ -2,7 +2,7 @@ import { Dispenser } from '../../@types/schema'
 import { getToken } from './tokenUtils'
 import { Address } from '@graphprotocol/graph-ts'
 import { weiToDecimal } from './generic'
-import { Dispenser as DispenserContract } from '../../@types/Dispenser/Dispenser'
+import { Dispenser as DispenserContract } from '../../@types/templates/Dispenser/Dispenser'
 
 export function getDispenserGraphID(
   contractAddress: Address,

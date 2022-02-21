@@ -1,6 +1,6 @@
 import { FixedRateExchange } from '../../@types/schema'
 
-import { FixedRateExchange as FixedRateExchangeContract } from '../../@types/FixedRateExchange/FixedRateExchange'
+import { FixedRateExchange as FixedRateExchangeContract } from '../../@types/templates/FixedRateExchange/FixedRateExchange'
 import { Address, Bytes } from '@graphprotocol/graph-ts'
 import { getToken } from './tokenUtils'
 import { weiToDecimal } from './generic'

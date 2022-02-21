@@ -8,7 +8,7 @@ import {
   ExchangeRateChanged,
   Swapped,
   PublishMarketFeeChanged
-} from '../@types/FixedRateExchange/FixedRateExchange'
+} from '../@types/templates/FixedRateExchange/FixedRateExchange'
 import {
   FixedRateExchange,
   FixedRateExchangeSwap,
