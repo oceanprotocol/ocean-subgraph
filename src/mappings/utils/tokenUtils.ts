@@ -11,11 +11,17 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   }
   const token = new Token(address.toHexString())
   const contract = ERC20.bind(address)
-  token.name = contract.name()
-  token.symbol = contract.symbol()
+  const name = contract.try_name()
+  if (name.reverted) token.name = ''
+  else token.name = name.value
+  const symbol = contract.try_symbol()
+  if (name.reverted) token.symbol = ''
+  else token.symbol = symbol.value
   token.address = address.toHexString()
   token.isDatatoken = isDatatoken
-  token.decimals = contract.decimals()
+  const decimals = contract.try_decimals()
+  if (decimals.reverted) token.decimals = 18
+  else token.decimals = decimals.value
   token.save()
   return token
 }
