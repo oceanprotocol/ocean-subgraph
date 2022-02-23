@@ -36,7 +36,7 @@ export function handleJoin(event: LOG_JOIN): void {
   pool.joinCount = pool.joinCount.plus(integer.ONE)
 
   // get token,  update pool transaction, poolSnapshot
-  const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
+
   const token = getToken(event.params.tokenIn, false)
   const ammount = weiToDecimal(
     event.params.tokenAmountIn.toBigDecimal(),
@@ -45,24 +45,36 @@ export function handleJoin(event: LOG_JOIN): void {
   if (token.isDatatoken) {
     poolTx.datatoken = token.id
     poolTx.datatokenValue = ammount
+    if (pool.isFinalized) {
+      const poolSnapshot = getPoolSnapshot(
+        pool.id,
+        event.block.timestamp.toI32()
+      )
+      poolSnapshot.datatokenLiquidity =
+        poolSnapshot.datatokenLiquidity.plus(ammount)
 
-    poolSnapshot.datatokenLiquidity =
-      poolSnapshot.datatokenLiquidity.plus(ammount)
+      poolSnapshot.save()
+    }
 
     pool.datatokenLiquidity = pool.datatokenLiquidity.plus(ammount)
   } else {
     poolTx.baseToken = token.id
     poolTx.baseTokenValue = ammount
 
-    poolSnapshot.baseTokenLiquidity =
-      poolSnapshot.baseTokenLiquidity.plus(ammount)
-
+    if (pool.isFinalized) {
+      const poolSnapshot = getPoolSnapshot(
+        pool.id,
+        event.block.timestamp.toI32()
+      )
+      poolSnapshot.baseTokenLiquidity =
+        poolSnapshot.baseTokenLiquidity.plus(ammount)
+      poolSnapshot.save()
+    }
     pool.baseTokenLiquidity = pool.baseTokenLiquidity.plus(ammount)
 
     addLiquidity(token.id, ammount)
   }
 
-  poolSnapshot.save()
   poolTx.save()
   pool.save()
 }
@@ -225,15 +237,19 @@ export function handleSetup(event: LOG_SETUP): void {
   poolTx.type = PoolTransactionType.SETUP
   poolTx.baseToken = token.id
   poolTx.datatoken = datatoken.id
+  pool.save()
+  poolTx.save()
+
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   poolSnapshot.spotPrice = spotPrice
+  poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
+  poolSnapshot.datatokenLiquidity = pool.datatokenLiquidity
+  poolSnapshot.totalShares = pool.totalShares
 
-  poolTx.save()
   poolSnapshot.save()
   const globalStats = getGlobalStats()
   globalStats.poolCount = globalStats.poolCount + 1
   globalStats.save()
-  pool.save()
   datatoken.save()
 }
 
@@ -243,10 +259,6 @@ export function handlerBptTransfer(event: Transfer): void {
   const poolAddress = event.address.toHex()
   const caller = getUser(event.transaction.from.toHex())
   const poolTx = getPoolTransaction(event, caller.id, PoolTransactionType.SWAP)
-  const poolSnapshot = getPoolSnapshot(
-    poolAddress,
-    event.block.timestamp.toI32()
-  )
 
   // btoken has 18 decimals
   const ammount = weiToDecimal(event.params.amt.toBigDecimal(), 18)
@@ -261,7 +273,15 @@ export function handlerBptTransfer(event: Transfer): void {
     pool.totalShares = pool.totalShares.plus(ammount)
 
     // check tx?
-    poolSnapshot.totalShares = pool.totalShares
+    if (pool.isFinalized) {
+      const poolSnapshot = getPoolSnapshot(
+        poolAddress,
+        event.block.timestamp.toI32()
+      )
+      poolSnapshot.totalShares = pool.totalShares
+      poolSnapshot.save()
+    }
+
     pool.save()
   } else {
     if (poolAddress != fromAddress) {
@@ -275,7 +295,14 @@ export function handlerBptTransfer(event: Transfer): void {
     // remove
     const pool = getPool(poolAddress)
     pool.totalShares = pool.totalShares.minus(ammount)
-    poolSnapshot.totalShares = pool.totalShares
+    if (pool.isFinalized) {
+      const poolSnapshot = getPoolSnapshot(
+        poolAddress,
+        event.block.timestamp.toI32()
+      )
+      poolSnapshot.totalShares = pool.totalShares
+      poolSnapshot.save()
+    }
     pool.save()
   } else {
     if (poolAddress != toAddress) {
@@ -286,7 +313,6 @@ export function handlerBptTransfer(event: Transfer): void {
   }
 
   poolTx.save()
-  poolSnapshot.save()
 }
 
 export function handlePublishMarketFeeChanged(

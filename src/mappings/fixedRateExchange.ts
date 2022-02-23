@@ -7,7 +7,8 @@ import {
   ExchangeMintStateChanged,
   ExchangeRateChanged,
   Swapped,
-  PublishMarketFeeChanged
+  PublishMarketFeeChanged,
+  TokenCollected
 } from '../@types/templates/FixedRateExchange/FixedRateExchange'
 import {
   FixedRateExchange,
@@ -215,6 +216,24 @@ export function handlePublishMarketFeeChanged(
       event.params.swapFee.toBigDecimal(),
       BigInt.fromI32(18).toI32()
     )
+    fixedRateExchange.save()
+  }
+}
+
+export function handleTokenCollected(event: TokenCollected): void {
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
+  )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
+
+  if (event.params.token.toHexString() == fixedRateExchange.baseToken) {
+    const baseToken = getToken(event.params.token, false)
+    fixedRateExchange.baseTokenBalance =
+      fixedRateExchange.baseTokenBalance.minus(
+        weiToDecimal(event.params.amount.toBigDecimal(), baseToken.decimals)
+      )
+
     fixedRateExchange.save()
   }
 }

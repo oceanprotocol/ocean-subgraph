@@ -99,7 +99,6 @@ export function createPoolSnapshot(
   const snapshotId = getPoolSnapshotId(poolAddress, timestamp)
 
   const pool = getPool(poolAddress)
-
   const snapshot = new PoolSnapshot(snapshotId)
 
   snapshot.pool = poolAddress
