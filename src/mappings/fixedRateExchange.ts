@@ -7,7 +7,8 @@ import {
   ExchangeMintStateChanged,
   ExchangeRateChanged,
   Swapped,
-  PublishMarketFeeChanged
+  PublishMarketFeeChanged,
+  TokenCollected
 } from '../@types/templates/FixedRateExchange/FixedRateExchange'
 import {
   FixedRateExchange,
@@ -24,7 +25,6 @@ import { weiToDecimal } from './utils/generic'
 import { addFixedRateExchange, addFixedSwap } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
-import { TokenCollected } from '../@types/FixedRateExchange/FixedRateExchange'
 
 export function handleExchangeCreated(event: ExchangeCreated): void {
   const fixedRateId = getFixedRateGraphID(
