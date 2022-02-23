@@ -1,4 +1,4 @@
-import { BigInt, Address } from '@graphprotocol/graph-ts'
+import { BigInt, Address, BigDecimal, log } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -24,6 +24,7 @@ import { weiToDecimal } from './utils/generic'
 import { addFixedRateExchange, addFixedSwap } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
+import { TokenCollected } from '../@types/FixedRateExchange/FixedRateExchange'
 
 export function handleExchangeCreated(event: ExchangeCreated): void {
   const fixedRateId = getFixedRateGraphID(
@@ -215,6 +216,24 @@ export function handlePublishMarketFeeChanged(
       event.params.swapFee.toBigDecimal(),
       BigInt.fromI32(18).toI32()
     )
+    fixedRateExchange.save()
+  }
+}
+
+export function handleTokenCollected(event: TokenCollected): void {
+  const fixedRateId = getFixedRateGraphID(
+    event.params.exchangeId.toHexString(),
+    event.address
+  )
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
+
+  if (event.params.token.toHexString() == fixedRateExchange.baseToken) {
+    const baseToken = getToken(event.params.token, false)
+    fixedRateExchange.baseTokenBalance =
+      fixedRateExchange.baseTokenBalance.minus(
+        weiToDecimal(event.params.amount.toBigDecimal(), baseToken.decimals)
+      )
+
     fixedRateExchange.save()
   }
 }

@@ -1,4 +1,4 @@
-import { Address, BigDecimal, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, ethereum, log } from '@graphprotocol/graph-ts'
 import {
   Pool,
   PoolShare,
@@ -99,7 +99,6 @@ export function createPoolSnapshot(
   const snapshotId = getPoolSnapshotId(poolAddress, timestamp)
 
   const pool = getPool(poolAddress)
-
   const snapshot = new PoolSnapshot(snapshotId)
 
   snapshot.pool = poolAddress

@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721Factory
-    network: __NETWORK__
+    network: rinkeby
     source:
-      address: __ERC721FACTORYADDRESS__
+      address: '0x1b1FE18bE79249AE8A30b3cEef03d70ca299a75b'
       abi: ERC721Factory
-      startBlock: __STARTBLOCK__
+      startBlock: 10182337
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -31,11 +31,11 @@ dataSources:
   
   - kind: ethereum/contract
     name: FactoryRouter
-    network: __NETWORK__
+    network: rinkeby
     source:
-      address: __FACTORYROUTERADDRESS__
+      address: '0x6CE85a8B9dF0aEbd6deE3593d4E9cde7398ff842'
       abi: FactoryRouter
-      startBlock: __STARTBLOCK__
+      startBlock: 10182337
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -74,7 +74,7 @@ templates:
 
   - name: ERC20Template
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: ERC20Template
     mapping:
@@ -115,7 +115,7 @@ templates:
 
   - name: BPool
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: BPool
     mapping:
@@ -152,7 +152,7 @@ templates:
 
   - name: ERC721Template
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: ERC721Template
     mapping:
@@ -199,7 +199,7 @@ templates:
 
   - name: Dispenser
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: Dispenser
     mapping:
@@ -230,7 +230,7 @@ templates:
 
   - name: FixedRateExchange
     kind: ethereum/contract
-    network: __NETWORK__
+    network: rinkeby
     source:
       abi: FixedRateExchange
     mapping:

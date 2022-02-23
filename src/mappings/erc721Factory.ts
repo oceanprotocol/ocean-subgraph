@@ -8,7 +8,6 @@ import { getToken, getNftToken } from './utils/tokenUtils'
 import { addDatatoken } from './utils/globalUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
-  log.warning('nft handleNftCreated {}', [event.params.tokenURI.toString()])
   // const nft = new Nft(event.params.newTokenAddress.toHexString())
   const nft = getNftToken(event.params.newTokenAddress)
   const user = getUser(event.params.admin.toHexString())
