@@ -1,4 +1,4 @@
-import { Address, BigDecimal, ethereum, log } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, ethereum } from '@graphprotocol/graph-ts'
 import {
   Pool,
   PoolShare,

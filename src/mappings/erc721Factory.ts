@@ -1,4 +1,3 @@
-import { log } from '@graphprotocol/graph-ts'
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
