@@ -13,7 +13,12 @@ import {
 } from '../@types/FactoryRouter/FactoryRouter'
 import { BigInt } from '@graphprotocol/graph-ts'
 import { Pool } from '../@types/schema'
-import { BPool, FixedRateExchange, Dispenser } from '../@types/templates'
+import {
+  BPool,
+  FixedRateExchange,
+  Dispenser,
+  SSContract
+} from '../@types/templates'
 import { addPool, getOPC, getTemplates } from './utils/globalUtils'
 import { weiToDecimal } from './utils/generic'
 
@@ -99,6 +104,7 @@ export function handleTokenRemoved(event: TokenRemoved): void {
 
 export function handleSSContractAdded(event: SSContractAdded): void {
   // add token to approvedTokens
+  SSContract.create(event.params.contractAddress)
   const templates = getTemplates()
   let existingContracts: string[]
   if (!templates.ssTemplates) existingContracts = []
