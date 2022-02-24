@@ -59,6 +59,7 @@ export function handleMetadataUpdated(event: MetadataUpdated): void {
     getId(event.transaction.hash.toHex(), nftAddress)
   )
 
+  nftUpdate.nft = nft.id
   nftUpdate.type = NftUpdateType.METADATA_UPDATED
   nftUpdate.userAddress = event.params.updatedBy.toHex()
   nftUpdate.assetState = event.params.state
@@ -82,6 +83,7 @@ export function handleMetadataState(event: MetadataState): void {
     getId(event.transaction.hash.toHex(), nftAddress)
   )
 
+  nftUpdate.nft = nft.id
   nftUpdate.type = NftUpdateType.STATE_UPDATED
   nftUpdate.userAddress = event.params.updatedBy.toHex()
   nftUpdate.assetState = event.params.state
@@ -105,7 +107,7 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
   const nftUpdate = new NftUpdate(
     getId(event.transaction.hash.toHex(), nftAddress)
   )
-
+  nftUpdate.nft = nft.id
   nftUpdate.type = NftUpdateType.TOKENURI_UPDATED
   nftUpdate.userAddress = event.params.updatedBy.toHex()
   nftUpdate.tokenUri = nft.tokenUri
