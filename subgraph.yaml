@@ -28,7 +28,7 @@ dataSources:
           handler: handleNftCreated
         - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
-  
+
   - kind: ethereum/contract
     name: FactoryRouter
     network: rinkeby
@@ -71,7 +71,6 @@ dataSources:
           handler: handleDispenserContractRemoved
 
 templates:
-
   - name: ERC20Template
     kind: ethereum/contract
     network: rinkeby
@@ -264,3 +263,24 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleTokenCollected
+
+  - name: SSContract
+    kind: ethereum/contract
+    network: rinkeby
+    source:
+      abi: SSContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/sscontract.ts
+      entities:
+        - SSContract
+      abis:
+        - name: SSContract
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/ssContracts/SideStaking.sol/SideStaking.json
+      eventHandlers:
+        - event: VestingCreated(indexed address,indexed address,uint256,uint256)
+          handler: handleVestingCreated
+        - event: Vesting(indexed address,indexed address,indexed address,uint256)
+          handler: handleVesting
