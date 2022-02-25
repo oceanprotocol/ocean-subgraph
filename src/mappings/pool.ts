@@ -45,31 +45,11 @@ export function handleJoin(event: LOG_JOIN): void {
   if (token.isDatatoken) {
     poolTx.datatoken = token.id
     poolTx.datatokenValue = ammount
-    if (pool.isFinalized) {
-      const poolSnapshot = getPoolSnapshot(
-        pool.id,
-        event.block.timestamp.toI32()
-      )
-      poolSnapshot.datatokenLiquidity =
-        poolSnapshot.datatokenLiquidity.plus(ammount)
-
-      poolSnapshot.save()
-    }
 
     pool.datatokenLiquidity = pool.datatokenLiquidity.plus(ammount)
   } else {
     poolTx.baseToken = token.id
     poolTx.baseTokenValue = ammount
-
-    if (pool.isFinalized) {
-      const poolSnapshot = getPoolSnapshot(
-        pool.id,
-        event.block.timestamp.toI32()
-      )
-      poolSnapshot.baseTokenLiquidity =
-        poolSnapshot.baseTokenLiquidity.plus(ammount)
-      poolSnapshot.save()
-    }
     pool.baseTokenLiquidity = pool.baseTokenLiquidity.plus(ammount)
 
     addLiquidity(token.id, ammount)
@@ -77,6 +57,14 @@ export function handleJoin(event: LOG_JOIN): void {
 
   poolTx.save()
   pool.save()
+
+  if (pool.isFinalized) {
+    const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
+    poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
+    poolSnapshot.datatokenLiquidity = pool.datatokenLiquidity
+    poolSnapshot.totalShares = pool.totalShares
+    poolSnapshot.save()
+  }
 }
 
 export function handleExit(event: LOG_EXIT): void {
@@ -98,20 +86,18 @@ export function handleExit(event: LOG_EXIT): void {
     poolTx.datatoken = token.id
     poolTx.datatokenValue = ammount.neg()
 
-    poolSnapshot.datatokenLiquidity =
-      poolSnapshot.datatokenLiquidity.minus(ammount)
-
     pool.datatokenLiquidity.minus(ammount)
   } else {
     poolTx.baseToken = token.id
     poolTx.baseTokenValue = ammount.neg()
 
-    poolSnapshot.baseTokenLiquidity =
-      poolSnapshot.baseTokenLiquidity.minus(ammount)
-
     pool.baseTokenLiquidity.minus(ammount)
     removeLiquidity(token.id, ammount)
   }
+
+  poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
+  poolSnapshot.datatokenLiquidity = pool.datatokenLiquidity
+  poolSnapshot.totalShares = pool.totalShares
 
   poolSnapshot.save()
   poolTx.save()
@@ -139,17 +125,12 @@ export function handleSwap(event: LOG_SWAP): void {
     poolTx.datatokenValue = ammountOut.neg()
 
     pool.datatokenLiquidity = pool.datatokenLiquidity.minus(ammountOut)
-
-    poolSnapshot.datatokenLiquidity =
-      poolSnapshot.datatokenLiquidity.minus(ammountOut)
   } else {
     poolTx.baseToken = tokenOut.id
     poolTx.baseTokenValue = ammountOut.neg()
 
     pool.baseTokenLiquidity = pool.baseTokenLiquidity.minus(ammountOut)
-
-    poolSnapshot.baseTokenLiquidity =
-      poolSnapshot.baseTokenLiquidity.minus(ammountOut)
+    poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountOut)
 
     addPoolSwap(tokenOut.id, ammountOut)
     removeLiquidity(tokenOut.id, ammountOut)
@@ -166,17 +147,12 @@ export function handleSwap(event: LOG_SWAP): void {
     poolTx.datatokenValue = ammountIn
 
     pool.datatokenLiquidity = pool.datatokenLiquidity.plus(ammountIn)
-
-    poolSnapshot.datatokenLiquidity =
-      poolSnapshot.datatokenLiquidity.plus(ammountIn)
   } else {
     poolTx.baseToken = tokenIn.id
     poolTx.baseTokenValue = ammountIn
 
     pool.baseTokenLiquidity = pool.baseTokenLiquidity.plus(ammountIn)
-
-    poolSnapshot.baseTokenLiquidity =
-      poolSnapshot.baseTokenLiquidity.plus(ammountIn)
+    poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountIn)
 
     addLiquidity(tokenIn.id, ammountIn)
     addPoolSwap(tokenIn.id, ammountIn)
@@ -192,6 +168,9 @@ export function handleSwap(event: LOG_SWAP): void {
   )
   pool.spotPrice = spotPrice
   poolSnapshot.spotPrice = spotPrice
+  poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
+  poolSnapshot.datatokenLiquidity = pool.datatokenLiquidity
+  poolSnapshot.totalShares = pool.totalShares
 
   poolSnapshot.save()
   poolTx.save()
