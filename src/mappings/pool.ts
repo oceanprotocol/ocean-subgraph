@@ -86,12 +86,12 @@ export function handleExit(event: LOG_EXIT): void {
     poolTx.datatoken = token.id
     poolTx.datatokenValue = ammount.neg()
 
-    pool.datatokenLiquidity.minus(ammount)
+    pool.datatokenLiquidity = pool.datatokenLiquidity.minus(ammount)
   } else {
     poolTx.baseToken = token.id
     poolTx.baseTokenValue = ammount.neg()
 
-    pool.baseTokenLiquidity.minus(ammount)
+    pool.baseTokenLiquidity = pool.baseTokenLiquidity.minus(ammount)
     removeLiquidity(token.id, ammount)
   }
 
