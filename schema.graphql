@@ -136,9 +136,9 @@ type Pool @entity {
     datatokenWeight: BigDecimal!
 
     "publisher market fee value"
-    publisherMarketSwapFee: BigDecimal! 
+    publishMarketSwapFee: BigDecimal! 
     "publisher market fee total amount"             
-    publishMarketSwapFee: BigDecimal   
+    publishMarketSwapFeeAmount: BigDecimal   
 
     "Liquidty provider fee value"             
     liquidityProviderSwapFee: BigDecimal   

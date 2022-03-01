@@ -135,3 +135,9 @@ export function getPoolLpSwapFee(poolAddress: Address): BigDecimal {
   const lpFee = weiToDecimal(lpFeeWei.toBigDecimal(), 18)
   return lpFee
 }
+export function getPoolPublisherMarketFee(poolAddress: Address): BigDecimal {
+  const contract = BPool.bind(poolAddress)
+  const marketFeeWei = contract.getMarketFee()
+  const marketFee = weiToDecimal(marketFeeWei.toBigDecimal(), 18)
+  return marketFee
+}
