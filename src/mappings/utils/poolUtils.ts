@@ -1,4 +1,4 @@
-import { Address, BigDecimal, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, ethereum, log } from '@graphprotocol/graph-ts'
 import {
   Pool,
   PoolShare,
@@ -127,4 +127,11 @@ export function getPoolSnapshot(
   }
 
   return snapshot
+}
+
+export function getPoolLpSwapFee(poolAddress: Address): BigDecimal {
+  const contract = BPool.bind(poolAddress)
+  const lpFeeWei = contract.getSwapFee()
+  const lpFee = weiToDecimal(lpFeeWei.toBigDecimal(), 18)
+  return lpFee
 }
