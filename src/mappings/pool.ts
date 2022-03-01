@@ -21,7 +21,9 @@ import {
   getPool,
   getPoolTransaction,
   getPoolShare,
-  getPoolSnapshot
+  getPoolSnapshot,
+  getPoolLpSwapFee,
+  getPoolPublisherMarketFee
 } from './utils/poolUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
@@ -219,6 +221,12 @@ export function handleSetup(event: LOG_SETUP): void {
   pool.save()
   poolTx.save()
 
+  const lpFee = getPoolLpSwapFee(event.address)
+  pool.liquidityProviderSwapFee = lpFee
+  const publisherMarketFee = getPoolPublisherMarketFee(event.address)
+  pool.publishMarketSwapFee = publisherMarketFee
+
+  pool.save()
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   poolSnapshot.spotPrice = spotPrice
   poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity

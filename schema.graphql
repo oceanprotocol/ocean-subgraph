@@ -135,11 +135,15 @@ type Pool @entity {
     datatokenLiquidity: BigDecimal!
     datatokenWeight: BigDecimal!
 
-    "publisher market fee   : SWAP, JOIN , EXIT"
-    marketSwapFee: BigDecimal! 
+    "publisher market fee value"
+    publishMarketSwapFee: BigDecimal! 
+    "publisher market fee total amount"             
+    publishMarketSwapFeeAmount: BigDecimal   
 
-    "liquidity provider fee"
-    liquidityProviderFee: BigDecimal!
+    "Liquidty provider fee value"             
+    liquidityProviderSwapFee: BigDecimal   
+    "liquidity provider fee total amount"
+    liquidityProviderSwapFeeAmount: BigDecimal!
 
     "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                    
     opcFee: BigDecimal!           
@@ -177,11 +181,8 @@ type Pool @entity {
     "address of the market where the datatoken was created. This address collects market fees."                       
     publishMarketFeeAddress: String 
 
-    "fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
-    publishMarketSwapFee: BigDecimal   
+   
 
-    "LP fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
-    liquidityProviderSwapFee: BigDecimal   
 
 }
 
