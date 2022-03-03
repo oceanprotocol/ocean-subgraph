@@ -15,7 +15,7 @@ import {
 import { integer } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 import { addOrder } from './utils/globalUtils'
-import { getToken } from './utils/tokenUtils'
+import { getToken, getUSDValue } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
 function getOrderId(
@@ -63,7 +63,9 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.createdTimestamp = event.block.timestamp.toI32()
   order.tx = event.transaction.hash.toHex()
   order.block = event.block.number.toI32()
-
+  order.lastPriceToken = token.lastPriceToken
+  order.lastPriceValue = token.lastPriceValue
+  order.estimatedUSDValue = getUSDValue(order.lastPriceToken, order.lastPriceValue, order.createdTimestamp)
   order.save()
   token.save()
   addOrder()

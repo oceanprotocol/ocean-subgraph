@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -177,6 +177,12 @@ export function handleSwap(event: LOG_SWAP): void {
   poolSnapshot.save()
   poolTx.save()
   pool.save()
+
+  //update datatoken lastPriceToken and lastPriceValue
+  const datatoken = getToken(Address.fromString(pool.datatoken), true)
+  datatoken.lastPriceToken = pool.baseToken
+  datatoken.lastPriceValue = spotPrice
+  datatoken.save()
 }
 
 // setup is just to set token weight(it will mostly be 50:50) and spotPrice

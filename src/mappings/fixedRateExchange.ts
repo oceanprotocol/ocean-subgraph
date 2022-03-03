@@ -199,6 +199,12 @@ export function handleSwap(event: Swapped): void {
       event.params.tokenOutAddress.toHexString(),
       swap.baseTokenAmount
     )
+
+  //update datatoken lastPriceToken and lastPriceValue
+  const datatoken = getToken(Address.fromString(fixedRateExchange.datatoken), true)
+  datatoken.lastPriceToken = fixedRateExchange.baseToken
+  datatoken.lastPriceValue = fixedRateExchange.price
+  datatoken.save()
 }
 
 export function handlePublishMarketFeeChanged(

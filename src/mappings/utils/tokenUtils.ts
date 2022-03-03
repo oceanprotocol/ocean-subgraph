@@ -1,4 +1,4 @@
-import { Address, log } from '@graphprotocol/graph-ts'
+import { Address, log, BigDecimal } from '@graphprotocol/graph-ts'
 import { Nft, Token } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
 import { ERC20Template, ERC721Template } from '../../@types/templates'
@@ -22,6 +22,8 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   const decimals = contract.try_decimals()
   if (decimals.reverted) token.decimals = 18
   else token.decimals = decimals.value
+  token.lastPriceToken = '0x0000000000000000000000000000000000000000'
+  token.lastPriceValue = BigDecimal.zero()
   token.save()
   return token
 }
@@ -55,4 +57,8 @@ export function getNftToken(address: Address): Nft {
     newToken = createNftToken(address)
   }
   return newToken
+}
+
+export function getUSDValue(address: string, value: BigDecimal, timestamp: number): BigDecimal{
+  return BigDecimal.zero()
 }

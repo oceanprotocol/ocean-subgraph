@@ -57,7 +57,10 @@ type Token @entity {
     tx: String!        
 
     "block number when it was created"                                   
-    block: Int!                                            
+    block: Int!           
+
+    lastPriceToken: String!
+    lastPriceValue: BigDecimal!
 }
 
 "utility type"
@@ -261,6 +264,10 @@ type Order @entity {
   createdTimestamp: Int!
   tx: String!
   block: Int!
+
+  lastPriceToken: String!
+  lastPriceValue: BigDecimal!
+  estimatedUSDValue: BigDecimal!
 }
 
 # to be removed, mabye for pool shares only 
