@@ -3,6 +3,7 @@ import { Nft, Token } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
 import { ERC20Template, ERC721Template } from '../../@types/templates'
 import { addNft } from './globalUtils'
+import { ZERO_ADDRESS } from './constants'
 
 export function createToken(address: Address, isDatatoken: boolean): Token {
   log.debug('started creating token with address: {}', [address.toHexString()])
@@ -22,7 +23,7 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   const decimals = contract.try_decimals()
   if (decimals.reverted) token.decimals = 18
   else token.decimals = decimals.value
-  token.lastPriceToken = '0x0000000000000000000000000000000000000000'
+  token.lastPriceToken = ZERO_ADDRESS
   token.lastPriceValue = BigDecimal.zero()
   token.save()
   return token
