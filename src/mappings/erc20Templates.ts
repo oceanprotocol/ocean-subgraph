@@ -65,7 +65,11 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.block = event.block.number.toI32()
   order.lastPriceToken = token.lastPriceToken
   order.lastPriceValue = token.lastPriceValue
-  order.estimatedUSDValue = getUSDValue(order.lastPriceToken, order.lastPriceValue, order.createdTimestamp)
+  order.estimatedUSDValue = getUSDValue(
+    order.lastPriceToken,
+    order.lastPriceValue,
+    order.createdTimestamp
+  )
   order.save()
   token.save()
   addOrder()

@@ -200,8 +200,11 @@ export function handleSwap(event: Swapped): void {
       swap.baseTokenAmount
     )
 
-  //update datatoken lastPriceToken and lastPriceValue
-  const datatoken = getToken(Address.fromString(fixedRateExchange.datatoken), true)
+  // update datatoken lastPriceToken and lastPriceValue
+  const datatoken = getToken(
+    Address.fromString(fixedRateExchange.datatoken),
+    true
+  )
   datatoken.lastPriceToken = fixedRateExchange.baseToken
   datatoken.lastPriceValue = fixedRateExchange.price
   datatoken.save()

@@ -59,6 +59,10 @@ export function getNftToken(address: Address): Nft {
   return newToken
 }
 
-export function getUSDValue(address: string, value: BigDecimal, timestamp: number): BigDecimal{
+export function getUSDValue(
+  address: string,
+  value: BigDecimal,
+  timestamp: number
+): BigDecimal {
   return BigDecimal.zero()
 }

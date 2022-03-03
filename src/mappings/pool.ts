@@ -178,7 +178,7 @@ export function handleSwap(event: LOG_SWAP): void {
   poolTx.save()
   pool.save()
 
-  //update datatoken lastPriceToken and lastPriceValue
+  // update datatoken lastPriceToken and lastPriceValue
   const datatoken = getToken(Address.fromString(pool.datatoken), true)
   datatoken.lastPriceToken = pool.baseToken
   datatoken.lastPriceValue = spotPrice
