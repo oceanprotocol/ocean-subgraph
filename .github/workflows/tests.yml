@@ -51,6 +51,8 @@ jobs:
         working-directory: ${{ github.workspace }}/barge
         run: |
           bash -x start_ocean.sh --with-thegraph --skip-subgraph-deploy --no-dashboard 2>&1 > start_ocean.log &
+        env:
+          CONTRACTS_VERSION: v4_rc1
  
       - run: npm ci
 
@@ -61,7 +63,6 @@ jobs:
             sleep 10
             [ -f "$HOME/.ocean/ocean-contracts/artifacts/ready" ] && break
             done
-      
       - name: create and deploy subgraph
         run: |
           npm run quickstart:barge
