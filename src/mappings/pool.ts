@@ -1,4 +1,4 @@
-import { BigInt, Address, log } from '@graphprotocol/graph-ts'
+import { BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -129,7 +129,7 @@ export function handleSwap(event: LOG_SWAP): void {
     event.params.tokenOut,
     tokenOut.decimals
   )
- 
+
   if (tokenOut.isDatatoken) {
     poolTx.datatoken = tokenOut.id
     poolTx.datatokenValue = ammountOut.neg()
