@@ -141,3 +141,14 @@ export function getPoolPublisherMarketFee(poolAddress: Address): BigDecimal {
   const marketFee = weiToDecimal(marketFeeWei.toBigDecimal(), 18)
   return marketFee
 }
+
+export function getBalance(
+  poolAddress: Address,
+  tokenAddress: Address,
+  tokenDecimals: i32
+): BigDecimal {
+  const contract = BPool.bind(poolAddress)
+  const balanceWei = contract.getBalance(tokenAddress)
+  const balance = weiToDecimal(balanceWei.toBigDecimal(), tokenDecimals)
+  return balance
+}
