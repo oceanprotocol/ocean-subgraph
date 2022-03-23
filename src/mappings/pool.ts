@@ -1,4 +1,4 @@
-import { BigInt, Address } from '@graphprotocol/graph-ts'
+import { BigInt, Address, log } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -23,7 +23,8 @@ import {
   getPoolShare,
   getPoolSnapshot,
   getPoolLpSwapFee,
-  getPoolPublisherMarketFee
+  getPoolPublisherMarketFee,
+  getBalance
 } from './utils/poolUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
@@ -122,16 +123,23 @@ export function handleSwap(event: LOG_SWAP): void {
     event.params.tokenAmountOut.toBigDecimal(),
     tokenOut.decimals
   )
+
+  const tokenOutNewBalance = getBalance(
+    event.address,
+    event.params.tokenOut,
+    tokenOut.decimals
+  )
+ 
   if (tokenOut.isDatatoken) {
     poolTx.datatoken = tokenOut.id
     poolTx.datatokenValue = ammountOut.neg()
 
-    pool.datatokenLiquidity = pool.datatokenLiquidity.minus(ammountOut)
+    pool.datatokenLiquidity = tokenOutNewBalance
   } else {
     poolTx.baseToken = tokenOut.id
     poolTx.baseTokenValue = ammountOut.neg()
 
-    pool.baseTokenLiquidity = pool.baseTokenLiquidity.minus(ammountOut)
+    pool.baseTokenLiquidity = tokenOutNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountOut)
 
     addPoolSwap(tokenOut.id, ammountOut)
@@ -144,18 +152,21 @@ export function handleSwap(event: LOG_SWAP): void {
     event.params.tokenAmountIn.toBigDecimal(),
     tokenIn.decimals
   )
+  const tokenInNewBalance = getBalance(
+    event.address,
+    event.params.tokenIn,
+    tokenIn.decimals
+  )
   if (tokenIn.isDatatoken) {
     poolTx.datatoken = tokenIn.id
     poolTx.datatokenValue = ammountIn
 
-    pool.datatokenLiquidity = pool.datatokenLiquidity.plus(ammountIn)
+    pool.datatokenLiquidity = tokenInNewBalance
   } else {
     poolTx.baseToken = tokenIn.id
     poolTx.baseTokenValue = ammountIn
-
-    pool.baseTokenLiquidity = pool.baseTokenLiquidity.plus(ammountIn)
+    pool.baseTokenLiquidity = tokenInNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountIn)
-
     addLiquidity(tokenIn.id, ammountIn)
     addPoolSwap(tokenIn.id, ammountIn)
   }

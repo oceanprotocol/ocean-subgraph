@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: rinkeby
     source:
-      address: '0x1b1FE18bE79249AE8A30b3cEef03d70ca299a75b'
+      address: '0x548fd8639eC4Add192f12FC5c3EF6Dd80e1634ce'
       abi: ERC721Factory
-      startBlock: 10182337
+      startBlock: 10364536
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -33,9 +33,9 @@ dataSources:
     name: FactoryRouter
     network: rinkeby
     source:
-      address: '0x6CE85a8B9dF0aEbd6deE3593d4E9cde7398ff842'
+      address: '0xfe1a9F07718b40071F4c8d0f4bA22121dD5C0559'
       abi: FactoryRouter
-      startBlock: 10182337
+      startBlock: 10364536
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
