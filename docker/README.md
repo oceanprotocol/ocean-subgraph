@@ -60,6 +60,11 @@ clone this repository and run
 ```sh
 docker-compose up
 ```
+OR
+
+```sh
+docker-compose --env-file .env up | grep -a -E --color 'WARN.*|$'
+```
 
 This will start IPFS, Postgres and Graph Node in Docker and create persistent
 data directories for IPFS and Postgres in `./data/ipfs` and `./data/postgres`. You
