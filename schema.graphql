@@ -231,13 +231,13 @@ type PoolTransaction @entity {
   "base tokens transfered"
   baseToken: Token 
 
-  "number of base tokens transfered, if value is negative it means it was removed"       
+  "number of base tokens transfered, for type SWAP if value is negative it means it was removed"       
   baseTokenValue: BigDecimal
 
   "datatokens transfered"                        
   datatoken: Token
 
-  "number of datatokens transfered, if value is negative it means it was removed"
+  "number of datatokens transfered, for type SWAP if value is negative it means it was removed"
   datatokenValue: BigDecimal
 }
 

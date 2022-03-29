@@ -17,16 +17,27 @@ export function getPoolShareId(
   return `${poolAddress}-${userAddress}`
 }
 
+export function getPoolTransactionId(
+  txHash: string,
+  userAddress: string
+): string {
+  return `${txHash}-${userAddress}`
+}
+
 export function getPoolTransaction(
   event: ethereum.Event,
   userAddress: string,
   type: string
 ): PoolTransaction {
-  let poolTx = PoolTransaction.load(event.transaction.hash.toHex())
+  const txId = getPoolTransactionId(
+    event.transaction.hash.toHexString(),
+    userAddress
+  )
+  let poolTx = PoolTransaction.load(txId)
 
   // create pool transaction and fill basic fields
   if (poolTx === null) {
-    poolTx = new PoolTransaction(event.transaction.hash.toHex())
+    poolTx = new PoolTransaction(txId)
 
     poolTx.user = userAddress
     poolTx.pool = event.address.toHex()
