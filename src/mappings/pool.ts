@@ -1,4 +1,4 @@
-import { BigInt, Address, log } from '@graphprotocol/graph-ts'
+import { BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -72,9 +72,9 @@ export function handleJoin(event: LOG_JOIN): void {
 
 export function handleExit(event: LOG_EXIT): void {
   const pool = getPool(event.address.toHex())
-  let user = getUser(event.params.caller.toHex())
+  const user = getUser(event.params.caller.toHex())
   const poolTx = getPoolTransaction(event, user.id, PoolTransactionType.EXIT)
-  
+
   pool.transactionCount = pool.transactionCount.plus(integer.ONE)
   pool.joinCount = pool.joinCount.plus(integer.ONE)
 
