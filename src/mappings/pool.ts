@@ -234,7 +234,10 @@ export function handleSetup(event: LOG_SETUP): void {
   )
   poolTx.type = PoolTransactionType.SETUP
   poolTx.baseToken = token.id
-  poolTx.datatoken = datatoken.id
+  poolTx.baseTokenValue = weiToDecimal(
+    event.params.baseTokenAmountIn.toBigDecimal(),
+    token.decimals
+  )
   pool.save()
   poolTx.save()
 
