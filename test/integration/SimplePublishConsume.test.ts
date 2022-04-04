@@ -82,13 +82,15 @@ describe('Simple Publish & consume test', async () => {
       name: 'testNFT',
       symbol: 'TST',
       templateIndex: 1,
-      tokenURI: ''
+      tokenURI: '',
+      transferable: true,
+      owner: publisherAccount
     }
     const erc20Params: Erc20CreateParams = {
       templateIndex: 1,
       cap: '100000',
       feeAmount: '0',
-      feeManager: '0x0000000000000000000000000000000000000000',
+      paymentCollector: '0x0000000000000000000000000000000000000000',
       feeToken: '0x0000000000000000000000000000000000000000',
       minter: publisherAccount,
       mpFeeAddress: '0x0000000000000000000000000000000000000000'

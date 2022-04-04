@@ -80,6 +80,8 @@ type Nft @entity{
   
     "address of the owner of the nft"                                     
     owner: String!     
+    "address of the creator of the nft"                                     
+    creator: String!     
 
     "same as id, it's just for easy discoverability"                                    
     address: String!     
@@ -99,6 +101,8 @@ type Nft @entity{
     "template address"
     template: String!           
 
+    "set if NFT is transferable"
+    transferable: Boolean!
 
     "block time nft was created"
     createdTimestamp: Int!                                  

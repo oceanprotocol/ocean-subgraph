@@ -23,8 +23,7 @@ import {
   getPoolShare,
   getPoolSnapshot,
   getPoolLpSwapFee,
-  getPoolPublisherMarketFee,
-  getBalance
+  getPoolPublisherMarketFee
 } from './utils/poolUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
@@ -124,11 +123,8 @@ export function handleSwap(event: LOG_SWAP): void {
     tokenOut.decimals
   )
 
-  const tokenOutNewBalance = getBalance(
-    event.address,
-    event.params.tokenOut,
-    tokenOut.decimals
-  )
+  const tokenOutNewBalance = event.params.outBalance.toBigDecimal()
+  const tokenInNewBalance = event.params.inBalance.toBigDecimal()
 
   if (tokenOut.isDatatoken) {
     poolTx.datatoken = tokenOut.id
@@ -152,11 +148,6 @@ export function handleSwap(event: LOG_SWAP): void {
     event.params.tokenAmountIn.toBigDecimal(),
     tokenIn.decimals
   )
-  const tokenInNewBalance = getBalance(
-    event.address,
-    event.params.tokenIn,
-    tokenIn.decimals
-  )
   if (tokenIn.isDatatoken) {
     poolTx.datatoken = tokenIn.id
     poolTx.datatokenValue = ammountIn
@@ -172,13 +163,7 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update spot price
-  const isTokenInDatatoken = tokenIn.isDatatoken
-  const spotPrice = calcSpotPrice(
-    pool.id,
-    isTokenInDatatoken ? tokenOut.id : tokenIn.id,
-    isTokenInDatatoken ? tokenIn.id : tokenOut.id,
-    isTokenInDatatoken ? tokenIn.decimals : tokenOut.decimals
-  )
+  const spotPrice = event.params.newSpotPrice.toBigDecimal()
   pool.spotPrice = spotPrice
   poolSnapshot.spotPrice = spotPrice
   poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
