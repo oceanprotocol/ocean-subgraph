@@ -117,14 +117,20 @@ export function handleSwap(event: LOG_SWAP): void {
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   // get token out and update pool transaction, value is negative
   const tokenOut = getToken(event.params.tokenOut, false)
-
+  const tokenIn = getToken(event.params.tokenIn, false)
   const ammountOut = weiToDecimal(
     event.params.tokenAmountOut.toBigDecimal(),
     tokenOut.decimals
   )
 
-  const tokenOutNewBalance = event.params.outBalance.toBigDecimal()
-  const tokenInNewBalance = event.params.inBalance.toBigDecimal()
+  const tokenOutNewBalance = weiToDecimal(
+    event.params.outBalance.toBigDecimal(),
+    tokenOut.decimals
+  )
+  const tokenInNewBalance = weiToDecimal(
+    event.params.inBalance.toBigDecimal(),
+    tokenIn.decimals
+  )
 
   if (tokenOut.isDatatoken) {
     poolTx.datatoken = tokenOut.id
@@ -143,7 +149,6 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update pool token in
-  const tokenIn = getToken(event.params.tokenIn, false)
   const ammountIn = weiToDecimal(
     event.params.tokenAmountIn.toBigDecimal(),
     tokenIn.decimals
