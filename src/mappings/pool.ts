@@ -23,8 +23,7 @@ import {
   getPoolShare,
   getPoolSnapshot,
   getPoolLpSwapFee,
-  getPoolPublisherMarketFee,
-  getBalance
+  getPoolPublisherMarketFee
 } from './utils/poolUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
@@ -118,16 +117,19 @@ export function handleSwap(event: LOG_SWAP): void {
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
   // get token out and update pool transaction, value is negative
   const tokenOut = getToken(event.params.tokenOut, false)
-
+  const tokenIn = getToken(event.params.tokenIn, false)
   const ammountOut = weiToDecimal(
     event.params.tokenAmountOut.toBigDecimal(),
     tokenOut.decimals
   )
 
-  const tokenOutNewBalance = getBalance(
-    event.address,
-    event.params.tokenOut,
+  const tokenOutNewBalance = weiToDecimal(
+    event.params.outBalance.toBigDecimal(),
     tokenOut.decimals
+  )
+  const tokenInNewBalance = weiToDecimal(
+    event.params.inBalance.toBigDecimal(),
+    tokenIn.decimals
   )
 
   if (tokenOut.isDatatoken) {
@@ -147,14 +149,8 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update pool token in
-  const tokenIn = getToken(event.params.tokenIn, false)
   const ammountIn = weiToDecimal(
     event.params.tokenAmountIn.toBigDecimal(),
-    tokenIn.decimals
-  )
-  const tokenInNewBalance = getBalance(
-    event.address,
-    event.params.tokenIn,
     tokenIn.decimals
   )
   if (tokenIn.isDatatoken) {
@@ -172,13 +168,7 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update spot price
-  const isTokenInDatatoken = tokenIn.isDatatoken
-  const spotPrice = calcSpotPrice(
-    pool.id,
-    isTokenInDatatoken ? tokenOut.id : tokenIn.id,
-    isTokenInDatatoken ? tokenIn.id : tokenOut.id,
-    isTokenInDatatoken ? tokenIn.decimals : tokenOut.decimals
-  )
+  const spotPrice = event.params.newSpotPrice.toBigDecimal()
   pool.spotPrice = spotPrice
   poolSnapshot.spotPrice = spotPrice
   poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity

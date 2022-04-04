@@ -24,7 +24,7 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
-        - event: NFTCreated(indexed address,indexed address,string,address,string,string)
+        - event: NFTCreated(address,indexed address,string,indexed address,string,string,bool,indexed address)
           handler: handleNftCreated
         - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
@@ -134,7 +134,7 @@ templates:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
-        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256)
+        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleSwap
         - event: LOG_JOIN(indexed address,indexed address,uint256,uint256)
           handler: handleJoin
