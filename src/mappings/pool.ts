@@ -122,7 +122,7 @@ export function handleSwap(event: LOG_SWAP): void {
     event.params.tokenAmountOut.toBigDecimal(),
     tokenOut.decimals
   )
-
+  let baseTokenDecimals = 18
   const tokenOutNewBalance = weiToDecimal(
     event.params.outBalance.toBigDecimal(),
     tokenOut.decimals
@@ -140,7 +140,7 @@ export function handleSwap(event: LOG_SWAP): void {
   } else {
     poolTx.baseToken = tokenOut.id
     poolTx.baseTokenValue = ammountOut.neg()
-
+    baseTokenDecimals = tokenOut.decimals
     pool.baseTokenLiquidity = tokenOutNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountOut)
 
@@ -161,6 +161,7 @@ export function handleSwap(event: LOG_SWAP): void {
   } else {
     poolTx.baseToken = tokenIn.id
     poolTx.baseTokenValue = ammountIn
+    baseTokenDecimals = tokenIn.decimals
     pool.baseTokenLiquidity = tokenInNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountIn)
     addLiquidity(tokenIn.id, ammountIn)
@@ -168,7 +169,10 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update spot price
-  const spotPrice = weiToDecimal(event.params.newSpotPrice.toBigDecimal(), 18)
+  const spotPrice = weiToDecimal(
+    event.params.newSpotPrice.toBigDecimal(),
+    baseTokenDecimals
+  )
   pool.spotPrice = spotPrice
   poolSnapshot.spotPrice = spotPrice
   poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
