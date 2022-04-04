@@ -168,7 +168,7 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update spot price
-  const spotPrice = event.params.newSpotPrice.toBigDecimal()
+  const spotPrice = weiToDecimal(event.params.newSpotPrice.toBigDecimal(), 18)
   pool.spotPrice = spotPrice
   poolSnapshot.spotPrice = spotPrice
   poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
