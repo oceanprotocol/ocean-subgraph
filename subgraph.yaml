@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: rinkeby
     source:
-      address: '0x548fd8639eC4Add192f12FC5c3EF6Dd80e1634ce'
+      address: '0x6eb0184B64f22fB5e1316221E1eC84988F9E6b12'
       abi: ERC721Factory
-      startBlock: 10364536
+      startBlock: 10422197
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -24,7 +24,7 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
-        - event: NFTCreated(indexed address,indexed address,string,address,string,string)
+        - event: NFTCreated(address,indexed address,string,indexed address,string,string,bool,indexed address)
           handler: handleNftCreated
         - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
@@ -33,9 +33,9 @@ dataSources:
     name: FactoryRouter
     network: rinkeby
     source:
-      address: '0xfe1a9F07718b40071F4c8d0f4bA22121dD5C0559'
+      address: '0xF1Ef3C2332E44bdA219D9155E9a97201a1b5eC1C'
       abi: FactoryRouter
-      startBlock: 10364536
+      startBlock: 10422197
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -134,7 +134,7 @@ templates:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
-        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256)
+        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleSwap
         - event: LOG_JOIN(indexed address,indexed address,uint256,uint256)
           handler: handleJoin

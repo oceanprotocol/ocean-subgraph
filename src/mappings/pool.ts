@@ -146,11 +146,9 @@ export function handleSwap(event: LOG_SWAP): void {
     poolTx.baseToken = tokenOut.id
     poolTx.baseTokenValue = ammountOut.neg()
 
-    spotPrice = weiToDecimal(
-      event.params.newSpotPrice.toBigDecimal(),
-      tokenOut.decimals
+    spotPrice = decimal.ONE.div(
+      weiToDecimal(event.params.newSpotPrice.toBigDecimal(), tokenOut.decimals)
     )
-
     pool.baseTokenLiquidity = tokenOutNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountOut)
 
@@ -172,8 +170,9 @@ export function handleSwap(event: LOG_SWAP): void {
     poolTx.baseToken = tokenIn.id
     poolTx.baseTokenValue = ammountIn
 
-    spotPrice = decimal.ONE.div(
-      weiToDecimal(event.params.newSpotPrice.toBigDecimal(), tokenOut.decimals)
+    spotPrice = weiToDecimal(
+      event.params.newSpotPrice.toBigDecimal(),
+      tokenOut.decimals
     )
     pool.baseTokenLiquidity = tokenInNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountIn)
