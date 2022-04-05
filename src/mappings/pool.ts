@@ -8,7 +8,12 @@ import {
   SwapFeeChanged
 } from '../@types/templates/BPool/BPool'
 import { Transfer } from '../@types/templates/BPool/BToken'
-import { integer, PoolTransactionType, ZERO_ADDRESS } from './utils/constants'
+import {
+  decimal,
+  integer,
+  PoolTransactionType,
+  ZERO_ADDRESS
+} from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 import {
   addLiquidity,
@@ -115,14 +120,14 @@ export function handleSwap(event: LOG_SWAP): void {
   pool.joinCount = pool.joinCount.plus(integer.ONE)
 
   const poolSnapshot = getPoolSnapshot(pool.id, event.block.timestamp.toI32())
-  // get token out and update pool transaction, value is negative
   const tokenOut = getToken(event.params.tokenOut, false)
   const tokenIn = getToken(event.params.tokenIn, false)
+  let spotPrice = decimal.ZERO
+
   const ammountOut = weiToDecimal(
     event.params.tokenAmountOut.toBigDecimal(),
     tokenOut.decimals
   )
-  let baseTokenDecimals = 18
   const tokenOutNewBalance = weiToDecimal(
     event.params.outBalance.toBigDecimal(),
     tokenOut.decimals
@@ -140,7 +145,12 @@ export function handleSwap(event: LOG_SWAP): void {
   } else {
     poolTx.baseToken = tokenOut.id
     poolTx.baseTokenValue = ammountOut.neg()
-    baseTokenDecimals = tokenOut.decimals
+
+    spotPrice = weiToDecimal(
+      event.params.newSpotPrice.toBigDecimal(),
+      tokenOut.decimals
+    )
+
     pool.baseTokenLiquidity = tokenOutNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountOut)
 
@@ -161,7 +171,10 @@ export function handleSwap(event: LOG_SWAP): void {
   } else {
     poolTx.baseToken = tokenIn.id
     poolTx.baseTokenValue = ammountIn
-    baseTokenDecimals = tokenIn.decimals
+
+    spotPrice = decimal.ONE.div(
+      weiToDecimal(event.params.newSpotPrice.toBigDecimal(), tokenOut.decimals)
+    )
     pool.baseTokenLiquidity = tokenInNewBalance
     poolSnapshot.swapVolume = poolSnapshot.swapVolume.plus(ammountIn)
     addLiquidity(tokenIn.id, ammountIn)
@@ -169,10 +182,6 @@ export function handleSwap(event: LOG_SWAP): void {
   }
 
   // update spot price
-  const spotPrice = weiToDecimal(
-    event.params.newSpotPrice.toBigDecimal(),
-    baseTokenDecimals
-  )
   pool.spotPrice = spotPrice
   poolSnapshot.spotPrice = spotPrice
   poolSnapshot.baseTokenLiquidity = pool.baseTokenLiquidity
