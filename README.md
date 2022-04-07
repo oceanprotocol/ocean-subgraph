@@ -30,10 +30,10 @@
 
 This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` namespace for all networks the Ocean Protocol contracts are deployed to:
 
-- [subgraphv4.ropsten.oceanprotocol.com](https://subgraphv4.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
-- [subgraphv4.rinkeby.oceanprotocol.com](https://subgraphv4.rinkeby.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
-- [subgraphv4.mumbai.oceanprotocol.com](https://subgraphv4.mumbai.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
-- [subgraphv4.moonbase.oceanprotocol.com](https://subgraphv4.moonbase.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.ropsten.oceanprotocol.com](https://v4.subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.rinkeby.oceanprotocol.com](https://v4.subgraph.rinkeby.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.mumbai.oceanprotocol.com](https://v4.subgraph.mumbai.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.moonbase.oceanprotocol.com](https://v4.subgraph.moonbase.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
 ## ⛵ Example Queries
 
