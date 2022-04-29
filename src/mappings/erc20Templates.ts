@@ -90,26 +90,24 @@ export function handlePublishMarketFeeChanged(
   event: PublishMarketFeeChanged
 ): void {
   const token = getToken(event.address, true)
-  if (token != null) {
-    token.publishMarketFeeAddress =
-      event.params.PublishMarketFeeAddress.toHexString()
-    token.publishMarketFeeToken =
-      event.params.PublishMarketFeeToken.toHexString()
-    let decimals = BigInt.fromI32(18).toI32()
-    if (
-      token.publishMarketFeeToken !=
-      '0x0000000000000000000000000000000000000000'
-    ) {
-      const token = getToken(event.params.PublishMarketFeeToken, false)
-      decimals = BigInt.fromI32(token.decimals).toI32()
-    }
-    token.publishMarketFeeAmmount = weiToDecimal(
-      event.params.PublishMarketFeeAmount.toBigDecimal(),
-      decimals
-    )
-    token.save()
-    // TODO - shold we have a history
+  if (!token) return
+
+  token.publishMarketFeeAddress =
+    event.params.PublishMarketFeeAddress.toHexString()
+  token.publishMarketFeeToken = event.params.PublishMarketFeeToken.toHexString()
+  let decimals = BigInt.fromI32(18).toI32()
+  if (
+    token.publishMarketFeeToken != '0x0000000000000000000000000000000000000000'
+  ) {
+    const token = getToken(event.params.PublishMarketFeeToken, false)
+    decimals = BigInt.fromI32(token.decimals).toI32()
   }
+  token.publishMarketFeeAmount = weiToDecimal(
+    event.params.PublishMarketFeeAmount.toBigDecimal(),
+    decimals
+  )
+  token.save()
+  // TODO - shold we have a history
 }
 
 // roles

@@ -26,8 +26,8 @@ type Token @entity {
     "adreess of fee token (can be Ocean, ETH, etc.)"                     
     publishMarketFeeToken: String   
 
-    "fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
-    publishMarketFeeAmmount: BigDecimal   
+    "fee amount. Fixed value."             
+    publishMarketFeeAmount: BigDecimal   
 
     "template ID of the datatoken"                               
     templateId: Int                                       
@@ -150,10 +150,7 @@ type Pool @entity {
     "Liquidty provider fee value"             
     liquidityProviderSwapFee: BigDecimal   
     "liquidity provider fee total amount"
-    liquidityProviderSwapFeeAmount: BigDecimal!
-
-    "OPF Fee percent, fee that goes to Ocean Protocol Foundation : SWAP"                                    
-    opcFee: BigDecimal!           
+    liquidityProviderSwapFeeAmount: BigDecimal!     
 
     "total pool token shares"                           
     totalShares: BigDecimal!   
@@ -328,8 +325,6 @@ type FixedRateExchange @entity {
   "if the fre has the minter role on the datatoken"                                        
   isMinter: Boolean             
 
-  marketSwapFee: BigDecimal!
-
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
   swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
 
@@ -340,7 +335,7 @@ type FixedRateExchange @entity {
   "address of the market where the datatoken was created. This address collects market fees."                       
   publishMarketFeeAddress: String 
 
-    "fee amount. Fixed value, expressed in wei in contracts, needs conversion in decimals."             
+  "fee amount. Fixed value"             
   publishMarketSwapFee: BigDecimal   
 
 }
