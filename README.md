@@ -84,7 +84,23 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 > Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
 
+**Pools with the highest liquidity**
 
+```graphql
+{
+  pools(where: {datatokenLiquidity_gte: 1}, orderBy: baseTokenLiquidity, orderDirection: desc, first: 15) {
+    id
+    datatoken {
+      address
+    }
+    baseToken {
+      symbol
+    }
+    baseTokenLiquidity
+    datatokenLiquidity
+  }
+}
+```
 
 ## 🏊 Development on Barge
 
