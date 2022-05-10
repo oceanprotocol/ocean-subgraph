@@ -55,6 +55,24 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 }
 ```
 
+**Pools with the highest liquidity**
+
+```graphql
+{
+  pools(where: {datatokenLiquidity_gte: 1}, orderBy: baseTokenLiquidity, orderDirection: desc, first: 15) {
+    id
+    datatoken {
+      address
+    }
+    baseToken {
+      symbol
+    }
+    baseTokenLiquidity
+    datatokenLiquidity
+  }
+}
+```
+
 **All Data NFTs**
 
 ```graphql
@@ -102,24 +120,39 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
   }
 ```
 
-> Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
+> Note: all ETH addresses like `$user` in above example need to be passed as a lowercase string.
 
-**Pools with the highest liquidity**
+**All pool transactions for a given user in an individual pool**
 
 ```graphql
 {
-  pools(where: {datatokenLiquidity_gte: 1}, orderBy: baseTokenLiquidity, orderDirection: desc, first: 15) {
-    id
-    datatoken {
-      address
+    poolTransactions(
+      orderBy: timestamp
+      orderDirection: desc
+      where: { pool: $pool, user: $user }
+      first: 1000
+    ) {
+      baseToken {
+        symbol
+        address
+      }
+      baseTokenValue
+      datatoken {
+        symbol
+        address
+      }
+      datatokenValue
+      type
+      tx
+      timestamp
+      pool {
+        datatoken {
+          id
+        }
+        id
+      }
     }
-    baseToken {
-      symbol
-    }
-    baseTokenLiquidity
-    datatokenLiquidity
   }
-}
 ```
 
 ## 🏊 Development on Barge
