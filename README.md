@@ -55,18 +55,16 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 }
 ```
 
-**All datatokens**
+**All Data NFTs**
 
 ```graphql
 {
-  datatokens(orderBy: createTime, orderDirection: desc) {
-    address
-    symbol
-    name
-    cap
-    supply
-    publisher
-    holderCount
+  nfts(orderBy: createdTimestamp, orderDirection: desc){
+    id,
+    symbol,
+    name,
+    creator,
+    createdTimestamp
   }
 }
 ```
