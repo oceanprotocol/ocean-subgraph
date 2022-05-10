@@ -9,6 +9,7 @@
     "quickstart:ropsten": "node ./scripts/generatenetworkssubgraphs.js ropsten && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:mumbai": "node ./scripts/generatenetworkssubgraphs.js mumbai && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:moonbase": "node ./scripts/generatenetworkssubgraphs.js moonbase && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:polygon": "node ./scripts/generatenetworkssubgraphs.js polygon && npm run codegen && npm run create:local && npm run deploy:local",
     "create:thegraph": "graph create oceanprotocol/ocean-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-barge": "graph create oceanprotocol/ocean-subgraph --node http://172.15.0.15:8020",
@@ -53,7 +54,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@oceanprotocol/lib": "^1.0.0-next.33",
+    "@oceanprotocol/lib": "^1.0.0-next.42",
     "cross-fetch": "^3.1.4"
   },
   "repository": {
