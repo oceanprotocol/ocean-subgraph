@@ -87,6 +87,20 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 }
 ```
 
+**All Datatokens**
+
+```graphql
+{
+  tokens(where: {isDatatoken: true}, orderBy: createdTimestamp, orderDirection: desc) {
+    id
+    symbol
+    name
+    address
+    holderCount
+  }
+}
+```
+
 **All pool transactions for a given user**
 
 ```graphql
