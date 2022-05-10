@@ -73,14 +73,33 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 ```graphql
 {
-  poolTransactions(
-    where: { userAddressStr: $userAddress }
-    orderBy: timestamp
-    orderDirection: desc
-  ) {
-    poolAddressStr
+    poolTransactions(
+      orderBy: timestamp
+      orderDirection: desc
+      where: { user: $user }
+      first: 1000
+    ) {
+      baseToken {
+        symbol
+        address
+      }
+      baseTokenValue
+      datatoken {
+        symbol
+        address
+      }
+      datatokenValue
+      type
+      tx
+      timestamp
+      pool {
+        datatoken {
+          id
+        }
+        id
+      }
+    }
   }
-}
 ```
 
 > Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
