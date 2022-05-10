@@ -155,6 +155,8 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
   }
 ```
 
+> Note: all ETH addresses like `$pool` and `$user` in above example need to be passed as a lowercase string.
+
 ## 🏊 Development on Barge
 
 
