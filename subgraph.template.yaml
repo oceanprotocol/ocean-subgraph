@@ -55,8 +55,6 @@ dataSources:
           handler: handleTokenAdded
         - event: TokenRemoved(indexed address,indexed address)
           handler: handleTokenRemoved
-        - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
-          handler: handleOPCFeeChanged
         - event: FixedRateContractAdded(indexed address,indexed address)
           handler: handleFixedRateContractAdded
         - event: FixedRateContractRemoved(indexed address,indexed address)
