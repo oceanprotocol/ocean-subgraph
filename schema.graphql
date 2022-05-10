@@ -534,18 +534,4 @@ type Template @entity{
   ssTemplates: [String!]
 }
 
-type Vested @entity {
-    id: ID!
-    amount: BigDecimal!
-    block: BigInt!
-    vesting: Vesting!
-}
 
-type Vesting @entity {
-    id: ID!
-    user: User!
-    token: Token!
-    endBlock: BigInt!
-    amount: BigDecimal!
-    vestingHistory: [Vested!]! @derivedFrom(field: "vesting")
-}

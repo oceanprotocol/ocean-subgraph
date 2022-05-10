@@ -4,8 +4,6 @@ import {
   TokenRemoved,
   OPCFeeChanged,
   FactoryRouter,
-  SSContractAdded,
-  SSContractRemoved,
   FixedRateContractAdded,
   FixedRateContractRemoved,
   DispenserContractAdded,
@@ -13,12 +11,7 @@ import {
 } from '../@types/FactoryRouter/FactoryRouter'
 import { BigInt } from '@graphprotocol/graph-ts'
 import { Pool } from '../@types/schema'
-import {
-  BPool,
-  FixedRateExchange,
-  Dispenser,
-  SSContract
-} from '../@types/templates'
+import { BPool, FixedRateExchange, Dispenser } from '../@types/templates'
 import { addPool, getOPC, getTemplates } from './utils/globalUtils'
 import { weiToDecimal } from './utils/generic'
 
@@ -102,33 +95,6 @@ export function handleTokenRemoved(event: TokenRemoved): void {
   opc.save()
 }
 
-export function handleSSContractAdded(event: SSContractAdded): void {
-  // add token to approvedTokens
-  SSContract.create(event.params.contractAddress)
-  const templates = getTemplates()
-  let existingContracts: string[]
-  if (!templates.ssTemplates) existingContracts = []
-  else existingContracts = templates.ssTemplates as string[]
-  if (!existingContracts.includes(event.params.contractAddress.toHexString()))
-    existingContracts.push(event.params.contractAddress.toHexString())
-  templates.ssTemplates = existingContracts
-  templates.save()
-}
-export function handleSSContractRemoved(event: SSContractRemoved): void {
-  const templates = getTemplates()
-  const newList: string[] = []
-  let existingContracts: string[]
-  if (!templates.ssTemplates) existingContracts = []
-  else existingContracts = templates.ssTemplates as string[]
-  if (!existingContracts || existingContracts.length < 1) return
-  while (existingContracts.length > 0) {
-    const role = existingContracts.shift().toString()
-    if (!role) break
-    if (role !== event.params.contractAddress.toHexString()) newList.push(role)
-  }
-  templates.ssTemplates = newList
-  templates.save()
-}
 export function handleFixedRateContractAdded(
   event: FixedRateContractAdded
 ): void {

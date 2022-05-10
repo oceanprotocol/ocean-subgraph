@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721Factory
-    network: rinkeby
+    network: development
     source:
-      address: '0x6eb0184B64f22fB5e1316221E1eC84988F9E6b12'
+      address: '0x3c5592bF2104Bb94a68e71bf277EC98bb06ec776'
       abi: ERC721Factory
-      startBlock: 10422197
+      startBlock: 1081
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -31,11 +31,11 @@ dataSources:
 
   - kind: ethereum/contract
     name: FactoryRouter
-    network: rinkeby
+    network: development
     source:
-      address: '0xF1Ef3C2332E44bdA219D9155E9a97201a1b5eC1C'
+      address: '0x104f07603cE1cDf6Ea5a95b8C0fd9e9F7F9eB598'
       abi: FactoryRouter
-      startBlock: 10422197
+      startBlock: 1081
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -57,10 +57,6 @@ dataSources:
           handler: handleTokenRemoved
         - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
           handler: handleOPCFeeChanged
-        - event: SSContractAdded(indexed address,indexed address)
-          handler: handleSSContractAdded
-        - event: SSContractRemoved(indexed address,indexed address)
-          handler: handleSSContractRemoved
         - event: FixedRateContractAdded(indexed address,indexed address)
           handler: handleFixedRateContractAdded
         - event: FixedRateContractRemoved(indexed address,indexed address)
@@ -73,7 +69,7 @@ dataSources:
 templates:
   - name: ERC20Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC20Template
     mapping:
@@ -114,7 +110,7 @@ templates:
 
   - name: BPool
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: BPool
     mapping:
@@ -151,7 +147,7 @@ templates:
 
   - name: ERC721Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC721Template
     mapping:
@@ -198,7 +194,7 @@ templates:
 
   - name: Dispenser
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: Dispenser
     mapping:
@@ -229,7 +225,7 @@ templates:
 
   - name: FixedRateExchange
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: FixedRateExchange
     mapping:
@@ -263,24 +259,3 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleTokenCollected
-
-  - name: SSContract
-    kind: ethereum/contract
-    network: rinkeby
-    source:
-      abi: SSContract
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/sscontract.ts
-      entities:
-        - SSContract
-      abis:
-        - name: SSContract
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/ssContracts/SideStaking.sol/SideStaking.json
-      eventHandlers:
-        - event: VestingCreated(indexed address,indexed address,uint256,uint256)
-          handler: handleVestingCreated
-        - event: Vesting(indexed address,indexed address,indexed address,uint256)
-          handler: handleVesting
