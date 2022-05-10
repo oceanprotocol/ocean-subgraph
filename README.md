@@ -77,7 +77,7 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 ```graphql
 {
-  nfts(orderBy: createdTimestamp, orderDirection: desc){
+  nfts(orderBy: createdTimestamp, orderDirection: desc, first: 1000){
     id,
     symbol,
     name,
@@ -87,11 +87,13 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 }
 ```
 
+> Note: 1000 is the maximum number of items the subgraph can return.
+
 **All Datatokens**
 
 ```graphql
 {
-  tokens(where: {isDatatoken: true}, orderBy: createdTimestamp, orderDirection: desc) {
+  tokens(where: {isDatatoken: true}, orderBy: createdTimestamp, orderDirection: desc, first: 1000) {
     id
     symbol
     name
