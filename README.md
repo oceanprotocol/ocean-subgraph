@@ -41,13 +41,16 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 ```graphql
 {
-  pools(orderBy: oceanReserve, orderDirection: desc) {
-    consumePrice
-    datatokenReserve
-    oceanReserve
-    spotPrice
-    swapFee
-    transactionCount
+  pools(orderBy: baseTokenLiquidity, orderDirection: desc) {
+    id
+    datatoken {
+      address
+    }
+    baseToken {
+      symbol
+    }
+    baseTokenLiquidity
+    datatokenLiquidity
   }
 }
 ```
