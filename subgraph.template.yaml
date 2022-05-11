@@ -28,6 +28,8 @@ dataSources:
           handler: handleNftCreated
         - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
+        - event: Transfer(indexed address, indexed address, indexed uint256)
+          handler: handleNftTransferred
 
   - kind: ethereum/contract
     name: FactoryRouter
