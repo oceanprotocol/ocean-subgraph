@@ -41,28 +41,63 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 ```graphql
 {
-  pools(orderBy: oceanReserve, orderDirection: desc) {
-    consumePrice
-    datatokenReserve
-    oceanReserve
-    spotPrice
-    swapFee
-    transactionCount
+  pools(orderBy: baseTokenLiquidity, orderDirection: desc) {
+    id
+    datatoken {
+      address
+    }
+    baseToken {
+      symbol
+    }
+    baseTokenLiquidity
+    datatokenLiquidity
   }
 }
 ```
 
-**All datatokens**
+**Pools with the highest liquidity**
 
 ```graphql
 {
-  datatokens(orderBy: createTime, orderDirection: desc) {
-    address
+  pools(where: {datatokenLiquidity_gte: 1}, orderBy: baseTokenLiquidity, orderDirection: desc, first: 15) {
+    id
+    datatoken {
+      address
+    }
+    baseToken {
+      symbol
+    }
+    baseTokenLiquidity
+    datatokenLiquidity
+  }
+}
+```
+
+**All Data NFTs**
+
+```graphql
+{
+  nfts(orderBy: createdTimestamp, orderDirection: desc, first: 1000){
+    id,
+    symbol,
+    name,
+    creator,
+    createdTimestamp
+  }
+}
+```
+
+> Note: 1000 is the maximum number of items the subgraph can return.
+
+**All Datatokens**
+
+```graphql
+{
+  tokens(where: {isDatatoken: true}, orderBy: createdTimestamp, orderDirection: desc, first: 1000) {
+    id
     symbol
     name
-    cap
-    supply
-    publisher
+    address
     holderCount
   }
 }
@@ -72,19 +107,71 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 ```graphql
 {
-  poolTransactions(
-    where: { userAddressStr: $userAddress }
-    orderBy: timestamp
-    orderDirection: desc
-  ) {
-    poolAddressStr
+    poolTransactions(
+      orderBy: timestamp
+      orderDirection: desc
+      where: { user: $user }
+      first: 1000
+    ) {
+      baseToken {
+        symbol
+        address
+      }
+      baseTokenValue
+      datatoken {
+        symbol
+        address
+      }
+      datatokenValue
+      type
+      tx
+      timestamp
+      pool {
+        datatoken {
+          id
+        }
+        id
+      }
+    }
   }
-}
 ```
 
-> Note: all ETH addresses like `$userAddress` in above example need to be passed in lowercase.
+> Note: all ETH addresses like `$user` in above example need to be passed as a lowercase string.
 
+**All pool transactions for a given user in an individual pool**
 
+```graphql
+{
+    poolTransactions(
+      orderBy: timestamp
+      orderDirection: desc
+      where: { pool: $pool, user: $user }
+      first: 1000
+    ) {
+      baseToken {
+        symbol
+        address
+      }
+      baseTokenValue
+      datatoken {
+        symbol
+        address
+      }
+      datatokenValue
+      type
+      tx
+      timestamp
+      pool {
+        datatoken {
+          id
+        }
+        id
+      }
+    }
+  }
+```
+
+> Note: all ETH addresses like `$pool` and `$user` in above example need to be passed as a lowercase string.
 
 ## 🏊 Development on Barge
 
