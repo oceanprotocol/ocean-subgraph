@@ -1,4 +1,8 @@
-import { NFTCreated, TokenCreated, Transfer } from '../@types/ERC721Factory/ERC721Factory'
+import {
+  NFTCreated,
+  TokenCreated,
+  Transfer
+} from '../@types/ERC721Factory/ERC721Factory'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 
@@ -48,5 +52,5 @@ export function handleNewToken(event: TokenCreated): void {
 }
 
 export function handleNftTransferred(event: Transfer): void {
-
+  const nft = getNftToken(event.params.tokenId)
 }
