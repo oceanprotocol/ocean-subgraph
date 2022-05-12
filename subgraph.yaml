@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: development
     source:
-      address: '0xfFf5d3cD5834927D7A7445250f79580C0553211F'
+      address: '0x2f7a30F120f0B7799C8900144eC6d8E4fBbc90ec'
       abi: ERC721Factory
-      startBlock: 1099
+      startBlock: 1119
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -33,9 +33,9 @@ dataSources:
     name: FactoryRouter
     network: development
     source:
-      address: '0x933b52b58141a33E3cdbdbd6081cb83bf0c91542'
+      address: '0x375B009326A0938B8c325Bc2d402a16fe0fBB402'
       abi: FactoryRouter
-      startBlock: 1099
+      startBlock: 1119
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -55,6 +55,12 @@ dataSources:
           handler: handleTokenAdded
         - event: TokenRemoved(indexed address,indexed address)
           handler: handleTokenRemoved
+        - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleOPCFeeChanged
+        - event: SSContractAdded(indexed address,indexed address)
+          handler: handleSSContractAdded
+        - event: SSContractRemoved(indexed address,indexed address)
+          handler: handleSSContractRemoved
         - event: FixedRateContractAdded(indexed address,indexed address)
           handler: handleFixedRateContractAdded
         - event: FixedRateContractRemoved(indexed address,indexed address)
