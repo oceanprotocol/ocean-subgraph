@@ -8,9 +8,15 @@ dataSources:
     name: ERC721Factory
     network: development
     source:
+<<<<<<< HEAD
       address: '0x49E1828E62c762Af53e3B7f09c63c4c7B25A8511'
       abi: ERC721Factory
       startBlock: 264
+=======
+      address: '0x2f7a30F120f0B7799C8900144eC6d8E4fBbc90ec'
+      abi: ERC721Factory
+      startBlock: 1119
+>>>>>>> 796bff70e7647f15d2b0bc3d962776d684278016
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -35,9 +41,15 @@ dataSources:
     name: FactoryRouter
     network: development
     source:
+<<<<<<< HEAD
       address: '0x067008a4045f7CF6222291D85cb143e35acA2f40'
       abi: FactoryRouter
       startBlock: 264
+=======
+      address: '0x375B009326A0938B8c325Bc2d402a16fe0fBB402'
+      abi: FactoryRouter
+      startBlock: 1119
+>>>>>>> 796bff70e7647f15d2b0bc3d962776d684278016
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -265,6 +277,7 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleTokenCollected
+<<<<<<< HEAD
 
   - name: SSContract
     kind: ethereum/contract
@@ -286,3 +299,5 @@ templates:
           handler: handleVestingCreated
         - event: Vesting(indexed address,indexed address,indexed address,uint256)
           handler: handleVesting
+=======
+>>>>>>> 796bff70e7647f15d2b0bc3d962776d684278016

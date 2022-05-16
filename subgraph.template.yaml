@@ -265,24 +265,3 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleTokenCollected
-
-  - name: SSContract
-    kind: ethereum/contract
-    network: __NETWORK__
-    source:
-      abi: SSContract
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/sscontract.ts
-      entities:
-        - SSContract
-      abis:
-        - name: SSContract
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/ssContracts/SideStaking.sol/SideStaking.json
-      eventHandlers:
-        - event: VestingCreated(indexed address,indexed address,uint256,uint256)
-          handler: handleVestingCreated
-        - event: Vesting(indexed address,indexed address,indexed address,uint256)
-          handler: handleVesting
