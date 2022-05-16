@@ -7,7 +7,7 @@ import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
-import { getToken, getNftToken } from './utils/tokenUtils'
+import { getToken, getNftToken, getNftTokenWithID } from './utils/tokenUtils'
 import { addDatatoken } from './utils/globalUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
@@ -52,5 +52,10 @@ export function handleNewToken(event: TokenCreated): void {
 }
 
 export function handleNftTransferred(event: Transfer): void {
-  const nft = getNftToken(event.params.tokenId)
+  console.log('NFT transfered')
+  const nft = getNftTokenWithID(event.params.tokenId)
+  const owner = event.params.to
+  nft.owner = owner.toString()
+
+  nft.save()
 }

@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721Factory
-    network: rinkeby
+    network: development
     source:
-      address: '0x6eb0184B64f22fB5e1316221E1eC84988F9E6b12'
+      address: '0x49E1828E62c762Af53e3B7f09c63c4c7B25A8511'
       abi: ERC721Factory
-      startBlock: 10422197
+      startBlock: 264
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -28,14 +28,16 @@ dataSources:
           handler: handleNftCreated
         - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleNftTransferred
 
   - kind: ethereum/contract
     name: FactoryRouter
-    network: rinkeby
+    network: development
     source:
-      address: '0xF1Ef3C2332E44bdA219D9155E9a97201a1b5eC1C'
+      address: '0x067008a4045f7CF6222291D85cb143e35acA2f40'
       abi: FactoryRouter
-      startBlock: 10422197
+      startBlock: 264
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -73,7 +75,7 @@ dataSources:
 templates:
   - name: ERC20Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC20Template
     mapping:
@@ -114,7 +116,7 @@ templates:
 
   - name: BPool
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: BPool
     mapping:
@@ -151,7 +153,7 @@ templates:
 
   - name: ERC721Template
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: ERC721Template
     mapping:
@@ -198,7 +200,7 @@ templates:
 
   - name: Dispenser
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: Dispenser
     mapping:
@@ -229,7 +231,7 @@ templates:
 
   - name: FixedRateExchange
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: FixedRateExchange
     mapping:
@@ -266,7 +268,7 @@ templates:
 
   - name: SSContract
     kind: ethereum/contract
-    network: rinkeby
+    network: development
     source:
       abi: SSContract
     mapping:
