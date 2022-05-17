@@ -490,8 +490,8 @@ type OPC @entity {
     swapOceanFee: BigDecimal
     "fee in percent for swaps involving non OPC approved tokens"
     swapNonOceanFee: BigDecimal
-    "fee in percent taken by OPC from consumeFees"
-    consumeFee: BigDecimal
+    "fee in percent taken by OPC from orderFees"
+    orderFee: BigDecimal
     "fee in percent taken by OPC from providerFees"
     providerFee: BigDecimal
     approvedTokens: [String!]
