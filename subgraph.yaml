@@ -8,9 +8,9 @@ dataSources:
     name: ERC721Factory
     network: development
     source:
-      address: '0xa2C486EBdFbF4B9Dd201519ea8f38095115B4568'
+      address: '0xf37ECE0685D73625d1695BbCCF1D99EF690340a9'
       abi: ERC721Factory
-      startBlock: 369
+      startBlock: 399
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -35,9 +35,9 @@ dataSources:
     name: FactoryRouter
     network: development
     source:
-      address: '0x14d36b75B4744a4231fc51e29B5f0B3E9Ea25aDA'
+      address: '0x100b79E3813372384df2d628C8Acb02199FCad7a'
       abi: FactoryRouter
-      startBlock: 369
+      startBlock: 399
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

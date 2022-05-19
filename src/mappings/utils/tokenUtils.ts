@@ -61,9 +61,6 @@ export function getNftToken(address: Address): Nft {
 }
 
 export function getNftTokenWithID(tokenId: BigInt): Nft {
-  log.debug('started loading nft token with address: {}', [
-    tokenId.toHexString()
-  ])
   let newToken = Nft.load(tokenId.toHexString())
   if (newToken === null) {
     const address = new Address(0x123)
