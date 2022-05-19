@@ -8,15 +8,9 @@ dataSources:
     name: ERC721Factory
     network: development
     source:
-<<<<<<< HEAD
-      address: '0x49E1828E62c762Af53e3B7f09c63c4c7B25A8511'
+      address: '0xa2C486EBdFbF4B9Dd201519ea8f38095115B4568'
       abi: ERC721Factory
-      startBlock: 264
-=======
-      address: '0x2f7a30F120f0B7799C8900144eC6d8E4fBbc90ec'
-      abi: ERC721Factory
-      startBlock: 1119
->>>>>>> 796bff70e7647f15d2b0bc3d962776d684278016
+      startBlock: 369
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -41,15 +35,9 @@ dataSources:
     name: FactoryRouter
     network: development
     source:
-<<<<<<< HEAD
-      address: '0x067008a4045f7CF6222291D85cb143e35acA2f40'
+      address: '0x14d36b75B4744a4231fc51e29B5f0B3E9Ea25aDA'
       abi: FactoryRouter
-      startBlock: 264
-=======
-      address: '0x375B009326A0938B8c325Bc2d402a16fe0fBB402'
-      abi: FactoryRouter
-      startBlock: 1119
->>>>>>> 796bff70e7647f15d2b0bc3d962776d684278016
+      startBlock: 369
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -277,27 +265,3 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleTokenCollected
-<<<<<<< HEAD
-
-  - name: SSContract
-    kind: ethereum/contract
-    network: development
-    source:
-      abi: SSContract
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/sscontract.ts
-      entities:
-        - SSContract
-      abis:
-        - name: SSContract
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/ssContracts/SideStaking.sol/SideStaking.json
-      eventHandlers:
-        - event: VestingCreated(indexed address,indexed address,uint256,uint256)
-          handler: handleVestingCreated
-        - event: Vesting(indexed address,indexed address,indexed address,uint256)
-          handler: handleVesting
-=======
->>>>>>> 796bff70e7647f15d2b0bc3d962776d684278016

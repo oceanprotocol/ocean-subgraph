@@ -54,6 +54,7 @@ export function handleNewToken(event: TokenCreated): void {
 export function handleNftTransferred(event: Transfer): void {
   console.log('NFT transfered')
   const nft = getNftTokenWithID(event.params.tokenId)
+
   const owner = event.params.to
   nft.owner = owner.toString()
 

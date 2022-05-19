@@ -142,6 +142,7 @@ describe('Simple Publish & consume test', async () => {
       body: JSON.stringify(query)
     })
     const queryResult = await response.json()
+    console.log('queryResult', queryResult)
     assert(queryResult.data.nft.id === graphNftToken)
 
     /*
