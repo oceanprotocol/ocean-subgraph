@@ -61,12 +61,17 @@ export function getNftToken(address: Address): Nft {
 }
 
 export function getNftTokenWithID(tokenId: BigInt): Nft {
-  let newToken = Nft.load(tokenId.toHexString())
-  if (newToken === null) {
-    const address = new Address(0x123)
-    newToken = createNftToken(address)
+  let nftToken = Nft.load(tokenId.toHexString())
+  if (nftToken === null) {
+    nftToken = new Nft(tokenId.toHexString())
+    // const contract = ERC721Template.bind(address)
+    nftToken.name = ''
+    nftToken.symbol = ''
+    nftToken.address = tokenId.toHexString()
+    nftToken.save()
+    addNft()
   }
-  return newToken
+  return nftToken
 }
 
 export function getUSDValue(

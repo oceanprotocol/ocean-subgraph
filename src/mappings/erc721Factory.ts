@@ -55,7 +55,7 @@ export function handleNftTransferred(event: Transfer): void {
   const nft = getNftTokenWithID(event.params.tokenId)
 
   const owner = event.params.to
-  nft.owner = owner.toString()
+  nft.owner = owner.toHexString()
 
   nft.save()
 }
