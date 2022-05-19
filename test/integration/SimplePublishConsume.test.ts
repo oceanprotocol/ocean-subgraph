@@ -115,6 +115,7 @@ describe('Simple Publish & consume test', async () => {
       SHA256(web3.utils.toChecksumAddress(erc721Address) + chain.toString(10))
 
     providerResponse = await ProviderInstance.encrypt(ddo, providerUrl)
+    console.log('providerResponse', providerResponse)
     const encryptedResponse = await providerResponse
     const metadataHash = getHash(JSON.stringify(ddo))
     await nft.setMetadata(
@@ -131,7 +132,7 @@ describe('Simple Publish & consume test', async () => {
     // assert(resolvedDDO, 'Cannot fetch DDO from Aquarius')
 
     // graph tests here
-    await sleep(2000)
+    await sleep(50000)
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
@@ -141,9 +142,27 @@ describe('Simple Publish & consume test', async () => {
       method: 'POST',
       body: JSON.stringify(query)
     })
+    console.log('response', response)
     const queryResult = await response.json()
     console.log('queryResult', queryResult)
     assert(queryResult.data.nft.id === graphNftToken)
+
+    // Transfer the NFT
+    const newOwnerAccount = accounts[1]
+    await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount, 1)
+    const query2 = {
+      query: `query {
+          nft(id:"${graphNftToken}"){symbol,id,owner}}`
+    }
+    const response2 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query2)
+    })
+    console.log('response2', response2)
+    const queryResult2 = await response.json()
+    console.log('queryResult2', queryResult2)
+    console.log('newOwnerAccount', newOwnerAccount)
+    assert(queryResult.data.nft.owner === newOwnerAccount)
 
     /*
 

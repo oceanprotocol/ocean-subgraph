@@ -53,9 +53,8 @@ export function handleNewToken(event: TokenCreated): void {
 
 export function handleNftTransferred(event: Transfer): void {
   const nft = getNftTokenWithID(event.params.tokenId)
-
-  const owner = event.params.to
-  nft.owner = owner.toHexString()
+  const newOwner = getUser(event.params.to.toHexString())
+  nft.owner = newOwner.id
 
   nft.save()
 }
