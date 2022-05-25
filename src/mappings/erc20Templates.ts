@@ -1,5 +1,5 @@
 import { Order, Nft, OrderReuse } from '../@types/schema'
-import { BigInt, log } from '@graphprotocol/graph-ts'
+import { BigInt } from '@graphprotocol/graph-ts'
 import {
   NewPaymentCollector,
   OrderStarted,
