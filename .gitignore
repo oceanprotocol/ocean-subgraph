@@ -68,3 +68,4 @@ typings/
 
 # auto generated barge yaml
 subgraph.barge.yaml
+subgraph.yaml
