@@ -147,7 +147,7 @@ describe('Simple Publish & consume test', async () => {
     assert(queryResult.data.nft.id === graphNftToken)
 
     // Transfer the NFT
-    const newOwnerAccount = accounts[1]
+    const newOwnerAccount = accounts[1].toLowerCase()
     await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount, 1)
     await sleep(50000)
     const query2 = {
