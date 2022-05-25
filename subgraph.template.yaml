@@ -95,6 +95,8 @@ templates:
       eventHandlers:
         - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
           handler: handleOrderStarted
+        - event: OrderReused(bytes32,address,uint256,uint256)
+          handler: handlerOrderReused
         - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
