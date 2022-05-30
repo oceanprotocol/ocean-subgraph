@@ -242,6 +242,14 @@ type PoolTransaction @entity {
   datatokenValue: BigDecimal
 }
 
+type OrderReuse @entity {
+  id: ID!
+  order: Order!
+  caller: String!
+  createdTimestamp: BigInt!
+  tx: String!
+  block: BigInt!
+  }
 type Order @entity {  
   "transaction hash - token address - from address"                                       
   id: ID!                                                    
@@ -261,6 +269,8 @@ type Order @entity {
   consumerMarket: User
   consumerMarketToken: Token                                  #
   consumerMarketAmmount: BigDecimal                           #call contract to get fee amount
+
+  reuses: [OrderReuse!] @derivedFrom(field: "order")
 
   createdTimestamp: Int!
   tx: String!
@@ -490,8 +500,8 @@ type OPC @entity {
     swapOceanFee: BigDecimal
     "fee in percent for swaps involving non OPC approved tokens"
     swapNonOceanFee: BigDecimal
-    "fee in percent taken by OPC from consumeFees"
-    consumeFee: BigDecimal
+    "fee in percent taken by OPC from orderFees"
+    orderFee: BigDecimal
     "fee in percent taken by OPC from providerFees"
     providerFee: BigDecimal
     approvedTokens: [String!]

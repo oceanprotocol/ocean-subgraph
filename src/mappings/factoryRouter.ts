@@ -35,7 +35,7 @@ export function handleOPCFeeChanged(event: OPCFeeChanged): void {
     event.params.newSwapNonOceanFee.toBigDecimal(),
     decimals
   )
-  opc.consumeFee = weiToDecimal(
+  opc.orderFee = weiToDecimal(
     event.params.newConsumeFee.toBigDecimal(),
     decimals
   )
@@ -62,12 +62,12 @@ export function handleTokenAdded(event: TokenAdded): void {
     decimals
   )
 
-  const newConsumeFee = contract.try_getOPCConsumeFee()
-  if (newConsumeFee.reverted) return
+  const newOrderFee = contract.try_getOPCConsumeFee()
+  if (newOrderFee.reverted) return
 
   const newProviderFee = contract.try_getOPCProviderFee()
   if (newProviderFee.reverted) return
-  opc.consumeFee = weiToDecimal(newConsumeFee.value.toBigDecimal(), decimals)
+  opc.orderFee = weiToDecimal(newOrderFee.value.toBigDecimal(), decimals)
   opc.providerFee = weiToDecimal(newProviderFee.value.toBigDecimal(), decimals)
 
   // add token to approvedTokens

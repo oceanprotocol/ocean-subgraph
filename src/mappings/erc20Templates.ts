@@ -1,4 +1,4 @@
-import { Order, Nft } from '../@types/schema'
+import { Order, Nft, OrderReuse } from '../@types/schema'
 import { BigInt } from '@graphprotocol/graph-ts'
 import {
   NewPaymentCollector,
@@ -9,7 +9,8 @@ import {
   AddedPaymentManager,
   RemovedMinter,
   RemovedPaymentManager,
-  CleanedPermissions
+  CleanedPermissions,
+  OrderReused
 } from '../@types/templates/ERC20Template/ERC20Template'
 
 import { integer } from './utils/constants'
@@ -83,6 +84,26 @@ export function handleOrderStarted(event: OrderStarted): void {
     owner.totalSales = owner.totalSales.plus(integer.ONE)
     owner.save()
   }
+}
+
+export function handlerOrderReused(event: OrderReused): void {
+  const orderId = getOrderId(
+    event.params.orderTxId.toHexString(),
+    event.address.toHex(),
+    event.params.caller.toHex()
+  )
+  const order = Order.load(orderId)
+
+  if (!order) return
+
+  const reuseOrder = new OrderReuse(event.transaction.hash.toHex())
+  reuseOrder.order = orderId
+  reuseOrder.caller = event.params.caller.toHexString()
+  reuseOrder.createdTimestamp = event.params.timestamp
+  reuseOrder.tx = event.transaction.hash.toHex()
+  reuseOrder.block = event.params.number
+
+  reuseOrder.save()
 }
 
 export function handlePublishMarketFee(event: PublishMarketFee): void {}
