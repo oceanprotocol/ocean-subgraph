@@ -193,7 +193,7 @@ describe('Simple Publish & consume test', async () => {
     }
     */
   })
-  it('should publish a dataset (create NFT + ERC20)', async () => {
+  it('should publish and transfer an NFT', async () => {
     const nft = new Nft(web3)
     const Factory = new NftFactory(addresses.ERC721Factory, web3)
     const accounts = await web3.eth.getAccounts()
