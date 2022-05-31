@@ -135,16 +135,15 @@ describe('Simple Publish & consume test', async () => {
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner}}`
+          nft(id:"${graphNftToken}"){symbol,id}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
-    console.log('response', response)
     const queryResult = await response.json()
-    console.log('queryResult', queryResult)
     assert(queryResult.data.nft.id === graphNftToken)
+
     /*
 
     // mint 1 ERC20 and send it to the consumer
