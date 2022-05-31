@@ -28,8 +28,6 @@ dataSources:
           handler: handleNftCreated
         - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
           handler: handleNewToken
-        - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleNftTransferred
 
   - kind: ethereum/contract
     name: FactoryRouter
@@ -199,6 +197,8 @@ templates:
           handler: handleRemovedManager
         - event: CleanedPermissions(indexed address,uint256,uint256)
           handler: handleCleanedPermissions
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleNftTransferred
 
   - name: Dispenser
     kind: ethereum/contract
