@@ -12,10 +12,12 @@ import {
   RemovedFromCreateERC20List,
   RemovedFromMetadataList,
   RemovedManager,
-  CleanedPermissions
+  CleanedPermissions,
+  Transfer
 } from '../@types/templates/ERC721Template/ERC721Template'
 import { NftUpdateType } from './utils/constants'
-import { getNftToken } from './utils/tokenUtils'
+import { getNftToken, getNftTokenWithID } from './utils/tokenUtils'
+import { getUser } from './utils/userUtils'
 
 function getId(tx: string, nftAddress: string): string {
   return `${tx}-${nftAddress}`
@@ -245,5 +247,13 @@ export function handleCleanedPermissions(event: CleanedPermissions): void {
   nft.erc20DeployerRole = newList
   nft.storeUpdateRole = newList
   nft.managerRole = newList
+  nft.save()
+}
+
+export function handleNftTransferred(event: Transfer): void {
+  const nft = getNftTokenWithID(event.params.tokenId)
+  const newOwner = getUser(event.params.to.toHexString())
+  nft.owner = newOwner.id
+
   nft.save()
 }

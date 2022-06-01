@@ -1,13 +1,9 @@
-import {
-  NFTCreated,
-  TokenCreated,
-  Transfer
-} from '../@types/ERC721Factory/ERC721Factory'
+import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
-import { getToken, getNftToken, getNftTokenWithID } from './utils/tokenUtils'
+import { getToken, getNftToken } from './utils/tokenUtils'
 import { addDatatoken } from './utils/globalUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
@@ -49,12 +45,4 @@ export function handleNewToken(event: TokenCreated): void {
 
   token.save()
   addDatatoken()
-}
-
-export function handleNftTransferred(event: Transfer): void {
-  const nft = getNftTokenWithID(event.params.tokenId)
-  const newOwner = getUser(event.params.to.toHexString())
-  nft.owner = newOwner.id
-
-  nft.save()
 }
