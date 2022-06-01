@@ -252,8 +252,8 @@ describe('Simple Publish & consume test', async () => {
     const graphNftToken = erc721Address.toLowerCase()
 
     // Transfer the NFT
-    await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount, 1)
-    await sleep(50000)
+    await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
+    await sleep(100000)
     const query2 = {
       query: `query {
           nft(id:"${graphNftToken}"){symbol,id,owner}}`
@@ -266,6 +266,11 @@ describe('Simple Publish & consume test', async () => {
     const queryResult = await response.json()
     console.log('queryResult', queryResult)
     console.log('newOwnerAccount', newOwnerAccount)
+    console.log(
+      'Comparing queryResult.data.nft.owner === newOwnerAccount',
+      queryResult.data.nft.owner,
+      newOwnerAccount
+    )
     assert(queryResult.data.nft.owner === newOwnerAccount)
   })
 })
