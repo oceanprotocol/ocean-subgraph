@@ -15,12 +15,7 @@ import {
   ZERO_ADDRESS
 } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
-import {
-  addLiquidity,
-  addPoolSwap,
-  getGlobalStats,
-  removeLiquidity
-} from './utils/globalUtils'
+import { addLiquidity, addPoolSwap, removeLiquidity } from './utils/globalUtils'
 import {
   calcSpotPrice,
   getPool,
