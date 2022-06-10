@@ -256,9 +256,6 @@ export function handleSetup(event: LOG_SETUP): void {
   poolSnapshot.totalShares = pool.totalShares
 
   poolSnapshot.save()
-  const globalStats = getGlobalStats()
-  globalStats.poolCount = globalStats.poolCount + 1
-  globalStats.save()
   datatoken.save()
 }
 
