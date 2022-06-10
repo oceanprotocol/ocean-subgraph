@@ -32,7 +32,8 @@ export function updateFixedRateExchangeSupply(
   const fixedRateExchange = getFixedRateExchange(fixedRateID)
   const contract = FixedRateExchangeContract.bind(contractAddress)
   const fixedRateDetails = contract.try_getExchange(exchangeId)
-  if (fixedRateDetails == null) return
+
+  if (fixedRateDetails == null || fixedRateDetails.reverted === true) return
   const baseToken = getToken(fixedRateDetails.value.value3, false)
   const datatoken = getToken(fixedRateDetails.value.value1, true)
   fixedRateExchange.datatokenBalance = weiToDecimal(
