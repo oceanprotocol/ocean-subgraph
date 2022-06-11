@@ -28,6 +28,7 @@
     "lint:fix": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx . --fix",
     "format": "prettier --ignore-path .gitignore './**/*.{css,yml,js,ts,tsx,json,yaml}' --write",
     "type-check": "tsc --noEmit",
+    "replaceVersion": "node ./scripts/replaceVersion.js",
     "release": "release-it --non-interactive",
     "changelog": "auto-changelog -p"
   },
@@ -68,7 +69,7 @@
   "license": "Apache-2.0",
   "release-it": {
     "hooks": {
-      "after:bump": "npm run changelog"
+      "after:bump": "npm run changelog && npm run replaceVersion"
     },
     "plugins": {},
     "git": {

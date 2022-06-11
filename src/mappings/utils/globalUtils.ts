@@ -14,6 +14,7 @@ export function getGlobalStats(): GlobalStatistic {
   let globalStats = GlobalStatistic.load(GLOBAL_ID)
   if (!globalStats) {
     globalStats = new GlobalStatistic(GLOBAL_ID)
+    globalStats.version = '1.2.0'
     globalStats.save()
   }
   return globalStats
