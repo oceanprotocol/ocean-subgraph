@@ -504,7 +504,7 @@ type OPC @entity {
     orderFee: BigDecimal
     "fee in percent taken by OPC from providerFees"
     providerFee: BigDecimal
-    approvedTokens: [String!]
+    approvedTokens: [Token!]
 }
 
  enum NftUpdateType {

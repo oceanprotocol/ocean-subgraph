@@ -15,12 +15,7 @@ import {
   ZERO_ADDRESS
 } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
-import {
-  addLiquidity,
-  addPoolSwap,
-  getGlobalStats,
-  removeLiquidity
-} from './utils/globalUtils'
+import { addLiquidity, addPoolSwap, removeLiquidity } from './utils/globalUtils'
 import {
   calcSpotPrice,
   getPool,
@@ -256,9 +251,6 @@ export function handleSetup(event: LOG_SETUP): void {
   poolSnapshot.totalShares = pool.totalShares
 
   poolSnapshot.save()
-  const globalStats = getGlobalStats()
-  globalStats.poolCount = globalStats.poolCount + 1
-  globalStats.save()
   datatoken.save()
 }
 
