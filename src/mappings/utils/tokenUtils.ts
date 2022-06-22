@@ -1,4 +1,4 @@
-import { Address, log, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { Address, log, BigDecimal } from '@graphprotocol/graph-ts'
 import { Nft, Token } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
 import { ERC20Template, ERC721Template } from '../../@types/templates'
