@@ -253,24 +253,16 @@ describe('Simple Publish & consume test', async () => {
 
     // Transfer the NFT
     await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
-    await sleep(100000)
+    await sleep(2000)
     const query2 = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner, transferable}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query2)
     })
-    console.log('response', response)
     const queryResult = await response.json()
-    console.log('queryResult', queryResult)
-    console.log('newOwnerAccount', newOwnerAccount)
-    console.log(
-      'Comparing queryResult.data.nft.owner === newOwnerAccount',
-      queryResult.data.nft.owner,
-      newOwnerAccount
-    )
     assert(queryResult.data.nft.owner === newOwnerAccount)
   })
 })

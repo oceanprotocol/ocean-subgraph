@@ -251,7 +251,8 @@ export function handleCleanedPermissions(event: CleanedPermissions): void {
 }
 
 export function handleNftTransferred(event: Transfer): void {
-  const nft = getNftTokenWithID(event.params.tokenId)
+  const id = event.address.toHex()
+  const nft = getNftTokenWithID(id)
   const newOwner = getUser(event.params.to.toHexString())
   nft.owner = newOwner.id
 
