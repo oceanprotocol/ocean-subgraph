@@ -492,6 +492,9 @@ type GlobalStatistic @entity {
 
     "number of dispensers created"
     dispenserCount: Int!
+
+   "current version"
+    version: String
 }
 
 type OPC @entity {
