@@ -16,6 +16,7 @@ import { Pool } from '../@types/schema'
 import { BPool, FixedRateExchange, Dispenser } from '../@types/templates'
 import { addPool, getOPC, getTemplates } from './utils/globalUtils'
 import { weiToDecimal } from './utils/generic'
+import { getToken } from './utils/tokenUtils'
 
 export function handleNewPool(event: NewPool): void {
   BPool.create(event.params.poolAddress)
@@ -74,8 +75,11 @@ export function handleTokenAdded(event: TokenAdded): void {
   let existingTokens: string[]
   if (!opc.approvedTokens) existingTokens = []
   else existingTokens = opc.approvedTokens as string[]
-  if (!existingTokens.includes(event.params.token.toHexString()))
-    existingTokens.push(event.params.token.toHexString())
+  if (!existingTokens.includes(event.params.token.toHexString())) {
+    const newToken = getToken(event.params.token, false)
+    existingTokens.push(newToken.id)
+  }
+
   opc.approvedTokens = existingTokens
 
   opc.save()
