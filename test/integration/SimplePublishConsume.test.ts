@@ -221,8 +221,25 @@ describe('Simple Publish & consume test', async () => {
       nftParams,
       erc20Params
     )
+    await sleep(2000)
     const erc721Address = result.events.NFTCreated.returnValues[0]
     const datatokenAddress = result.events.TokenCreated.returnValues[0]
+    const graphNftToken = erc721Address.toLowerCase()
+
+    const queryOriginalOwner = {
+      query: `query {
+          nft(id:"${graphNftToken}"){symbol,id,owner}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(queryOriginalOwner)
+    })
+    const initialResult = await initialResponse.json()
+    // Checking original owner account has been set correctly
+    assert(
+      initialResult.data.nft.owner.toLowerCase() ===
+        publisherAccount.toLowerCase()
+    )
 
     // create the files encrypted string
     let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
@@ -249,7 +266,6 @@ describe('Simple Publish & consume test', async () => {
       '0x' + metadataHash
     )
     await sleep(2000)
-    const graphNftToken = erc721Address.toLowerCase()
 
     // Transfer the NFT
     await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
