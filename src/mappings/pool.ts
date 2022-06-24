@@ -202,7 +202,7 @@ export function handleSetup(event: LOG_SETUP): void {
   pool.baseToken = token.id
   pool.baseTokenWeight = weiToDecimal(
     event.params.baseTokenWeight.toBigDecimal(),
-    token.decimals
+    18
   )
 
   // decimals hardcoded because datatokens have 18 decimals
