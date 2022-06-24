@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-var fs = require('fs')
-var addresses = require('@oceanprotocol/contracts/addresses/address.json')
+const fs = require('fs')
+let addresses = require('@oceanprotocol/contracts/addresses/address.json')
 
 async function replaceContractAddresses() {
   // load addresses file first

@@ -192,4 +192,93 @@ describe('Simple Publish & consume test', async () => {
     }
     */
   })
+  it('should publish and transfer an NFT', async () => {
+    const nft = new Nft(web3)
+    const Factory = new NftFactory(addresses.ERC721Factory, web3)
+    const accounts = await web3.eth.getAccounts()
+    const publisherAccount = accounts[0]
+    const newOwnerAccount = accounts[1].toLowerCase()
+
+    const nftParams: NftCreateData = {
+      name: 'testNFT',
+      symbol: 'TST',
+      templateIndex: 1,
+      tokenURI: '',
+      transferable: true,
+      owner: publisherAccount
+    }
+    const erc20Params: Erc20CreateParams = {
+      templateIndex: 1,
+      cap: '100000',
+      feeAmount: '0',
+      paymentCollector: '0x0000000000000000000000000000000000000000',
+      feeToken: '0x0000000000000000000000000000000000000000',
+      minter: publisherAccount,
+      mpFeeAddress: '0x0000000000000000000000000000000000000000'
+    }
+    const result = await Factory.createNftWithErc20(
+      publisherAccount,
+      nftParams,
+      erc20Params
+    )
+    await sleep(2000)
+    const erc721Address = result.events.NFTCreated.returnValues[0]
+    const datatokenAddress = result.events.TokenCreated.returnValues[0]
+    const graphNftToken = erc721Address.toLowerCase()
+
+    const queryOriginalOwner = {
+      query: `query {
+          nft(id:"${graphNftToken}"){symbol,id,owner}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(queryOriginalOwner)
+    })
+    const initialResult = await initialResponse.json()
+    // Checking original owner account has been set correctly
+    assert(
+      initialResult.data.nft.owner.toLowerCase() ===
+        publisherAccount.toLowerCase()
+    )
+
+    // create the files encrypted string
+    let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
+    ddo.services[0].files = await providerResponse
+    ddo.services[0].datatokenAddress = datatokenAddress
+    // update ddo and set the right did
+    ddo.nftAddress = erc721Address
+    const chain = await web3.eth.getChainId()
+    ddo.id =
+      'did:op:' +
+      SHA256(web3.utils.toChecksumAddress(erc721Address) + chain.toString(10))
+
+    providerResponse = await ProviderInstance.encrypt(ddo, providerUrl)
+    const encryptedResponse = await providerResponse
+    const metadataHash = getHash(JSON.stringify(ddo))
+    await nft.setMetadata(
+      erc721Address,
+      publisherAccount,
+      0,
+      providerUrl,
+      '',
+      '0x2',
+      encryptedResponse,
+      '0x' + metadataHash
+    )
+    await sleep(2000)
+
+    // Transfer the NFT
+    await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
+    await sleep(2000)
+    const query2 = {
+      query: `query {
+          nft(id:"${graphNftToken}"){symbol,id,owner, transferable}}`
+    }
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query2)
+    })
+    const queryResult = await response.json()
+    assert(queryResult.data.nft.owner === newOwnerAccount)
+  })
 })

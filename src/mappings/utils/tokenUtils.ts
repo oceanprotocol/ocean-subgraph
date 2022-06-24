@@ -60,6 +60,20 @@ export function getNftToken(address: Address): Nft {
   return newToken
 }
 
+export function getNftTokenWithID(tokenId: string): Nft {
+  let nftToken = Nft.load(tokenId)
+  if (nftToken === null) {
+    nftToken = new Nft(tokenId)
+    // const contract = ERC721Template.bind(address)
+    nftToken.name = ''
+    nftToken.symbol = ''
+    nftToken.address = tokenId
+    nftToken.save()
+    addNft()
+  }
+  return nftToken
+}
+
 export function getUSDValue(
   address: string,
   value: BigDecimal,
