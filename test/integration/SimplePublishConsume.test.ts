@@ -7,6 +7,7 @@ import {
   Nft,
   NftFactory,
   NftCreateData,
+  PoolCreationParams,
   getHash,
   sleep
 } from '@oceanprotocol/lib'
@@ -280,5 +281,104 @@ describe('Simple Publish & consume test', async () => {
     })
     const queryResult = await response.json()
     assert(queryResult.data.nft.owner === newOwnerAccount)
+  })
+
+  it('should publish a dataset with a pool', async () => {
+    const nft = new Nft(web3)
+    // const datatoken = new Datatoken(web3)
+
+    const Factory = new NftFactory(addresses.ERC721Factory, web3)
+    const accounts = await web3.eth.getAccounts()
+    const publisherAccount = accounts[0]
+    // const consumerAccount = accounts[1]
+    const nftParams: NftCreateData = {
+      name: 'testNFT',
+      symbol: 'TST',
+      templateIndex: 1,
+      tokenURI: '',
+      transferable: true,
+      owner: publisherAccount
+    }
+    // CREATE A POOL
+    // we prepare transaction parameters objects
+    const poolParams: PoolCreationParams = {
+      ssContract: addresses.Staking,
+      baseTokenAddress: addresses.Ocean,
+      baseTokenSender: addresses.ERC721Factory,
+      publisherAddress: publisherAccount,
+      marketFeeCollector: publisherAccount,
+      poolTemplateAddress: addresses.poolTemplate,
+      rate: '1',
+      baseTokenDecimals: 18,
+      vestingAmount: '10000',
+      vestedBlocks: 2500000,
+      initialBaseTokenLiquidity: '2000',
+      swapFeeLiquidityProvider: '0.001',
+      swapFeeMarketRunner: '0.001'
+    }
+
+    const erc20Params: Erc20CreateParams = {
+      templateIndex: 1,
+      cap: '100000',
+      feeAmount: '0',
+      paymentCollector: '0x0000000000000000000000000000000000000000',
+      feeToken: '0x0000000000000000000000000000000000000000',
+      minter: publisherAccount,
+      mpFeeAddress: '0x0000000000000000000000000000000000000000'
+    }
+    const result = await Factory.createNftErc20WithPool(
+      publisherAccount,
+      nftParams,
+      erc20Params,
+      poolParams
+    )
+    const erc721Address = result.events.NFTCreated.returnValues[0]
+    const poolAddress =
+      result.events.NewPool.returnValues.poolAddress.toLowerCase()
+    const datatokenAddress = result.events.TokenCreated.returnValues[0]
+
+    // create the files encrypted string
+    let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
+    ddo.services[0].files = await providerResponse
+    ddo.services[0].datatokenAddress = datatokenAddress
+    // update ddo and set the right did
+    ddo.nftAddress = erc721Address
+    const chain = await web3.eth.getChainId()
+    ddo.id =
+      'did:op:' +
+      SHA256(web3.utils.toChecksumAddress(erc721Address) + chain.toString(10))
+
+    providerResponse = await ProviderInstance.encrypt(ddo, providerUrl)
+    const encryptedResponse = await providerResponse
+    const metadataHash = getHash(JSON.stringify(ddo))
+    await nft.setMetadata(
+      erc721Address,
+      publisherAccount,
+      0,
+      providerUrl,
+      '',
+      '0x2',
+      encryptedResponse,
+      '0x' + metadataHash
+    )
+
+    // graph tests here
+    await sleep(2000)
+    const query = {
+      query: `query {
+          pool(id:"${poolAddress}"){symbol,id, block, tx}}`
+    }
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query)
+    })
+    const queryResult = await response.json()
+    console.log('queryResult', queryResult)
+    assert(
+      queryResult.data.pool.id === poolAddress,
+      'Invalid response for poolAddress'
+    )
+    assert(queryResult.data.pool.block, 'invalid response for block')
+    assert(queryResult.data.pool.tx, 'invalid response for tx')
   })
 })
