@@ -1,4 +1,4 @@
-import { BigInt, Address } from '@graphprotocol/graph-ts'
+import { BigInt, Address, log } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -235,6 +235,8 @@ export function handleSetup(event: LOG_SETUP): void {
     event.params.baseTokenAmountIn.toBigDecimal(),
     token.decimals
   )
+  log.info('\n\npoolTx: {}\n\n', [event.address.toHex()])
+  log.info('\n\npoolTx: {}\n\n', [event.block.toString()])
   pool.save()
   poolTx.save()
 
