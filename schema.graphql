@@ -265,7 +265,7 @@ type Order @entity {
   publishingMarket: User
   publishingMarketToken: Token                                #
   publishingMarketAmmount: BigDecimal                         #call contract to get fee amount
-  providerFee: String
+  providerFee: [String!]
 
   consumerMarket: User
   consumerMarketToken: Token                                  #

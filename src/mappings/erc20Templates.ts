@@ -204,7 +204,8 @@ export function handleProviderFee(event: ProviderFee): void {
     event.address.toHex(),
     event.transaction.from.toHex()
   )
-  const providerFee = `{providerFeeAddress: ${event.params.providerFeeAddress.toHex()}, providerFeeToken: ${event.params.providerFeeToken.toHex()}, providerFeeAmount: ${
+
+  const providerFee: string = `{providerFeeAddress: ${event.params.providerFeeAddress.toHex()}, providerFeeToken: ${event.params.providerFeeToken.toHex()}, providerFeeAmount: ${
     event.params.providerFeeAmount
   }, providerData: ${event.params.providerData.toHexString()}, v: ${
     event.params.v
@@ -213,7 +214,12 @@ export function handleProviderFee(event: ProviderFee): void {
   }
   }`
 
-  order.providerFee = providerFee
+  let existingProviderFees: string[]
+  if (!order.providerFee) existingProviderFees = []
+  else existingProviderFees = order.providerFee as string[]
+  existingProviderFees.push(providerFee)
+
+  order.providerFee = existingProviderFees
   order.save()
 }
 
