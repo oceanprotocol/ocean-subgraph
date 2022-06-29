@@ -1,0 +1,290 @@
+name: Subgraph - generic - apply
+
+
+on:
+
+  # push:
+  #   tags:
+  #     - 'prod-v*'
+  #   branches:
+  #     - main
+  #   paths:
+  #     - k8s/**
+  #     - .github/workflows/subgraph-v3-prod-apply.yaml
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Ocean version
+        required: true
+        default: v3
+        type: choice
+        options:
+        - v3
+      environment:
+        description: Environment
+        required: true
+        default: dev
+        type: choice
+        options:
+        - dev
+        - staging
+        - uat
+        - prod
+      subgraph_suffix:
+        description: Subgraph suffix
+        required: true
+        default: bdp-subgraph
+      subgraph_start_block_mainnet:
+        description: Mainnet subgraph start block
+        required: true
+        default: 14907823
+      subgraph_start_block_rinkeby:
+        description: Rinkeby subgraph start block
+        required: true
+        default: 10882423
+
+
+env:
+  # Project
+  # VERSION: v3
+  # ENVIRONMENT: dev
+  VERSION: ${{ github.event.inputs.version }}
+  ENVIRONMENT: ${{ github.event.inputs.environment }}
+
+  # Subgraph
+  # SUBGRAPH_SUFFIX: bdp-subgraph
+  SUBGRAPH_SUFFIX: ${{ github.event.inputs.subgraph_suffix }}
+
+  # Subgraph start block - 0 (on manual run) or empty (on push) to skip
+  # SUBGRAPH_START_BLOCK_mainnet: 14907823
+  # SUBGRAPH_START_BLOCK_rinkeby: 10762423
+  SUBGRAPH_START_BLOCK_mainnet: ${{ github.event.inputs.subgraph_start_block_mainnet }}
+  SUBGRAPH_START_BLOCK_rinkeby: ${{ github.event.inputs.subgraph_start_block_rinkeby }}
+
+  # EKS
+  KUBECTL_VERSION: 1.22.6
+  KUBECTL_VERSION_DATE: 2022-03-09
+  GOMPLATE_VERSION: v3.10.0
+
+
+jobs:
+  # IPFS Open
+  ipfs-open:
+    name: IPFS Open
+    runs-on: ubuntu-latest
+    steps:
+      - name: IPFS Open - Checkout
+        uses: actions/checkout@master
+
+      - name: IPFS Open - Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets[format('{0}_{1}_AWS_ACCESS_KEY_ID', env.VERSION, env.ENVIRONMENT)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_{1}_AWS_SECRET_ACCESS_KEY', env.VERSION, env.ENVIRONMENT)] }}
+          aws-region: ${{ secrets[format('{0}_{1}_AWS_REGION', env.VERSION, env.ENVIRONMENT)] }}
+
+      - name: IPFS Open - Compute variables
+        run: echo "CLUSTER_NAME=${{ secrets[format('{0}_{1}_CLUSTER_NAME', env.VERSION, env.ENVIRONMENT)] }}" >> $GITHUB_ENV
+
+      - name: IPFS Open - Install gomplate
+        run: |
+          curl -o /usr/local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/${{ env.GOMPLATE_VERSION }}/gomplate_linux-amd64
+          sudo chmod +x /usr/local/bin/gomplate
+
+      - name: IPFS Open - Install kubectl
+        run: |
+          curl -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/${{ env.KUBECTL_VERSION }}/${{ env.KUBECTL_VERSION_DATE }}/bin/linux/amd64/kubectl
+          sudo chmod +x /usr/local/bin/kubectl
+
+      - name: IPFS Open - Configure kubectl
+        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }}
+
+      - name: IPFS Open - Preprocessing manifests
+        run: |
+          export AWS_TIMEOUT=2000
+          export CHAINS=$(echo ${{ env.CHAINS }} | sed 's/_trim//g')
+
+          gomplate --input-dir k8s --output-dir k8s --datasource 'alb=aws+sm:/${{ env.CLUSTER_NAME }}/alb?type=application/json'
+        env:
+          NAMESPACE: ${{ env.VERSION }}-${{ env.ENVIRONMENT }}
+          DOMAIN: ${{ secrets[format('{0}_{1}_DOMAIN', env.VERSION, env.ENVIRONMENT)] }}
+          NAME: ${{ secrets[format('{0}_{1}_NAME', env.VERSION, env.ENVIRONMENT)] }}
+          CHAINS: ${{ secrets[format('{0}_{1}_CHAINS', env.VERSION, env.ENVIRONMENT)] }}
+          IPFS_ENDPOINT_AUTH: false
+
+      - name: IPFS Open - Update IPFS ALB rules
+        run: kubectl apply --wait=true -f k8s/ingress.yaml
+
+
+  # Chains
+  chains:
+    name: Chains
+    runs-on: ubuntu-latest
+    needs: ipfs-open
+    outputs:
+      list: ${{ steps.chains.outputs.list }}
+    steps:
+      - name: Get Chains list
+        id: chains
+        run: echo "::set-output name=list::$(echo ${{ env.CHAINS }} | sed 's/_trim//g' | jq -Rc 'split(" ")')"
+        env:
+          CHAINS: ${{ secrets[format('{0}_{1}_CHAINS', env.VERSION, env.ENVIRONMENT)] }}
+
+
+  # Subgraph
+  subgraph:
+    name: Subgraph
+    runs-on: ubuntu-latest
+    needs: chains
+    strategy:
+      max-parallel: 10
+      fail-fast: false
+      matrix:
+        chain: ${{ fromJSON(needs.chains.outputs.list) }}
+    steps:
+      - name: Subgraph - Use Node.js 12
+        uses: actions/setup-node@v3
+        with:
+          node-version: 12
+
+      - name: Subgraph - Checkout
+        uses: actions/checkout@v3
+
+      - name: Subgraph - Compute variables
+        run: |
+          # Subgraph
+          case ${{ env.CHAIN }} in
+            mainnet) echo "SUBGRAPH_MANIFEST=subgraph.yaml" >> $GITHUB_ENV ;;
+            *)       echo "SUBGRAPH_MANIFEST=subgraph.${{ env.CHAIN }}.yaml" >> $GITHUB_ENV ;;
+          esac
+
+          echo "SUBGRAPH_NAME=${{ env.CHAIN }}/${{ env.SUBGRAPH_SUFFIX }}" >> $GITHUB_ENV
+          echo "SUBGRAPH_LABEL=${GITHUB_REF_NAME}-$(git rev-parse --short ${GITHUB_SHA})" >> $GITHUB_ENV
+
+          # Start block
+          if [[ ${{ env.SUBGRAPH_START_BLOCK }} -eq 0 ]]; then
+            echo "SUBGRAPH_START_BLOCK=" >> $GITHUB_ENV
+          else
+            echo "SUBGRAPH_START_BLOCK=${{ env.SUBGRAPH_START_BLOCK }}" >> $GITHUB_ENV
+          fi
+          # Endpoints
+          echo "IPFS_ENDPOINT=${{ env.IPFS_ENDPOINT }}" >> $GITHUB_ENV
+          echo "INDEX_NODE_ENDPOINT=${{ env.INDEX_NODE_ENDPOINT }}" >> $GITHUB_ENV
+          echo "ALB_USERNAME=${{ env.ALB_USERNAME }}" >> $GITHUB_ENV
+          echo "ALB_PASSWORD=${{ env.ALB_PASSWORD }}" >> $GITHUB_ENV
+        env:
+          CHAIN: ${{ matrix.chain }}
+          IPFS_ENDPOINT: ${{ secrets[format('{0}_{1}_IPFS_ENDPOINT', env.VERSION, env.ENVIRONMENT)] }}
+          INDEX_NODE_ENDPOINT: ${{ secrets[format('{0}_{1}_INDEX_NODE_ENDPOINT_{2}', env.VERSION, env.ENVIRONMENT, matrix.chain)] }}
+          ALB_USERNAME: ${{ secrets[format('{0}_{1}_ALB_USERNAME', env.VERSION, env.ENVIRONMENT)] }}
+          ALB_PASSWORD: ${{ secrets[format('{0}_{1}_ALB_PASSWORD', env.VERSION, env.ENVIRONMENT)] }}
+          SUBGRAPH_START_BLOCK: ${{ env[format('SUBGRAPH_START_BLOCK_{0}', matrix.chain)] }}
+
+      - name: Subgraph - Update start block
+        if: env.SUBGRAPH_START_BLOCK != ''
+        run: |
+          sed -i 's/startBlock:.*/startBlock: ${{ env.SUBGRAPH_START_BLOCK }}/' ${{ env.SUBGRAPH_MANIFEST }}
+
+      - name: Subgraph - Install dependencies
+        run: yarn install
+
+      - name: Subgraph - Generates AssemblyScript
+        run: yarn codegen
+
+      - name: Subgraph - Build
+        run: |
+          yarn graph build --ipfs https://${{ env.IPFS_ENDPOINT }} ${{ env.SUBGRAPH_MANIFEST }} >build.log
+          echo "IPFS_HASH=$(awk -F': ' '/Build completed/ {print $2}' build.log)" >> $GITHUB_ENV
+
+      - name: Subgraph - Graph create
+        run: |
+          OUTPUT=create-output.txt
+          curl -X POST https://${{ env.INDEX_NODE_ENDPOINT }} \
+            --max-time 10 \
+            --fail \
+            --show-error \
+            --output ${OUTPUT} \
+            --user '${{ env.ALB_USERNAME }}:${{ env.ALB_PASSWORD }}' \
+            --header 'Content-Type: application/json' \
+            --data '{"jsonrpc": "2.0", "id": "2", "method": "subgraph_create", "params": {"name": "${{ env.SUBGRAPH_NAME }}"}}'
+
+            # Check output
+            grep 'jsonrpc' ${OUTPUT}
+            if [[ $? -eq 0 ]]; then
+              echo "Subgraph created successfully"
+            else
+              echo "Subgraph creation failed"
+            fi
+            echo "Output: `cat ${OUTPUT}`"
+
+      - name: Subgraph - Graph deploy
+        run: |
+          OUTPUT=deploy-output.txt
+          curl -X POST https://${{ env.INDEX_NODE_ENDPOINT }} \
+            --max-time 10 \
+            --fail \
+            --show-error \
+            --output ${OUTPUT} \
+            --user '${{ env.ALB_USERNAME }}:${{ env.ALB_PASSWORD }}' \
+            --header 'Content-Type: application/json' \
+            --data '{"jsonrpc": "2.0", "id": "2", "method": "subgraph_deploy", "params": {"name": "${{ env.SUBGRAPH_NAME }}", "ipfs_hash": "${{ env.IPFS_HASH }}"}}'
+
+            # Check output
+            grep 'jsonrpc' ${OUTPUT}
+            if [[ $? -eq 0 ]]; then
+              echo "Subgraph deployed successfully"
+            else
+              echo "Subgraph deployment failed"
+            fi
+            echo "Output: `cat ${OUTPUT}`"
+
+
+  # IPFS Close
+  ipfs-close:
+    name: IPFS Close
+    needs: subgraph
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: IPFS Close - Checkout
+        uses: actions/checkout@master
+
+      - name: IPFS Close - Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets[format('{0}_{1}_AWS_ACCESS_KEY_ID', env.VERSION, env.ENVIRONMENT)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_{1}_AWS_SECRET_ACCESS_KEY', env.VERSION, env.ENVIRONMENT)] }}
+          aws-region: ${{ secrets[format('{0}_{1}_AWS_REGION', env.VERSION, env.ENVIRONMENT)] }}
+
+      - name: IPFS Close - Compute variables
+        run: echo "CLUSTER_NAME=${{ secrets[format('{0}_{1}_CLUSTER_NAME', env.VERSION, env.ENVIRONMENT)] }}" >> $GITHUB_ENV
+
+      - name: IPFS Close - Install gomplate
+        run: |
+          curl -o /usr/local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/${{ env.GOMPLATE_VERSION }}/gomplate_linux-amd64
+          sudo chmod +x /usr/local/bin/gomplate
+
+      - name: IPFS Close - Install kubectl
+        run: |
+          curl -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/${{ env.KUBECTL_VERSION }}/${{ env.KUBECTL_VERSION_DATE }}/bin/linux/amd64/kubectl
+          sudo chmod +x /usr/local/bin/kubectl
+
+      - name: IPFS Close - Configure kubectl
+        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }}
+
+      - name: IPFS Close - Preprocessing manifests
+        run: |
+          export AWS_TIMEOUT=2000
+          export CHAINS=$(echo ${{ env.CHAINS }} | sed 's/_trim//g')
+
+          gomplate --input-dir k8s --output-dir k8s --datasource 'alb=aws+sm:/${{ env.CLUSTER_NAME }}/alb?type=application/json'
+        env:
+          NAMESPACE: ${{ env.VERSION }}-${{ env.ENVIRONMENT }}
+          DOMAIN: ${{ secrets[format('{0}_{1}_DOMAIN', env.VERSION, env.ENVIRONMENT)] }}
+          NAME: ${{ secrets[format('{0}_{1}_NAME', env.VERSION, env.ENVIRONMENT)] }}
+          CHAINS: ${{ secrets[format('{0}_{1}_CHAINS', env.VERSION, env.ENVIRONMENT)] }}
+          IPFS_ENDPOINT_AUTH: true
+
+      - name: IPFS Close - Update IPFS ALB rules
+        run: kubectl apply --wait=true -f k8s/ingress.yaml

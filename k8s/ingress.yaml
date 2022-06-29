@@ -1,0 +1,32 @@
+# IPFS
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: {{ .Env.NAMESPACE }}
+  name: ipfs
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: '{{ (ds "alb").certificate_arn }}'
+    alb.ingress.kubernetes.io/group.name: '{{ .Env.NAMESPACE }}'
+    alb.ingress.kubernetes.io/success-codes: '404'
+    alb.ingress.kubernetes.io/tags: |
+      project={{ .Env.NAME }},version={{ .Env.VERSION }},environment={{ .Env.ENVIRONMENT }},chains={{ .Env.CHAINS }}
+    alb.ingress.kubernetes.io/conditions.ipfs: |
+      [{"field":"host-header","hostHeaderConfig":{"values":["ipfs.{{ (ds "alb").domain }}"]}}{{- if eq .Env.IPFS_ENDPOINT_AUTH "true" }},{"field":"http-header","httpHeaderConfig":{"httpHeaderName": "Authorization", "values":["{{ print "Basic" (print (ds "alb").username ":" (ds "alb").password | base64.Encode) }}"]}}{{- end }}]
+    alb.ingress.kubernetes.io/actions.ipfs: |
+      {"type":"forward","forwardConfig":{"targetGroups":[{"serviceName":"go-ipfs","servicePort":"80"}]}}
+
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: ipfs
+              port:
+                name: use-annotation
