@@ -1,14 +1,15 @@
 import {
-  // Aquarius,
-  // Datatoken,
+  Datatoken,
   Erc20CreateParams,
   ProviderInstance,
-  // ProviderFees,
+  ProviderFees,
   Nft,
   NftFactory,
   NftCreateData,
   getHash,
-  sleep
+  sleep,
+  ZERO_ADDRESS,
+  signHash
 } from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
@@ -71,12 +72,18 @@ const ddo = {
 }
 
 describe('Simple Publish & consume test', async () => {
+  const nft = new Nft(web3)
+  const Factory = new NftFactory(addresses.ERC721Factory, web3)
+  const accounts = await web3.eth.getAccounts()
+  const publisherAccount = accounts[0]
+  const newOwnerAccount = accounts[1].toLowerCase()
+  const user1 = accounts[2]
+  const user2 = accounts[3]
+  const user3 = accounts[4]
+  let datatokenAddress: string
+  let datatoken: Datatoken
+
   it('should publish a dataset (create NFT + ERC20)', async () => {
-    const nft = new Nft(web3)
-    // const datatoken = new Datatoken(web3)
-    const Factory = new NftFactory(addresses.ERC721Factory, web3)
-    const accounts = await web3.eth.getAccounts()
-    const publisherAccount = accounts[0]
     // const consumerAccount = accounts[1]
     const nftParams: NftCreateData = {
       name: 'testNFT',
@@ -101,7 +108,7 @@ describe('Simple Publish & consume test', async () => {
       erc20Params
     )
     const erc721Address = result.events.NFTCreated.returnValues[0]
-    const datatokenAddress = result.events.TokenCreated.returnValues[0]
+    datatokenAddress = result.events.TokenCreated.returnValues[0]
 
     // create the files encrypted string
     let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
@@ -193,12 +200,6 @@ describe('Simple Publish & consume test', async () => {
     */
   })
   it('should publish and transfer an NFT', async () => {
-    const nft = new Nft(web3)
-    const Factory = new NftFactory(addresses.ERC721Factory, web3)
-    const accounts = await web3.eth.getAccounts()
-    const publisherAccount = accounts[0]
-    const newOwnerAccount = accounts[1].toLowerCase()
-
     const nftParams: NftCreateData = {
       name: 'testNFT',
       symbol: 'TST',
@@ -280,5 +281,48 @@ describe('Simple Publish & consume test', async () => {
     })
     const queryResult = await response.json()
     assert(queryResult.data.nft.owner === newOwnerAccount)
+  })
+
+  it('should save  provider fees after startOrder is called', async () => {
+    datatoken = new Datatoken(web3, 8996)
+    const providerData = JSON.stringify({ timeout: 0 })
+    const providerFeeToken = ZERO_ADDRESS
+    const providerFeeAmount = '10000'
+    const providerValidUntil = '0'
+    const message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    const { v, r, s } = await signHash(web3, message, user3)
+    const providerFees: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+    const order = await datatoken.startOrder(
+      datatokenAddress,
+      user1,
+      user2,
+      1,
+      providerFees
+    )
+    console.log('order', order)
+    // const query2 = {
+    //   query: `query {
+    //       nft(id:"${graphNftToken}"){symbol,id,owner, transferable}}`
+    // }
+    // const response = await fetch(subgraphUrl, {
+    //   method: 'POST',
+    //   body: JSON.stringify(query2)
+    // })
+    // const queryResult = await response.json()
   })
 })
