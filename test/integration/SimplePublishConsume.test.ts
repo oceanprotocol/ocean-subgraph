@@ -72,16 +72,27 @@ const ddo = {
 }
 
 describe('Simple Publish & consume test', async () => {
-  const nft = new Nft(web3)
-  const Factory = new NftFactory(addresses.ERC721Factory, web3)
-  const accounts = await web3.eth.getAccounts()
-  const publisherAccount = accounts[0]
-  const newOwnerAccount = accounts[1].toLowerCase()
-  const user1 = accounts[2]
-  const user2 = accounts[3]
-  const user3 = accounts[4]
   let datatokenAddress: string
   let datatoken: Datatoken
+  let nft: Nft
+  let Factory: NftFactory
+  let accounts: string[]
+  let publisherAccount: string
+  let newOwnerAccount: string
+  let user1: string
+  let user2: string
+  let user3: string
+
+  before(async () => {
+    nft = new Nft(web3)
+    Factory = new NftFactory(addresses.ERC721Factory, web3)
+    accounts = await web3.eth.getAccounts()
+    publisherAccount = accounts[0]
+    newOwnerAccount = accounts[1].toLowerCase()
+    user1 = accounts[2]
+    user2 = accounts[3]
+    user3 = accounts[4]
+  })
 
   it('should publish a dataset (create NFT + ERC20)', async () => {
     // const consumerAccount = accounts[1]

@@ -214,12 +214,7 @@ export function handleProviderFee(event: ProviderFee): void {
   }
   }`
 
-  let existingProviderFees: string[]
-  if (!order.providerFee) existingProviderFees = []
-  else existingProviderFees = order.providerFee as string[]
-  existingProviderFees.push(providerFee)
-
-  order.providerFee = existingProviderFees
+  order.providerFee = providerFee
   order.save()
 }
 
