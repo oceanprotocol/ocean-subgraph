@@ -199,12 +199,6 @@ export function handleNewPaymentCollector(event: NewPaymentCollector): void {
 }
 
 export function handleProviderFee(event: ProviderFee): void {
-  const order = getOrder(
-    event.transaction.hash.toHex(),
-    event.address.toHex(),
-    event.transaction.from.toHex()
-  )
-
   const providerFee: string = `{providerFeeAddress: ${event.params.providerFeeAddress.toHex()}, providerFeeToken: ${event.params.providerFeeToken.toHex()}, providerFeeAmount: ${
     event.params.providerFeeAmount
   }, providerData: ${event.params.providerData.toHexString()}, v: ${
@@ -214,8 +208,24 @@ export function handleProviderFee(event: ProviderFee): void {
   }
   }`
 
-  order.providerFee = providerFee
-  order.save()
+  const orderId = getOrderId(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.transaction.from.toHex()
+  )
+  const order = Order.load(orderId)
+  let orderReuse = OrderReuse.load(event.transaction.hash.toHex())
+  if (order) {
+    order.providerFee = providerFee
+    order.save()
+  } else if (orderReuse) {
+    orderReuse.providerFee = providerFee
+    orderReuse.save()
+  } else {
+    orderReuse = new OrderReuse(event.transaction.hash.toHex())
+    orderReuse.providerFee = providerFee
+    orderReuse.save()
+  }
 }
 
 // export function handlePublishMarketFees(event: PublishMarketFees): void {

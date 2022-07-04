@@ -249,6 +249,7 @@ type OrderReuse @entity {
   createdTimestamp: BigInt!
   tx: String!
   block: BigInt!
+  providerFee: String
   }
 type Order @entity {  
   "transaction hash - token address - from address"                                       
