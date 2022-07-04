@@ -199,14 +199,13 @@ export function handleNewPaymentCollector(event: NewPaymentCollector): void {
 }
 
 export function handleProviderFee(event: ProviderFee): void {
-  const providerFee: string = `{providerFeeAddress: ${event.params.providerFeeAddress.toHex()}, providerFeeToken: ${event.params.providerFeeToken.toHex()}, providerFeeAmount: ${
+  const providerFee: string = `{"providerFeeAddress": "${event.params.providerFeeAddress.toHex()}", "providerFeeToken": "${event.params.providerFeeToken.toHex()}", "providerFeeAmount": "${
     event.params.providerFeeAmount
-  }, providerData: ${event.params.providerData.toHexString()}, v: ${
+  }", "providerData": "${event.params.providerData.toHexString()}", "v": "${
     event.params.v
-  }, r: ${event.params.r.toHexString()}, s: ${event.params.s.toHexString()}, validUntil: ${
+  }", "r": "${event.params.r.toHexString()}", "s": "${event.params.s.toHexString()}", "validUntil": "${
     event.params.validUntil
-  }
-  }`
+  }"}`
 
   const orderId = getOrderId(
     event.transaction.hash.toHex(),
