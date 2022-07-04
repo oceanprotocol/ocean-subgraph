@@ -19,7 +19,7 @@ import { weiToDecimal } from './utils/generic'
 import { addOrder } from './utils/globalUtils'
 import { getToken, getUSDValue } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
-import { getOrder, getOrderId } from './utils/orderUtils'
+import { getOrderId } from './utils/orderUtils'
 
 export function handleOrderStarted(event: OrderStarted): void {
   const order = new Order(
