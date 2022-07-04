@@ -80,7 +80,7 @@ describe('Simple Publish & consume test', async () => {
   let accounts: string[]
   let publisherAccount: string
   let newOwnerAccount: string
-  let user1: string
+  // let user1: string
   let user2: string
   let user3: string
 
@@ -90,7 +90,7 @@ describe('Simple Publish & consume test', async () => {
     accounts = await web3.eth.getAccounts()
     publisherAccount = accounts[0]
     newOwnerAccount = accounts[1].toLowerCase()
-    user1 = accounts[2]
+    //  user1 = accounts[2]
     user2 = accounts[3]
     user3 = accounts[4]
   })
