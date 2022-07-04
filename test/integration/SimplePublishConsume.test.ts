@@ -17,6 +17,7 @@ import { SHA256 } from 'crypto-js'
 import { homedir } from 'os'
 import fs from 'fs'
 import { fetch } from 'cross-fetch'
+import { getOrderId } from '../../src/mappings/utils/orderUtils'
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -308,7 +309,7 @@ describe('Simple Publish & consume test', async () => {
       { t: 'uint256', v: providerValidUntil }
     )
     const { v, r, s } = await signHash(web3, message, user3)
-    const providerFees: ProviderFees = {
+    const setProviderFee: ProviderFees = {
       providerFeeAddress: user3,
       providerFeeToken,
       providerFeeAmount,
@@ -318,22 +319,130 @@ describe('Simple Publish & consume test', async () => {
       providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
       validUntil: providerValidUntil
     }
-    const order = await datatoken.startOrder(
+    const orderTx = await datatoken.startOrder(
       datatokenAddress,
-      user1,
+      publisherAccount,
       user2,
       1,
-      providerFees
+      setProviderFee
     )
-    console.log('order', order)
-    // const query2 = {
-    //   query: `query {
-    //       nft(id:"${graphNftToken}"){symbol,id,owner, transferable}}`
-    // }
-    // const response = await fetch(subgraphUrl, {
-    //   method: 'POST',
-    //   body: JSON.stringify(query2)
-    // })
-    // const queryResult = await response.json()
+    console.log('order', orderTx)
+    const orderId = getOrderId(
+      orderTx.transactionHash,
+      datatokenAddress,
+      publisherAccount
+    )
+    const query = {
+      query: `query {
+          order(id:"${orderId}"){id, providerFee}}`
+    }
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query)
+    })
+    const queryResult = await response.json()
+    assert(queryResult.data.order.providerFee === setProviderFee)
+  })
+
+  it('should save provider fees after calling reuseOrder on a using a previous txId', async () => {
+    const providerData = JSON.stringify({ timeout: 0 })
+    const providerFeeToken = ZERO_ADDRESS
+    let providerFeeAmount = '90'
+    let providerValidUntil = '0'
+    let message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    let { v, r, s } = await signHash(web3, message, user3)
+    const setInitialProviderFee: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+    const orderTx = await datatoken.startOrder(
+      datatokenAddress,
+      publisherAccount,
+      user2,
+      1,
+      setInitialProviderFee
+    )
+    assert(orderTx.transactionHash, ' Failed to start order')
+
+    // Check initial provider fee has been set correctly
+    const orderId = getOrderId(
+      orderTx.transactionHash,
+      datatokenAddress,
+      publisherAccount
+    )
+    const query = {
+      query: `query {
+        OrderReuse(id:"${orderId}"){id, providerFee}}`
+    }
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query)
+    })
+    const queryResult = await response.json()
+    assert(
+      queryResult.data.order.providerFee === setInitialProviderFee,
+      'Initial provider fee was not correctly set'
+    )
+
+    providerFeeAmount = '90'
+    providerValidUntil = '0'
+    message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    const msgResult = await signHash(web3, message, user3)
+    v = msgResult.v
+    r = msgResult.r
+    s = msgResult.s
+
+    const setNewProviderFee: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+
+    const reusedOrder = await datatoken.reuseOrder(
+      datatokenAddress,
+      user2,
+      orderTx.transactionHash,
+      setNewProviderFee
+    )
+    assert(reusedOrder.events.OrderReused.event === 'OrderReused')
+    assert(reusedOrder.events.ProviderFee.event === 'ProviderFee')
+
+    // Check the new provider fee has been set in OrderReuse
+    const query2 = {
+      query: `query {
+        OrderReuse(id:"${reusedOrder.transactionHash}"){id, providerFee}}`
+    }
+    const response2 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query2)
+    })
+    const queryResult2 = await response2.json()
+    assert(
+      queryResult2.data.order.providerFee === setNewProviderFee,
+      'New provider fees have not been correctly set in OrderReuse'
+    )
   })
 })
