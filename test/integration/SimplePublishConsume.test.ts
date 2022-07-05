@@ -451,4 +451,56 @@ describe('Simple Publish & consume test', async () => {
       'New providerFeeToken set in reuse order is wrong'
     )
   })
+
+  it('lastPriceToken is stored correctly', async () => {
+    const providerData = JSON.stringify({ timeout: 0 })
+    const providerFeeToken = ZERO_ADDRESS
+    const providerFeeAmount = '90'
+    const providerValidUntil = '0'
+    const message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    const { v, r, s } = await signHash(web3, message, user3)
+    const setInitialProviderFee: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+
+    const orderTx = await datatoken.startOrder(
+      datatokenAddress,
+      user4,
+      user2,
+      1,
+      setInitialProviderFee
+    )
+    assert(orderTx.transactionHash, 'Failed to start order')
+
+    // Check initial provider fee has been set correctly
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}`
+
+    const initialQuery = {
+      query: `query {order(id:"${orderId}"){id, lastPriceToken {id}}}`
+    }
+    await sleep(2000)
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(initialQuery)
+    })
+    const initialQueryResult = await initialResponse.json()
+    console.log('initialQueryResult:', initialQueryResult)
+    const lastPriceToken = initialQueryResult.data.order.lastPriceToken
+    console.log('lastPriceToken:', lastPriceToken)
+
+    assert(lastPriceToken === '0x0000000000000000000000000000000000000000')
+  })
 })

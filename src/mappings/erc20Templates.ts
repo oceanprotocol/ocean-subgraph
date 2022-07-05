@@ -1,5 +1,5 @@
 import { Order, Nft, OrderReuse } from '../@types/schema'
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 import {
   NewPaymentCollector,
   OrderStarted,
@@ -58,7 +58,10 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.createdTimestamp = event.block.timestamp.toI32()
   order.tx = event.transaction.hash.toHex()
   order.block = event.block.number.toI32()
+  log.info('\n\n1. order.lastPriceToken: {}\n\n', [order.lastPriceToken])
+  log.info('\n\n2. token.lastPriceToken: {}\n\n', [token.lastPriceToken])
   order.lastPriceToken = token.lastPriceToken
+  log.info('\n\n3. order.lastPriceToken: {}\n\n', [order.lastPriceToken])
   order.lastPriceValue = token.lastPriceValue
   order.estimatedUSDValue = getUSDValue(
     order.lastPriceToken,
@@ -78,6 +81,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     owner.totalSales = owner.totalSales.plus(integer.ONE)
     owner.save()
   }
+  log.info('\n\n4. order.lastPriceToken: {}\n\n', [order.lastPriceToken])
 }
 
 export function handlerOrderReused(event: OrderReused): void {

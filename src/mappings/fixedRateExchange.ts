@@ -1,4 +1,4 @@
-import { BigInt, Address } from '@graphprotocol/graph-ts'
+import { BigInt, Address, log } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -205,9 +205,16 @@ export function handleSwap(event: Swapped): void {
     Address.fromString(fixedRateExchange.datatoken),
     true
   )
+  log.info('\n\n5. datatoken.lastPriceToken: {}\n\n', [
+    datatoken.lastPriceToken
+  ])
   datatoken.lastPriceToken = fixedRateExchange.baseToken
   datatoken.lastPriceValue = fixedRateExchange.price
   datatoken.save()
+
+  log.info('\n\n5. datatoken.lastPriceToken: {}\n\n', [
+    datatoken.lastPriceToken
+  ])
 }
 
 export function handlePublishMarketFeeChanged(

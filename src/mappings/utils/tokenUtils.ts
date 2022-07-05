@@ -23,9 +23,11 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   const decimals = contract.try_decimals()
   if (decimals.reverted) token.decimals = 18
   else token.decimals = decimals.value
+  log.info('\n\n9. token.lastPriceToken: {}\n\n', [token.lastPriceToken])
   token.lastPriceToken = ZERO_ADDRESS
   token.lastPriceValue = BigDecimal.zero()
   token.save()
+  log.info('\n\n10. token.lastPriceToken: {}\n\n', [token.lastPriceToken])
   return token
 }
 
