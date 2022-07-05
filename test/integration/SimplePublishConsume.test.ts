@@ -8,8 +8,10 @@ import {
   NftFactory,
   NftCreateData,
   getHash,
-  sleep
+  sleep,
+  PoolCreationParams
 } from '@oceanprotocol/lib'
+import { Addresses } from './utils'
 import { assert } from 'chai'
 import Web3 from 'web3'
 import { SHA256 } from 'crypto-js'
@@ -25,7 +27,7 @@ const data = JSON.parse(
   )
 )
 
-const addresses = data.development
+const addresses: Addresses = data.development
 // const aquarius = new Aquarius('http://127.0.0.1:5000')
 const web3 = new Web3('http://127.0.0.1:8545')
 
@@ -74,7 +76,7 @@ describe('Simple Publish & consume test', async () => {
   it('should publish a dataset (create NFT + ERC20)', async () => {
     const nft = new Nft(web3)
     // const datatoken = new Datatoken(web3)
-    const Factory = new NftFactory(addresses.ERC721Factory, web3)
+    const Factory = new NftFactory(addresses.erc721FactoryAddress, web3)
     const accounts = await web3.eth.getAccounts()
     const publisherAccount = accounts[0]
     // const consumerAccount = accounts[1]
@@ -143,58 +145,10 @@ describe('Simple Publish & consume test', async () => {
     })
     const queryResult = await response.json()
     assert(queryResult.data.nft.id === graphNftToken)
-
-    /*
-
-    // mint 1 ERC20 and send it to the consumer
-    await datatoken.mint(datatokenAddress, publisherAccount, '1', consumerAccount)
-    // initialize provider
-    const initializeData = await ProviderInstance.initialize(
-      resolvedDDO.id,
-      resolvedDDO.services[0].id,
-      0,
-      consumerAccount,
-      providerUrl
-    )
-    const providerFees: ProviderFees = {
-      providerFeeAddress: initializeData.providerFee.providerFeeAddress,
-      providerFeeToken: initializeData.providerFee.providerFeeToken,
-      providerFeeAmount: initializeData.providerFee.providerFeeAmount,
-      v: initializeData.providerFee.v,
-      r: initializeData.providerFee.r,
-      s: initializeData.providerFee.s,
-      providerData: initializeData.providerFee.providerData,
-      validUntil: initializeData.providerFee.validUntil
-    }
-    // make the payment
-    const txid = await datatoken.startOrder(
-      datatokenAddress,
-      consumerAccount,
-      consumerAccount,
-      0,
-      providerFees
-    )
-    // get the url
-    const downloadURL = await ProviderInstance.getDownloadUrl(
-      ddo.id,
-      consumerAccount,
-      ddo.services[0].id,
-      0,
-      txid.transactionHash,
-      providerUrl,
-      web3
-    )
-    assert(downloadURL, 'Provider getDownloadUrl failed')
-    try {
-      const fileData = await downloadFile(downloadURL)
-    } catch (e) {
-      assert.fail('Download failed')
-    }
-    */
   })
   it('should publish and transfer an NFT', async () => {
     const nft = new Nft(web3)
-    const Factory = new NftFactory(addresses.ERC721Factory, web3)
+    const Factory = new NftFactory(addresses.erc721FactoryAddress, web3)
     const accounts = await web3.eth.getAccounts()
     const publisherAccount = accounts[0]
     const newOwnerAccount = accounts[1].toLowerCase()
@@ -280,5 +234,68 @@ describe('Simple Publish & consume test', async () => {
     })
     const queryResult = await response.json()
     assert(queryResult.data.nft.owner === newOwnerAccount)
+  })
+
+  it('Creates a pool and saves fields correctly', async () => {
+    const accounts = await web3.eth.getAccounts()
+    const factoryOwner = accounts[3]
+    const nftData: NftCreateData = {
+      name: '72120Bundle',
+      symbol: '72Bundle',
+      templateIndex: 1,
+      tokenURI: 'https://oceanprotocol.com/nft/',
+      transferable: true,
+      owner: null
+    }
+    // CREATE A POOL
+    // we prepare transaction parameters objects
+    const poolParams: PoolCreationParams = {
+      ssContract: addresses.sideStakingAddress,
+      baseTokenAddress: addresses.daiAddress,
+      baseTokenSender: addresses.erc721FactoryAddress,
+      publisherAddress: factoryOwner,
+      marketFeeCollector: factoryOwner,
+      poolTemplateAddress: addresses.poolTemplateAddress,
+      rate: '1',
+      baseTokenDecimals: 18,
+      vestingAmount: '10000',
+      vestedBlocks: 2500000,
+      initialBaseTokenLiquidity: '2000',
+      swapFeeLiquidityProvider: '0.001',
+      swapFeeMarketRunner: '0.001'
+    }
+
+    const ercParams = {
+      templateIndex: 1,
+      minter: factoryOwner,
+      paymentCollector: accounts[4],
+      mpFeeAddress: factoryOwner,
+      feeToken: '0x00000',
+      cap: '1000000',
+      feeAmount: '0',
+      name: 'ERC20B1',
+      symbol: 'ERC20DT1Symbol'
+    }
+
+    const nftFactory = new NftFactory(
+      addresses.erc721FactoryAddress,
+      web3,
+      8996
+    )
+
+    const txReceipt = await nftFactory.createNftErc20WithPool(
+      factoryOwner,
+      nftData,
+      ercParams,
+      poolParams
+    )
+
+    const erc20Token =
+      txReceipt.events.TokenCreated.returnValues.newTokenAddress
+    const poolAddress = txReceipt.events.NewPool.returnValues.poolAddress
+
+    // user1 has no dt1
+    console.log('erc20Token', erc20Token)
+    console.log('poolAddress', poolAddress)
   })
 })
