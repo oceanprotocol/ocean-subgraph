@@ -457,17 +457,6 @@ describe('Simple Publish & consume test', async () => {
   it('Creates a pool and saves fields correctly', async () => {
     datatoken = new Datatoken(web3, 8996)
     await datatoken.mint(datatokenAddress, publisherAccount, '100')
-    const publisherAccountBalance = await datatoken.balance(
-      datatokenAddress,
-      publisherAccount
-    )
-    console.log('publisherAccountBalance', publisherAccountBalance)
-
-    const publisherAccountBalance2 = await datatoken.balance(
-      addresses.MockDAI,
-      publisherAccount
-    )
-    console.log('publisherAccountBalance 2', publisherAccountBalance2)
 
     const nftData: NftCreateData = {
       name: '72120Bundle',
@@ -477,8 +466,7 @@ describe('Simple Publish & consume test', async () => {
       transferable: true,
       owner: publisherAccount
     }
-    console.log('nftData', nftData)
-    console.log('addresses', addresses)
+
     // CREATE A POOL
     // we prepare transaction parameters objects
     const poolParams: PoolCreationParams = {
@@ -496,7 +484,6 @@ describe('Simple Publish & consume test', async () => {
       swapFeeLiquidityProvider: '0.001',
       swapFeeMarketRunner: '0.001'
     }
-    console.log('poolParams', poolParams)
 
     const ercParams = {
       templateIndex: 1,
@@ -509,9 +496,6 @@ describe('Simple Publish & consume test', async () => {
       name: 'ERC20B1',
       symbol: 'ERC20DT1Symbol'
     }
-    console.log('ercParams', ercParams)
-
-    // const nftFactory = new NftFactory(addresses.erc721Factory, web3, 8996)
 
     await approve(
       web3,
@@ -528,12 +512,83 @@ describe('Simple Publish & consume test', async () => {
       poolParams
     )
 
-    const erc20Token =
-      txReceipt.events.TokenCreated.returnValues.newTokenAddress
     const poolAddress = txReceipt.events.NewPool.returnValues.poolAddress
 
-    // user1 has no dt1
-    console.log('erc20Token', erc20Token)
-    console.log('poolAddress', poolAddress)
+    const poolQuery = {
+      query: `query {pool(id:"${poolAddress.toLocaleLowerCase()}"){id,controller,isFinalized,symbol,name,cap,baseToken,baseTokenLiquidity,baseTokenWeight,datatoken,
+        datatokenLiquidity,
+        datatokenWeight,
+        publishMarketSwapFee,
+        publishMarketSwapFeeAmount,
+        liquidityProviderSwapFee,
+        liquidityProviderSwapFeeAmount,
+        totalShares,
+        totalSwapVolume,
+        spotPrice,
+        joinCount,
+        exitCount,
+        swapCount,
+        transactionCount,
+        createdTimestamp,
+        tx,
+        block,
+        shares,
+        transactions,
+        publishMarketFeeAddress }}`
+    }
+    console.log('poolQuery', poolQuery)
+
+    await sleep(2000)
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(poolQuery)
+    })
+
+    const poolData = (await response.json()).data.pool
+
+    console.log('poolData', poolData)
+
+    assert(poolData.controller !== null, 'controller is null')
+    assert(poolData.isFinalized !== null, 'isFinalized is null')
+    assert(poolData.symbol !== null, 'symbol is null')
+    assert(poolData.name !== null, 'name is null')
+    assert(poolData.cap !== null, 'cap is null')
+    assert(poolData.baseToken !== null, 'baseToken is null')
+    assert(poolData.baseTokenLiquidity !== null, 'baseTokenLiquidity is null')
+    assert(poolData.baseTokenWeight !== null, 'baseTokenWeight is null')
+    assert(poolData.datatoken !== null, 'datatoken is null')
+    assert(poolData.datatokenLiquidity !== null, 'datatokenLiquidity is null')
+    assert(poolData.datatokenWeight !== null, 'datatokenWeight is null')
+    assert(
+      poolData.publishMarketSwapFee !== null,
+      'publishMarketSwapFee is null'
+    )
+    assert(
+      poolData.publishMarketSwapFeeAmount !== null,
+      'publishMarketSwapFeeAmount is null'
+    )
+    assert(
+      poolData.liquidityProviderSwapFee !== null,
+      'liquidityProviderSwapFee is null'
+    )
+    assert(
+      poolData.liquidityProviderSwapFeeAmount !== null,
+      'liquidityProviderSwapFeeAmount is null'
+    )
+    assert(poolData.totalShares !== null, 'totalShares is null')
+    assert(poolData.totalSwapVolume !== null, 'totalSwapVolume is null')
+    assert(poolData.spotPrice !== null, 'spotPrice is null')
+    assert(poolData.exitCount !== null, 'exitCount is null')
+    assert(poolData.swapCount !== null, 'swapCount is null')
+    assert(poolData.transactionCount !== null, 'transactionCount is null')
+    assert(poolData.createdTimestamp !== null, 'createdTimestamp is null')
+    assert(poolData.tx !== null, 'tx is null')
+    assert(poolData.block !== null, 'block is null')
+    assert(poolData.shares !== null, 'shares is null')
+    assert(poolData.transactions !== null, 'transactions is null')
+    assert(
+      poolData.publishMarketFeeAddress !== null,
+      'publishMarketFeeAddress is null'
+    )
   })
 })
