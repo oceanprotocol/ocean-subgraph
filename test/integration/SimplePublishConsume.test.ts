@@ -9,7 +9,9 @@ import {
   getHash,
   sleep,
   ZERO_ADDRESS,
-  signHash
+  signHash,
+  PoolCreationParams,
+  approve
 } from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
@@ -450,5 +452,88 @@ describe('Simple Publish & consume test', async () => {
         setNewProviderFee.providerFeeToken.toLowerCase(),
       'New providerFeeToken set in reuse order is wrong'
     )
+  })
+
+  it('Creates a pool and saves fields correctly', async () => {
+    datatoken = new Datatoken(web3, 8996)
+    await datatoken.mint(datatokenAddress, publisherAccount, '100')
+    const publisherAccountBalance = await datatoken.balance(
+      datatokenAddress,
+      publisherAccount
+    )
+    console.log('publisherAccountBalance', publisherAccountBalance)
+
+    const publisherAccountBalance2 = await datatoken.balance(
+      addresses.MockDAI,
+      publisherAccount
+    )
+    console.log('publisherAccountBalance 2', publisherAccountBalance2)
+
+    const nftData: NftCreateData = {
+      name: '72120Bundle',
+      symbol: '72Bundle',
+      templateIndex: 1,
+      tokenURI: 'https://oceanprotocol.com/nft/',
+      transferable: true,
+      owner: publisherAccount
+    }
+    console.log('nftData', nftData)
+    console.log('addresses', addresses)
+    // CREATE A POOL
+    // we prepare transaction parameters objects
+    const poolParams: PoolCreationParams = {
+      ssContract: addresses.Staking,
+      baseTokenAddress: addresses.MockDAI,
+      baseTokenSender: addresses.ERC721Factory,
+      publisherAddress: publisherAccount,
+      marketFeeCollector: publisherAccount,
+      poolTemplateAddress: addresses.poolTemplate,
+      rate: '1',
+      baseTokenDecimals: 18,
+      vestingAmount: '10000',
+      vestedBlocks: 2500000,
+      initialBaseTokenLiquidity: '2000',
+      swapFeeLiquidityProvider: '0.001',
+      swapFeeMarketRunner: '0.001'
+    }
+    console.log('poolParams', poolParams)
+
+    const ercParams = {
+      templateIndex: 1,
+      minter: publisherAccount,
+      paymentCollector: accounts[4],
+      mpFeeAddress: publisherAccount,
+      feeToken: addresses.MockDAI,
+      cap: '1000000',
+      feeAmount: '0',
+      name: 'ERC20B1',
+      symbol: 'ERC20DT1Symbol'
+    }
+    console.log('ercParams', ercParams)
+
+    // const nftFactory = new NftFactory(addresses.erc721Factory, web3, 8996)
+
+    await approve(
+      web3,
+      publisherAccount,
+      addresses.MockDAI,
+      addresses.ERC721Factory,
+      '2000'
+    )
+
+    const txReceipt = await Factory.createNftErc20WithPool(
+      publisherAccount,
+      nftData,
+      ercParams,
+      poolParams
+    )
+
+    const erc20Token =
+      txReceipt.events.TokenCreated.returnValues.newTokenAddress
+    const poolAddress = txReceipt.events.NewPool.returnValues.poolAddress
+
+    // user1 has no dt1
+    console.log('erc20Token', erc20Token)
+    console.log('poolAddress', poolAddress)
   })
 })
