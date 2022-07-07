@@ -1,4 +1,4 @@
-import { BigInt, Address } from '@graphprotocol/graph-ts'
+import { BigInt, Address, log } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -235,8 +235,11 @@ export function handleSetup(event: LOG_SETUP): void {
     event.params.baseTokenAmountIn.toBigDecimal(),
     token.decimals
   )
+  pool.tx = event.transaction.hash.toHex()
   pool.save()
   poolTx.save()
+
+  log.debug('\n\n Pool: {}\n\n\n', [pool.tx])
 
   const lpFee = getPoolLpSwapFee(event.address)
   pool.liquidityProviderSwapFee = lpFee

@@ -536,7 +536,6 @@ describe('Simple Publish & consume test', async () => {
         transactions,
         publishMarketFeeAddress }}`
     }
-    console.log('poolQuery', poolQuery)
 
     await sleep(2000)
     const response = await fetch(subgraphUrl, {
