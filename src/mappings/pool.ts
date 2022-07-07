@@ -237,10 +237,10 @@ export function handleSetup(event: LOG_SETUP): void {
   )
   pool.tx = event.transaction.hash.toHex()
   pool.block = event.block.number.toI32()
+  pool.symbol = datatoken.symbol
+  pool.name = datatoken.name
   pool.save()
   poolTx.save()
-
-  log.info('\n\n ##### \n\n Pool: {}\n\n########\n\n\n ', [pool.tx])
 
   const lpFee = getPoolLpSwapFee(event.address)
   pool.liquidityProviderSwapFee = lpFee
