@@ -458,6 +458,8 @@ describe('Simple Publish & consume test', async () => {
     datatoken = new Datatoken(web3, 8996)
     await datatoken.mint(datatokenAddress, publisherAccount, '100')
 
+    const collector = accounts[4].toLowerCase()
+
     const nftData: NftCreateData = {
       name: '72120Bundle',
       symbol: '72Bundle',
@@ -469,6 +471,8 @@ describe('Simple Publish & consume test', async () => {
 
     // CREATE A POOL
     // we prepare transaction parameters objects
+    const poolLiquidity = '2000'
+
     const poolParams: PoolCreationParams = {
       ssContract: addresses.Staking,
       baseTokenAddress: addresses.MockDAI,
@@ -480,21 +484,24 @@ describe('Simple Publish & consume test', async () => {
       baseTokenDecimals: 18,
       vestingAmount: '10000',
       vestedBlocks: 2500000,
-      initialBaseTokenLiquidity: '2000',
+      initialBaseTokenLiquidity: poolLiquidity,
       swapFeeLiquidityProvider: '0.001',
       swapFeeMarketRunner: '0.001'
     }
+    const ecr20Symbol = 'ERC20DT1Symbol'
+    const erc20Name = 'ERC20B1'
+    const erc20Cap = '1000000'
 
     const ercParams = {
       templateIndex: 1,
       minter: publisherAccount,
-      paymentCollector: accounts[4],
+      paymentCollector: collector,
       mpFeeAddress: publisherAccount,
       feeToken: addresses.MockDAI,
-      cap: '1000000',
+      cap: erc20Cap,
       feeAmount: '0',
-      name: 'ERC20B1',
-      symbol: 'ERC20DT1Symbol'
+      name: erc20Name,
+      symbol: ecr20Symbol
     }
 
     await approve(
@@ -502,7 +509,7 @@ describe('Simple Publish & consume test', async () => {
       publisherAccount,
       addresses.MockDAI,
       addresses.ERC721Factory,
-      '2000'
+      poolLiquidity
     )
 
     const txReceipt = await Factory.createNftErc20WithPool(
@@ -513,9 +520,21 @@ describe('Simple Publish & consume test', async () => {
     )
 
     const poolAddress = txReceipt.events.NewPool.returnValues.poolAddress
+    const erc20Token =
+      txReceipt.events.TokenCreated.returnValues.newTokenAddress
 
     const poolQuery = {
-      query: `query {pool(id:"${poolAddress.toLocaleLowerCase()}"){id,controller,isFinalized,symbol,name,cap,baseToken,baseTokenLiquidity,baseTokenWeight,datatoken,
+      query: `query {pool(id:"${poolAddress.toLocaleLowerCase()}"){
+        id,
+        controller,
+        isFinalized,
+        symbol,
+        name,
+        cap,
+        baseToken{id},
+        baseTokenLiquidity,
+        baseTokenWeight,
+        datatoken{id},
         datatokenLiquidity,
         datatokenWeight,
         publishMarketSwapFee,
@@ -536,6 +555,7 @@ describe('Simple Publish & consume test', async () => {
         transactions,
         publishMarketFeeAddress }}`
     }
+    console.log('query', poolQuery)
 
     await sleep(2000)
     const response = await fetch(subgraphUrl, {
@@ -545,18 +565,27 @@ describe('Simple Publish & consume test', async () => {
 
     const poolData = (await response.json()).data.pool
 
-    console.log('poolData', poolData)
+    console.log('poolData', poolData, poolData.dataToken)
 
-    assert(poolData.controller !== null, 'controller is null')
-    assert(poolData.isFinalized !== null, 'isFinalized is null')
-    assert(poolData.symbol !== null, 'symbol is null')
-    assert(poolData.name !== null, 'name is null')
-    assert(poolData.cap !== null, 'cap is null')
-    assert(poolData.baseToken !== null, 'baseToken is null')
+    // assert(poolData.controller === controller, 'controller is null')
+    assert(poolData.isFinalized === true, 'isFinalized is null')
+    assert(poolData.symbol === ecr20Symbol, 'symbol is null')
+    assert(poolData.name === erc20Name, 'name is null')
+    assert(poolData.cap === erc20Cap, 'cap is null')
+    assert(
+      poolData.baseToken.id === addresses.MockDAI.toLowerCase(),
+      'baseToken is null'
+    )
     assert(poolData.baseTokenLiquidity !== null, 'baseTokenLiquidity is null')
     assert(poolData.baseTokenWeight !== null, 'baseTokenWeight is null')
-    assert(poolData.datatoken !== null, 'datatoken is null')
-    assert(poolData.datatokenLiquidity !== null, 'datatokenLiquidity is null')
+    assert(
+      poolData.datatoken.id === erc20Token.toLowerCase(),
+      'datatoken is null'
+    )
+    assert(
+      poolData.datatokenLiquidity === poolLiquidity,
+      'datatokenLiquidity is null'
+    )
     assert(poolData.datatokenWeight !== null, 'datatokenWeight is null')
     assert(
       poolData.publishMarketSwapFee !== null,

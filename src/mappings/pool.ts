@@ -1,4 +1,4 @@
-import { BigInt, Address, log } from '@graphprotocol/graph-ts'
+import { BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   LOG_EXIT,
   LOG_JOIN,
@@ -222,7 +222,7 @@ export function handleSetup(event: LOG_SETUP): void {
   )
   pool.spotPrice = spotPrice
   pool.isFinalized = true
-  // TODO: proper tx , add baseToken, datatoken
+
   const fromUser = getUser(event.transaction.from.toHexString())
   const poolTx = getPoolTransaction(
     event,
