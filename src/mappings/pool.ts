@@ -239,6 +239,7 @@ export function handleSetup(event: LOG_SETUP): void {
   pool.block = event.block.number.toI32()
   pool.symbol = datatoken.symbol
   pool.name = datatoken.name
+  pool.cap = datatoken.cap
   pool.save()
   poolTx.save()
 

@@ -145,7 +145,7 @@ type Pool @entity {
     "publisher market fee value"
     publishMarketSwapFee: BigDecimal! 
     "publisher market fee total amount"             
-    publishMarketSwapFeeAmount: BigDecimal   
+    publishMarketSwapFeeAmount: BigDecimal!   
 
     "Liquidty provider fee value"             
     liquidityProviderSwapFee: BigDecimal   
