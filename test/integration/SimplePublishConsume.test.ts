@@ -522,6 +522,8 @@ describe('Simple Publish & consume test', async () => {
     const poolAddress = txReceipt.events.NewPool.returnValues.poolAddress
     const erc20Token =
       txReceipt.events.TokenCreated.returnValues.newTokenAddress
+    const tx = txReceipt.transactionHash.toLowerCase()
+    const txBlockHash = txReceipt.blockHash.toLowerCase()
 
     const poolQuery = {
       query: `query {pool(id:"${poolAddress.toLocaleLowerCase()}"){
@@ -555,7 +557,6 @@ describe('Simple Publish & consume test', async () => {
         transactions,
         publishMarketFeeAddress }}`
     }
-    console.log('query', poolQuery)
 
     await sleep(2000)
     const response = await fetch(subgraphUrl, {
@@ -565,26 +566,26 @@ describe('Simple Publish & consume test', async () => {
 
     const poolData = (await response.json()).data.pool
 
-    console.log('poolData', poolData, poolData.dataToken)
+    console.log('poolData', poolData)
 
     // assert(poolData.controller === controller, 'controller is null')
-    assert(poolData.isFinalized === true, 'isFinalized is null')
-    assert(poolData.symbol === ecr20Symbol, 'symbol is null')
-    assert(poolData.name === erc20Name, 'name is null')
-    assert(poolData.cap === erc20Cap, 'cap is null')
+    assert(poolData.isFinalized === true, 'isFinalized is false')
+    assert(poolData.symbol === ecr20Symbol, 'invalid symbol')
+    assert(poolData.name === erc20Name, 'invalid name')
+    assert(poolData.cap === erc20Cap, 'invalid cap')
     assert(
       poolData.baseToken.id === addresses.MockDAI.toLowerCase(),
-      'baseToken is null'
+      'invalid baseToken'
     )
     assert(poolData.baseTokenLiquidity !== null, 'baseTokenLiquidity is null')
     assert(poolData.baseTokenWeight !== null, 'baseTokenWeight is null')
     assert(
       poolData.datatoken.id === erc20Token.toLowerCase(),
-      'datatoken is null'
+      'invalid datatoken'
     )
     assert(
       poolData.datatokenLiquidity === poolLiquidity,
-      'datatokenLiquidity is null'
+      'invalid datatokenLiquidity'
     )
     assert(poolData.datatokenWeight !== null, 'datatokenWeight is null')
     assert(
@@ -610,10 +611,10 @@ describe('Simple Publish & consume test', async () => {
     assert(poolData.swapCount !== null, 'swapCount is null')
     assert(poolData.transactionCount !== null, 'transactionCount is null')
     assert(poolData.createdTimestamp !== null, 'createdTimestamp is null')
-    assert(poolData.tx !== null, 'tx is null')
-    assert(poolData.block !== null, 'block is null')
+    assert(poolData.tx === tx, 'invalid tx')
+    assert(poolData.block === txBlockHash, 'invalid block')
     assert(poolData.shares !== null, 'shares is null')
-    assert(poolData.transactions !== null, 'transactions is null')
+    assert(poolData.transactions >= 1, 'transactions are zero')
     assert(
       poolData.publishMarketFeeAddress !== null,
       'publishMarketFeeAddress is null'
