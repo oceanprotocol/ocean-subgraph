@@ -213,40 +213,23 @@ export function handleProviderFee(event: ProviderFee): void {
     event.transaction.from.toHex()
   )
   const order = Order.load(orderId)
-  let orderReuse = OrderReuse.load(event.transaction.hash.toHex())
+
   if (order) {
     order.providerFee = providerFee
+    order.providerFeeValidUntil = event.params.validUntil
     order.save()
-  } else if (orderReuse) {
+    return
+  }
+
+  let orderReuse = OrderReuse.load(event.transaction.hash.toHex())
+  if (orderReuse) {
     orderReuse.providerFee = providerFee
+    orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.save()
   } else {
     orderReuse = new OrderReuse(event.transaction.hash.toHex())
     orderReuse.providerFee = providerFee
+    orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.save()
   }
 }
-
-// export function handlePublishMarketFees(event: PublishMarketFees): void {
-//   const order = Order.load(
-//     getOrderId(
-//       event.transaction.hash.toHex(),
-//       event.address.toHex(),
-//       event.transaction.from.toHex()
-//     )
-//   )
-
-//   order.save()
-// }
-
-// export function handleConsumeMarketFees(event: ConsumeMarketFees): void {
-//   const order = Order.load(
-//     getOrderId(
-//       event.transaction.hash.toHex(),
-//       event.address.toHex(),
-//       event.transaction.from.toHex()
-//     )
-//   )
-
-//   order.save()
-// }
