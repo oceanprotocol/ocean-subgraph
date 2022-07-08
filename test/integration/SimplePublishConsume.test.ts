@@ -523,7 +523,7 @@ describe('Simple Publish & consume test', async () => {
     const erc20Token =
       txReceipt.events.TokenCreated.returnValues.newTokenAddress
     const tx = txReceipt.transactionHash.toLowerCase()
-    const txBlockHash = txReceipt.blockHash.toLowerCase()
+    const txBlock = txReceipt.blockNumber
 
     const poolQuery = {
       query: `query {pool(id:"${poolAddress.toLocaleLowerCase()}"){
@@ -553,8 +553,8 @@ describe('Simple Publish & consume test', async () => {
         createdTimestamp,
         tx,
         block,
-        shares,
-        transactions,
+        shares{id},
+        transactions{id},
         publishMarketFeeAddress }}`
     }
 
@@ -566,8 +566,6 @@ describe('Simple Publish & consume test', async () => {
 
     const poolData = (await response.json()).data.pool
 
-    console.log('poolData', poolData)
-
     // assert(poolData.controller === controller, 'controller is null')
     assert(poolData.isFinalized === true, 'isFinalized is false')
     assert(poolData.symbol === ecr20Symbol, 'invalid symbol')
@@ -577,8 +575,8 @@ describe('Simple Publish & consume test', async () => {
       poolData.baseToken.id === addresses.MockDAI.toLowerCase(),
       'invalid baseToken'
     )
-    assert(poolData.baseTokenLiquidity !== null, 'baseTokenLiquidity is null')
-    assert(poolData.baseTokenWeight !== null, 'baseTokenWeight is null')
+    assert(poolData.baseTokenLiquidity, 'baseTokenLiquidity is null')
+    assert(poolData.baseTokenWeight, 'baseTokenWeight is null')
     assert(
       poolData.datatoken.id === erc20Token.toLowerCase(),
       'invalid datatoken'
@@ -587,37 +585,31 @@ describe('Simple Publish & consume test', async () => {
       poolData.datatokenLiquidity === poolLiquidity,
       'invalid datatokenLiquidity'
     )
-    assert(poolData.datatokenWeight !== null, 'datatokenWeight is null')
+    assert(poolData.datatokenWeight, 'datatokenWeight is null')
+    assert(poolData.publishMarketSwapFee, 'publishMarketSwapFee is null')
     assert(
-      poolData.publishMarketSwapFee !== null,
-      'publishMarketSwapFee is null'
-    )
-    assert(
-      poolData.publishMarketSwapFeeAmount !== null,
+      poolData.publishMarketSwapFeeAmount,
       'publishMarketSwapFeeAmount is null'
     )
     assert(
-      poolData.liquidityProviderSwapFee !== null,
+      poolData.liquidityProviderSwapFee,
       'liquidityProviderSwapFee is null'
     )
     assert(
-      poolData.liquidityProviderSwapFeeAmount !== null,
+      poolData.liquidityProviderSwapFeeAmount,
       'liquidityProviderSwapFeeAmount is null'
     )
-    assert(poolData.totalShares !== null, 'totalShares is null')
+    assert(poolData.totalShares, 'totalShares is null')
     assert(poolData.totalSwapVolume !== null, 'totalSwapVolume is null')
-    assert(poolData.spotPrice !== null, 'spotPrice is null')
-    assert(poolData.exitCount !== null, 'exitCount is null')
-    assert(poolData.swapCount !== null, 'swapCount is null')
-    assert(poolData.transactionCount !== null, 'transactionCount is null')
+    assert(poolData.spotPrice, 'spotPrice is null')
+    assert(poolData.exitCount, 'exitCount is null')
+    assert(poolData.swapCount, 'swapCount is null')
+    assert(poolData.transactionCount, 'transactionCount is null')
     assert(poolData.createdTimestamp !== null, 'createdTimestamp is null')
     assert(poolData.tx === tx, 'invalid tx')
-    assert(poolData.block === txBlockHash, 'invalid block')
-    assert(poolData.shares !== null, 'shares is null')
-    assert(poolData.transactions >= 1, 'transactions are zero')
-    assert(
-      poolData.publishMarketFeeAddress !== null,
-      'publishMarketFeeAddress is null'
-    )
+    assert(poolData.block === txBlock, 'invalid block')
+    assert(poolData.shares, 'shares is null')
+    assert(poolData.transactions, 'transactions are null')
+    assert(poolData.publishMarketFeeAddress, 'publishMarketFeeAddress is null')
   })
 })
