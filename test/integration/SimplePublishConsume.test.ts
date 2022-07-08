@@ -563,8 +563,10 @@ describe('Simple Publish & consume test', async () => {
       method: 'POST',
       body: JSON.stringify(poolQuery)
     })
+    await sleep(2000)
 
     const poolData = (await response.json()).data.pool
+    console.log('poolData', poolData)
 
     // assert(poolData.controller === controller, 'controller is null')
     assert(poolData.isFinalized === true, 'isFinalized is false')
