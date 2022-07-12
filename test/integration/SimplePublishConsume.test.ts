@@ -1,14 +1,15 @@
 import {
-  // Aquarius,
-  // Datatoken,
+  Datatoken,
   Erc20CreateParams,
   ProviderInstance,
-  // ProviderFees,
+  ProviderFees,
   Nft,
   NftFactory,
   NftCreateData,
   getHash,
-  sleep
+  sleep,
+  ZERO_ADDRESS,
+  signHash
 } from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
@@ -71,12 +72,31 @@ const ddo = {
 }
 
 describe('Simple Publish & consume test', async () => {
+  let datatokenAddress: string
+  let datatoken: Datatoken
+  let nft: Nft
+  let Factory: NftFactory
+  let accounts: string[]
+  let publisherAccount: string
+  let newOwnerAccount: string
+  let user1: string
+  let user2: string
+  let user3: string
+  let user4: string
+
+  before(async () => {
+    nft = new Nft(web3)
+    Factory = new NftFactory(addresses.ERC721Factory, web3)
+    accounts = await web3.eth.getAccounts()
+    publisherAccount = accounts[0]
+    newOwnerAccount = accounts[1].toLowerCase()
+    user1 = accounts[2]
+    user2 = accounts[3]
+    user3 = accounts[4]
+    user4 = accounts[4]
+  })
+
   it('should publish a dataset (create NFT + ERC20)', async () => {
-    const nft = new Nft(web3)
-    // const datatoken = new Datatoken(web3)
-    const Factory = new NftFactory(addresses.ERC721Factory, web3)
-    const accounts = await web3.eth.getAccounts()
-    const publisherAccount = accounts[0]
     // const consumerAccount = accounts[1]
     const nftParams: NftCreateData = {
       name: 'testNFT',
@@ -101,7 +121,7 @@ describe('Simple Publish & consume test', async () => {
       erc20Params
     )
     const erc721Address = result.events.NFTCreated.returnValues[0]
-    const datatokenAddress = result.events.TokenCreated.returnValues[0]
+    datatokenAddress = result.events.TokenCreated.returnValues[0]
 
     // create the files encrypted string
     let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
@@ -127,8 +147,6 @@ describe('Simple Publish & consume test', async () => {
       encryptedResponse,
       '0x' + metadataHash
     )
-    // const resolvedDDO = await aquarius.waitForAqua(ddo.id)
-    // assert(resolvedDDO, 'Cannot fetch DDO from Aquarius')
 
     // graph tests here
     await sleep(2000)
@@ -143,62 +161,8 @@ describe('Simple Publish & consume test', async () => {
     })
     const queryResult = await response.json()
     assert(queryResult.data.nft.id === graphNftToken)
-
-    /*
-
-    // mint 1 ERC20 and send it to the consumer
-    await datatoken.mint(datatokenAddress, publisherAccount, '1', consumerAccount)
-    // initialize provider
-    const initializeData = await ProviderInstance.initialize(
-      resolvedDDO.id,
-      resolvedDDO.services[0].id,
-      0,
-      consumerAccount,
-      providerUrl
-    )
-    const providerFees: ProviderFees = {
-      providerFeeAddress: initializeData.providerFee.providerFeeAddress,
-      providerFeeToken: initializeData.providerFee.providerFeeToken,
-      providerFeeAmount: initializeData.providerFee.providerFeeAmount,
-      v: initializeData.providerFee.v,
-      r: initializeData.providerFee.r,
-      s: initializeData.providerFee.s,
-      providerData: initializeData.providerFee.providerData,
-      validUntil: initializeData.providerFee.validUntil
-    }
-    // make the payment
-    const txid = await datatoken.startOrder(
-      datatokenAddress,
-      consumerAccount,
-      consumerAccount,
-      0,
-      providerFees
-    )
-    // get the url
-    const downloadURL = await ProviderInstance.getDownloadUrl(
-      ddo.id,
-      consumerAccount,
-      ddo.services[0].id,
-      0,
-      txid.transactionHash,
-      providerUrl,
-      web3
-    )
-    assert(downloadURL, 'Provider getDownloadUrl failed')
-    try {
-      const fileData = await downloadFile(downloadURL)
-    } catch (e) {
-      assert.fail('Download failed')
-    }
-    */
   })
   it('should publish and transfer an NFT', async () => {
-    const nft = new Nft(web3)
-    const Factory = new NftFactory(addresses.ERC721Factory, web3)
-    const accounts = await web3.eth.getAccounts()
-    const publisherAccount = accounts[0]
-    const newOwnerAccount = accounts[1].toLowerCase()
-
     const nftParams: NftCreateData = {
       name: 'testNFT',
       symbol: 'TST',
@@ -280,5 +244,211 @@ describe('Simple Publish & consume test', async () => {
     })
     const queryResult = await response.json()
     assert(queryResult.data.nft.owner === newOwnerAccount)
+  })
+
+  it('should save  provider fees after startOrder is called', async () => {
+    datatoken = new Datatoken(web3, 8996)
+    await datatoken.mint(datatokenAddress, publisherAccount, '100', user1)
+    const user1Balance = await datatoken.balance(datatokenAddress, user1)
+    assert(user1Balance === '100', 'user1 has no datatokens')
+
+    const providerData = JSON.stringify({ timeout: 0 })
+    const providerFeeToken = ZERO_ADDRESS
+    const providerFeeAmount = '10000'
+    const providerValidUntil = '0'
+    const message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    const { v, r, s } = await signHash(web3, message, user3)
+    const setProviderFee: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+    const orderTx = await datatoken.startOrder(
+      datatokenAddress,
+      user1,
+      user2,
+      1,
+      setProviderFee
+    )
+    const orderId = `${orderTx.transactionHash.toLocaleLowerCase()}-${datatokenAddress.toLocaleLowerCase()}-${user1.toLocaleLowerCase()}`
+
+    const query = { query: `query {order(id:"${orderId}"){id, providerFee}}` }
+
+    await sleep(2000)
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query)
+    })
+
+    const queryResult = await response.json()
+
+    const providerFeeJSON = JSON.parse(queryResult.data.order.providerFee)
+
+    assert(
+      providerFeeJSON.providerFeeAddress.toLowerCase() ===
+        setProviderFee.providerFeeAddress.toLowerCase(),
+      'Wrong providerFeeAddress set'
+    )
+    assert(
+      providerFeeJSON.providerFeeAmount.toLowerCase() ===
+        setProviderFee.providerFeeAmount.toLowerCase(),
+      'Wrong providerFeeAmount set'
+    )
+    assert(
+      providerFeeJSON.providerFeeToken.toLowerCase() ===
+        setProviderFee.providerFeeToken.toLowerCase(),
+      'Wrong providerFeeToken set'
+    )
+  })
+
+  it('should save provider fees after calling reuseOrder on a using a previous txId', async () => {
+    await datatoken.mint(datatokenAddress, publisherAccount, '100', user4)
+    const user4Balance = await datatoken.balance(datatokenAddress, user4)
+    assert(user4Balance === '100', 'publisherAccount has no datatokens')
+
+    const providerData = JSON.stringify({ timeout: 0 })
+    const providerFeeToken = ZERO_ADDRESS
+    let providerFeeAmount = '90'
+    let providerValidUntil = '0'
+    let message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    let { v, r, s } = await signHash(web3, message, user3)
+    const setInitialProviderFee: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+
+    const orderTx = await datatoken.startOrder(
+      datatokenAddress,
+      user4,
+      user2,
+      1,
+      setInitialProviderFee
+    )
+    assert(orderTx.transactionHash, 'Failed to start order')
+
+    // Check initial provider fee has been set correctly
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}`
+
+    const initialQuery = {
+      query: `query {order(id:"${orderId}"){id, providerFee}}`
+    }
+    await sleep(2000)
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(initialQuery)
+    })
+    const initialQueryResult = await initialResponse.json()
+    const initialProviderFeeJSON = JSON.parse(
+      initialQueryResult.data.order.providerFee
+    )
+
+    assert(
+      initialProviderFeeJSON.providerFeeAddress.toLowerCase() ===
+        setInitialProviderFee.providerFeeAddress.toLowerCase(),
+      'Wrong initial providerFeeAddress set'
+    )
+    assert(
+      initialProviderFeeJSON.providerFeeAmount.toLowerCase() ===
+        setInitialProviderFee.providerFeeAmount.toLowerCase(),
+      'Wrong initial providerFeeAmount set'
+    )
+    assert(
+      initialProviderFeeJSON.providerFeeToken.toLowerCase() ===
+        setInitialProviderFee.providerFeeToken.toLowerCase(),
+      'Wrong initial providerFeeToken set'
+    )
+
+    providerFeeAmount = '990000'
+    providerValidUntil = '10000'
+    message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    const msgResult = await signHash(web3, message, user3)
+    v = msgResult.v
+    r = msgResult.r
+    s = msgResult.s
+
+    const setNewProviderFee: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+
+    const reusedOrder = await datatoken.reuseOrder(
+      datatokenAddress,
+      user2,
+      orderTx.transactionHash,
+      setNewProviderFee
+    )
+
+    assert(reusedOrder.events.OrderReused.event === 'OrderReused')
+    assert(reusedOrder.events.ProviderFee.event === 'ProviderFee')
+
+    sleep(4000)
+    // Check the new provider fee has been set in OrderReuse
+
+    const reuseQuery = {
+      query: `query {orderReuse(id:"${reusedOrder.transactionHash}"){id, providerFee}}`
+    }
+
+    await sleep(2000)
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(reuseQuery)
+    })
+
+    const reuseQueryResult = await response.json()
+
+    const reuseProviderFeeJSON = JSON.parse(
+      reuseQueryResult.data.orderReuse.providerFee
+    )
+
+    assert(
+      reuseProviderFeeJSON.providerFeeAddress.toLowerCase() ===
+        setNewProviderFee.providerFeeAddress.toLowerCase(),
+      'New providerFeeAddress set in reuse order is wrong'
+    )
+    assert(
+      reuseProviderFeeJSON.providerFeeAmount.toLowerCase() ===
+        setNewProviderFee.providerFeeAmount.toLowerCase(),
+      'New providerFeeAmount set in reuse order is wrong'
+    )
+    assert(
+      reuseProviderFeeJSON.providerFeeToken.toLowerCase() ===
+        setNewProviderFee.providerFeeToken.toLowerCase(),
+      'New providerFeeToken set in reuse order is wrong'
+    )
   })
 })

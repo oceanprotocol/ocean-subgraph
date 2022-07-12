@@ -249,6 +249,8 @@ type OrderReuse @entity {
   createdTimestamp: BigInt!
   tx: String!
   block: BigInt!
+  providerFee: String
+  providerFeeValidUntil: BigInt
   }
 type Order @entity {  
   "transaction hash - token address - from address"                                       
@@ -265,6 +267,8 @@ type Order @entity {
   publishingMarket: User
   publishingMarketToken: Token                                #
   publishingMarketAmmount: BigDecimal                         #call contract to get fee amount
+  providerFee: String
+  providerFeeValidUntil: BigInt
 
   consumerMarket: User
   consumerMarketToken: Token                                  #

@@ -10,7 +10,8 @@ import {
   RemovedMinter,
   RemovedPaymentManager,
   CleanedPermissions,
-  OrderReused
+  OrderReused,
+  ProviderFee
 } from '../@types/templates/ERC20Template/ERC20Template'
 
 import { integer } from './utils/constants'
@@ -18,14 +19,7 @@ import { weiToDecimal } from './utils/generic'
 import { addOrder } from './utils/globalUtils'
 import { getToken, getUSDValue } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
-
-function getOrderId(
-  tx: string,
-  tokenAddress: string,
-  fromAddress: string
-): string {
-  return `${tx}-${tokenAddress}-${fromAddress}`
-}
+import { getOrderId } from './utils/orderUtils'
 
 export function handleOrderStarted(event: OrderStarted): void {
   const order = new Order(
@@ -204,26 +198,38 @@ export function handleNewPaymentCollector(event: NewPaymentCollector): void {
   token.save()
 }
 
-// export function handlePublishMarketFees(event: PublishMarketFees): void {
-//   const order = Order.load(
-//     getOrderId(
-//       event.transaction.hash.toHex(),
-//       event.address.toHex(),
-//       event.transaction.from.toHex()
-//     )
-//   )
+export function handleProviderFee(event: ProviderFee): void {
+  const providerFee: string = `{"providerFeeAddress": "${event.params.providerFeeAddress.toHex()}", "providerFeeToken": "${event.params.providerFeeToken.toHex()}", "providerFeeAmount": "${
+    event.params.providerFeeAmount
+  }", "providerData": "${event.params.providerData.toHexString()}", "v": "${
+    event.params.v
+  }", "r": "${event.params.r.toHexString()}", "s": "${event.params.s.toHexString()}", "validUntil": "${
+    event.params.validUntil
+  }"}`
 
-//   order.save()
-// }
+  const orderId = getOrderId(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.transaction.from.toHex()
+  )
+  const order = Order.load(orderId)
 
-// export function handleConsumeMarketFees(event: ConsumeMarketFees): void {
-//   const order = Order.load(
-//     getOrderId(
-//       event.transaction.hash.toHex(),
-//       event.address.toHex(),
-//       event.transaction.from.toHex()
-//     )
-//   )
+  if (order) {
+    order.providerFee = providerFee
+    order.providerFeeValidUntil = event.params.validUntil
+    order.save()
+    return
+  }
 
-//   order.save()
-// }
+  let orderReuse = OrderReuse.load(event.transaction.hash.toHex())
+  if (orderReuse) {
+    orderReuse.providerFee = providerFee
+    orderReuse.providerFeeValidUntil = event.params.validUntil
+    orderReuse.save()
+  } else {
+    orderReuse = new OrderReuse(event.transaction.hash.toHex())
+    orderReuse.providerFee = providerFee
+    orderReuse.providerFeeValidUntil = event.params.validUntil
+    orderReuse.save()
+  }
+}
