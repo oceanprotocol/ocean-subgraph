@@ -69,6 +69,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     order.createdTimestamp
   )
   order.save()
+  log.info('\n\n3 A. order.lastPriceToken: {}\n\n', [order.lastPriceToken])
   token.save()
   addOrder()
   if (token.nft) {
