@@ -543,7 +543,6 @@ type NftUpdate @entity {
   tx: String!
 }
 
-
 type Template @entity{
   id: ID!
   fixedRateTemplates: [String!]
@@ -551,4 +550,44 @@ type Template @entity{
   ssTemplates: [String!]
 }
 
+# Not tracking allocationToId or idToAllocation
+# id = {user}
+type veAllocateUser @entity{
+  id: ID!
+  
+  allocations: [veAllocation!] @derivedFrom(field: "allocationUser")  
+  allocatedTotal: BigDecimal!
+}
 
+# id = {DT Address}-{chain id}
+type veAllocateId @entity{
+  id: ID!
+  
+  allocations: [veAllocation!] @derivedFrom(field: "allocationId")
+  allocatedTotal: BigDecimal!
+}
+
+# we need to track allocation of user to id
+# id = {user}-{DT Address}-{chain id}
+type veAllocation @entity {
+  id: ID!
+
+  allocationUser: veAllocateUser!
+  allocationId: veAllocateId!
+  
+  updates: [veAllocationUpdate!] @derivedFrom(field: "veAllocation")
+  allocation: BigInt!
+}
+
+enum AllocationUpdateType {
+  SET,
+  REMOVED
+}
+
+type veAllocationUpdate @entity {
+  id: ID! # {tx}-{veAllocation id}
+ 
+  veAllocationId: veAllocation!
+  type: AllocationUpdateType!
+  allocation: BigInt!
+}
