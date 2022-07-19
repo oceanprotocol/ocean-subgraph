@@ -551,16 +551,16 @@ type Template @entity{
 }
 
 # Not tracking allocationToId or idToAllocation
-# id = {user}
 type veAllocateUser @entity{
+  "id = {user}"
   id: ID!
   
   allocations: [veAllocation!] @derivedFrom(field: "allocationUser")  
   allocatedTotal: BigDecimal!
 }
 
-# id = {DT Address}-{chain id}
 type veAllocateId @entity{
+  "id = {DataNFT Address}-{chain id}"
   id: ID!
   
   allocations: [veAllocation!] @derivedFrom(field: "allocationId")
@@ -568,26 +568,27 @@ type veAllocateId @entity{
 }
 
 # we need to track allocation of user to id
-# id = {user}-{DT Address}-{chain id}
 type veAllocation @entity {
+  "id = {user}-{DataNFT Address}-{chain id}"
   id: ID!
 
   allocationUser: veAllocateUser!
   allocationId: veAllocateId!
   
   updates: [veAllocationUpdate!] @derivedFrom(field: "veAllocation")
-  allocation: BigInt!
+  allocation: BigDecimal!
 }
 
-enum AllocationUpdateType {
+enum veAllocationUpdateType {
   SET,
   REMOVED
 }
 
 type veAllocationUpdate @entity {
-  id: ID! # {tx}-{veAllocation id}
+  "{tx}-{veAllocation id}"
+  id: ID!
  
-  veAllocationId: veAllocation!
-  type: AllocationUpdateType!
-  allocation: BigInt!
+  veAllocation: veAllocation!
+  type: veAllocationUpdateType!
+  allocation: BigDecimal!
 }

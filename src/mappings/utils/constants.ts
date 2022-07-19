@@ -34,3 +34,8 @@ export namespace NftUpdateType {
   export const STATE_UPDATED = 'STATE_UPDATED'
   export const TOKENURI_UPDATED = 'TOKENURI_UPDATED'
 }
+
+export namespace veAllocationUpdateType {
+  export const SET = 'SET'
+  export const REMOVED = 'REMOVED'
+}

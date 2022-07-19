@@ -23,14 +23,14 @@ export function getveAllocateId(id: string): veAllocateId {
 export function getveAllocation(sender: string, id: string): veAllocation {
     let allocation = veAllocation.load(sender+"-"+id)
     if (allocation === null) {
-        allocation = new veAllocateId(sender+"-"+id)
+        allocation = new veAllocation(sender+"-"+id)
         allocation.save()
     }
   
     return allocation
 }
 
-export function getveAllocationUpdate(tx: string, allocationId: string): veAllocation {
+export function getveAllocationUpdate(tx: string, allocationId: string): veAllocationUpdate {
     let allocationUpdate = veAllocationUpdate.load(tx+"-"+allocationId)
     if (allocationUpdate === null) {
         allocationUpdate = new veAllocationUpdate(tx+"-"+allocationId)

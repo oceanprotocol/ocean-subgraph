@@ -1,23 +1,30 @@
-import { AllocationSet, AllocationRemoved } from '../@types/veOcean/veOcean'
-import { AllocationUpdateType } from '../../@types/schema'
+import { AllocationSet, AllocationRemoved } from '../@types/veAllocate/veAllocate'
+
+import { weiToDecimal } from './utils/generic'
+import { veAllocationUpdateType } from './utils/constants'
 
 import { getveAllocateUser, getveAllocateId, getveAllocation, getveAllocationUpdate } from './utils/veUtils'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleAllocationSet(event: AllocationSet): void {
   // get allocation entities
-  const allocateUser = getveAllocateUser(event.params.sender)
-  const allocateId = getveAllocateId(event.params.id)
-  const allocation = getveAllocation(event.params.sender, event.params.id)
-  
+  const allocateUser = getveAllocateUser(event.params.sender.toHex())
+  const allocateId = getveAllocateId(event.params.id.toString())
+  const allocation = getveAllocation(event.params.sender.toHex(), event.params.id.toString())
+  const allocationAmount = weiToDecimal(
+    event.params.amount.toBigDecimal(),
+    18
+  )
+
   // get allocation event
   const allocationUpdate = getveAllocationUpdate(event.transaction.hash.toHex(), allocation.id)
-  allocationUpdate.type = AllocationUpdateType.SET
+  allocationUpdate.type = veAllocationUpdateType.SET
   
   // update all entities
-  allocateUser.allocatedTotal = allocateUser.allocatedTotal - allocation.allocation + event.params.allocation
-  allocateId.allocatedTotal = allocateId.allocatedTotal - allocation.allocation + event.params.allocation
-  allocation.allocation = event.params.allocation  
-  allocationUpdate.allocation = event.params.allocation
+  allocateUser.allocatedTotal = allocateUser.allocatedTotal - allocation.allocation + allocationAmount
+  allocateId.allocatedTotal = allocateId.allocatedTotal - allocation.allocation + allocationAmount
+  allocation.allocation = allocationAmount
+  allocationUpdate.allocation = allocationAmount
 
   // save entities
   allocateUser.save()
@@ -28,19 +35,20 @@ export function handleAllocationSet(event: AllocationSet): void {
 
 export function handleAllocationRemoved(event: AllocationRemoved): void {
   // get allocation objects
-  const allocateUser = getveAllocateUser(event.params.sender)
-  const allocateId = getveAllocateId(event.params.id)
-  const allocation = getveAllocation(event.params.sender, event.params.id)
+  const allocateUser = getveAllocateUser(event.params.sender.toHex())
+  const allocateId = getveAllocateId(event.params.id.toString())
+  
+  const allocation = getveAllocation(event.params.sender.toHex(), event.params.id.toString())
 
   // get allocation event
   const allocationUpdate = getveAllocationUpdate(event.transaction.hash.toHex(), allocation.id)
-  allocationUpdate.type = AllocationUpdateType.REMOVED
+  allocationUpdate.type = veAllocationUpdateType.REMOVED
   
   // update all entities
   allocateUser.allocatedTotal = allocateUser.allocatedTotal - allocation.allocation
   allocateId.allocatedTotal = allocateId.allocatedTotal - allocation.allocation
-  allocation.allocation = 0
-  allocationUpdate.allocation = 0
+  allocation.allocation = BigInt.fromI32(0).toBigDecimal()
+  allocationUpdate.allocation = BigInt.fromI32(0).toBigDecimal()
   
   // save entities
   allocateUser.save()

@@ -286,8 +286,8 @@ templates:
         - name: veAllocate
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veAllocate.vy/veAllocate.json
       eventHandlers:
-        - event: AllocationSet(indexed address, indexed string, uint256)
+        - event: AllocationSet(indexed address,indexed string,uint256)
           handler: handleAllocationSet
-        - event: AllocationRemoved(indexed address, indexed string)
+        - event: AllocationRemoved(indexed address,indexed string)
           handler: handleAllocationRemoved
         
