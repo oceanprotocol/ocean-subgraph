@@ -153,20 +153,6 @@ type Order @entity {
   estimatedUSDValue: BigDecimal!
 }
 
-# to be removed, mabye for pool shares only 
-type TokenTransaction @entity {
-  id: ID! # Log ID
-  event: String
-  token: Token
-  user: User
-
-  block: Int!
-  gasUsed: BigDecimal!
-  gasPrice: BigDecimal!
-  createdTimestamp: Int!
-  tx: String!
-}
-
 type User @entity {
   id: ID!
   tokenBalancesOwned: [TokenValuePair!]
