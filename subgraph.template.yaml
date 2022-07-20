@@ -49,6 +49,7 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
+        - event: TokenAdded(indexed address,indexed address)
           handler: handleTokenAdded
         - event: TokenRemoved(indexed address,indexed address)
           handler: handleTokenRemoved
