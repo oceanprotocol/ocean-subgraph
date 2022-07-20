@@ -3,7 +3,6 @@ import {
   GlobalStatistic,
   GlobalTotalFixedSwapPair,
   GlobalTotalLiquidityPair,
-  GlobalTotalPoolSwapPair,
   OPC,
   Template
 } from '../../@types/schema'
@@ -66,25 +65,6 @@ export function addDispenser(): void {
   const globalStats = getGlobalStats()
   globalStats.dispenserCount = globalStats.dispenserCount + 1
   globalStats.save()
-}
-
-export function addPool(): void {
-  const globalStats = getGlobalStats()
-  globalStats.poolCount = globalStats.poolCount + 1
-  globalStats.save()
-}
-
-export function addPoolSwap(tokenAddress: string, value: BigDecimal): void {
-  let poolSwapPair = GlobalTotalPoolSwapPair.load(tokenAddress)
-  if (!poolSwapPair) {
-    poolSwapPair = new GlobalTotalPoolSwapPair(tokenAddress)
-    poolSwapPair.globalStatistic = GLOBAL_ID
-    poolSwapPair.token = tokenAddress
-  }
-  poolSwapPair.value = poolSwapPair.value.plus(value)
-  poolSwapPair.count = poolSwapPair.count.plus(BigInt.fromI32(1))
-
-  poolSwapPair.save()
 }
 
 export function addFixedSwap(tokenAddress: string, value: BigDecimal): void {
