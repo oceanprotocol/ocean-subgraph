@@ -47,9 +47,6 @@ type Token @entity {
     "dispensers using this token"
     dispensers: [Dispenser!] @derivedFrom(field:"token")
 
-    "pools, only available for datatokens"
-    pools: [Pool!] @derivedFrom(field:"datatoken")
-
     "block time datatoken was created"
     createdTimestamp: Int!        
 
@@ -115,133 +112,6 @@ type Nft @entity{
     orderCount: BigInt!                                              
 }
 
-type Pool @entity {
-    "pool address"
-    id: ID!    
-
-    "owner address, pool controller"                                   
-    controller: String!
-
-    "only finalized pools are relevant to us"                             
-    isFinalized: Boolean!                                   
-    
-    "pool token symbol"
-    symbol: String      
-
-    "pool token name"                                    
-    name: String    
-
-    "maximum supply if any, converted from wei"                                        
-    cap: BigDecimal                                              
-
-    baseToken: Token! 
-    baseTokenLiquidity: BigDecimal!
-    baseTokenWeight: BigDecimal!
-    
-    datatoken: Token!
-    datatokenLiquidity: BigDecimal!
-    datatokenWeight: BigDecimal!
-
-    "publisher market fee value"
-    publishMarketSwapFee: BigDecimal! 
-    "publisher market fee total amount"             
-    publishMarketSwapFeeAmount: BigDecimal   
-
-    "Liquidty provider fee value"             
-    liquidityProviderSwapFee: BigDecimal   
-    "liquidity provider fee total amount"
-    liquidityProviderSwapFeeAmount: BigDecimal!     
-
-    "total pool token shares"                           
-    totalShares: BigDecimal!   
-
-    "total tokens that were swaped"                             
-    totalSwapVolume: [TokenValuePair!]!                         
-
-    spotPrice: BigDecimal!                                  
-
-    "count for when liquidity has been added"
-    joinCount: BigInt!             
-
-    "count for when liquidity has been removed"                     
-    exitCount: BigInt!              
-
-    "count for when tokens were swapped"                             
-    swapCount: BigInt!
-
-    "number of transactions in this pool involving liquidity changes"
-    transactionCount: BigInt!                               
-   
-    "block time when pool was created"
-    createdTimestamp: Int!      
-    "pool creation transaction id"                            
-    tx: String!    
-    "block number when it was created"                                          
-    block: Int                                              
-
-    shares: [PoolShare!] @derivedFrom(field: "pool")
-    transactions: [PoolTransaction!] @derivedFrom(field: "pool")
-
-    "address of the market where the datatoken was created. This address collects market fees."                       
-    publishMarketFeeAddress: String 
-
-   
-
-
-}
-
-# we will need to track pool share tx between users -  bpool transfer tx event
-type PoolShare @entity {
-  "poolAddress + userAddress"
-  id: ID!                                                   
-  user: User!
-  pool: Pool!
-  shares: BigDecimal!
-}
-
- enum PoolTransactionType {
-  JOIN,
-  EXIT,
-  SWAP,
-  SETUP
-}
-
-type PoolTransaction @entity {
-  "tx address + caller address" 
-  id: ID!        
-  "pool related to this tx"                                            
-  pool: Pool!   
-  "user that initiates the tx"                                             
-  user: User!                                              
-  type: PoolTransactionType!                                                  
-  
-  "number of shares transfered"
-  sharesTransferAmount: BigDecimal!                           
- 
-  "block time when pool was created"
-  timestamp: Int!      
-  "pool creation transaction id"                            
-  tx: String!    
-  "block number when it was created"                                          
-  block: Int       
-
-  gasLimit: BigDecimal!  
-  "price expressed in eth"                                    
-  gasPrice: BigDecimal!                                      
-
-  "base tokens transfered"
-  baseToken: Token 
-
-  "number of base tokens transfered, for type SWAP if value is negative it means it was removed"       
-  baseTokenValue: BigDecimal
-
-  "datatokens transfered"                        
-  datatoken: Token
-
-  "number of datatokens transfered, for type SWAP if value is negative it means it was removed"
-  datatokenValue: BigDecimal
-}
-
 type OrderReuse @entity {
   id: ID!
   order: Order!
@@ -252,6 +122,7 @@ type OrderReuse @entity {
   providerFee: String
   providerFeeValidUntil: BigInt
   }
+
 type Order @entity {  
   "transaction hash - token address - from address"                                       
   id: ID!                                                    
@@ -287,9 +158,7 @@ type Order @entity {
 
 type User @entity {
   id: ID!
-  sharesOwned: [PoolShare!] @derivedFrom(field: "user")
   tokenBalancesOwned: [TokenValuePair!]
-  poolTransactions: [PoolTransaction!] @derivedFrom(field: "user")
   orders: [Order!] @derivedFrom(field: "payer")
   freSwaps: [FixedRateExchangeSwap!] @derivedFrom(field: "by")
   
@@ -407,28 +276,6 @@ type DispenserTransaction @entity {
   tx: String!
 }
 
-type PoolSnapshot @entity {
-  id: ID!
-  pool: Pool!
-  "total pool shares at the end of the 24h interval"
-  totalShares: BigDecimal!
-  "swap value 24h"
-  swapVolume: BigDecimal!   
-  "swap fee value 24h"                                          
-  swapFees: BigDecimal! 
-  "date without time"                                              
-  date: Int!         
-  "last spot price in the 24h interval"                                 
-  spotPrice: BigDecimal!                                         
-  
-  baseToken: Token!
-  baseTokenLiquidity: BigDecimal!
-
-  datatoken: Token!
-  datatokenLiquidity: BigDecimal! 
-
-}
-
 "utility type"
 type GlobalTotalLiquidityPair @entity {
    "address of the token"
@@ -439,15 +286,6 @@ type GlobalTotalLiquidityPair @entity {
 }
 
 "utility type"
-type GlobalTotalPoolSwapPair @entity {
-   "address of the token"
-   id : ID!
-   globalStatistic: GlobalStatistic!
-   token : Token!
-   value : BigDecimal!
-   count: BigInt!
-}
-"utility type"
 type GlobalTotalFixedSwapPair @entity {
    "address of the token"
    id : ID!
@@ -457,25 +295,18 @@ type GlobalTotalFixedSwapPair @entity {
    count: BigInt!
 }
 type GlobalStatistic @entity {
-    id: ID!
-
-    "total liquidity for each base token in pools"                  
-    totalLiquidity: [GlobalTotalLiquidityPair!]!   @derivedFrom(field: "globalStatistic")                      
-    "total swap volume for each base token in pools"
-    totalPoolSwapVolume: [GlobalTotalPoolSwapPair!]!  @derivedFrom(field: "globalStatistic")        
+    id: ID!     
 
     "total swap volume for each base token in fixed rate exchanges"
     totalFixedSwapVolume: [GlobalTotalFixedSwapPair!]    @derivedFrom(field: "globalStatistic")                          
      
-    "number of total orders. pool orders + fixed rate exchange orders + dispenser orders"
+    "number of total orders. fixed rate exchange orders + dispenser orders"
     orderCount: Int!                                    
 
     "total nfts(erc721) created"
     nftCount: Int!
     "total datatokens (tokens with isDatatoken = true) created"
-    datatokenCount:Int!
-    "number of pools"
-    poolCount: Int!     
+    datatokenCount:Int!  
     
     "number of fixed rate exchanges"
     fixedCount: Int!
