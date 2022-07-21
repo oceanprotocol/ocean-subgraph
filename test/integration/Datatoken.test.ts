@@ -13,6 +13,7 @@ import { SHA256 } from 'crypto-js'
 import { homedir } from 'os'
 import fs from 'fs'
 import { fetch } from 'cross-fetch'
+import { TransactionReceipt } from 'web3-core'
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -68,6 +69,8 @@ const ddo = {
 }
 
 describe('Datatoken tests', async () => {
+  const nftName = 'testNFT'
+  const nftSymbol = 'TST'
   let datatokenAddress: string
   let nft: Nft
   let Factory: NftFactory
@@ -76,6 +79,8 @@ describe('Datatoken tests', async () => {
   let publisher: string
   let erc721Address: string
   let nftAddress: string
+  let time: number
+  let blockNumber: number
 
   before(async () => {
     nft = new Nft(web3)
@@ -86,11 +91,9 @@ describe('Datatoken tests', async () => {
   })
 
   it('should publish a datatoken', async () => {
-    const nftName = 'testNFT'
-    const nftSymbol = 'TST'
     const date = new Date()
-    const time = Math.floor(date.getTime() / 1000)
-    const blockNumber = await web3.eth.getBlockNumber()
+    time = Math.floor(date.getTime() / 1000)
+    blockNumber = await web3.eth.getBlockNumber()
 
     const nftParams: NftCreateData = {
       name: nftName,
@@ -149,8 +152,7 @@ describe('Datatoken tests', async () => {
     })
     await sleep(2000)
     const nft = (await initialResponse.json()).data.nft
-    const tx = await web3.eth.getTransactionReceipt(nft.tx)
-    console.log('initialResult', nft)
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(nft.tx)
     assert(nft.id === nftAddress, 'incorrect value for: id')
     assert(nft.symbol === nftSymbol, 'incorrect value for: symbol')
     assert(nft.name === nftName, 'incorrect value for: name')
@@ -212,13 +214,76 @@ describe('Datatoken tests', async () => {
     await sleep(2000)
     const query = {
       query: `query {
-          nft(id:"${nftAddress}"){symbol,id}}`
+              nft(id:"${nftAddress}"){    
+                id,
+                symbol,
+                name,
+                tokenUri,
+                owner,
+                creator,
+                address,
+                providerUrl,
+                assetState,
+                managerRole,
+                erc20DeployerRole,
+                storeUpdateRole,
+                metadataRole,
+                template,
+                transferable,
+                createdTimestamp,
+                tx,
+                block,
+                orderCount}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
-    const queryResult = await response.json()
-    assert(queryResult.data.nft.id === nftAddress)
+    const updatedNft = (await response.json()).data.nft
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(
+      updatedNft.tx
+    )
+    console.log('updatedNft', updatedNft)
+    assert(updatedNft.id === nftAddress, 'incorrect value for: id')
+    assert(updatedNft.symbol === nftSymbol, 'incorrect value for: symbol')
+    assert(updatedNft.name === nftName, 'incorrect value for: name')
+    assert(updatedNft.tokenUri === '', 'incorrect value for: tokenUri')
+    assert(updatedNft.owner === publisher, 'incorrect value for: owner')
+    assert(updatedNft.creator === publisher, 'incorrect value for: creator')
+    assert(
+      updatedNft.managerRole[0] === publisher,
+      'incorrect value for: managerRole'
+    )
+    assert(
+      updatedNft.erc20DeployerRole[0] === factoryAddress,
+      'incorrect value for: erc20DeployerRole'
+    )
+    assert(
+      updatedNft.storeUpdateRole === null,
+      'incorrect value for: storeUpdateRole'
+    )
+    assert(
+      updatedNft.metadataRole === null,
+      'incorrect value for: metadataRole'
+    )
+    assert(updatedNft.template === '', 'incorrect value for: template')
+    assert(
+      updatedNft.transferable === true,
+      'incorrect value for: transferable'
+    )
+    assert(
+      updatedNft.createdTimestamp >= time,
+      'incorrect value for: createdTimestamp'
+    )
+    assert(
+      updatedNft.createdTimestamp < time + 5,
+      'incorrect value for: createdTimestamp'
+    )
+    assert(tx.from === publisher, 'incorrect value for: tx')
+    assert(tx.to === factoryAddress, 'incorrect value for: tx')
+    assert(tx.blockNumber >= blockNumber, 'incorrect value for: tx')
+    assert(updatedNft.block >= blockNumber, 'incorrect value for: block')
+    assert(updatedNft.block < blockNumber + 50, 'incorrect value for: block')
+    assert(updatedNft.orderCount === '0', 'incorrect value for: orderCount')
   })
 })
