@@ -90,6 +90,7 @@ describe('Datatoken tests', async () => {
     const nftSymbol = 'TST'
     const date = new Date()
     const time = Math.floor(date.getTime() / 1000)
+    const blockNumber = await web3.eth.getBlockNumber()
 
     const nftParams: NftCreateData = {
       name: nftName,
@@ -148,6 +149,7 @@ describe('Datatoken tests', async () => {
     })
     await sleep(2000)
     const nft = (await initialResponse.json()).data.nft
+    const tx = await web3.eth.getTransactionReceipt(nft.tx)
     console.log('initialResult', nft)
     assert(nft.id === nftAddress, 'incorrect value for: id')
     assert(nft.symbol === nftSymbol, 'incorrect value for: symbol')
@@ -172,9 +174,12 @@ describe('Datatoken tests', async () => {
       nft.createdTimestamp < time + 5,
       'incorrect value for: createdTimestamp'
     )
-    // assert(nft.tx === '', 'incorrect value for: tx')
-    // assert(nft.block === '', 'incorrect value for: block')
-    // assert(nft.orderCount === '', 'incorrect value for: orderCount')
+    assert(tx.from === publisher, 'incorrect value for: tx')
+    assert(tx.to === factoryAddress, 'incorrect value for: tx')
+    assert(tx.blockNumber >= blockNumber, 'incorrect value for: tx')
+    assert(nft.block >= blockNumber, 'incorrect value for: block')
+    assert(nft.block < blockNumber + 50, 'incorrect value for: block')
+    assert(nft.orderCount === '0', 'incorrect value for: orderCount')
   })
 
   it('Update metadata', async () => {
