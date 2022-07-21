@@ -71,21 +71,25 @@ describe('Datatoken tests', async () => {
   let datatokenAddress: string
   let nft: Nft
   let Factory: NftFactory
+  let factoryAddress: string
   let accounts: string[]
-  let publisherAccount: string
+  let publisher: string
   let erc721Address: string
   let nftAddress: string
 
   before(async () => {
     nft = new Nft(web3)
-    Factory = new NftFactory(addresses.ERC721Factory, web3)
+    factoryAddress = addresses.ERC721Factory.toLowerCase()
+    Factory = new NftFactory(factoryAddress, web3)
     accounts = await web3.eth.getAccounts()
-    publisherAccount = accounts[0]
+    publisher = accounts[0].toLowerCase()
   })
 
   it('should publish a datatoken', async () => {
     const nftName = 'testNFT'
     const nftSymbol = 'TST'
+    const date = new Date()
+    const time = Math.floor(date.getTime() / 1000)
 
     const nftParams: NftCreateData = {
       name: nftName,
@@ -93,7 +97,7 @@ describe('Datatoken tests', async () => {
       templateIndex: 1,
       tokenURI: '',
       transferable: true,
-      owner: publisherAccount
+      owner: publisher
     }
     const erc20Params: Erc20CreateParams = {
       templateIndex: 1,
@@ -101,11 +105,11 @@ describe('Datatoken tests', async () => {
       feeAmount: '0',
       paymentCollector: '0x0000000000000000000000000000000000000000',
       feeToken: '0x0000000000000000000000000000000000000000',
-      minter: publisherAccount,
+      minter: publisher,
       mpFeeAddress: '0x0000000000000000000000000000000000000000'
     }
     const result = await Factory.createNftWithErc20(
-      publisherAccount,
+      publisher,
       nftParams,
       erc20Params
     )
@@ -117,55 +121,60 @@ describe('Datatoken tests', async () => {
     nftAddress = erc721Address.toLowerCase()
     const initialQuery = {
       query: `query {
-              nft(id:"${nftAddress}"){name,symbol,id}}`
+              nft(id:"${nftAddress}"){    
+                id,
+                symbol,
+                name,
+                tokenUri,
+                owner,
+                creator,
+                address,
+                providerUrl,
+                assetState,
+                managerRole,
+                erc20DeployerRole,
+                storeUpdateRole,
+                metadataRole,
+                template,
+                transferable,
+                createdTimestamp,
+                tx,
+                block,
+                orderCount}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    const initialNFT = (await initialResponse.json()).data.nft
-    console.log('initialResult', initialNFT)
-    assert(initialNFT.id === nftAddress)
-    assert(initialNFT.symbol === nftSymbol)
-    assert(initialNFT.name === nftName)
-
-    // create the files encrypted string
-    let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
-    ddo.services[0].files = await providerResponse
-    ddo.services[0].datatokenAddress = datatokenAddress
-    // update ddo and set the right did
-    ddo.nftAddress = erc721Address
-    const chain = await web3.eth.getChainId()
-    ddo.id =
-      'did:op:' +
-      SHA256(web3.utils.toChecksumAddress(erc721Address) + chain.toString(10))
-
-    providerResponse = await ProviderInstance.encrypt(ddo, providerUrl)
-    const encryptedResponse = await providerResponse
-    const metadataHash = getHash(JSON.stringify(ddo))
-    await nft.setMetadata(
-      erc721Address,
-      publisherAccount,
-      0,
-      providerUrl,
-      '',
-      '0x2',
-      encryptedResponse,
-      '0x' + metadataHash
-    )
-
-    // graph tests here
     await sleep(2000)
-    const query = {
-      query: `query {
-          nft(id:"${nftAddress}"){symbol,id}}`
-    }
-    const response = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(query)
-    })
-    const queryResult = await response.json()
-    assert(queryResult.data.nft.id === nftAddress)
+    const nft = (await initialResponse.json()).data.nft
+    console.log('initialResult', nft)
+    assert(nft.id === nftAddress, 'incorrect value for: id')
+    assert(nft.symbol === nftSymbol, 'incorrect value for: symbol')
+    assert(nft.name === nftName, 'incorrect value for: name')
+    assert(nft.tokenUri === '', 'incorrect value for: tokenUri')
+    assert(nft.owner === publisher, 'incorrect value for: owner')
+    assert(nft.creator === publisher, 'incorrect value for: creator')
+    assert(nft.managerRole[0] === publisher, 'incorrect value for: managerRole')
+    assert(
+      nft.erc20DeployerRole[0] === factoryAddress,
+      'incorrect value for: erc20DeployerRole'
+    )
+    assert(nft.storeUpdateRole === null, 'incorrect value for: storeUpdateRole')
+    assert(nft.metadataRole === null, 'incorrect value for: metadataRole')
+    assert(nft.template === '', 'incorrect value for: template')
+    assert(nft.transferable === true, 'incorrect value for: transferable')
+    assert(
+      nft.createdTimestamp >= time,
+      'incorrect value for: createdTimestamp'
+    )
+    assert(
+      nft.createdTimestamp < time + 5,
+      'incorrect value for: createdTimestamp'
+    )
+    // assert(nft.tx === '', 'incorrect value for: tx')
+    // assert(nft.block === '', 'incorrect value for: block')
+    // assert(nft.orderCount === '', 'incorrect value for: orderCount')
   })
 
   it('Update metadata', async () => {
@@ -185,7 +194,7 @@ describe('Datatoken tests', async () => {
     const metadataHash = getHash(JSON.stringify(ddo))
     await nft.setMetadata(
       erc721Address,
-      publisherAccount,
+      publisher,
       0,
       providerUrl,
       '',
