@@ -69,6 +69,8 @@ jobs:
           sleep 20
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
+          BARGE_FOLDER: /home/runner/.ocean/
       - run: npm run test-integration
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
+          BARGE_FOLDER: /home/runner/.ocean/
