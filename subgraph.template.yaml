@@ -86,7 +86,7 @@ dataSources:
         - veAllocate
       abis:
         - name: veAllocate
-          file: __BARGEFOLDER__/ocean-contracts/artifacts/contracts/ve/veAllocate.sol/veAllocate.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veAllocate.sol/veAllocate.json
       eventHandlers:
         - event: AllocationSet(indexed address,indexed string,uint256)
           handler: handleAllocationSet
