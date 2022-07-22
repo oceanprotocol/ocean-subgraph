@@ -45,10 +45,7 @@ async function replaceContractAddresses() {
       "'" + addresses[network].DFRewards + "'"
     )
     if (process.env.BARGE_FOLDER) {
-      subgraph = subgraph.replace(
-        /__BARGEFOLDER__/g,
-        "'" + process.env.BARGE_FOLDER + "'"
-      )
+      subgraph = subgraph.replace(/__BARGEFOLDER__/g, process.env.BARGE_FOLDER)
     }
     fs.writeFileSync('subgraph.yaml', subgraph, 'utf8')
   }
