@@ -70,6 +70,28 @@ dataSources:
         - event: DispenserContractRemoved(indexed address,indexed address)
           handler: handleDispenserContractRemoved
 
+  - name: veAllocate
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      abi: veAllocate
+      address: __VEALLOCATEADDRESS__
+      startBlock: __STARTBLOCK__
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/veAllocate.ts
+      entities:
+        - veAllocate
+      abis:
+        - name: veAllocate
+          file: ${HOME}/.ocean/ocean-contracts/artifacts/contracts/ve/veAllocate.sol/veAllocate.json
+      eventHandlers:
+        - event: AllocationSet(indexed address,indexed string,uint256)
+          handler: handleAllocationSet
+        - event: AllocationRemoved(indexed address,indexed string)
+          handler: handleAllocationRemoved
 templates:
   - name: ERC20Template
     kind: ethereum/contract
@@ -269,25 +291,3 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleTokenCollected
-
-  - name: veAllocate
-    kind: ethereum/contract
-    network: __NETWORK__
-    source:
-      abi: veAllocate
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/veAllocate.ts
-      entities:
-        - veAllocate
-      abis:
-        - name: veAllocate
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veAllocate.vy/veAllocate.json
-      eventHandlers:
-        - event: AllocationSet(indexed address,indexed string,uint256)
-          handler: handleAllocationSet
-        - event: AllocationRemoved(indexed address,indexed string)
-          handler: handleAllocationRemoved
-        

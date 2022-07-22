@@ -34,6 +34,16 @@ async function replaceContractAddresses() {
       /__FACTORYROUTERADDRESS__/g,
       "'" + addresses[network].Router + "'"
     )
+
+    subgraph = subgraph.replace(
+      /__VEALLOCATEADDRESS__/g,
+      "'" + addresses[network].veAllocate + "'"
+    )
+
+    subgraph = subgraph.replace(
+      /__DFREWARDSADDRESS__/g,
+      "'" + addresses[network].DFRewards + "'"
+    )
     fs.writeFileSync('subgraph.yaml', subgraph, 'utf8')
   }
 }
