@@ -68,10 +68,9 @@ const ddo = {
   ]
 }
 
-describe('Datatoken tests', async () => {
+describe('NFT tests', async () => {
   const nftName = 'testNFT'
   const nftSymbol = 'TST'
-  const cap = '10000'
   let datatokenAddress: string
   let nft: Nft
   let Factory: NftFactory
@@ -91,7 +90,7 @@ describe('Datatoken tests', async () => {
     publisher = accounts[0].toLowerCase()
   })
 
-  it('should publish an NFT & datatoken', async () => {
+  it('Should publish an NFT & datatoken', async () => {
     const date = new Date()
     time = Math.floor(date.getTime() / 1000)
     blockNumber = await web3.eth.getBlockNumber()
@@ -106,7 +105,7 @@ describe('Datatoken tests', async () => {
     }
     const erc20Params: Erc20CreateParams = {
       templateIndex: 1,
-      cap,
+      cap: '100000',
       feeAmount: '0',
       paymentCollector: '0x0000000000000000000000000000000000000000',
       feeToken: '0x0000000000000000000000000000000000000000',
@@ -119,76 +118,70 @@ describe('Datatoken tests', async () => {
       erc20Params
     )
     erc721Address = result.events.NFTCreated.returnValues[0]
-    datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
-    console.log('datatokenAddress', datatokenAddress)
+    datatokenAddress = result.events.TokenCreated.returnValues[0]
 
     // Check values before updating metadata
     await sleep(2000)
     nftAddress = erc721Address.toLowerCase()
     const initialQuery = {
       query: `query {
-        token(id: "${datatokenAddress}"){    
-          id,
-          symbol,
-          name,
-          decimals,
-          address,
-          cap,
-          supply,
-          isDatatoken,
-          nft {id},
-          minter,
-          paymentManager,
-          paymentCollector,
-          publishMarketFeeAddress,
-          publishMarketFeeAmount,
-          templateId,
-          holderCount,
-          orderCount,
-          orders {id},
-          fixedRateExchanges {id},
-          dispensers {id},
-          createdTimestamp,
-          tx,
-          block,
-          lastPriceToken,
-          lastPriceValue
-        }}`
+              nft(id:"${nftAddress}"){    
+                id,
+                symbol,
+                name,
+                tokenUri,
+                owner,
+                creator,
+                address,
+                providerUrl,
+                assetState,
+                managerRole,
+                erc20DeployerRole,
+                storeUpdateRole,
+                metadataRole,
+                template,
+                transferable,
+                createdTimestamp,
+                tx,
+                block,
+                orderCount}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
     await sleep(2000)
-    const dt = (await initialResponse.json()).data.token
-    console.log('dt', dt)
-    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
-    assert(dt.id === datatokenAddress, 'incorrect value for: id')
-    assert(dt.symbol, 'incorrect value for: symbol')
-    assert(dt.name, 'incorrect value for: name')
-    assert(dt.decimals === 18, 'incorrect value for: decimals')
-    assert(dt.address === publisher, 'incorrect value for: address')
-    assert(dt.cap === cap, 'incorrect value for: cap')
-    assert(dt.supply === '0', 'incorrect value for: supply')
-    // assert(
-    //   nft.erc20DeployerRole[0] === factoryAddress,
-    //   'incorrect value for: erc20DeployerRole'
-    // )
-    // assert(nft.storeUpdateRole === null, 'incorrect value for: storeUpdateRole')
-    // assert(nft.metadataRole === null, 'incorrect value for: metadataRole')
-    // assert(nft.template === '', 'incorrect value for: template')
-    // assert(nft.transferable === true, 'incorrect value for: transferable')
-    assert(dt.createdTimestamp >= time, 'incorrect value for: createdTimestamp')
-    // assert(
-    //   nft.createdTimestamp < time + 5,
-    //   'incorrect value for: createdTimestamp'
-    // )
+    const nft = (await initialResponse.json()).data.nft
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(nft.tx)
+    assert(nft.id === nftAddress, 'incorrect value for: id')
+    assert(nft.symbol === nftSymbol, 'incorrect value for: symbol')
+    assert(nft.name === nftName, 'incorrect value for: name')
+    assert(nft.tokenUri === '', 'incorrect value for: tokenUri')
+    assert(nft.owner === publisher, 'incorrect value for: owner')
+    assert(nft.creator === publisher, 'incorrect value for: creator')
+    assert(nft.managerRole[0] === publisher, 'incorrect value for: managerRole')
+    assert(
+      nft.erc20DeployerRole[0] === factoryAddress,
+      'incorrect value for: erc20DeployerRole'
+    )
+    assert(nft.storeUpdateRole === null, 'incorrect value for: storeUpdateRole')
+    assert(nft.metadataRole === null, 'incorrect value for: metadataRole')
+    assert(nft.template === '', 'incorrect value for: template')
+    assert(nft.transferable === true, 'incorrect value for: transferable')
+    assert(
+      nft.createdTimestamp >= time,
+      'incorrect value for: createdTimestamp'
+    )
+    assert(
+      nft.createdTimestamp < time + 5,
+      'incorrect value for: createdTimestamp'
+    )
     assert(tx.from === publisher, 'incorrect value for: tx')
-    // assert(tx.to === factoryAddress, 'incorrect value for: tx')
+    assert(tx.to === factoryAddress, 'incorrect value for: tx')
     assert(tx.blockNumber >= blockNumber, 'incorrect value for: tx')
-    // assert(nft.block >= blockNumber, 'incorrect value for: block')
-    // assert(nft.block < blockNumber + 50, 'incorrect value for: block')
-    // assert(nft.orderCount === '0', 'incorrect value for: orderCount')
+    assert(nft.block >= blockNumber, 'incorrect value for: block')
+    assert(nft.block < blockNumber + 50, 'incorrect value for: block')
+    assert(nft.orderCount === '0', 'incorrect value for: orderCount')
   })
 
   it('Update metadata', async () => {
@@ -221,7 +214,7 @@ describe('Datatoken tests', async () => {
     await sleep(2000)
     const query = {
       query: `query {
-              nft(id:"${nftAddress}"){
+              nft(id:"${nftAddress}"){    
                 id,
                 symbol,
                 name,
