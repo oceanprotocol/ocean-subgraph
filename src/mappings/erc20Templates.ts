@@ -93,9 +93,9 @@ export function handlerOrderReused(event: OrderReused): void {
   const reuseOrder = new OrderReuse(event.transaction.hash.toHex())
   reuseOrder.order = orderId
   reuseOrder.caller = event.params.caller.toHexString()
-  reuseOrder.createdTimestamp = event.params.timestamp
+  reuseOrder.createdTimestamp = event.params.timestamp.toI32()
   reuseOrder.tx = event.transaction.hash.toHex()
-  reuseOrder.block = event.params.number
+  reuseOrder.block = event.params.number.toI32()
 
   reuseOrder.save()
 }
@@ -230,6 +230,11 @@ export function handleProviderFee(event: ProviderFee): void {
     orderReuse = new OrderReuse(event.transaction.hash.toHex())
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
+    orderReuse.order = orderId
+    orderReuse.createdTimestamp = event.block.timestamp.toI32()
+    orderReuse.tx = event.transaction.hash.toHex()
+    orderReuse.block = event.block.number.toI32()
+    orderReuse.caller = event.transaction.from.toHex()
     orderReuse.save()
   }
 }

@@ -246,9 +246,9 @@ type OrderReuse @entity {
   id: ID!
   order: Order!
   caller: String!
-  createdTimestamp: BigInt!
+  createdTimestamp: Int!
   tx: String!
-  block: BigInt!
+  block: Int!
   providerFee: String
   providerFeeValidUntil: BigInt
   }
