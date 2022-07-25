@@ -71,6 +71,7 @@ const ddo = {
 describe('Datatoken tests', async () => {
   const nftName = 'testNFT'
   const nftSymbol = 'TST'
+  const marketPlaceFeeAddress = '0x1230000000000000000000000000000000000000'
   const cap = '10000'
   let datatokenAddress: string
   let nft: Nft
@@ -111,14 +112,14 @@ describe('Datatoken tests', async () => {
       paymentCollector: '0x0000000000000000000000000000000000000000',
       feeToken: '0x0000000000000000000000000000000000000000',
       minter: publisher,
-      mpFeeAddress: '0x0000000000000000000000000000000000000000'
+      mpFeeAddress: marketPlaceFeeAddress
     }
     const result = await Factory.createNftWithErc20(
       publisher,
       nftParams,
       erc20Params
     )
-    erc721Address = result.events.NFTCreated.returnValues[0]
+    erc721Address = result.events.NFTCreated.returnValues[0].toLowerCase()
     datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
     console.log('datatokenAddress', datatokenAddress)
 
@@ -167,17 +168,21 @@ describe('Datatoken tests', async () => {
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')
     assert(dt.decimals === 18, 'incorrect value for: decimals')
-    assert(dt.address === publisher, 'incorrect value for: address')
+    assert(dt.address === datatokenAddress, 'incorrect value for: address')
     assert(dt.cap === cap, 'incorrect value for: cap')
     assert(dt.supply === '0', 'incorrect value for: supply')
-    // assert(
-    //   nft.erc20DeployerRole[0] === factoryAddress,
-    //   'incorrect value for: erc20DeployerRole'
-    // )
-    // assert(nft.storeUpdateRole === null, 'incorrect value for: storeUpdateRole')
-    // assert(nft.metadataRole === null, 'incorrect value for: metadataRole')
-    // assert(nft.template === '', 'incorrect value for: template')
-    // assert(nft.transferable === true, 'incorrect value for: transferable')
+    assert(dt.isDatatoken === true, 'incorrect value for: isDatatoken')
+    assert(dt.nft.id === erc721Address, 'incorrect value for: nft.id')
+    assert(dt.minter[0] === publisher, 'incorrect value for: minter')
+    assert(dt.paymentManager === null, 'incorrect value for: paymentManager')
+    assert(
+      dt.paymentCollector === null,
+      'incorrect value for: paymentCollector'
+    )
+    assert(
+      dt.publishMarketFeeAddress === marketPlaceFeeAddress,
+      'incorrect value for: publishMarketFeeAddress'
+    )
     assert(dt.createdTimestamp >= time, 'incorrect value for: createdTimestamp')
     // assert(
     //   nft.createdTimestamp < time + 5,
