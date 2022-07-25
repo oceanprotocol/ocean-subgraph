@@ -41,6 +41,7 @@ export function handleMetadataCreated(event: MetadataCreated): void {
 
   nftUpdate.nft = nft.id
   nftUpdate.providerUrl = nft.providerUrl
+  nftUpdate.tokenUri = nft.tokenUri
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
