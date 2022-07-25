@@ -1,4 +1,9 @@
-import { veAllocateUser, veAllocateId, veAllocation, veAllocationUpdate } from '../../@types/schema'
+import {
+  veAllocateUser,
+  veAllocateId,
+  veAllocation,
+  veAllocationUpdate
+} from '../../@types/schema'
 
 export function getveAllocateUser(sender: string): veAllocateUser {
   let allocateUser = veAllocateUser.load(sender)
@@ -11,32 +16,35 @@ export function getveAllocateUser(sender: string): veAllocateUser {
 }
 
 export function getveAllocateId(id: string): veAllocateId {
-    let allocateId = veAllocateId.load(id)
-    if (allocateId === null) {
-        allocateId = new veAllocateId(id)
-        allocateId.save()
-    }
-  
-    return allocateId
+  let allocateId = veAllocateId.load(id)
+  if (allocateId === null) {
+    allocateId = new veAllocateId(id)
+    allocateId.save()
   }
 
-export function getveAllocation(sender: string, id: string): veAllocation {
-    let allocation = veAllocation.load(sender+"-"+id)
-    if (allocation === null) {
-        allocation = new veAllocation(sender+"-"+id)
-        allocation.save()
-    }
-  
-    return allocation
+  return allocateId
 }
 
-export function getveAllocationUpdate(tx: string, allocationId: string): veAllocationUpdate {
-    let allocationUpdate = veAllocationUpdate.load(tx+"-"+allocationId)
-    if (allocationUpdate === null) {
-        allocationUpdate = new veAllocationUpdate(tx+"-"+allocationId)
-        allocationUpdate.id = allocationId
-        allocationUpdate.save()
-    }
+export function getveAllocation(sender: string, id: string): veAllocation {
+  let allocation = veAllocation.load(sender + '-' + id)
+  if (allocation === null) {
+    allocation = new veAllocation(sender + '-' + id)
+    allocation.save()
+  }
 
-    return allocationUpdate
+  return allocation
+}
+
+export function getveAllocationUpdate(
+  tx: string,
+  allocationId: string
+): veAllocationUpdate {
+  let allocationUpdate = veAllocationUpdate.load(tx + '-' + allocationId)
+  if (allocationUpdate === null) {
+    allocationUpdate = new veAllocationUpdate(tx + '-' + allocationId)
+    allocationUpdate.id = allocationId
+    allocationUpdate.save()
+  }
+
+  return allocationUpdate
 }
