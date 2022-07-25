@@ -5,7 +5,8 @@ import {
   NftFactory,
   NftCreateData,
   getHash,
-  sleep
+  sleep,
+  Datatoken
 } from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
@@ -81,10 +82,11 @@ describe('Datatoken tests', async () => {
   let factoryAddress: string
   let accounts: string[]
   let publisher: string
+  let user1: string
   let erc721Address: string
-  let nftAddress: string
   let time: number
   let blockNumber: number
+  let datatoken: Datatoken
 
   before(async () => {
     nft = new Nft(web3)
@@ -92,6 +94,7 @@ describe('Datatoken tests', async () => {
     Factory = new NftFactory(factoryAddress, web3)
     accounts = await web3.eth.getAccounts()
     publisher = accounts[0].toLowerCase()
+    user1 = accounts[1].toLowerCase()
   })
 
   it('should publish an NFT & datatoken', async () => {
@@ -126,7 +129,6 @@ describe('Datatoken tests', async () => {
 
     // Check values before updating metadata
     await sleep(2000)
-    nftAddress = erc721Address.toLowerCase()
     const initialQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -211,7 +213,7 @@ describe('Datatoken tests', async () => {
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
 
-  it('Update metadata', async () => {
+  it('Correct Datatoken fields after updating metadata', async () => {
     // create the files encrypted string
     let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
     ddo.services[0].files = await providerResponse
@@ -237,79 +239,127 @@ describe('Datatoken tests', async () => {
       '0x' + metadataHash
     )
 
-    // graph tests here
+    // Check values before updating metadata
     await sleep(2000)
-    const query = {
+    const initialQuery = {
       query: `query {
-              nft(id:"${nftAddress}"){
-                id,
-                symbol,
-                name,
-                tokenUri,
-                owner,
-                creator,
-                address,
-                providerUrl,
-                assetState,
-                managerRole,
-                erc20DeployerRole,
-                storeUpdateRole,
-                metadataRole,
-                template,
-                transferable,
-                createdTimestamp,
-                tx,
-                block,
-                orderCount}}`
+        token(id: "${datatokenAddress}"){    
+          id,
+          symbol,
+          name,
+          decimals,
+          address,
+          cap,
+          supply,
+          isDatatoken,
+          nft {id},
+          minter,
+          paymentManager,
+          paymentCollector,
+          publishMarketFeeAddress,
+          publishMarketFeeAmount,
+          templateId,
+          holderCount,
+          orderCount,
+          orders {id},
+          fixedRateExchanges {id},
+          dispensers {id},
+          createdTimestamp,
+          tx,
+          block,
+          lastPriceToken,
+          lastPriceValue
+        }}`
     }
-    const response = await fetch(subgraphUrl, {
+    const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
-      body: JSON.stringify(query)
+      body: JSON.stringify(initialQuery)
     })
-    const updatedNft = (await response.json()).data.nft
-    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(
-      updatedNft.tx
-    )
-    assert(updatedNft.id === nftAddress, 'incorrect value for: id')
-    assert(updatedNft.symbol === nftSymbol, 'incorrect value for: symbol')
-    assert(updatedNft.name === nftName, 'incorrect value for: name')
-    assert(updatedNft.tokenUri === '', 'incorrect value for: tokenUri')
-    assert(updatedNft.owner === publisher, 'incorrect value for: owner')
-    assert(updatedNft.creator === publisher, 'incorrect value for: creator')
+    await sleep(2000)
+    const dt = (await initialResponse.json()).data.token
+
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
+    assert(dt.id === datatokenAddress, 'incorrect value for: id')
+    assert(dt.symbol, 'incorrect value for: symbol')
+    assert(dt.name, 'incorrect value for: name')
+    assert(dt.decimals === 18, 'incorrect value for: decimals')
+    assert(dt.address === datatokenAddress, 'incorrect value for: address')
+    assert(dt.cap === cap, 'incorrect value for: cap')
+    assert(dt.supply === '0', 'incorrect value for: supply')
+    assert(dt.isDatatoken === true, 'incorrect value for: isDatatoken')
+    assert(dt.nft.id === erc721Address, 'incorrect value for: nft.id')
+    assert(dt.minter[0] === publisher, 'incorrect value for: minter')
+    assert(dt.paymentManager === null, 'incorrect value for: paymentManager')
     assert(
-      updatedNft.managerRole[0] === publisher,
-      'incorrect value for: managerRole'
-    )
-    assert(
-      updatedNft.erc20DeployerRole[0] === factoryAddress,
-      'incorrect value for: erc20DeployerRole'
-    )
-    assert(
-      updatedNft.storeUpdateRole === null,
-      'incorrect value for: storeUpdateRole'
+      dt.paymentCollector === null,
+      'incorrect value for: paymentCollector'
     )
     assert(
-      updatedNft.metadataRole === null,
-      'incorrect value for: metadataRole'
-    )
-    assert(updatedNft.template === '', 'incorrect value for: template')
-    assert(
-      updatedNft.transferable === true,
-      'incorrect value for: transferable'
+      dt.publishMarketFeeAddress === marketPlaceFeeAddress,
+      'incorrect value for: publishMarketFeeAddress'
     )
     assert(
-      updatedNft.createdTimestamp >= time,
-      'incorrect value for: createdTimestamp'
+      dt.publishMarketFeeAmount === publishMarketFeeAmount,
+      'incorrect value for: publishMarketFeeAmount'
     )
+    assert(dt.templateId === null, 'incorrect value for: templateId')
+    assert(dt.holderCount === '0', 'incorrect value for: holderCount')
+    assert(dt.orderCount === '0', 'incorrect value for: orderCount')
+    assert(dt.orders, 'incorrect value for: orders')
+    assert(dt.fixedRateExchanges, 'incorrect value for: fixedRateExchanges')
+    assert(dt.dispensers, 'incorrect value for: dispensers')
+    assert(dt.createdTimestamp >= time, 'incorrect value for: createdTimestamp')
     assert(
-      updatedNft.createdTimestamp < time + 5,
+      dt.createdTimestamp < time + 5,
       'incorrect value for: createdTimestamp'
     )
     assert(tx.from === publisher, 'incorrect value for: tx')
     assert(tx.to === factoryAddress, 'incorrect value for: tx')
     assert(tx.blockNumber >= blockNumber, 'incorrect value for: tx')
-    assert(updatedNft.block >= blockNumber, 'incorrect value for: block')
-    assert(updatedNft.block < blockNumber + 50, 'incorrect value for: block')
-    assert(updatedNft.orderCount === '0', 'incorrect value for: orderCount')
+    assert(dt.block >= blockNumber, 'incorrect value for: block')
+    assert(dt.block < blockNumber + 50, 'incorrect value for: block')
+    assert(
+      dt.lastPriceToken === '0x0000000000000000000000000000000000000000',
+      'incorrect value for: lastPriceToken'
+    )
+    assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
+
+  it('Check balance before and after minting datatokens', async () => {
+    datatoken = new Datatoken(web3, 8996)
+    const mint1 = '100'
+    const mint2 = '10'
+    const balance1before = await datatoken.balance(datatokenAddress, publisher)
+    const balance2before = await datatoken.balance(datatokenAddress, user1)
+    assert(balance1before === '0')
+    assert(balance2before === '0')
+
+    // await datatoken.transfer(datatokenAddress, user2, '1', user1)
+    await datatoken.mint(datatokenAddress, publisher, mint1, publisher)
+    await datatoken.mint(datatokenAddress, publisher, mint2, user1)
+
+    const balance1after = await datatoken.balance(datatokenAddress, publisher)
+    const balance2after = await datatoken.balance(datatokenAddress, user1)
+
+    // TODO: Check balances from the subgraph - currently tokenBalancesOwned isn't updated.
+
+    assert(balance1after === mint1)
+    assert(balance2after === mint2)
+  })
+
+  // it('Check balance before and after transfering datatokens', async () => {
+  //   datatoken = new Datatoken(web3, 8996)
+  //   const transfer = '50'
+  //   const balance1before = await datatoken.balance(datatokenAddress, publisher)
+  //   const balance2before = await datatoken.balance(datatokenAddress, user1)
+
+  //   await datatoken.transfer(datatokenAddress, user1, transfer, publisher)
+
+  //   const balance1after = await datatoken.balance(datatokenAddress, publisher)
+  //   const balance2after = await datatoken.balance(datatokenAddress, user1)
+
+  //   console.log('balance after', balance1after, balance2after)
+  //   assert(balance1after === balance1before - Number(transfer))
+  //   assert(balance2after === mint2)
+  // })
 })
