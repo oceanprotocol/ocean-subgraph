@@ -72,6 +72,8 @@ describe('Datatoken tests', async () => {
   const nftName = 'testNFT'
   const nftSymbol = 'TST'
   const marketPlaceFeeAddress = '0x1230000000000000000000000000000000000000'
+  const feeToken = '0x3210000000000000000000000000000000000000'
+  const publishMarketFeeAmount = '0.1'
   const cap = '10000'
   let datatokenAddress: string
   let nft: Nft
@@ -108,9 +110,9 @@ describe('Datatoken tests', async () => {
     const erc20Params: Erc20CreateParams = {
       templateIndex: 1,
       cap,
-      feeAmount: '0',
+      feeAmount: publishMarketFeeAmount,
       paymentCollector: '0x0000000000000000000000000000000000000000',
-      feeToken: '0x0000000000000000000000000000000000000000',
+      feeToken,
       minter: publisher,
       mpFeeAddress: marketPlaceFeeAddress
     }
@@ -121,7 +123,6 @@ describe('Datatoken tests', async () => {
     )
     erc721Address = result.events.NFTCreated.returnValues[0].toLowerCase()
     datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
-    console.log('datatokenAddress', datatokenAddress)
 
     // Check values before updating metadata
     await sleep(2000)
@@ -162,7 +163,7 @@ describe('Datatoken tests', async () => {
     })
     await sleep(2000)
     const dt = (await initialResponse.json()).data.token
-    console.log('dt', dt)
+
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
@@ -183,17 +184,31 @@ describe('Datatoken tests', async () => {
       dt.publishMarketFeeAddress === marketPlaceFeeAddress,
       'incorrect value for: publishMarketFeeAddress'
     )
+    assert(
+      dt.publishMarketFeeAmount === publishMarketFeeAmount,
+      'incorrect value for: publishMarketFeeAmount'
+    )
+    assert(dt.templateId === null, 'incorrect value for: templateId')
+    assert(dt.holderCount === '0', 'incorrect value for: holderCount')
+    assert(dt.orderCount === '0', 'incorrect value for: orderCount')
+    assert(dt.orders, 'incorrect value for: orders')
+    assert(dt.fixedRateExchanges, 'incorrect value for: fixedRateExchanges')
+    assert(dt.dispensers, 'incorrect value for: dispensers')
     assert(dt.createdTimestamp >= time, 'incorrect value for: createdTimestamp')
-    // assert(
-    //   nft.createdTimestamp < time + 5,
-    //   'incorrect value for: createdTimestamp'
-    // )
+    assert(
+      dt.createdTimestamp < time + 5,
+      'incorrect value for: createdTimestamp'
+    )
     assert(tx.from === publisher, 'incorrect value for: tx')
-    // assert(tx.to === factoryAddress, 'incorrect value for: tx')
+    assert(tx.to === factoryAddress, 'incorrect value for: tx')
     assert(tx.blockNumber >= blockNumber, 'incorrect value for: tx')
-    // assert(nft.block >= blockNumber, 'incorrect value for: block')
-    // assert(nft.block < blockNumber + 50, 'incorrect value for: block')
-    // assert(nft.orderCount === '0', 'incorrect value for: orderCount')
+    assert(dt.block >= blockNumber, 'incorrect value for: block')
+    assert(dt.block < blockNumber + 50, 'incorrect value for: block')
+    assert(
+      dt.lastPriceToken === '0x0000000000000000000000000000000000000000',
+      'incorrect value for: lastPriceToken'
+    )
+    assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
 
   it('Update metadata', async () => {
