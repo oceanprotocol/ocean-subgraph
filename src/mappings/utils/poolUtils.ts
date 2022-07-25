@@ -1,4 +1,4 @@
-import { Address, BigDecimal, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import {
   Pool,
   PoolShare,
@@ -19,19 +19,20 @@ export function getPoolShareId(
 
 export function getPoolTransactionId(
   txHash: string,
-  userAddress: string
+  eventIndex: BigInt
 ): string {
-  return `${txHash}-${userAddress}`
+  return `${txHash}-` + eventIndex.toString()
 }
 
 export function getPoolTransaction(
   event: ethereum.Event,
   userAddress: string,
-  type: string
+  type: string,
+  eventIndex: BigInt
 ): PoolTransaction {
   const txId = getPoolTransactionId(
     event.transaction.hash.toHexString(),
-    userAddress
+    eventIndex
   )
   let poolTx = PoolTransaction.load(txId)
 
@@ -45,6 +46,7 @@ export function getPoolTransaction(
 
     poolTx.timestamp = event.block.timestamp.toI32()
     poolTx.tx = event.transaction.hash.toHex()
+    poolTx.eventIndex = eventIndex
     poolTx.block = event.block.number.toI32()
 
     poolTx.gasPrice = gweiToEth(event.transaction.gasPrice.toBigDecimal())
