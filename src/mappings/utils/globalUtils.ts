@@ -15,6 +15,12 @@ export function getGlobalStats(): GlobalStatistic {
   if (!globalStats) {
     globalStats = new GlobalStatistic(GLOBAL_ID)
     globalStats.version = '2.0.1'
+    globalStats.orderCount = 0
+    globalStats.fixedCount = 0
+    globalStats.datatokenCount = 0
+    globalStats.poolCount = 0
+    globalStats.dispenserCount = 0
+    globalStats.nftCount = 0
     globalStats.save()
   }
   return globalStats
