@@ -32,7 +32,12 @@ import { getUser } from './utils/userUtils'
 export function handleJoin(event: LOG_JOIN): void {
   const pool = getPool(event.address.toHex())
   const user = getUser(event.params.caller.toHex())
-  const poolTx = getPoolTransaction(event, user.id, PoolTransactionType.JOIN)
+  const poolTx = getPoolTransaction(
+    event,
+    user.id,
+    PoolTransactionType.JOIN,
+    event.logIndex
+  )
 
   pool.transactionCount = pool.transactionCount.plus(integer.ONE)
   pool.joinCount = pool.joinCount.plus(integer.ONE)
@@ -72,7 +77,12 @@ export function handleJoin(event: LOG_JOIN): void {
 export function handleExit(event: LOG_EXIT): void {
   const pool = getPool(event.address.toHex())
   const user = getUser(event.params.caller.toHex())
-  const poolTx = getPoolTransaction(event, user.id, PoolTransactionType.EXIT)
+  const poolTx = getPoolTransaction(
+    event,
+    user.id,
+    PoolTransactionType.EXIT,
+    event.logIndex
+  )
 
   pool.transactionCount = pool.transactionCount.plus(integer.ONE)
   pool.joinCount = pool.joinCount.plus(integer.ONE)
@@ -109,7 +119,12 @@ export function handleExit(event: LOG_EXIT): void {
 export function handleSwap(event: LOG_SWAP): void {
   const pool = getPool(event.address.toHex())
   const user = getUser(event.params.caller.toHex())
-  const poolTx = getPoolTransaction(event, user.id, PoolTransactionType.SWAP)
+  const poolTx = getPoolTransaction(
+    event,
+    user.id,
+    PoolTransactionType.SWAP,
+    event.logIndex
+  )
 
   pool.transactionCount = pool.transactionCount.plus(integer.ONE)
   pool.joinCount = pool.joinCount.plus(integer.ONE)
@@ -227,7 +242,8 @@ export function handleSetup(event: LOG_SETUP): void {
   const poolTx = getPoolTransaction(
     event,
     fromUser.id,
-    PoolTransactionType.SETUP
+    PoolTransactionType.SETUP,
+    event.logIndex
   )
   poolTx.type = PoolTransactionType.SETUP
   poolTx.baseToken = token.id
@@ -259,7 +275,12 @@ export function handlerBptTransfer(event: Transfer): void {
   const toAddress = event.params.dst.toHexString()
   const poolAddress = event.address.toHex()
   const caller = getUser(event.transaction.from.toHex())
-  const poolTx = getPoolTransaction(event, caller.id, PoolTransactionType.SWAP)
+  const poolTx = getPoolTransaction(
+    event,
+    caller.id,
+    PoolTransactionType.SWAP,
+    event.logIndex
+  )
 
   // btoken has 18 decimals
   const ammount = weiToDecimal(event.params.amt.toBigDecimal(), 18)
