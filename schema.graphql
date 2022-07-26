@@ -120,7 +120,7 @@ type Pool @entity {
     id: ID!    
 
     "owner address, pool controller"                                   
-    controller: String!
+    controller: String
 
     "only finalized pools are relevant to us"                             
     isFinalized: Boolean!                                   
