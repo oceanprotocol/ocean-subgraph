@@ -13,7 +13,12 @@ export function getGlobalStats(): GlobalStatistic {
   let globalStats = GlobalStatistic.load(GLOBAL_ID)
   if (!globalStats) {
     globalStats = new GlobalStatistic(GLOBAL_ID)
-    globalStats.version = '2.0.1'
+    globalStats.version = '2.0.2'
+    globalStats.orderCount = 0
+    globalStats.fixedCount = 0
+    globalStats.datatokenCount = 0
+    globalStats.dispenserCount = 0
+    globalStats.nftCount = 0
     globalStats.save()
   }
   return globalStats
@@ -73,6 +78,8 @@ export function addFixedSwap(tokenAddress: string, value: BigDecimal): void {
     fixedSwapPair = new GlobalTotalFixedSwapPair(tokenAddress)
     fixedSwapPair.globalStatistic = GLOBAL_ID
     fixedSwapPair.token = tokenAddress
+    fixedSwapPair.value = BigDecimal.zero()
+    fixedSwapPair.count = BigInt.zero()
   }
   fixedSwapPair.value = fixedSwapPair.value.plus(value)
   fixedSwapPair.count = fixedSwapPair.count.plus(BigInt.fromI32(1))

@@ -73,7 +73,7 @@ type Nft @entity{
     id: ID!                                                
     symbol: String!                                       
     name: String!                                          
-    tokenUri: String! 
+    tokenUri: String
   
     "address of the owner of the nft"                                     
     owner: String!     
@@ -116,9 +116,9 @@ type OrderReuse @entity {
   id: ID!
   order: Order!
   caller: String!
-  createdTimestamp: BigInt!
+  createdTimestamp: Int!
   tx: String!
-  block: BigInt!
+  block: Int!
   providerFee: String
   providerFeeValidUntil: BigInt
   }
@@ -340,7 +340,7 @@ type OPC @entity {
 
 type NftUpdate @entity {
   id: ID! # update tx +  nft address
-  tokenUri: String! 
+  tokenUri: String
   nft: Nft!
 
   "provider url that can decrypt the ddo"                                  

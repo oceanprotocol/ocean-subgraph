@@ -1,4 +1,4 @@
-import { Address, log, BigDecimal } from '@graphprotocol/graph-ts'
+import { Address, log, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { Nft, Token } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
 import { ERC20Template, ERC721Template } from '../../@types/templates'
@@ -25,6 +25,11 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   else token.decimals = decimals.value
   token.lastPriceToken = ZERO_ADDRESS
   token.lastPriceValue = BigDecimal.zero()
+  token.orderCount = BigInt.zero()
+  token.holderCount = BigInt.zero()
+  token.createdTimestamp = 0
+  token.block = 0
+  token.tx = ''
   token.save()
   return token
 }
@@ -38,15 +43,25 @@ export function getToken(address: Address, isDatatoken: boolean): Token {
 }
 
 export function createNftToken(address: Address): Nft {
-  log.debug('started creating nft token with address: {}', [
+  log.warning('started creating nft token with address: {}', [
     address.toHexString()
   ])
   ERC721Template.create(address)
   const token = new Nft(address.toHexString())
-  // const contract = ERC721Template.bind(address)
   token.name = ''
   token.symbol = ''
   token.address = address.toHexString()
+  token.providerUrl = ''
+  token.tokenUri = ''
+  token.owner = ''
+  token.creator = ''
+  token.assetState = 0
+  token.template = ''
+  token.transferable = true
+  token.createdTimestamp = 0
+  token.block = 0
+  token.tx = ''
+  token.orderCount = BigInt.zero()
   token.save()
   addNft()
   return token
