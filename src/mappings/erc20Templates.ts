@@ -10,8 +10,7 @@ import {
   RemovedMinter,
   RemovedPaymentManager,
   CleanedPermissions,
-  OrderReused,
-  ProviderFee
+  OrderReused
 } from '../@types/templates/ERC20Template/ERC20Template'
 
 import { integer } from './utils/constants'
@@ -19,7 +18,14 @@ import { weiToDecimal } from './utils/generic'
 import { addOrder } from './utils/globalUtils'
 import { getToken, getUSDValue } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
-import { getOrderId } from './utils/orderUtils'
+
+function getOrderId(
+  tx: string,
+  tokenAddress: string,
+  fromAddress: string
+): string {
+  return `${tx}-${tokenAddress}-${fromAddress}`
+}
 
 export function handleOrderStarted(event: OrderStarted): void {
   const order = new Order(
@@ -93,9 +99,9 @@ export function handlerOrderReused(event: OrderReused): void {
   const reuseOrder = new OrderReuse(event.transaction.hash.toHex())
   reuseOrder.order = orderId
   reuseOrder.caller = event.params.caller.toHexString()
-  reuseOrder.createdTimestamp = event.params.timestamp.toI32()
+  reuseOrder.createdTimestamp = event.params.timestamp
   reuseOrder.tx = event.transaction.hash.toHex()
-  reuseOrder.block = event.params.number.toI32()
+  reuseOrder.block = event.params.number
 
   reuseOrder.save()
 }
@@ -198,43 +204,26 @@ export function handleNewPaymentCollector(event: NewPaymentCollector): void {
   token.save()
 }
 
-export function handleProviderFee(event: ProviderFee): void {
-  const providerFee: string = `{"providerFeeAddress": "${event.params.providerFeeAddress.toHex()}", "providerFeeToken": "${event.params.providerFeeToken.toHex()}", "providerFeeAmount": "${
-    event.params.providerFeeAmount
-  }", "providerData": "${event.params.providerData.toHexString()}", "v": "${
-    event.params.v
-  }", "r": "${event.params.r.toHexString()}", "s": "${event.params.s.toHexString()}", "validUntil": "${
-    event.params.validUntil
-  }"}`
+// export function handlePublishMarketFees(event: PublishMarketFees): void {
+//   const order = Order.load(
+//     getOrderId(
+//       event.transaction.hash.toHex(),
+//       event.address.toHex(),
+//       event.transaction.from.toHex()
+//     )
+//   )
 
-  const orderId = getOrderId(
-    event.transaction.hash.toHex(),
-    event.address.toHex(),
-    event.transaction.from.toHex()
-  )
-  const order = Order.load(orderId)
+//   order.save()
+// }
 
-  if (order) {
-    order.providerFee = providerFee
-    order.providerFeeValidUntil = event.params.validUntil
-    order.save()
-    return
-  }
+// export function handleConsumeMarketFees(event: ConsumeMarketFees): void {
+//   const order = Order.load(
+//     getOrderId(
+//       event.transaction.hash.toHex(),
+//       event.address.toHex(),
+//       event.transaction.from.toHex()
+//     )
+//   )
 
-  let orderReuse = OrderReuse.load(event.transaction.hash.toHex())
-  if (orderReuse) {
-    orderReuse.providerFee = providerFee
-    orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.save()
-  } else {
-    orderReuse = new OrderReuse(event.transaction.hash.toHex())
-    orderReuse.providerFee = providerFee
-    orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.order = orderId
-    orderReuse.createdTimestamp = event.block.timestamp.toI32()
-    orderReuse.tx = event.transaction.hash.toHex()
-    orderReuse.block = event.block.number.toI32()
-    orderReuse.caller = event.transaction.from.toHex()
-    orderReuse.save()
-  }
-}
+//   order.save()
+// }

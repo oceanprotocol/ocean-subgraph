@@ -120,7 +120,7 @@ type Pool @entity {
     id: ID!    
 
     "owner address, pool controller"                                   
-    controller: String
+    controller: String!
 
     "only finalized pools are relevant to us"                             
     isFinalized: Boolean!                                   
@@ -207,7 +207,7 @@ type PoolShare @entity {
 }
 
 type PoolTransaction @entity {
-  "tx address + eventIndex" 
+  "tx address + caller address" 
   id: ID!        
   "pool related to this tx"                                            
   pool: Pool!   
@@ -222,7 +222,6 @@ type PoolTransaction @entity {
   timestamp: Int!      
   "pool creation transaction id"                            
   tx: String!    
-  eventIndex: BigInt
   "block number when it was created"                                          
   block: Int       
 
@@ -247,11 +246,9 @@ type OrderReuse @entity {
   id: ID!
   order: Order!
   caller: String!
-  createdTimestamp: Int!
+  createdTimestamp: BigInt!
   tx: String!
-  block: Int!
-  providerFee: String
-  providerFeeValidUntil: BigInt
+  block: BigInt!
   }
 type Order @entity {  
   "transaction hash - token address - from address"                                       
@@ -268,8 +265,6 @@ type Order @entity {
   publishingMarket: User
   publishingMarketToken: Token                                #
   publishingMarketAmmount: BigDecimal                         #call contract to get fee amount
-  providerFee: String
-  providerFeeValidUntil: BigInt
 
   consumerMarket: User
   consumerMarketToken: Token                                  #
@@ -502,19 +497,6 @@ type GlobalStatistic @entity {
     version: String
 }
 
-type OPC @entity {
-    id: ID!
-    "fee in percent for swaps involving OPC approved tokens"
-    swapOceanFee: BigDecimal
-    "fee in percent for swaps involving non OPC approved tokens"
-    swapNonOceanFee: BigDecimal
-    "fee in percent taken by OPC from orderFees"
-    orderFee: BigDecimal
-    "fee in percent taken by OPC from providerFees"
-    providerFee: BigDecimal
-    approvedTokens: [Token!]
-}
-
  enum NftUpdateType {
   METADATA_CREATED,
   METADATA_UPDATED,
@@ -551,5 +533,4 @@ type Template @entity{
   dispenserTemplates: [String!]
   ssTemplates: [String!]
 }
-
 

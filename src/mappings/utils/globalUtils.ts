@@ -4,7 +4,6 @@ import {
   GlobalTotalFixedSwapPair,
   GlobalTotalLiquidityPair,
   GlobalTotalPoolSwapPair,
-  OPC,
   Template
 } from '../../@types/schema'
 
@@ -21,15 +20,6 @@ export function getGlobalStats(): GlobalStatistic {
     globalStats.poolCount = 0
     globalStats.dispenserCount = 0
     globalStats.nftCount = 0
-    globalStats.save()
-  }
-  return globalStats
-}
-
-export function getOPC(): OPC {
-  let globalStats = OPC.load(GLOBAL_ID)
-  if (!globalStats) {
-    globalStats = new OPC(GLOBAL_ID)
     globalStats.save()
   }
   return globalStats

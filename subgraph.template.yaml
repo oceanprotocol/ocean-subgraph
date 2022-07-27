@@ -51,12 +51,6 @@ dataSources:
       eventHandlers:
         - event: NewPool(indexed address,bool)
           handler: handleNewPool
-        - event: TokenAdded(indexed address,indexed address)
-          handler: handleTokenAdded
-        - event: TokenRemoved(indexed address,indexed address)
-          handler: handleTokenRemoved
-        - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
-          handler: handleOPCFeeChanged
         - event: SSContractAdded(indexed address,indexed address)
           handler: handleSSContractAdded
         - event: SSContractRemoved(indexed address,indexed address)
@@ -113,8 +107,6 @@ templates:
           handler: handleRemovedPaymentManager
         - event: CleanedPermissions(indexed address,uint256,uint256)
           handler: handleCleanedPermissions
-        - event: ProviderFee(indexed address,indexed address,uint256,bytes,uint8,bytes32,bytes32,uint256)
-          handler: handleProviderFee
 
   - name: BPool
     kind: ethereum/contract
