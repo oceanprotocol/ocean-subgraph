@@ -120,7 +120,7 @@ type Pool @entity {
     id: ID!    
 
     "owner address, pool controller"                                   
-    controller: String!
+    controller: String
 
     "only finalized pools are relevant to us"                             
     isFinalized: Boolean!                                   
@@ -207,7 +207,7 @@ type PoolShare @entity {
 }
 
 type PoolTransaction @entity {
-  "tx address + caller address" 
+  "tx address + eventIndex" 
   id: ID!        
   "pool related to this tx"                                            
   pool: Pool!   
@@ -222,6 +222,7 @@ type PoolTransaction @entity {
   timestamp: Int!      
   "pool creation transaction id"                            
   tx: String!    
+  eventIndex: BigInt
   "block number when it was created"                                          
   block: Int       
 
