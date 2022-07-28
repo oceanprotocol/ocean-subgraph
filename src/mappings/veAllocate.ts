@@ -22,7 +22,7 @@ export function handleAllocationSet(event: AllocationSet): void {
     event.params.sender.toHexString(),
     event.params.id.toHexString()
   )
-  const allocationAmount = weiToDecimal(event.params.amount.toBigDecimal(), 18)
+  const allocationAmount = event.params.amount.toBigDecimal()
 
   // // get allocation event
   const allocationUpdate = writeveAllocationUpdate(
