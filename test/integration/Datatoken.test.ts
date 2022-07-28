@@ -6,7 +6,10 @@ import {
   NftCreateData,
   getHash,
   sleep,
-  Datatoken
+  Datatoken,
+  ProviderFees,
+  ZERO_ADDRESS,
+  signHash
 } from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
@@ -83,10 +86,11 @@ describe('Datatoken tests', async () => {
   let accounts: string[]
   let publisher: string
   let user1: string
+  let user2: string
+  let user3: string
   let erc721Address: string
   let time: number
   let blockNumber: number
-  let datatoken: Datatoken
 
   before(async () => {
     nft = new Nft(web3)
@@ -95,6 +99,8 @@ describe('Datatoken tests', async () => {
     accounts = await web3.eth.getAccounts()
     publisher = accounts[0].toLowerCase()
     user1 = accounts[1].toLowerCase()
+    user2 = accounts[2].toLowerCase()
+    user3 = accounts[3].toLowerCase()
   })
 
   it('should publish an NFT & datatoken', async () => {
@@ -325,27 +331,27 @@ describe('Datatoken tests', async () => {
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
 
-  it('Check balance before and after minting datatokens', async () => {
-    datatoken = new Datatoken(web3, 8996)
-    const mint1 = '100'
-    const mint2 = '10'
-    const balance1before = await datatoken.balance(datatokenAddress, publisher)
-    const balance2before = await datatoken.balance(datatokenAddress, user1)
-    assert(balance1before === '0')
-    assert(balance2before === '0')
+  // it('Check balance before and after minting datatokens', async () => {
+  //   datatoken = new Datatoken(web3, 8996)
+  //   const mint1 = '100'
+  //   const mint2 = '10'
+  //   const balance1before = await datatoken.balance(datatokenAddress, publisher)
+  //   const balance2before = await datatoken.balance(datatokenAddress, user1)
+  //   assert(balance1before === '0')
+  //   assert(balance2before === '0')
 
-    // await datatoken.transfer(datatokenAddress, user2, '1', user1)
-    await datatoken.mint(datatokenAddress, publisher, mint1, publisher)
-    await datatoken.mint(datatokenAddress, publisher, mint2, user1)
+  //   // await datatoken.transfer(datatokenAddress, user2, '1', user1)
+  //   await datatoken.mint(datatokenAddress, publisher, mint1, publisher)
+  //   await datatoken.mint(datatokenAddress, publisher, mint2, user1)
 
-    const balance1after = await datatoken.balance(datatokenAddress, publisher)
-    const balance2after = await datatoken.balance(datatokenAddress, user1)
+  //   const balance1after = await datatoken.balance(datatokenAddress, publisher)
+  //   const balance2after = await datatoken.balance(datatokenAddress, user1)
 
-    // TODO: Check balances from the subgraph - currently tokenBalancesOwned isn't updated.
+  //   // TODO: Check balances from the subgraph - currently tokenBalancesOwned isn't updated.
 
-    assert(balance1after === mint1)
-    assert(balance2after === mint2)
-  })
+  //   assert(balance1after === mint1)
+  //   assert(balance2after === mint2)
+  // })
 
   // it('Check balance before and after transfering datatokens', async () => {
   //   datatoken = new Datatoken(web3, 8996)
@@ -358,8 +364,107 @@ describe('Datatoken tests', async () => {
   //   const balance1after = await datatoken.balance(datatokenAddress, publisher)
   //   const balance2after = await datatoken.balance(datatokenAddress, user1)
 
+  // TODO: Check balances from the subgraph - currently tokenBalancesOwned isn't updated.
+
   //   console.log('balance after', balance1after, balance2after)
   //   assert(balance1after === balance1before - Number(transfer))
   //   assert(balance2after === mint2)
   // })
+
+  it('Check datatoken orders are updated correctly after publishing & ordering a datatoken', async () => {
+    // Start with publishing a new datatoken
+    const nftParams: NftCreateData = {
+      name: 'newNFT',
+      symbol: 'newTST',
+      templateIndex: 1,
+      tokenURI: '',
+      transferable: true,
+      owner: publisher
+    }
+    const erc20Params: Erc20CreateParams = {
+      templateIndex: 1,
+      cap: '100000',
+      feeAmount: '0',
+      paymentCollector: ZERO_ADDRESS,
+      feeToken: ZERO_ADDRESS,
+      minter: publisher,
+      mpFeeAddress: ZERO_ADDRESS
+    }
+    const result = await Factory.createNftWithErc20(
+      publisher,
+      nftParams,
+      erc20Params
+    )
+    await sleep(2000)
+    const newDtAddress = result.events.TokenCreated.returnValues[0]
+
+    const datatoken = new Datatoken(web3, 8996)
+    await datatoken.mint(newDtAddress, publisher, '100', user1)
+    const user1balance = await datatoken.balance(newDtAddress, user1)
+    const user2balance = await datatoken.balance(newDtAddress, user2)
+    assert(Number(user1balance) === 100, 'Invalid user1 balance')
+    assert(Number(user2balance) === 0, 'Invalid user2 balance')
+
+    const query = {
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id}}}`
+    }
+
+    await sleep(2000)
+    let response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query)
+    })
+
+    const initialToken = (await response.json()).data.token
+
+    assert(initialToken, 'Invalid initialToken')
+    assert(initialToken.orderCount === '0', 'Invalid initial orderCount')
+    assert(initialToken.orders.length === 0, 'Invalid initial orders')
+
+    const providerData = JSON.stringify({ timeout: 0 })
+    const providerFeeToken = ZERO_ADDRESS
+    const providerFeeAmount = '10000'
+    const providerValidUntil = '0'
+    const message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: user3 },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    assert(message, 'Invalid message')
+    const { v, r, s } = await signHash(web3, message, user3)
+    const setProviderFee: ProviderFees = {
+      providerFeeAddress: user3,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+    assert(setProviderFee, 'Invalid setProviderFee')
+    const orderTx = await datatoken.startOrder(
+      newDtAddress,
+      user1,
+      user2,
+      1,
+      setProviderFee
+    )
+    assert(orderTx, 'Invalid orderTx')
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}`
+
+    await sleep(2000)
+    response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query)
+    })
+
+    const token = (await response.json()).data.token
+
+    assert(token, 'Invalid token')
+    assert(token.orderCount === '1', 'Invalid orderCount after order')
+    assert(token.orders[0].id === orderId)
+  })
 })
