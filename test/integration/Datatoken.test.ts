@@ -196,6 +196,7 @@ describe('Datatoken tests', async () => {
       dt.publishMarketFeeAmount === publishMarketFeeAmount,
       'incorrect value for: publishMarketFeeAmount'
     )
+    // TODO: templateId id should not be null. Will be fixed in another PR. See: https://github.com/oceanprotocol/ocean-subgraph/issues/506
     assert(dt.templateId === null, 'incorrect value for: templateId')
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
