@@ -24,7 +24,7 @@ export function getveAllocateId(id: string): VeAllocateId {
     allocateId.allocatedTotal = BigDecimal.fromString('0.0')
     allocateId.save()
   }
-1
+
   return allocateId
 }
 
