@@ -1,34 +1,34 @@
 import {
-  veAllocateUser,
-  veAllocateId,
-  veAllocation,
-  veAllocationUpdate
+  VeAllocateUser,
+  VeAllocateId,
+  VeAllocation,
+  VeAllocationUpdate
 } from '../../@types/schema'
 
-export function getveAllocateUser(sender: string): veAllocateUser {
-  let allocateUser = veAllocateUser.load(sender)
+export function getveAllocateUser(sender: string): VeAllocateUser {
+  let allocateUser = VeAllocateUser.load(sender)
   if (allocateUser === null) {
-    allocateUser = new veAllocateUser(sender)
+    allocateUser = new VeAllocateUser(sender)
     allocateUser.save()
   }
 
   return allocateUser
 }
 
-export function getveAllocateId(id: string): veAllocateId {
-  let allocateId = veAllocateId.load(id)
+export function getveAllocateId(id: string): VeAllocateId {
+  let allocateId = VeAllocateId.load(id)
   if (allocateId === null) {
-    allocateId = new veAllocateId(id)
+    allocateId = new VeAllocateId(id)
     allocateId.save()
   }
 
   return allocateId
 }
 
-export function getveAllocation(sender: string, id: string): veAllocation {
-  let allocation = veAllocation.load(sender + '-' + id)
+export function getveAllocation(sender: string, id: string): VeAllocation {
+  let allocation = VeAllocation.load(sender + '-' + id)
   if (allocation === null) {
-    allocation = new veAllocation(sender + '-' + id)
+    allocation = new VeAllocation(sender + '-' + id)
     allocation.save()
   }
 
@@ -38,10 +38,10 @@ export function getveAllocation(sender: string, id: string): veAllocation {
 export function getveAllocationUpdate(
   tx: string,
   allocationId: string
-): veAllocationUpdate {
-  let allocationUpdate = veAllocationUpdate.load(tx + '-' + allocationId)
+): VeAllocationUpdate {
+  let allocationUpdate = VeAllocationUpdate.load(tx + '-' + allocationId)
   if (allocationUpdate === null) {
-    allocationUpdate = new veAllocationUpdate(tx + '-' + allocationId)
+    allocationUpdate = new VeAllocationUpdate(tx + '-' + allocationId)
     allocationUpdate.id = allocationId
     allocationUpdate.save()
   }
