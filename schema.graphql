@@ -555,7 +555,7 @@ type VeAllocateUser @entity{
   "id = {user}"
   id: ID!
   
-  allocations: [VeAllocation!] @derivedFrom(field: "allocationUser")  
+  veAllocation: [VeAllocation!] @derivedFrom(field: "allocationUser")  
   allocatedTotal: BigDecimal!
 }
 
@@ -563,7 +563,7 @@ type VeAllocateId @entity{
   "id = {DataNFT Address}-{chain id}"
   id: ID!
   
-  allocations: [VeAllocation!] @derivedFrom(field: "allocationId")
+  veAllocation: [VeAllocation!] @derivedFrom(field: "allocationId")
   allocatedTotal: BigDecimal!
 }
 
@@ -575,8 +575,8 @@ type VeAllocation @entity {
   allocationUser: VeAllocateUser!
   allocationId: VeAllocateId!
   
-  updates: [VeAllocationUpdate!] @derivedFrom(field: "VeAllocation")
-  allocation: BigDecimal!
+  updates: [VeAllocationUpdate!] @derivedFrom(field: "veAllocation")
+  allocatedTotal: BigDecimal!
 }
 
 enum veAllocationUpdateType {
@@ -588,7 +588,7 @@ type VeAllocationUpdate @entity {
   "{tx}-{VeAllocation id}"
   id: ID!
  
-  VeAllocation: VeAllocation!
+  veAllocation: VeAllocation!
   type: veAllocationUpdateType!
-  allocation: BigDecimal!
+  allocatedTotal: BigDecimal!
 }

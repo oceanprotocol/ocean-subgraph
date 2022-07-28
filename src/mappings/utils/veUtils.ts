@@ -1,3 +1,4 @@
+import { BigDecimal } from '@graphprotocol/graph-ts'
 import {
   VeAllocateUser,
   VeAllocateId,
@@ -9,6 +10,7 @@ export function getveAllocateUser(sender: string): VeAllocateUser {
   let allocateUser = VeAllocateUser.load(sender)
   if (allocateUser === null) {
     allocateUser = new VeAllocateUser(sender)
+    allocateUser.allocatedTotal = BigDecimal.fromString('0.0')
     allocateUser.save()
   }
 
@@ -19,30 +21,39 @@ export function getveAllocateId(id: string): VeAllocateId {
   let allocateId = VeAllocateId.load(id)
   if (allocateId === null) {
     allocateId = new VeAllocateId(id)
+    allocateId.allocatedTotal = BigDecimal.fromString('0.0')
     allocateId.save()
   }
-
+1
   return allocateId
 }
 
 export function getveAllocation(sender: string, id: string): VeAllocation {
-  let allocation = VeAllocation.load(sender + '-' + id)
-  if (allocation === null) {
-    allocation = new VeAllocation(sender + '-' + id)
-    allocation.save()
+  let veAllocation = VeAllocation.load(sender + '-' + id)
+  if (veAllocation === null) {
+    veAllocation = new VeAllocation(sender + '-' + id)
+    veAllocation.allocationUser = getveAllocateUser(sender).id
+    veAllocation.allocationId = getveAllocateId(id).id
+    veAllocation.allocatedTotal = BigDecimal.fromString('0.0')
+    veAllocation.save()
   }
 
-  return allocation
+  return veAllocation
 }
 
-export function getveAllocationUpdate(
+// Pass veAllocation being updated
+export function writeveAllocationUpdate(
   tx: string,
-  allocationId: string
+  veAllocationId: string,
+  allocationType: string,
+  amount: BigDecimal
 ): VeAllocationUpdate {
-  let allocationUpdate = VeAllocationUpdate.load(tx + '-' + allocationId)
+  let allocationUpdate = VeAllocationUpdate.load(tx + '-' + veAllocationId)
   if (allocationUpdate === null) {
-    allocationUpdate = new VeAllocationUpdate(tx + '-' + allocationId)
-    allocationUpdate.id = allocationId
+    allocationUpdate = new VeAllocationUpdate(tx + '-' + veAllocationId)
+    allocationUpdate.veAllocation = veAllocationId
+    allocationUpdate.type = allocationType
+    allocationUpdate.allocatedTotal = amount
     allocationUpdate.save()
   }
 

@@ -10,69 +10,77 @@ import {
   getveAllocateUser,
   getveAllocateId,
   getveAllocation,
-  getveAllocationUpdate
+  writeveAllocationUpdate
 } from './utils/veUtils'
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 
 export function handleAllocationSet(event: AllocationSet): void {
   // get allocation entities
-  const allocateUser = getveAllocateUser(event.params.sender.toHex())
-  const allocateId = getveAllocateId(event.params.id.toString())
-  const allocation = getveAllocation(
-    event.params.sender.toHex(),
-    event.params.id.toString()
+  const allocateUser = getveAllocateUser(event.params.sender.toHexString())
+  const allocateId = getveAllocateId(event.params.id.toHexString())
+  const veAllocation = getveAllocation(
+    event.params.sender.toHexString(),
+    event.params.id.toHexString()
   )
   const allocationAmount = weiToDecimal(event.params.amount.toBigDecimal(), 18)
 
-  // get allocation event
-  const allocationUpdate = getveAllocationUpdate(
+  // // get allocation event
+  const allocationUpdate = writeveAllocationUpdate(
     event.transaction.hash.toHex(),
-    allocation.id
+    veAllocation.id,
+    veAllocationUpdateType.SET,
+    allocationAmount,
   )
-  allocationUpdate.type = veAllocationUpdateType.SET
 
-  // update all entities
-  allocateUser.allocatedTotal =
-    allocateUser.allocatedTotal - allocation.allocation + allocationAmount
-  allocateId.allocatedTotal =
-    allocateId.allocatedTotal - allocation.allocation + allocationAmount
-  allocation.allocation = allocationAmount
-  allocationUpdate.allocation = allocationAmount
+  // update all entities  
+  let newUserAllocation : BigDecimal = allocateUser.allocatedTotal.minus(veAllocation.allocatedTotal)
+  newUserAllocation = newUserAllocation.plus(allocationAmount)
+  allocateUser.allocatedTotal = newUserAllocation
+  
+  let newIdAllocation : BigDecimal = allocateId.allocatedTotal.minus(veAllocation.allocatedTotal)
+  newIdAllocation = newIdAllocation.plus(allocationAmount)
+  allocateId.allocatedTotal = newIdAllocation
+  
+  veAllocation.allocatedTotal = allocationAmount
+  // allocationUpdate.allocatedTotal = allocationAmount
 
   // save entities
   allocateUser.save()
   allocateId.save()
-  allocation.save()
-  allocationUpdate.save()
+  veAllocation.save()
+  // allocationUpdate.save()
 }
 
 export function handleAllocationRemoved(event: AllocationRemoved): void {
   // get allocation objects
-  const allocateUser = getveAllocateUser(event.params.sender.toHex())
-  const allocateId = getveAllocateId(event.params.id.toString())
-
-  const allocation = getveAllocation(
-    event.params.sender.toHex(),
-    event.params.id.toString()
+  const allocateUser = getveAllocateUser(event.params.sender.toHexString())
+  const allocateId = getveAllocateId(event.params.id.toHexString())
+  const veAllocation = getveAllocation(
+    event.params.sender.toHexString(),
+    event.params.id.toHexString()
   )
 
-  // get allocation event
-  const allocationUpdate = getveAllocationUpdate(
+  // // get allocation event
+  const allocationUpdate = writeveAllocationUpdate(
     event.transaction.hash.toHex(),
-    allocation.id
+    veAllocation.id,
+    veAllocationUpdateType.REMOVED,
+    BigInt.fromI32(0).toBigDecimal()
   )
-  allocationUpdate.type = veAllocationUpdateType.REMOVED
 
   // update all entities
-  allocateUser.allocatedTotal =
-    allocateUser.allocatedTotal - allocation.allocation
-  allocateId.allocatedTotal = allocateId.allocatedTotal - allocation.allocation
-  allocation.allocation = BigInt.fromI32(0).toBigDecimal()
-  allocationUpdate.allocation = BigInt.fromI32(0).toBigDecimal()
+  let newUserAllocation : BigDecimal = allocateUser.allocatedTotal.minus(veAllocation.allocatedTotal)
+  allocateUser.allocatedTotal = newUserAllocation
+  
+  let newIdAllocation : BigDecimal = allocateId.allocatedTotal.minus(veAllocation.allocatedTotal)
+  allocateId.allocatedTotal = newIdAllocation
+
+  veAllocation.allocatedTotal = BigInt.fromI32(0).toBigDecimal()
+  // allocationUpdate.allocatedTotal = BigInt.fromI32(0).toBigDecimal()
 
   // save entities
   allocateUser.save()
   allocateId.save()
-  allocation.save()
-  allocationUpdate.save()
+  veAllocation.save()
+  // allocationUpdate.save()
 }
