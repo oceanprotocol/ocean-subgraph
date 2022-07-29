@@ -14,9 +14,9 @@ export function handleAllocationSet(event: AllocationSet): void {
   const eventSender = event.params.sender.toHexString()
   const eventId = event.params.id.toHexString()
 
-  const allocateUser = getveAllocateUser(eventSender)
-  const allocateId = getveAllocateId(eventId)
-  const veAllocation = getveAllocation(eventSender, eventId)
+  const allocateUser = getveAllocateUser(event, eventSender)
+  const allocateId = getveAllocateId(event, eventId)
+  const veAllocation = getveAllocation(event, eventSender, eventId)
   const allocationAmount = event.params.amount.toBigDecimal()
 
   // update all entities
@@ -31,9 +31,13 @@ export function handleAllocationSet(event: AllocationSet): void {
   veAllocation.allocatedTotal = allocateUser.allocatedTotal
   veAllocation.allocated = allocationAmount
 
+  allocateUser.lastContact = event.block.timestamp.toI32()
+  allocateId.lastContact = event.block.timestamp.toI32()
+  veAllocation.lastContact = event.block.timestamp.toI32()
+
   // register allocation update event
   writeveAllocationUpdate(
-    event.transaction.hash.toHex(),
+    event,
     veAllocation.id,
     veAllocationUpdateType.SET,
     allocationAmount
