@@ -10,7 +10,7 @@ export function getveAllocateUser(sender: string): VeAllocateUser {
   let allocateUser = VeAllocateUser.load(sender)
   if (allocateUser === null) {
     allocateUser = new VeAllocateUser(sender)
-    allocateUser.allocatedTotal = BigDecimal.fromString('0.0')
+    allocateUser.allocatedTotal = BigDecimal.zero()
     allocateUser.save()
   }
 
@@ -21,7 +21,7 @@ export function getveAllocateId(id: string): VeAllocateId {
   let allocateId = VeAllocateId.load(id)
   if (allocateId === null) {
     allocateId = new VeAllocateId(id)
-    allocateId.allocatedTotal = BigDecimal.fromString('0.0')
+    allocateId.allocatedTotal = BigDecimal.zero()
     allocateId.save()
   }
 
@@ -34,7 +34,8 @@ export function getveAllocation(sender: string, id: string): VeAllocation {
     veAllocation = new VeAllocation(sender + '-' + id)
     veAllocation.allocationUser = getveAllocateUser(sender).id
     veAllocation.allocationId = getveAllocateId(id).id
-    veAllocation.allocatedTotal = BigDecimal.fromString('0.0')
+    veAllocation.allocatedTotal = BigDecimal.zero()
+    veAllocation.allocated = BigDecimal.zero()
     veAllocation.save()
   }
 
