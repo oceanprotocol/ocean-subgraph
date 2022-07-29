@@ -129,10 +129,8 @@ dataSources:
         - name: veAllocate
           file: ./abis/veAllocate.json
       eventHandlers:
-        - event: AllocationSet(indexed address,indexed string,uint256)
+        - event: AllocationSet(address indexed sender, address indexed nft, uint256 indexed chainId, uint256 amount, bytes32 id)
           handler: handleAllocationSet
-        - event: AllocationRemoved(indexed address,indexed string)
-          handler: handleAllocationRemoved
 ```
 
 As you can see, we have also imported our `veAllocate.json ABI` file into the project, added the contract events we want to handle, and created a mapping script `./src/mappings/veAllocate.ts` so we can handle all the vents for the Subgraph.
