@@ -11,6 +11,7 @@ import {
   getveAllocation,
   writeveAllocationUpdate
 } from './utils/veUtils'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleAllocationSet(event: AllocationSet): void {
   // get allocation entities
