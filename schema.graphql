@@ -577,6 +577,7 @@ type VeAllocation @entity {
   
   updates: [VeAllocationUpdate!] @derivedFrom(field: "veAllocation")
   allocatedTotal: BigDecimal!
+  allocated: BigDecimal!
 }
 
 enum veAllocationUpdateType {

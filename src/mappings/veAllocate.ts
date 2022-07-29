@@ -32,7 +32,8 @@ export function handleAllocationSet(event: AllocationSet): void {
     veAllocation.allocatedTotal
   )
   allocateId.allocatedTotal = newIdAllocation.plus(allocationAmount)
-  veAllocation.allocatedTotal = allocationAmount
+  veAllocation.allocatedTotal = allocateUser.allocatedTotal
+  veAllocation.allocated = allocationAmount
 
   // register allocation update event
   writeveAllocationUpdate(
