@@ -22,10 +22,11 @@ export function handleAllocationSet(event: AllocationSet): void {
   const veAllocation = getveAllocation(eventSender, eventId)
 
   // update all entities
-  const newUserAllocation = allocateUser.allocatedTotal.minus(
-    veAllocation.allocatedTotal
-  )
-  allocateUser.allocatedTotal = newUserAllocation.plus(allocationAmount)
+  const newUserAllocation = allocateUser.allocatedTotal
+    .plus(allocationAmount)
+    .minus(veAllocation.allocated)
+
+  allocateUser.allocatedTotal = newUserAllocation
   const newIdAllocation = allocateId.allocatedTotal.minus(
     veAllocation.allocatedTotal
   )
