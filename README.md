@@ -37,51 +37,15 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 ## ⛵ Example Queries
 
-**All pools**
-
-```graphql
-{
-  pools(orderBy: baseTokenLiquidity, orderDirection: desc) {
-    id
-    datatoken {
-      address
-    }
-    baseToken {
-      symbol
-    }
-    baseTokenLiquidity
-    datatokenLiquidity
-  }
-}
-```
-
-**Pools with the highest liquidity**
-
-```graphql
-{
-  pools(where: {datatokenLiquidity_gte: 1}, orderBy: baseTokenLiquidity, orderDirection: desc, first: 15) {
-    id
-    datatoken {
-      address
-    }
-    baseToken {
-      symbol
-    }
-    baseTokenLiquidity
-    datatokenLiquidity
-  }
-}
-```
-
 **All Data NFTs**
 
 ```graphql
 {
-  nfts(orderBy: createdTimestamp, orderDirection: desc, first: 1000){
-    id,
-    symbol,
-    name,
-    creator,
+  nfts(orderBy: createdTimestamp, orderDirection: desc, first: 1000) {
+    id
+    symbol
+    name
+    creator
     createdTimestamp
   }
 }
@@ -89,92 +53,65 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 
 > Note: 1000 is the maximum number of items the subgraph can return.
 
-**All Datatokens**
+**Total Orders for Each User**
 
 ```graphql
 {
-  tokens(where: {isDatatoken: true}, orderBy: createdTimestamp, orderDirection: desc, first: 1000) {
+  users(first: 1000) {
     id
-    symbol
-    name
-    address
-    holderCount
+    totalOrders
   }
 }
 ```
 
-**All pool transactions for a given user**
+**Total Orders for All Users**
 
 ```graphql
 {
-    poolTransactions(
-      orderBy: timestamp
-      orderDirection: desc
-      where: { user: $user }
-      first: 1000
-    ) {
-      baseToken {
-        symbol
-        address
-      }
-      baseTokenValue
-      datatoken {
-        symbol
-        address
-      }
-      datatokenValue
-      type
-      tx
-      timestamp
-      pool {
-        datatoken {
-          id
-        }
-        id
-      }
-    }
+  users(first: 1000) {
+    id
+    totalOrders
   }
+}
+```
+
+> Note: 1000 is the maximum number of items the subgraph can return.
+
+**Total Orders for a Specific User**
+
+```graphql
+{
+  user(id: $user) {
+    id
+    totalOrders
+  }
+}
 ```
 
 > Note: all ETH addresses like `$user` in above example need to be passed as a lowercase string.
 
-**All pool transactions for a given user in an individual pool**
+**All Orders**
 
-```graphql
+```
 {
-    poolTransactions(
-      orderBy: timestamp
-      orderDirection: desc
-      where: { pool: $pool, user: $user }
-      first: 1000
-    ) {
-      baseToken {
-        symbol
-        address
-      }
-      baseTokenValue
-      datatoken {
-        symbol
-        address
-      }
-      datatokenValue
-      type
-      tx
-      timestamp
-      pool {
-        datatoken {
-          id
-        }
-        id
-      }
+  orders(orderBy: createdTimestamp, orderDirection: desc, first: 1000){
+    amount
+    datatoken {
+      id
+    }
+    consumer {
+      id
+    }
+    payer {
+      id
     }
   }
+}
 ```
 
-> Note: all ETH addresses like `$pool` and `$user` in above example need to be passed as a lowercase string.
+> Note: 1000 is the maximum number of items the subgraph can return.
 
 ## 🏊 Development on Barge
-
 
 1. Clone [barge](https://github.com/oceanprotocol/barge) and run it in another terminal:
 
@@ -194,12 +131,14 @@ cd ocean-subgraph
 npm i
 ```
 
-3. Let the components know where to pickup the smart contract addresses. 
+3. Let the components know where to pickup the smart contract addresses.
+
 ```
 export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
 ```
 
 4. Generate the subgraphs
+
 ```bash
 node ./scripts/generatenetworkssubgraphs.js barge
 npm run codegen
@@ -219,9 +158,7 @@ npm run deploy:local
 
 You now have a local graph-node running on http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph/graphql
 
-
 ## 🏊 Deploying graphs for live networks
-
 
 1. Clone the repo and install dependencies:
 
@@ -232,16 +169,16 @@ npm i
 ```
 
 2. Generate & deploy on rinkeby
+
 ```bash
 npm run quickstart:rinkeby
 ```
-
 
 ## 🔍 Testing
 
 - Please note: the `npm run test` command is currently not working due to [this issue](https://github.com/graphprotocol/graph-ts/issues/113).
 
-To run the integration tests locally, first start up barge by following the instructions above, then run the following terminal commands from the ocean-subgraph folder: 
+To run the integration tests locally, first start up barge by following the instructions above, then run the following terminal commands from the ocean-subgraph folder:
 
 ```Bash
 export ADDRESS_FILE="${HOME}/.ocean/ocean-contracts/artifacts/address.json"
@@ -262,8 +199,8 @@ npm run format
 
 ## 🛳 Releases
 
-Releases are managed semi-automatically. They are always manually triggered from a developer's 
-machine with release scripts. From a clean `main` branch you can run the release task bumping 
+Releases are managed semi-automatically. They are always manually triggered from a developer's
+machine with release scripts. From a clean `main` branch you can run the release task bumping
 the version accordingly based on semantic versioning:
 
 ```bash
@@ -310,7 +247,7 @@ You can edit the event handler code and then run `npm run deploy:local`, with so
 - Running deploy will fail if the code has no changes
 - Sometimes deploy will fail no matter what, in this case:
   - Stop the docker-compose run (`docker-compose down` or Ctrl+C)
-      This should stop the graph-node, ipfs and postgres containers
+    This should stop the graph-node, ipfs and postgres containers
   - Delete the `ipfs` and `postgres` folders in `/docker/data` (`rm -rf ./docker/data/*`)
   - Run `docker-compose up` to restart graph-node, ipfs and postgres
   - Run `npm run create:local` to create the ocean-subgraph
