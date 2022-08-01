@@ -129,7 +129,7 @@ dataSources:
         - name: veAllocate
           file: ./abis/veAllocate.json
       eventHandlers:
-        - event: AllocationSet(address indexed sender, address indexed nft, uint256 indexed chainId, uint256 amount)
+        - event: AllocationSet(indexed address,indexed address,indexed uint256,uint256)
           handler: handleAllocationSet
 ```
 
