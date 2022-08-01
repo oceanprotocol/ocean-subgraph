@@ -17,6 +17,7 @@ import { weiToDecimal } from './utils/generic'
 import { addDispenser } from './utils/globalUtils'
 import { getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
+import { BigDecimal } from '@graphprotocol/graph-ts'
 
 export function handleNewDispenser(event: DispenserCreated): void {
   const dispenserID = getDispenserGraphID(
@@ -38,7 +39,7 @@ export function handleNewDispenser(event: DispenserCreated): void {
     token.decimals
   )
   dispenser.active = true
-
+  dispenser.balance = BigDecimal.zero()
   dispenser.allowedSwapper = event.params.allowedSwapper.toHex()
   dispenser.createdTimestamp = event.block.timestamp.toI32()
   dispenser.tx = event.transaction.hash.toHex()
