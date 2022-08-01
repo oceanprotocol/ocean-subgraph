@@ -557,6 +557,11 @@ type VeAllocateUser @entity{
   
   veAllocation: [VeAllocation!] @derivedFrom(field: "allocationUser")  
   allocatedTotal: BigDecimal!
+
+  block: Int!
+  firstContact: Int!
+  lastContact: Int!
+  tx: String!
 }
 
 type VeAllocateId @entity{
@@ -565,6 +570,11 @@ type VeAllocateId @entity{
   
   veAllocation: [VeAllocation!] @derivedFrom(field: "allocationId")
   allocatedTotal: BigDecimal!
+
+  block: Int!
+  firstContact: Int!
+  lastContact: Int!
+  tx: String!
 }
 
 # we need to track allocation of user to id
@@ -580,6 +590,11 @@ type VeAllocation @entity {
   allocated: BigDecimal!
   chainId: BigInt!
   nftAddress: String!
+
+  block: Int!
+  firstContact: Int!
+  lastContact: Int!
+  tx: String!
 }
 
 enum veAllocationUpdateType {
@@ -594,4 +609,8 @@ type VeAllocationUpdate @entity {
   veAllocation: VeAllocation!
   type: veAllocationUpdateType!
   allocatedTotal: BigDecimal!
+
+  block: Int!
+  timestamp: Int!
+  tx: String!
 }

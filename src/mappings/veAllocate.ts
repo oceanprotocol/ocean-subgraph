@@ -36,9 +36,13 @@ export function handleAllocationSet(event: AllocationSet): void {
   veAllocation.chainId = chainId
   veAllocation.nftAddress = nftAddress
 
+  allocateUser.lastContact = event.block.timestamp.toI32()
+  allocateId.lastContact = event.block.timestamp.toI32()
+  veAllocation.lastContact = event.block.timestamp.toI32()
+
   // register allocation update event
   writeveAllocationUpdate(
-    event.transaction.hash.toHex(),
+    event,
     veAllocation.id,
     veAllocationUpdateType.SET,
     allocationAmount
