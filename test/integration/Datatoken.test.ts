@@ -196,7 +196,7 @@ describe('Datatoken tests', async () => {
       dt.publishMarketFeeAmount === publishMarketFeeAmount,
       'incorrect value for: publishMarketFeeAmount'
     )
-    // TODO: templateId id should not be null. Will be fixed in another PR. See: https://github.com/oceanprotocol/ocean-subgraph/issues/506
+
     assert(dt.templateId === null, 'incorrect value for: templateId')
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
@@ -331,46 +331,6 @@ describe('Datatoken tests', async () => {
     )
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
-
-  // it('Check balance before and after minting datatokens', async () => {
-  //   datatoken = new Datatoken(web3, 8996)
-  //   const mint1 = '100'
-  //   const mint2 = '10'
-  //   const balance1before = await datatoken.balance(datatokenAddress, publisher)
-  //   const balance2before = await datatoken.balance(datatokenAddress, user1)
-  //   assert(balance1before === '0')
-  //   assert(balance2before === '0')
-
-  //   // await datatoken.transfer(datatokenAddress, user2, '1', user1)
-  //   await datatoken.mint(datatokenAddress, publisher, mint1, publisher)
-  //   await datatoken.mint(datatokenAddress, publisher, mint2, user1)
-
-  //   const balance1after = await datatoken.balance(datatokenAddress, publisher)
-  //   const balance2after = await datatoken.balance(datatokenAddress, user1)
-
-  //   // TODO: Check balances from the subgraph - currently tokenBalancesOwned isn't updated.
-
-  //   assert(balance1after === mint1)
-  //   assert(balance2after === mint2)
-  // })
-
-  // it('Check balance before and after transfering datatokens', async () => {
-  //   datatoken = new Datatoken(web3, 8996)
-  //   const transfer = '50'
-  //   const balance1before = await datatoken.balance(datatokenAddress, publisher)
-  //   const balance2before = await datatoken.balance(datatokenAddress, user1)
-
-  //   await datatoken.transfer(datatokenAddress, user1, transfer, publisher)
-
-  //   const balance1after = await datatoken.balance(datatokenAddress, publisher)
-  //   const balance2after = await datatoken.balance(datatokenAddress, user1)
-
-  // TODO: Check balances from the subgraph - currently tokenBalancesOwned isn't updated.
-
-  //   console.log('balance after', balance1after, balance2after)
-  //   assert(balance1after === balance1before - Number(transfer))
-  //   assert(balance2after === mint2)
-  // })
 
   it('Check datatoken orders are updated correctly after publishing & ordering a datatoken', async () => {
     // Start with publishing a new datatoken
