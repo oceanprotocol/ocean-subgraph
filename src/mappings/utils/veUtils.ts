@@ -1,4 +1,4 @@
-import { BigDecimal } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import {
   VeAllocateUser,
   VeAllocateId,
@@ -36,6 +36,8 @@ export function getveAllocation(sender: string, id: string): VeAllocation {
     veAllocation.allocationId = getveAllocateId(id).id
     veAllocation.allocatedTotal = BigDecimal.zero()
     veAllocation.allocated = BigDecimal.zero()
+    veAllocation.chainId = BigInt.zero()
+    veAllocation.nftAddress = ''
     veAllocation.save()
   }
 
