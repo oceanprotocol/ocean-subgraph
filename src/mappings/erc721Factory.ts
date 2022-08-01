@@ -4,7 +4,8 @@ import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
 import { getToken, getNftToken } from './utils/tokenUtils'
-import { addDatatoken } from './utils/globalUtils'
+import { addDatatoken, getTemplates } from './utils/globalUtils'
+import { log } from '@graphprotocol/graph-ts'
 
 export function handleNftCreated(event: NFTCreated): void {
   // const nft = new Nft(event.params.newTokenAddress.toHexString())
@@ -42,6 +43,24 @@ export function handleNewToken(event: TokenCreated): void {
   token.decimals = 18
   token.supply = decimal.ZERO
   token.cap = weiToDecimal(event.params.cap.toBigDecimal(), 18)
+  const templateAddress = event.params.templateAddress
+  let existingContracts: string[]
+  const templates = getTemplates()
+  if (!templates.fixedRateTemplates) existingContracts = []
+  else existingContracts = templates.ssTemplates as string[]
+
+  log.info(
+    '\n\n\n**********\n\n\n***********\n\n\nAddress is template:\n{}\n\n\n************\n\n\n*********\n\n\n',
+    [existingContracts[0]]
+  )
+  log.info(
+    '\n\n\n**********\n\n\n***********\n\n\nAddress is template:\n{}\n\n\n************\n\n\n*********\n\n\n',
+    [existingContracts[1]]
+  )
+  log.info(
+    '\n\n\n**********\n\n\n***********\n\n\nChecking if templates work! \n[0]:\n{}\n\n\n************\n\n\n*********\n\n\n',
+    [templateAddress.toHexString()]
+  )
 
   token.save()
   addDatatoken()
