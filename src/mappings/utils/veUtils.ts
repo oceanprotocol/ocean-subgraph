@@ -18,6 +18,7 @@ export function getveAllocateUser(
     allocateUser.firstContact = event.block.timestamp.toI32()
     allocateUser.tx = event.transaction.hash.toHex()
     allocateUser.block = event.block.number.toI32()
+    allocateUser.lastContact = 0
 
     allocateUser.save()
   }
@@ -37,6 +38,7 @@ export function getveAllocateId(
     allocateId.firstContact = event.block.timestamp.toI32()
     allocateId.tx = event.transaction.hash.toHex()
     allocateId.block = event.block.number.toI32()
+    allocateId.lastContact = 0
 
     allocateId.save()
   }
@@ -52,8 +54,8 @@ export function getveAllocation(
   let veAllocation = VeAllocation.load(sender + '-' + id)
   if (veAllocation === null) {
     veAllocation = new VeAllocation(sender + '-' + id)
-    veAllocation.allocationUser = getveAllocateUser(sender).id
-    veAllocation.allocationId = getveAllocateId(id).id
+    veAllocation.allocationUser = getveAllocateUser(event, sender).id
+    veAllocation.allocationId = getveAllocateId(event, id).id
     veAllocation.allocatedTotal = BigDecimal.zero()
     veAllocation.allocated = BigDecimal.zero()
     veAllocation.chainId = BigInt.zero()
@@ -62,6 +64,7 @@ export function getveAllocation(
     veAllocation.firstContact = event.block.timestamp.toI32()
     veAllocation.tx = event.transaction.hash.toHex()
     veAllocation.block = event.block.number.toI32()
+    veAllocation.lastContact = 0
 
     veAllocation.save()
   }
