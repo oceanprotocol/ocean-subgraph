@@ -17,9 +17,9 @@ export function handleAllocationSet(event: AllocationSet): void {
   const allocationAmount = event.params.amount.toBigDecimal()
   const eventId = nftAddress + '-' + chainId.toString()
 
-  const allocateUser = getveAllocateUser(eventSender)
-  const allocateId = getveAllocateId(eventId)
-  const veAllocation = getveAllocation(eventSender, eventId)
+  const allocateUser = getveAllocateUser(event, eventSender)
+  const allocateId = getveAllocateId(event, eventId)
+  const veAllocation = getveAllocation(event, eventSender, eventId)
 
   // update all entities
   const newUserAllocation = allocateUser.allocatedTotal
