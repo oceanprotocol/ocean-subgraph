@@ -8,8 +8,8 @@ import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
 import { getToken, getNftToken } from './utils/tokenUtils'
-import { addDatatoken, getTemplates } from './utils/globalUtils'
-import { log, BigInt } from '@graphprotocol/graph-ts'
+import { addDatatoken } from './utils/globalUtils'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleNftCreated(event: NFTCreated): void {
   // const nft = new Nft(event.params.newTokenAddress.toHexString())
