@@ -71,6 +71,7 @@ const ddo = {
 describe('NFT tests', async () => {
   const nftName = 'testNFT'
   const nftSymbol = 'TST'
+  const tokenURI = 'https://oceanprotocol.com/nft/'
   let datatokenAddress: string
   let nft: Nft
   let Factory: NftFactory
@@ -99,7 +100,7 @@ describe('NFT tests', async () => {
       name: nftName,
       symbol: nftSymbol,
       templateIndex: 1,
-      tokenURI: '',
+      tokenURI,
       transferable: true,
       owner: publisher
     }
@@ -156,7 +157,7 @@ describe('NFT tests', async () => {
     assert(nft.id === nftAddress, 'incorrect value for: id')
     assert(nft.symbol === nftSymbol, 'incorrect value for: symbol')
     assert(nft.name === nftName, 'incorrect value for: name')
-    assert(nft.tokenUri === '', 'incorrect value for: tokenUri')
+    assert(nft.tokenUri === tokenURI, 'incorrect value for: tokenUri')
     assert(nft.owner === publisher, 'incorrect value for: owner')
     assert(nft.creator === publisher, 'incorrect value for: creator')
     assert(nft.managerRole[0] === publisher, 'incorrect value for: managerRole')
@@ -246,7 +247,7 @@ describe('NFT tests', async () => {
     assert(updatedNft.id === nftAddress, 'incorrect value for: id')
     assert(updatedNft.symbol === nftSymbol, 'incorrect value for: symbol')
     assert(updatedNft.name === nftName, 'incorrect value for: name')
-    assert(updatedNft.tokenUri === '', 'incorrect value for: tokenUri')
+    assert(updatedNft.tokenUri === tokenURI, 'incorrect value for: tokenUri')
     assert(updatedNft.owner === publisher, 'incorrect value for: owner')
     assert(updatedNft.creator === publisher, 'incorrect value for: creator')
     assert(
