@@ -79,6 +79,7 @@ describe('Datatoken tests', async () => {
   const feeToken = '0x3210000000000000000000000000000000000000'
   const publishMarketFeeAmount = '0.1'
   const cap = '10000'
+  const templateIndex = 1
   let datatokenAddress: string
   let nft: Nft
   let Factory: NftFactory
@@ -111,13 +112,13 @@ describe('Datatoken tests', async () => {
     const nftParams: NftCreateData = {
       name: nftName,
       symbol: nftSymbol,
-      templateIndex: 1,
+      templateIndex,
       tokenURI: '',
       transferable: true,
       owner: publisher
     }
     const erc20Params: Erc20CreateParams = {
-      templateIndex: 1,
+      templateIndex,
       cap,
       feeAmount: publishMarketFeeAmount,
       paymentCollector: '0x0000000000000000000000000000000000000000',
@@ -197,7 +198,7 @@ describe('Datatoken tests', async () => {
       'incorrect value for: publishMarketFeeAmount'
     )
 
-    assert(dt.templateId === null, 'incorrect value for: templateId')
+    assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
     assert(dt.orders, 'incorrect value for: orders')
@@ -309,7 +310,7 @@ describe('Datatoken tests', async () => {
       dt.publishMarketFeeAmount === publishMarketFeeAmount,
       'incorrect value for: publishMarketFeeAmount'
     )
-    assert(dt.templateId === null, 'incorrect value for: templateId')
+    assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
     assert(dt.orders, 'incorrect value for: orders')
@@ -337,13 +338,13 @@ describe('Datatoken tests', async () => {
     const nftParams: NftCreateData = {
       name: 'newNFT',
       symbol: 'newTST',
-      templateIndex: 1,
+      templateIndex,
       tokenURI: '',
       transferable: true,
       owner: publisher
     }
     const erc20Params: Erc20CreateParams = {
-      templateIndex: 1,
+      templateIndex,
       cap: '100000',
       feeAmount: '0',
       paymentCollector: ZERO_ADDRESS,

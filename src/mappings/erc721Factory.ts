@@ -54,29 +54,14 @@ export function handleNewToken(event: TokenCreated): void {
   const templateCount = contract.try_getCurrentTemplateCount()
   if (templateCount.reverted) return
   const templateCountNum = templateCount.value.toI32()
-  log.info(
-    '\n\n\n**********\n\n\n***********\n\n\ntemplateCountNum: \n[0]:\n{}\n\n\n************\n\n\n*********\n\n\n',
-    [templateCountNum.toString()]
-  )
+
   for (let i = 0; i < templateCountNum; i++) {
     const template = contract.try_getTokenTemplate(BigInt.fromI32(1 + i))
     if (template.reverted) return
     const templateAddress = template.value.templateAddress
       .toHexString()
       .toLowerCase()
-    log.info(
-      '\n\n\n**********\n\n\n***********\n\n\nChecking if templates work! \n[1]:\n{}\n\n\n************\n\n\n*********\n\n\n',
-      [templateAddress]
-    )
-    log.info(
-      '\n\n\n**********\n\n\n***********\n\n\nCompare with: \n[2]:\n{}\n\n\n************\n\n\n*********\n\n\n',
-      [eventTemplateAddress]
-    )
     if (templateAddress == eventTemplateAddress) {
-      log.info(
-        '\n\n\n**********\n\n\n***********\n\n\nMATCH - templates work! \n[0]:\n{}\n\n\n************\n\n\n*********\n\n\n',
-        [i.toString()]
-      )
       token.templateId = 1 + i
     }
   }
