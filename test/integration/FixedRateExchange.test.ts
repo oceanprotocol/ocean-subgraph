@@ -76,6 +76,8 @@ describe('Fixed Rate Exchange tests', async () => {
   const tokenURI = 'https://oceanprotocol.com/nft/'
   const cap = '10000'
   const feeAmount = '0.2'
+  const price = '123'
+  const publishMarketSwapFee = '0.003'
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
@@ -86,7 +88,6 @@ describe('Fixed Rate Exchange tests', async () => {
   let factoryAddress: string
   let accounts: string[]
   let publisher: string
-  let user1: string
   let erc721Address: string
   let nftAddress: string
   let time: number
@@ -100,8 +101,7 @@ describe('Fixed Rate Exchange tests', async () => {
     Factory = new NftFactory(factoryAddress, web3)
     accounts = await web3.eth.getAccounts()
     publisher = accounts[0].toLowerCase()
-    user1 = accounts[1].toLowerCase()
-    marketPlaceFeeAddress = accounts[2].toLowerCase()
+    marketPlaceFeeAddress = accounts[1].toLowerCase()
   })
 
   it('Deploying a Fixed Rate Exchange with DAI (18 Decimals)', async () => {
@@ -130,11 +130,11 @@ describe('Fixed Rate Exchange tests', async () => {
       fixedRateAddress,
       baseTokenAddress,
       owner: publisher,
-      marketFeeCollector: user1,
+      marketFeeCollector: marketPlaceFeeAddress,
       baseTokenDecimals: 18,
       datatokenDecimals: 18,
-      fixedRate: '1',
-      marketFee: '0.001',
+      fixedRate: price,
+      marketFee: publishMarketSwapFee,
       allowedConsumer: ZERO_ADDRESS,
       withMint: false
     }
@@ -147,10 +147,11 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     erc721Address = result.events.NFTCreated.returnValues[0]
     datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
+
     const exchangeContract =
       result.events.NewFixedRate.returnValues.exchangeContract.toLowerCase()
     const exchangeId =
-      result.events.NewFixedRate.returnValues.exchangeContract.toLowerCase()
+      result.events.NewFixedRate.returnValues.exchangeId.toLowerCase()
 
     fixedRateId = `${exchangeContract}-${exchangeId}`
 
@@ -291,11 +292,14 @@ describe('Fixed Rate Exchange tests', async () => {
       body: JSON.stringify(dtQuery)
     })
     await sleep(2000)
-    console.log('dtQuery', dtQuery)
     const dt = (await dtResponse.json()).data.token
     const fixed = dt.fixedRateExchanges[0]
 
     const dtTx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
+    const fixedTx: TransactionReceipt = await web3.eth.getTransactionReceipt(
+      fixed.tx
+    )
+
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')
@@ -343,7 +347,6 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
 
     // Test Fixed Rate Exchange Values
-
     assert(fixed.id === fixedRateId, 'incorrect value for: id')
     assert(fixed.contract === exchangeContract, 'incorrect value for: contract')
     assert(fixed.exchangeId === exchangeId, 'incorrect value for: exchangeId')
@@ -352,7 +355,10 @@ describe('Fixed Rate Exchange tests', async () => {
       fixed.datatoken.id === datatokenAddress,
       'incorrect value for: datatoken.id'
     )
-    assert(fixed.baseToken.id === '0', 'incorrect value for: baseToken.id')
+    assert(
+      fixed.baseToken.id === baseTokenAddress,
+      'incorrect value for: baseToken.id'
+    )
     assert(
       fixed.datatokenSupply === '0',
       'incorrect value for: datatokenSupply'
@@ -369,27 +375,41 @@ describe('Fixed Rate Exchange tests', async () => {
       fixed.baseTokenBalance === '0',
       'incorrect value for: baseTokenBalance'
     )
-    assert(fixed.price === '0', 'incorrect value for: price')
-    assert(fixed.active === '0', 'incorrect value for: active')
+    assert(fixed.price === price, 'incorrect value for: price')
+    assert(fixed.active === true, 'incorrect value for: active')
     assert(fixed.totalSwapValue === '0', 'incorrect value for: totalSwapValue')
-    assert(fixed.allowedSwapper === '0', 'incorrect value for: allowedSwapper')
-    assert(fixed.withMint === '0', 'incorrect value for: withMint')
-    assert(fixed.isMinter === '0', 'incorrect value for: isMinter')
-    assert(fixed.updates.id === '0', 'incorrect value for: updates.id')
-    assert(fixed.swaps.id === '0', 'incorrect value for: lastPriceValue')
     assert(
-      fixed.createdTimestamp === '0',
+      fixed.allowedSwapper === ZERO_ADDRESS,
+      'incorrect value for: allowedSwapper'
+    )
+    assert(fixed.withMint === null, 'incorrect value for: withMint')
+    assert(fixed.isMinter === null, 'incorrect value for: isMinter')
+    assert(
+      fixed.updates[0].id === `${result.transactionHash}-${fixedRateId}`,
+      'incorrect value for: updates.id'
+    )
+    assert(fixed.swaps, 'incorrect value for: swaps')
+    assert(
+      fixed.createdTimestamp >= time,
       'incorrect value for: createdTimestamp'
     )
-    assert(fixed.block === '0', 'incorrect value for: block')
     assert(
-      fixed.publishMarketFeeAddress === '0',
+      fixed.createdTimestamp < time + 5,
+      'incorrect value for: createdTimestamp'
+    )
+    assert(fixed.tx === result.transactionHash, 'incorrect value for: tx')
+    assert(fixed.block >= blockNumber, 'incorrect value for: block')
+    assert(fixed.block < blockNumber + 50, 'incorrect value for: block')
+    assert(
+      fixed.publishMarketFeeAddress === marketPlaceFeeAddress,
       'incorrect value for: publishMarketFeeAddress'
     )
     assert(
-      fixed.publishMarketSwapFee === '0',
+      fixed.publishMarketSwapFee === publishMarketSwapFee,
       'incorrect value for: publishMarketSwapFee'
     )
+    assert(fixedTx.from === publisher, 'incorrect value for: tx')
+    assert(fixedTx.to === factoryAddress, 'incorrect value for: tx')
   })
 
   it('Update metadata', async () => {
