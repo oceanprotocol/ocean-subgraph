@@ -1,5 +1,4 @@
 import {
-  NewPool,
   TokenAdded,
   TokenRemoved,
   OPCFeeChanged,
@@ -12,18 +11,10 @@ import {
   DispenserContractRemoved
 } from '../@types/FactoryRouter/FactoryRouter'
 import { BigInt } from '@graphprotocol/graph-ts'
-import { Pool } from '../@types/schema'
-import { BPool, FixedRateExchange, Dispenser } from '../@types/templates'
-import { addPool, getOPC, getTemplates } from './utils/globalUtils'
+import { FixedRateExchange, Dispenser } from '../@types/templates'
+import { getOPC, getTemplates } from './utils/globalUtils'
 import { weiToDecimal } from './utils/generic'
 import { getToken } from './utils/tokenUtils'
-
-export function handleNewPool(event: NewPool): void {
-  BPool.create(event.params.poolAddress)
-  const pool = new Pool(event.params.poolAddress.toHexString())
-  pool.save()
-  addPool()
-}
 
 export function handleOPCFeeChanged(event: OPCFeeChanged): void {
   const opc = getOPC()
