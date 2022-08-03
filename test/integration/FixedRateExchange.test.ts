@@ -180,9 +180,9 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(nft.block < blockNumber + 50, 'incorrect value for: block')
     assert(nft.orderCount === '0', 'incorrect value for: orderCount')
   })
+
   it('Test DT Fields after deploying Fixed rate exchange', async () => {
     // Check Datatoken Values
-
     const dtQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -211,41 +211,6 @@ describe('Fixed Rate Exchange tests', async () => {
           block,
           lastPriceToken,
           lastPriceValue
-          fixedRateExchanges {
-            id
-            contract
-            exchangeId
-            owner {
-              id
-            }
-            datatoken {
-              id
-            }
-            baseToken {
-              id
-            }
-            datatokenSupply
-            baseTokenSupply
-            datatokenBalance
-            baseTokenBalance
-            price
-            active
-            totalSwapValue
-            allowedSwapper
-            withMint
-            isMinter
-            updates {
-              id
-            }
-            swaps {
-              id
-            }
-            createdTimestamp
-            tx
-            block
-            publishMarketFeeAddress
-            publishMarketSwapFee
-          }
         }}`
     }
     const dtResponse = await fetch(subgraphUrl, {
@@ -303,8 +268,53 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
-  it('Deploying a Fixed Rate Exchange & Test fixedRateExchanges Fields', async () => {
-    const fixed = dt.fixedRateExchanges[0]
+
+  it('Test fixedRateExchanges Fields', async () => {
+    const fixedQuery = {
+      query: `query {
+        fixedRateExchange(id: "${fixedRateId}"){  
+          id
+          contract
+          exchangeId
+          owner {
+            id
+          }
+          datatoken {
+            id
+          }
+          baseToken {
+            id
+          }
+          datatokenSupply
+          baseTokenSupply
+          datatokenBalance
+          baseTokenBalance
+          price
+          active
+          totalSwapValue
+          allowedSwapper
+          withMint
+          isMinter
+          updates {
+            id
+          }
+          swaps {
+            id
+          }
+          createdTimestamp
+          tx
+          block
+          publishMarketFeeAddress
+          publishMarketSwapFee
+        }
+      }`
+    }
+    const fixedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(fixedQuery)
+    })
+    await sleep(2000)
+    const fixed = (await fixedResponse.json()).data.fixedRateExchange
     const fixedTx: TransactionReceipt = await web3.eth.getTransactionReceipt(
       fixed.tx
     )
@@ -346,10 +356,7 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     assert(fixed.withMint === null, 'incorrect value for: withMint')
     assert(fixed.isMinter === null, 'incorrect value for: isMinter')
-    assert(
-      fixed.updates[0].id === `${transactionHash}-${fixedRateId}`,
-      'incorrect value for: updates.id'
-    )
+    assert(fixed.updates, 'incorrect value for: updates.id')
     assert(fixed.swaps, 'incorrect value for: swaps')
     assert(
       fixed.createdTimestamp >= time,
