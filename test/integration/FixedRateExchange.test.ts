@@ -4,7 +4,8 @@ import {
   NftCreateData,
   sleep,
   FreCreationParams,
-  ZERO_ADDRESS
+  ZERO_ADDRESS,
+  FixedRateExchange
 } from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
@@ -52,6 +53,7 @@ describe('Fixed Rate Exchange tests', async () => {
   let exchangeContract: string
   let exchangeId: string
   let transactionHash: string
+  let fixedRate: FixedRateExchange
 
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
@@ -381,10 +383,46 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(fixedTx.to === factoryAddress, 'incorrect value for: tx')
   })
 
-  // it('Update Fixed Rate Price', async () => {
-  //   await fixedRate.setRate(exchangeOwner, exchangeId, '2')
-  //   expect(await fixedRate.getRate(exchangeId)).to.equal('2')
-  //   await fixedRate.setRate(exchangeOwner, exchangeId, '1')
-  //   expect(await fixedRate.getRate(exchangeId)).to.equal('1')
-  // })
+  it('Update Fixed Rate Price', async () => {
+    fixedRate = new FixedRateExchange(web3, fixedRateAddress, 8996)
+    const priceQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){price}}`
+    }
+
+    // Check initial price
+    const priceResponse1 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(priceQuery)
+    })
+    await sleep(2000)
+    const price1 = (await priceResponse1.json()).data.fixedRateExchange.price
+    assert(price1 === price, 'incorrect value for: price 1')
+
+    // Update price
+    await fixedRate.setRate(publisher, exchangeId, '999')
+    await sleep(2000)
+
+    // Check price after first update
+    const priceResponse2 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(priceQuery)
+    })
+    await sleep(2000)
+    const price2 = (await priceResponse2.json()).data.fixedRateExchange.price
+    assert(price2 === '999', 'incorrect value for: price 2')
+
+    // Update price a 2nd time
+    await fixedRate.setRate(publisher, exchangeId, '5.123')
+    await sleep(2000)
+
+    // Check price after 2nd update
+    const priceResponse3 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(priceQuery)
+    })
+    await sleep(2000)
+    const price3 = (await priceResponse3.json()).data.fixedRateExchange.price
+
+    assert(price3 === '5.123', 'incorrect value for: price 3')
+  })
 })
