@@ -1,4 +1,4 @@
-import { BigInt, Address, BigDecimal, log } from '@graphprotocol/graph-ts'
+import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
