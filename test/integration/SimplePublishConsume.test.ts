@@ -27,7 +27,6 @@ const data = JSON.parse(
 )
 
 const addresses = data.development
-// const aquarius = new Aquarius('http://127.0.0.1:5000')
 const web3 = new Web3('http://127.0.0.1:8545')
 
 const providerUrl = 'http://172.15.0.4:8030'
@@ -93,7 +92,7 @@ describe('Simple Publish & consume test', async () => {
     user1 = accounts[2]
     user2 = accounts[3]
     user3 = accounts[4]
-    user4 = accounts[4]
+    user4 = accounts[5]
   })
 
   it('should publish a dataset (create NFT + ERC20)', async () => {
@@ -281,7 +280,7 @@ describe('Simple Publish & consume test', async () => {
       1,
       setProviderFee
     )
-    const orderId = `${orderTx.transactionHash.toLocaleLowerCase()}-${datatokenAddress.toLocaleLowerCase()}-${user1.toLocaleLowerCase()}`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}`
 
     const query = { query: `query {order(id:"${orderId}"){id, providerFee}}` }
 

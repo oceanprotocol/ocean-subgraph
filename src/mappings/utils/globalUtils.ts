@@ -3,7 +3,6 @@ import {
   GlobalStatistic,
   GlobalTotalFixedSwapPair,
   GlobalTotalLiquidityPair,
-  GlobalTotalPoolSwapPair,
   OPC,
   Template
 } from '../../@types/schema'
@@ -14,11 +13,10 @@ export function getGlobalStats(): GlobalStatistic {
   let globalStats = GlobalStatistic.load(GLOBAL_ID)
   if (!globalStats) {
     globalStats = new GlobalStatistic(GLOBAL_ID)
-    globalStats.version = '2.0.1'
+    globalStats.version = '2.0.3'
     globalStats.orderCount = 0
     globalStats.fixedCount = 0
     globalStats.datatokenCount = 0
-    globalStats.poolCount = 0
     globalStats.dispenserCount = 0
     globalStats.nftCount = 0
     globalStats.save()
@@ -74,31 +72,14 @@ export function addDispenser(): void {
   globalStats.save()
 }
 
-export function addPool(): void {
-  const globalStats = getGlobalStats()
-  globalStats.poolCount = globalStats.poolCount + 1
-  globalStats.save()
-}
-
-export function addPoolSwap(tokenAddress: string, value: BigDecimal): void {
-  let poolSwapPair = GlobalTotalPoolSwapPair.load(tokenAddress)
-  if (!poolSwapPair) {
-    poolSwapPair = new GlobalTotalPoolSwapPair(tokenAddress)
-    poolSwapPair.globalStatistic = GLOBAL_ID
-    poolSwapPair.token = tokenAddress
-  }
-  poolSwapPair.value = poolSwapPair.value.plus(value)
-  poolSwapPair.count = poolSwapPair.count.plus(BigInt.fromI32(1))
-
-  poolSwapPair.save()
-}
-
 export function addFixedSwap(tokenAddress: string, value: BigDecimal): void {
   let fixedSwapPair = GlobalTotalFixedSwapPair.load(tokenAddress)
   if (!fixedSwapPair) {
     fixedSwapPair = new GlobalTotalFixedSwapPair(tokenAddress)
     fixedSwapPair.globalStatistic = GLOBAL_ID
     fixedSwapPair.token = tokenAddress
+    fixedSwapPair.value = BigDecimal.zero()
+    fixedSwapPair.count = BigInt.zero()
   }
   fixedSwapPair.value = fixedSwapPair.value.plus(value)
   fixedSwapPair.count = fixedSwapPair.count.plus(BigInt.fromI32(1))

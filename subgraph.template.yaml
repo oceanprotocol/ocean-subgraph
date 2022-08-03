@@ -49,8 +49,6 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
-        - event: NewPool(indexed address,bool)
-          handler: handleNewPool
         - event: TokenAdded(indexed address,indexed address)
           handler: handleTokenAdded
         - event: TokenRemoved(indexed address,indexed address)
@@ -136,43 +134,6 @@ templates:
           handler: handleCleanedPermissions
         - event: ProviderFee(indexed address,indexed address,uint256,bytes,uint8,bytes32,bytes32,uint256)
           handler: handleProviderFee
-
-  - name: BPool
-    kind: ethereum/contract
-    network: __NETWORK__
-    source:
-      abi: BPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/pool.ts
-      entities:
-        - BPool
-      abis:
-        - name: BPool
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BPool.sol/BPool.json
-        - name: BToken
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BToken.sol/BToken.json
-        - name: BMath
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/balancer/BMath.sol/BMath.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256)
-          handler: handleSwap
-        - event: LOG_JOIN(indexed address,indexed address,uint256,uint256)
-          handler: handleJoin
-        - event: LOG_EXIT(indexed address,indexed address,uint256,uint256)
-          handler: handleExit
-        - event: LOG_SETUP(indexed address,indexed address,uint256,uint256,indexed address,uint256,uint256)
-          handler: handleSetup
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handlerBptTransfer
-        - event: PublishMarketFeeChanged(address,address,uint256)
-          handler: handlePublishMarketFeeChanged
-        - event: SwapFeeChanged(address,uint256)
-          handler: handleSwapFeeChanged
 
   - name: ERC721Template
     kind: ethereum/contract

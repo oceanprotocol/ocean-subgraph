@@ -1,4 +1,4 @@
-import { BigInt, Address } from '@graphprotocol/graph-ts'
+import { BigInt, Address, BigDecimal, log } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -38,7 +38,11 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedRateExchange.exchangeId = event.params.exchangeId.toHexString()
   fixedRateExchange.datatoken = getToken(event.params.datatoken, true).id
   fixedRateExchange.baseToken = getToken(event.params.baseToken, false).id
-
+  fixedRateExchange.datatokenSupply = BigDecimal.zero()
+  fixedRateExchange.baseTokenSupply = BigDecimal.zero()
+  fixedRateExchange.datatokenBalance = BigDecimal.zero()
+  fixedRateExchange.baseTokenBalance = BigDecimal.zero()
+  fixedRateExchange.totalSwapValue = BigDecimal.zero()
   fixedRateExchange.active = false
   fixedRateExchange.price = weiToDecimal(
     event.params.fixedRate.toBigDecimal(),
@@ -67,7 +71,7 @@ export function handleRateChange(event: ExchangeRateChanged): void {
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
   newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
-
+  newExchangeUpdate.exchangeId = fixedRateId
   fixedRateExchange.price = weiToDecimal(
     event.params.newRate.toBigDecimal(),
     BigInt.fromI32(18).toI32()
@@ -88,8 +92,6 @@ export function handleMintStateChanged(event: ExchangeMintStateChanged): void {
   fixedRateExchange.save()
 }
 
-// TODO: implement fre updates/history for changes
-
 export function handleActivated(event: ExchangeActivated): void {
   const fixedRateId = getFixedRateGraphID(
     event.params.exchangeId.toHexString(),
@@ -99,6 +101,7 @@ export function handleActivated(event: ExchangeActivated): void {
   const newExchangeUpdate = new FixedRateExchangeUpdate(
     getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
   )
+  newExchangeUpdate.exchangeId = fixedRateId
   newExchangeUpdate.oldActive = fixedRateExchange.active
   newExchangeUpdate.newActive = true
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
@@ -123,6 +126,7 @@ export function handleDeactivated(event: ExchangeDeactivated): void {
   newExchangeUpdate.oldActive = fixedRateExchange.active
   newExchangeUpdate.newActive = false
 
+  newExchangeUpdate.exchangeId = fixedRateId
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
   newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
@@ -178,6 +182,7 @@ export function handleSwap(event: Swapped): void {
     Address.fromString(fixedRateExchange.baseToken),
     false
   )
+
   swap.baseTokenAmount = weiToDecimal(
     event.params.baseTokenSwappedAmount.toBigDecimal(),
     BigInt.fromI32(baseToken.decimals).toI32()
@@ -188,18 +193,17 @@ export function handleSwap(event: Swapped): void {
   )
 
   swap.save()
+
   updateFixedRateExchangeSupply(event.params.exchangeId, event.address)
-  if (event.params.tokenOutAddress.toHexString() == fixedRateExchange.datatoken)
+  log.error('start addFixedSwap', [])
+
+  if (event.params.tokenOutAddress.toHexString() == fixedRateExchange.baseToken)
     addFixedSwap(
       event.params.tokenOutAddress.toHexString(),
       swap.dataTokenAmount
     )
-  else
-    addFixedSwap(
-      event.params.tokenOutAddress.toHexString(),
-      swap.baseTokenAmount
-    )
-
+  else addFixedSwap(fixedRateExchange.baseToken, swap.baseTokenAmount)
+  log.error('addFixedSwap saved', [])
   // update datatoken lastPriceToken and lastPriceValue
   const datatoken = getToken(
     Address.fromString(fixedRateExchange.datatoken),

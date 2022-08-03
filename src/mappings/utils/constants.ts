@@ -21,12 +21,6 @@ export namespace decimal {
 }
 
 // string enums don't work in wasm so this was the alternative, not optimal
-export namespace PoolTransactionType {
-  export const JOIN = 'JOIN'
-  export const EXIT = 'EXIT'
-  export const SWAP = 'SWAP'
-  export const SETUP = 'SETUP'
-}
 
 export namespace NftUpdateType {
   export const METADATA_CREATED = 'METADATA_CREATED'
