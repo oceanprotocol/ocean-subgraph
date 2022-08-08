@@ -551,6 +551,60 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(updatedActive === true, 'incorrect value for: updatedActive')
   })
 
+  it('Activate Minting', async () => {
+    const mintingQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+    const initialMint = (await initialResponse.json()).data.fixedRateExchange
+      .withMint
+    assert(initialMint === null, 'incorrect value for: initialMint')
+
+    // Activate minting
+    await fixedRate.activateMint(publisher, exchangeId)
+    await sleep(2000)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+
+    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
+      .withMint
+    assert(updatedMint === true, 'incorrect value for: updatedMint')
+  })
+
+  it('Deactivate Minting', async () => {
+    const mintingQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+    const initialMint = (await initialResponse.json()).data.fixedRateExchange
+      .withMint
+    assert(initialMint === true, 'incorrect value for: initialMint')
+
+    // Activate minting
+    await fixedRate.deactivateMint(publisher, exchangeId)
+    await sleep(2000)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+
+    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
+      .withMint
+    assert(updatedMint === false, 'incorrect value for: updatedMint')
+  })
+
   it('Updates swaps', async () => {
     const swapsQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){
