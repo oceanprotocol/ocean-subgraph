@@ -54,6 +54,7 @@ describe('Fixed Rate Exchange tests', async () => {
   let exchangeId: string
   let transactionHash: string
   let fixedRate: FixedRateExchange
+  let user1: string
 
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
@@ -63,6 +64,7 @@ describe('Fixed Rate Exchange tests', async () => {
     accounts = await web3.eth.getAccounts()
     publisher = accounts[0].toLowerCase()
     marketPlaceFeeAddress = accounts[1].toLowerCase()
+    user1 = accounts[2].toLowerCase()
   })
 
   it('Deploying a Fixed Rate Exchange & Test NFT Fields', async () => {
@@ -424,5 +426,38 @@ describe('Fixed Rate Exchange tests', async () => {
     const price3 = (await priceResponse3.json()).data.fixedRateExchange.price
 
     assert(price3 === '5.123', 'incorrect value for: price 3')
+  })
+  it('Disables allowed swapper', async () => {
+    console.log('user1', user1)
+    const swapperQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper}}`
+    }
+    console.log('swapperQuery', swapperQuery)
+    // Check initial allowedSwapper
+    const swapperResponse1 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(swapperQuery)
+    })
+    await sleep(2000)
+    const allowedSwapper1 = (await swapperResponse1.json()).data
+      .fixedRateExchange.allowedSwapper
+    assert(
+      allowedSwapper1 === ZERO_ADDRESS,
+      'incorrect value for: allowedSwapper'
+    )
+    console.log('allowedSwapper1', allowedSwapper1)
+    await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
+    await sleep(2000)
+    const test = await fixedRate.getAllowedSwapper(exchangeId)
+    console.log('allowedSwapper1', test)
+    const swapperResponse2 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(swapperQuery)
+    })
+    await sleep(2000)
+    const allowedSwapper2 = (await swapperResponse2.json()).data
+      .fixedRateExchange.allowedSwapper
+    console.log('allowedSwapper2', allowedSwapper2)
+    assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
   })
 })
