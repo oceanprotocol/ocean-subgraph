@@ -479,7 +479,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(swapperQuery)
     })
-    await sleep(2000)
     const allowedSwapper1 = (await swapperResponse1.json()).data
       .fixedRateExchange.allowedSwapper
     assert(
@@ -494,7 +493,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(swapperQuery)
     })
-    await sleep(2000)
     const allowedSwapper2 = (await swapperResponse2.json()).data
       .fixedRateExchange.allowedSwapper
 
@@ -504,34 +502,53 @@ describe('Fixed Rate Exchange tests', async () => {
     const deactiveQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
     }
+    console.log('deactiveQuery', deactiveQuery)
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(deactiveQuery)
     })
-    await sleep(2000)
     const initialActive = (await initialResponse.json()).data.fixedRateExchange
       .active
-    console.log('initialSwaps', initialActive)
     assert(initialActive === true, 'incorrect value for: initialActive')
 
     // Deactivate exchange
-    const tx = await fixedRate.deactivate(publisher, exchangeId)
-    console.log(tx.events)
+    await fixedRate.deactivate(publisher, exchangeId)
+    await sleep(2000)
 
     // Check the updated value for active
     const updatedResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(deactiveQuery)
     })
-    await sleep(2000)
     const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
       .active
-    console.log('initialSwaps', updatedActive)
-    assert(updatedActive === true, 'incorrect value for: updatedActive')
+    assert(updatedActive === false, 'incorrect value for: updatedActive')
   })
+
   it('Activates exchange', async () => {
-    const tx = await fixedRate.activate(publisher, exchangeId)
-    console.log(tx.events)
+    const activeQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(activeQuery)
+    })
+    const initialActive = (await initialResponse.json()).data.fixedRateExchange
+      .active
+    assert(initialActive === false, 'incorrect value for: initialActive')
+
+    // Activate exchange
+    await fixedRate.activate(publisher, exchangeId)
+    await sleep(2000)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(activeQuery)
+    })
+    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
+      .active
+    assert(updatedActive === true, 'incorrect value for: updatedActive')
   })
 
   it('Updates swaps', async () => {
