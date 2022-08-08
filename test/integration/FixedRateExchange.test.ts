@@ -5,7 +5,8 @@ import {
   sleep,
   FreCreationParams,
   ZERO_ADDRESS,
-  FixedRateExchange
+  FixedRateExchange,
+  Datatoken
 } from '@oceanprotocol/lib'
 import { assert } from 'chai'
 import Web3 from 'web3'
@@ -56,6 +57,7 @@ describe('Fixed Rate Exchange tests', async () => {
   let transactionHash: string
   let fixedRate: FixedRateExchange
   let user1: string
+  let marketplace: string
 
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
@@ -66,6 +68,7 @@ describe('Fixed Rate Exchange tests', async () => {
     publisher = accounts[0].toLowerCase()
     marketPlaceFeeAddress = accounts[1].toLowerCase()
     user1 = accounts[2].toLowerCase()
+    marketplace = accounts[2].toLowerCase()
   })
 
   it('Deploying a Fixed Rate Exchange & Test NFT Fields', async () => {
@@ -386,10 +389,19 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(fixedTx.to === factoryAddress, 'incorrect value for: tx')
   })
 
-  it('Update Fixed Rate Price', async () => {
+  it('Updates Fixed Rate Price', async () => {
     fixedRate = new FixedRateExchange(web3, fixedRateAddress, 8996)
     const priceQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){price}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){
+        price
+        updates(orderBy: createdTimestamp, orderDirection: desc){
+          exchangeId {
+            id
+          }
+          oldPrice
+          newPrice
+        }
+      }}`
     }
 
     // Check initial price
@@ -398,11 +410,22 @@ describe('Fixed Rate Exchange tests', async () => {
       body: JSON.stringify(priceQuery)
     })
     await sleep(2000)
-    const price1 = (await priceResponse1.json()).data.fixedRateExchange.price
+    const fixedResponse1 = (await priceResponse1.json()).data.fixedRateExchange
+
+    const price1 = fixedResponse1.price
+    const updates1 = fixedResponse1.updates[0]
+
     assert(price1 === price, 'incorrect value for: price 1')
+    assert(
+      updates1.exchangeId.id === fixedRateId,
+      'incorrect value: initial fixedRateId'
+    )
+    assert(updates1.oldPrice === null, 'incorrect value: initial oldPrice')
+    assert(updates1.newPrice === null, 'incorrect value: initial oldPrice')
 
     // Update price
-    await fixedRate.setRate(publisher, exchangeId, '999')
+    const newPrice = '999'
+    await fixedRate.setRate(publisher, exchangeId, newPrice)
     await sleep(2000)
 
     // Check price after first update
@@ -411,11 +434,21 @@ describe('Fixed Rate Exchange tests', async () => {
       body: JSON.stringify(priceQuery)
     })
     await sleep(2000)
-    const price2 = (await priceResponse2.json()).data.fixedRateExchange.price
-    assert(price2 === '999', 'incorrect value for: price 2')
+    const fixedResponse2 = (await priceResponse2.json()).data.fixedRateExchange
+    const price2 = fixedResponse2.price
+    const updates2 = fixedResponse2.updates[0]
+
+    assert(price2 === newPrice, 'incorrect value for: price 2')
+    assert(
+      updates2.exchangeId.id === fixedRateId,
+      'incorrect value: 2nd fixedRateId'
+    )
+    assert(updates2.oldPrice === price1, 'incorrect value: 2nd oldPrice')
+    assert(updates2.newPrice === newPrice, 'incorrect value: 2nd newPrice')
 
     // Update price a 2nd time
-    await fixedRate.setRate(publisher, exchangeId, '5.123')
+    const newPrice2 = '5.123'
+    await fixedRate.setRate(publisher, exchangeId, newPrice2)
     await sleep(2000)
 
     // Check price after 2nd update
@@ -424,9 +457,18 @@ describe('Fixed Rate Exchange tests', async () => {
       body: JSON.stringify(priceQuery)
     })
     await sleep(2000)
-    const price3 = (await priceResponse3.json()).data.fixedRateExchange.price
 
-    assert(price3 === '5.123', 'incorrect value for: price 3')
+    const fixedResponse3 = (await priceResponse3.json()).data.fixedRateExchange
+    const price3 = fixedResponse3.price
+    const updates3 = fixedResponse3.updates[0]
+
+    assert(price3 === newPrice2, 'incorrect value for: price 3')
+    assert(
+      updates3.exchangeId.id === fixedRateId,
+      'incorrect value: 3rd fixedRateId'
+    )
+    assert(updates3.oldPrice === newPrice, 'incorrect value: 3rd oldPrice')
+    assert(updates3.newPrice === newPrice2, 'incorrect value: 3rd newPrice')
   })
   it('Updates allowed swapper', async () => {
     const swapperQuery = {
@@ -457,5 +499,45 @@ describe('Fixed Rate Exchange tests', async () => {
       .fixedRateExchange.allowedSwapper
 
     assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
+  })
+
+  it('Updates swaps', async () => {
+    const swapsQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){
+        swaps{
+          id
+          exchangeId
+          by
+        }
+      }}`
+    }
+    console.log('swapsQuery', swapsQuery)
+    // Check initial swaps
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(swapsQuery)
+    })
+    await sleep(2000)
+    const initialSwaps = (await initialResponse.json()).data.fixedRateExchange
+      .swaps
+    console.log('initialSwaps', initialSwaps)
+
+    await sleep(2000)
+    const datatoken = new Datatoken(web3, 8996)
+    await datatoken.mint(datatokenAddress, publisher, '100')
+    await datatoken.approve(datatokenAddress, marketplace, '100', publisher)
+    await datatoken.transfer(datatokenAddress, user1, '50', publisher)
+    const user1Balance = await datatoken.balance(datatokenAddress, user1)
+    console.log('user1Balance', user1Balance)
+
+    // Check updated swaps
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(swapsQuery)
+    })
+    await sleep(2000)
+    const updatedSwaps = (await updatedResponse.json()).data.fixedRateExchange
+      .swaps
+    console.log('updatedSwaps', updatedSwaps)
   })
 })
