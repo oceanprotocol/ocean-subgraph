@@ -61,7 +61,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@oceanprotocol/lib": "^1.1.6",
+    "@oceanprotocol/lib": "^1.1.7",
     "cross-fetch": "^3.1.4"
   },
   "repository": {
