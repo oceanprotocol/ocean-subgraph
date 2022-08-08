@@ -89,6 +89,31 @@ dataSources:
         - event: AllocationSet(indexed address,indexed address,indexed uint256,uint256)
           handler: handleAllocationSet
 
+  - name: veOcean
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      abi: veOCEAN
+      address: __veOCEANADDRESS__
+      startBlock: __STARTBLOCK__
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/veOCEAN.ts
+      entities:
+        - veOCEAN
+      abis:
+        - name: veOCEAN
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veOCEAN.sol/veOCEAN.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
+          handler: handleAllocationSet
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleAllocationSet
+        - event: Supply(uint256,uint256)
+          handler: handleAllocationSet
+
 templates:
   - name: ERC20Template
     kind: ethereum/contract
