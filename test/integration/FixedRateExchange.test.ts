@@ -500,6 +500,39 @@ describe('Fixed Rate Exchange tests', async () => {
 
     assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
   })
+  it('Deactivates exchange', async () => {
+    const deactiveQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(deactiveQuery)
+    })
+    await sleep(2000)
+    const initialActive = (await initialResponse.json()).data.fixedRateExchange
+      .active
+    console.log('initialSwaps', initialActive)
+    assert(initialActive === true, 'incorrect value for: initialActive')
+
+    // Deactivate exchange
+    const tx = await fixedRate.deactivate(publisher, exchangeId)
+    console.log(tx.events)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(deactiveQuery)
+    })
+    await sleep(2000)
+    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
+      .active
+    console.log('initialSwaps', updatedActive)
+    assert(updatedActive === true, 'incorrect value for: updatedActive')
+  })
+  it('Activates exchange', async () => {
+    const tx = await fixedRate.activate(publisher, exchangeId)
+    console.log(tx.events)
+  })
 
   it('Updates swaps', async () => {
     const swapsQuery = {
@@ -526,7 +559,9 @@ describe('Fixed Rate Exchange tests', async () => {
     const datatoken = new Datatoken(web3, 8996)
     await datatoken.mint(datatokenAddress, publisher, '100')
     await datatoken.approve(datatokenAddress, marketplace, '100', publisher)
-    await datatoken.transfer(datatokenAddress, user1, '50', publisher)
+
+    // await fixedRate.sellDT(user1, marketplace, '10', '1')
+    // await datatoken.transfer(datatokenAddress, user1, '50', publisher)
     const user1Balance = await datatoken.balance(datatokenAddress, user1)
     console.log('user1Balance', user1Balance)
 
