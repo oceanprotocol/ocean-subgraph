@@ -431,3 +431,10 @@ type VeAllocationUpdate @entity {
   timestamp: Int!
   tx: String!
 }
+
+type VeOcean @entity {
+  "id = {user address}"
+  id: ID!
+  lockedAmount: BigDecimal!
+  unlockTime: Int!
+}
