@@ -43,9 +43,6 @@ export function getToken(address: Address, isDatatoken: boolean): Token {
 }
 
 export function createNftToken(address: Address): Nft {
-  log.warning('started creating nft token with address: {}', [
-    address.toHexString()
-  ])
   ERC721Template.create(address)
   const token = new Nft(address.toHexString())
   token.name = ''

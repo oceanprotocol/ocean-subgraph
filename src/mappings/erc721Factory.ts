@@ -1,10 +1,15 @@
-import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
+import {
+  NFTCreated,
+  TokenCreated,
+  ERC721Factory
+} from '../@types/ERC721Factory/ERC721Factory'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
 import { getToken, getNftToken } from './utils/tokenUtils'
 import { addDatatoken } from './utils/globalUtils'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleNftCreated(event: NFTCreated): void {
   // const nft = new Nft(event.params.newTokenAddress.toHexString())
@@ -42,6 +47,24 @@ export function handleNewToken(event: TokenCreated): void {
   token.decimals = 18
   token.supply = decimal.ZERO
   token.cap = weiToDecimal(event.params.cap.toBigDecimal(), 18)
+  const eventTemplateAddress = event.params.templateAddress
+    .toHexString()
+    .toLowerCase()
+  const contract = ERC721Factory.bind(event.address)
+  const templateCount = contract.try_getCurrentTemplateCount()
+  if (templateCount.reverted) return
+  const templateCountNum = templateCount.value.toI32()
+
+  for (let i = 0; i < templateCountNum; i++) {
+    const template = contract.try_getTokenTemplate(BigInt.fromI32(1 + i))
+    if (template.reverted) return
+    const templateAddress = template.value.templateAddress
+      .toHexString()
+      .toLowerCase()
+    if (templateAddress == eventTemplateAddress) {
+      token.templateId = 1 + i
+    }
+  }
 
   token.save()
   addDatatoken()

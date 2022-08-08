@@ -1,6 +1,6 @@
 {
   "name": "ocean-subgraph",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "scripts": {
     "start": "",
     "quickstart:development": "node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local && npm run deploy:local",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.33.0",
     "@graphprotocol/graph-ts": "^0.27.0",
-    "@types/chai": "^4.3.1",
+    "@types/chai": "^4.3.2",
     "@types/chai-spies": "^1.0.3",
     "@types/mocha": "^9.1.1",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
@@ -62,7 +62,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@oceanprotocol/lib": "^1.1.6",
+    "@oceanprotocol/lib": "^1.1.7",
     "cross-fetch": "^3.1.4"
   },
   "repository": {

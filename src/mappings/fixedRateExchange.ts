@@ -1,4 +1,4 @@
-import { BigInt, Address, BigDecimal, log } from '@graphprotocol/graph-ts'
+import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts'
 import {
   ExchangeActivated,
   ExchangeAllowedSwapperChanged,
@@ -62,7 +62,6 @@ export function handleRateChange(event: ExchangeRateChanged): void {
     event.params.exchangeId.toHexString(),
     event.address
   )
-
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
   const newExchangeUpdate = new FixedRateExchangeUpdate(
     getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
@@ -72,6 +71,7 @@ export function handleRateChange(event: ExchangeRateChanged): void {
   newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
   newExchangeUpdate.exchangeId = fixedRateId
+
   fixedRateExchange.price = weiToDecimal(
     event.params.newRate.toBigDecimal(),
     BigInt.fromI32(18).toI32()
@@ -147,12 +147,11 @@ export function handleAllowedSwapperChanged(
   const newExchangeUpdate = new FixedRateExchangeUpdate(
     getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
   )
-
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
   newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
   newExchangeUpdate.oldAllowedSwapper = fixedRateExchange.allowedSwapper
-
+  newExchangeUpdate.exchangeId = fixedRateId
   fixedRateExchange.allowedSwapper = event.params.allowedSwapper.toHex()
   newExchangeUpdate.newAllowedSwapper = fixedRateExchange.allowedSwapper
   newExchangeUpdate.save()
@@ -195,7 +194,6 @@ export function handleSwap(event: Swapped): void {
   swap.save()
 
   updateFixedRateExchangeSupply(event.params.exchangeId, event.address)
-  log.error('start addFixedSwap', [])
 
   if (event.params.tokenOutAddress.toHexString() == fixedRateExchange.baseToken)
     addFixedSwap(
@@ -203,7 +201,6 @@ export function handleSwap(event: Swapped): void {
       swap.dataTokenAmount
     )
   else addFixedSwap(fixedRateExchange.baseToken, swap.baseTokenAmount)
-  log.error('addFixedSwap saved', [])
   // update datatoken lastPriceToken and lastPriceValue
   const datatoken = getToken(
     Address.fromString(fixedRateExchange.datatoken),
