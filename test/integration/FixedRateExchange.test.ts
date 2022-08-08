@@ -36,6 +36,7 @@ describe('Fixed Rate Exchange tests', async () => {
   const feeAmount = '0.2'
   const price = '123'
   const publishMarketSwapFee = '0.003'
+  const templateIndex = 1
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
@@ -81,7 +82,7 @@ describe('Fixed Rate Exchange tests', async () => {
       owner: publisher
     }
     const erc20Params: Erc20CreateParams = {
-      templateIndex: 1,
+      templateIndex,
       cap,
       feeAmount,
       paymentCollector: ZERO_ADDRESS,
@@ -250,7 +251,7 @@ describe('Fixed Rate Exchange tests', async () => {
       'incorrect value for: publishMarketFeeAmount'
     )
 
-    assert(dt.templateId === null, 'incorrect value for: templateId')
+    assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
     assert(dt.orders, 'incorrect value for: orders')
@@ -427,12 +428,10 @@ describe('Fixed Rate Exchange tests', async () => {
 
     assert(price3 === '5.123', 'incorrect value for: price 3')
   })
-  it('Disables allowed swapper', async () => {
-    console.log('user1', user1)
+  it('Updates allowed swapper', async () => {
     const swapperQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper}}`
     }
-    console.log('swapperQuery', swapperQuery)
     // Check initial allowedSwapper
     const swapperResponse1 = await fetch(subgraphUrl, {
       method: 'POST',
@@ -445,11 +444,10 @@ describe('Fixed Rate Exchange tests', async () => {
       allowedSwapper1 === ZERO_ADDRESS,
       'incorrect value for: allowedSwapper'
     )
-    console.log('allowedSwapper1', allowedSwapper1)
+
     await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
     await sleep(2000)
-    const test = await fixedRate.getAllowedSwapper(exchangeId)
-    console.log('allowedSwapper1', test)
+
     const swapperResponse2 = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(swapperQuery)
@@ -457,7 +455,7 @@ describe('Fixed Rate Exchange tests', async () => {
     await sleep(2000)
     const allowedSwapper2 = (await swapperResponse2.json()).data
       .fixedRateExchange.allowedSwapper
-    console.log('allowedSwapper2', allowedSwapper2)
+
     assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
   })
 })
