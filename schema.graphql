@@ -438,7 +438,8 @@ type VeDelegation @entity {
   cancelTime: Int!
   expireTime: Int!
   percentage: BigDecimal!
-  receiver: String!
+  receiver: VeOcean!
+  delegator: VeOcean!
 }
 
 type VeOcean @entity {
