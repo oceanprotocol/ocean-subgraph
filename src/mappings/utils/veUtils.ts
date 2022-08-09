@@ -3,7 +3,10 @@ import {
   VeAllocateUser,
   VeAllocateId,
   VeAllocation,
-  VeAllocationUpdate
+  VeAllocationUpdate,
+  VeDelegation,
+  VeOCEAN,
+  Deposit
 } from '../../@types/schema'
 
 export function getveAllocateUser(
@@ -126,3 +129,17 @@ export function getveOCEAN(id: string): VeOCEAN {
   return ve
 }
 
+export function getDeposit(id: string): Deposit {
+  let deposit = Deposit.load(id)
+
+  if (deposit === null) {
+    deposit = new Deposit(id)
+    deposit.provider = ''
+    deposit.value = BigDecimal.zero()
+    deposit.unlockTime = BigInt.zero()
+    deposit.type = BigInt.zero()
+    deposit.timestamp = BigInt.zero()
+    deposit.save()
+  }
+  return deposit
+}
