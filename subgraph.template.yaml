@@ -133,7 +133,7 @@ dataSources:
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veDelegation.vy/veDelegation.json
       eventHandlers:
         - event: DelegateBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
-          handler: handleAllocationSet
+          handler: handleDelegation
 
 templates:
   - name: ERC20Template
