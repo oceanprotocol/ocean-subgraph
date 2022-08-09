@@ -113,3 +113,16 @@ export function getveDelegation(id: string): VeDelegation {
   return veDelegation
 }
 
+export function getveOCEAN(id: string): VeOCEAN {
+  let ve = VeOCEAN.load(id)
+
+  if (ve === null) {
+    ve = new VeOCEAN(id)
+    ve.unlockTime = BigInt.zero()
+    ve.lockedAmount = BigDecimal.zero()
+    ve.save()
+  }
+
+  return ve
+}
+
