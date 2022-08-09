@@ -448,7 +448,7 @@ type VeOCEAN @entity {
   id: ID!
   lockedAmount: BigDecimal!
   unlockTime: BigInt!
-  delegation: VeDelegation!
+  delegation: [VeDelegation!] @derivedFrom(field: "delegator")
   delegates: [VeDelegation!] @derivedFrom(field: "receiver")
 }
 
