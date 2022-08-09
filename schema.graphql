@@ -432,9 +432,21 @@ type VeAllocationUpdate @entity {
   tx: String!
 }
 
+type VeDelegation @entity {
+  "id = {user address}"
+  id: ID!
+  cancelTime: Int!
+  expireTime: Int!
+  percentage: BigDecimal!
+  receiver: String!
+}
+
 type VeOcean @entity {
   "id = {user address}"
   id: ID!
   lockedAmount: BigDecimal!
   unlockTime: Int!
+  balance: BigDecimal!
+  delegation: VeDelegation
+  delegates: [VeDelegation!] @derivedFrom(field: "receiver")
 }
