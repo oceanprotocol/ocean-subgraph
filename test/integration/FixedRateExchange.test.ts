@@ -8,12 +8,15 @@ import {
   FixedRateExchange,
   Datatoken
 } from '@oceanprotocol/lib'
+import MockERC20 from '@oceanprotocol/contracts/artifacts/contracts/utils/mock/MockERC20Decimals.sol/MockERC20Decimals.json'
 import { assert } from 'chai'
 import Web3 from 'web3'
 import { homedir } from 'os'
 import fs from 'fs'
 import { fetch } from 'cross-fetch'
 import { TransactionReceipt } from 'web3-core'
+import { AbiItem } from 'web3-utils/types'
+import BN from 'bn.js'
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -57,7 +60,6 @@ describe('Fixed Rate Exchange tests', async () => {
   let transactionHash: string
   let fixedRate: FixedRateExchange
   let user1: string
-  let marketplace: string
 
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
@@ -68,7 +70,6 @@ describe('Fixed Rate Exchange tests', async () => {
     publisher = accounts[0].toLowerCase()
     marketPlaceFeeAddress = accounts[1].toLowerCase()
     user1 = accounts[2].toLowerCase()
-    marketplace = accounts[2].toLowerCase()
   })
 
   it('Deploying a Fixed Rate Exchange & Test NFT Fields', async () => {
@@ -153,7 +154,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(nftQuery)
     })
-    await sleep(2000)
     const nft = (await initialResponse.json()).data.nft
     const nftTx: TransactionReceipt = await web3.eth.getTransactionReceipt(
       nft.tx
@@ -225,7 +225,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(dtQuery)
     })
-    await sleep(2000)
     dt = (await dtResponse.json()).data.token
 
     const dtTx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -321,7 +320,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(fixedQuery)
     })
-    await sleep(2000)
     const fixed = (await fixedResponse.json()).data.fixedRateExchange
     const fixedTx: TransactionReceipt = await web3.eth.getTransactionReceipt(
       fixed.tx
@@ -409,7 +407,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(priceQuery)
     })
-    await sleep(2000)
     const fixedResponse1 = (await priceResponse1.json()).data.fixedRateExchange
 
     const price1 = fixedResponse1.price
@@ -433,7 +430,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(priceQuery)
     })
-    await sleep(2000)
     const fixedResponse2 = (await priceResponse2.json()).data.fixedRateExchange
     const price2 = fixedResponse2.price
     const updates2 = fixedResponse2.updates[0]
@@ -447,7 +443,7 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(updates2.newPrice === newPrice, 'incorrect value: 2nd newPrice')
 
     // Update price a 2nd time
-    const newPrice2 = '5.123'
+    const newPrice2 = '1' // '5.123'
     await fixedRate.setRate(publisher, exchangeId, newPrice2)
     await sleep(2000)
 
@@ -456,7 +452,6 @@ describe('Fixed Rate Exchange tests', async () => {
       method: 'POST',
       body: JSON.stringify(priceQuery)
     })
-    await sleep(2000)
 
     const fixedResponse3 = (await priceResponse3.json()).data.fixedRateExchange
     const price3 = fixedResponse3.price
@@ -470,39 +465,11 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(updates3.oldPrice === newPrice, 'incorrect value: 3rd oldPrice')
     assert(updates3.newPrice === newPrice2, 'incorrect value: 3rd newPrice')
   })
-  it('Updates allowed swapper', async () => {
-    const swapperQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper}}`
-    }
-    // Check initial allowedSwapper
-    const swapperResponse1 = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(swapperQuery)
-    })
-    const allowedSwapper1 = (await swapperResponse1.json()).data
-      .fixedRateExchange.allowedSwapper
-    assert(
-      allowedSwapper1 === ZERO_ADDRESS,
-      'incorrect value for: allowedSwapper'
-    )
-
-    await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
-    await sleep(2000)
-
-    const swapperResponse2 = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(swapperQuery)
-    })
-    const allowedSwapper2 = (await swapperResponse2.json()).data
-      .fixedRateExchange.allowedSwapper
-
-    assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
-  })
   it('Deactivates exchange', async () => {
     const deactiveQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
     }
-    console.log('deactiveQuery', deactiveQuery)
+
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(deactiveQuery)
@@ -605,45 +572,112 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(updatedMint === false, 'incorrect value for: updatedMint')
   })
 
-  it('Updates swaps', async () => {
+  it('User1 buys a datatoken', async () => {
     const swapsQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){
         swaps{
           id
-          exchangeId
-          by
-        }
+          exchangeId{id}
+          by{id}
+          baseTokenAmount
+          dataTokenAmount
+          block
+          createdTimestamp
+          tx
+          __typename
+        }  
       }}`
     }
-    console.log('swapsQuery', swapsQuery)
     // Check initial swaps
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(swapsQuery)
     })
-    await sleep(2000)
     const initialSwaps = (await initialResponse.json()).data.fixedRateExchange
       .swaps
-    console.log('initialSwaps', initialSwaps)
+    assert(initialSwaps.length === 0, 'incorrect value for: initialSwaps')
 
-    await sleep(2000)
     const datatoken = new Datatoken(web3, 8996)
+    // Mint datatokens as initial supply is 0
     await datatoken.mint(datatokenAddress, publisher, '100')
-    await datatoken.approve(datatokenAddress, marketplace, '100', publisher)
+    await datatoken.approve(
+      datatokenAddress,
+      fixedRateAddress,
+      '100',
+      publisher
+    )
 
-    // await fixedRate.sellDT(user1, marketplace, '10', '1')
-    // await datatoken.transfer(datatokenAddress, user1, '50', publisher)
-    const user1Balance = await datatoken.balance(datatokenAddress, user1)
-    console.log('user1Balance', user1Balance)
+    const daiContract = new web3.eth.Contract(
+      MockERC20.abi as AbiItem[],
+      addresses.MockDAI
+    )
+    // user1 need DAI so that they can buy the datatoken
+    await daiContract.methods
+      .transfer(user1, web3.utils.toWei('100'))
+      .send({ from: publisher })
+    await daiContract.methods
+      .approve(fixedRateAddress, web3.utils.toWei('10000000'))
+      .send({ from: user1 })
+
+    // user1 has no DTs before buying one
+    let user1Balance = await datatoken.balance(datatokenAddress, user1)
+    assert(user1Balance === '0', 'incorrect value for: user1Balance')
+
+    const dtAmount = '1'
+    const tx = (await fixedRate.buyDT(user1, exchangeId, dtAmount, '100'))
+      .events?.Swapped
+    await sleep(2000)
+    user1Balance = await datatoken.balance(datatokenAddress, user1)
+    // user1 has 1 datatoken
+    assert(user1Balance === dtAmount, 'incorrect value for: user1Balance')
 
     // Check updated swaps
     const updatedResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(swapsQuery)
     })
+    const swaps = (await updatedResponse.json()).data.fixedRateExchange.swaps[0]
+    const swappedAmount = web3.utils.fromWei(
+      new BN(tx.returnValues.baseTokenSwappedAmount)
+    )
+    assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
+    assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
+    assert(swaps.by.id === user1, 'incorrect value for: id')
+    assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
+    assert(swaps.dataTokenAmount === dtAmount, 'incorrect: dataTokenAmount')
+    assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
+    assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
+    assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
+    assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
+    assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
+  })
+
+  it('Updates allowed swapper', async () => {
+    const swapperQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper}}`
+    }
+    // Check initial allowedSwapper
+    const swapperResponse1 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(swapperQuery)
+    })
+    const allowedSwapper1 = (await swapperResponse1.json()).data
+      .fixedRateExchange.allowedSwapper
+    assert(
+      allowedSwapper1 === ZERO_ADDRESS,
+      'incorrect value for: allowedSwapper'
+    )
+
+    await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
     await sleep(2000)
-    const updatedSwaps = (await updatedResponse.json()).data.fixedRateExchange
-      .swaps
-    console.log('updatedSwaps', updatedSwaps)
+
+    const swapperResponse2 = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(swapperQuery)
+    })
+    const allowedSwapper2 = (await swapperResponse2.json()).data
+      .fixedRateExchange.allowedSwapper
+
+    assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
   })
 })
