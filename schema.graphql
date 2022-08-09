@@ -451,3 +451,13 @@ type VeOCEAN @entity {
   delegation: VeDelegation!
   delegates: [VeDelegation!] @derivedFrom(field: "receiver")
 }
+
+type Deposit @entity {
+  "id = {user address}-{timestamp}"
+  id: ID!
+  provider:String!
+  value: BigDecimal!
+  unlockTime: BigInt!
+  type:BigInt!
+  timestamp: BigInt!
+}
