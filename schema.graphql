@@ -433,13 +433,14 @@ type VeAllocationUpdate @entity {
 }
 
 type VeDelegation @entity {
-  "id = {user address}"
+  "id = tokenId"
   id: ID!
+  delegator: VeOcean!
+  receiver: VeOcean!
+  tokenId: BigInt!
+  amount: BigInt!
   cancelTime: Int!
   expireTime: Int!
-  percentage: BigDecimal!
-  receiver: VeOcean!
-  delegator: VeOcean!
 }
 
 type VeOcean @entity {
