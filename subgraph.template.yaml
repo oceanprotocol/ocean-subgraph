@@ -89,7 +89,7 @@ dataSources:
         - event: AllocationSet(indexed address,indexed address,indexed uint256,uint256)
           handler: handleAllocationSet
 
-  - name: veOcean
+  - name: veOCEAN
     kind: ethereum/contract
     network: __NETWORK__
     source:
@@ -108,11 +108,11 @@ dataSources:
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veOCEAN.vy/veOCEAN.json
       eventHandlers:
         - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
-          handler: handleAllocationSet
+          handler: handleDeposit
         - event: Withdraw(indexed address,uint256,uint256)
-          handler: handleAllocationSet
+          handler: handleSupply
         - event: Supply(uint256,uint256)
-          handler: handleAllocationSet
+          handler: handleWithdraw
 
   - name: veDelegation
     kind: ethereum/contract
