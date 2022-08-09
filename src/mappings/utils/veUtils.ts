@@ -96,3 +96,20 @@ export function writeveAllocationUpdate(
 
   return allocationUpdate
 }
+
+export function getveDelegation(id: string): VeDelegation {
+  let veDelegation = VeDelegation.load(id)
+
+  if (veDelegation === null) {
+    veDelegation = new VeDelegation(id)
+    veDelegation.cancelTime = BigInt.zero()
+    veDelegation.expireTime = BigInt.zero()
+    veDelegation.tokenId = BigInt.zero()
+    veDelegation.amount = BigInt.zero()
+    veDelegation.receiver = ''
+    veDelegation.delegator = ''
+    veDelegation.save()
+  }
+  return veDelegation
+}
+
