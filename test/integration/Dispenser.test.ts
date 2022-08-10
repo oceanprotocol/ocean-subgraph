@@ -4,10 +4,11 @@ import {
   NftCreateData,
   sleep,
   ZERO_ADDRESS,
-  FixedRateExchange,
+  Dispenser,
   Datatoken
 } from '@oceanprotocol/lib'
-import MockERC20 from '@oceanprotocol/contracts/artifacts/contracts/utils/mock/MockERC20Decimals.sol/MockERC20Decimals.json'
+import DispenserTemplate from '@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json'
+import ERC20Template from '@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json'
 import { assert } from 'chai'
 import Web3 from 'web3'
 import { homedir } from 'os'
@@ -15,7 +16,6 @@ import fs from 'fs'
 import { fetch } from 'cross-fetch'
 import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
-import BN from 'bn.js'
 
 const sleepMs = 1800
 
@@ -39,14 +39,8 @@ describe('Dispenser tests', async () => {
   const tokenURI = 'https://oceanprotocol.com/nft/fixed'
   const cap = '10000'
   const feeAmount = '0.2'
-  const price = '123'
-  const publishMarketSwapFee = '0.003'
   const templateIndex = 1
-  const dtAmount = '10'
-  const datatoken = new Datatoken(web3, 8996)
   let dtAddress: string
-  let fixedRateAddress: string
-  let baseTokenAddress: string
   let marketPlaceFeeAddress: string
   let fixedRateId: string
   let dt
@@ -57,21 +51,31 @@ describe('Dispenser tests', async () => {
   let nftAddress: string
   let time: number
   let blockNumber: number
-  let exchangeContract: string
   let exchangeId: string
-  let transactionHash: string
-  let fixedRate: FixedRateExchange
+  let dispenser: Dispenser
+  let datatoken: Datatoken
   let user1: string
 
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
-    fixedRateAddress = addresses.FixedPrice.toLowerCase()
-    baseTokenAddress = addresses.MockDAI.toLowerCase()
     Factory = new NftFactory(factoryAddress, web3)
     accounts = await web3.eth.getAccounts()
     publisher = accounts[0].toLowerCase()
     marketPlaceFeeAddress = accounts[1].toLowerCase()
     user1 = accounts[2].toLowerCase()
+  })
+
+  it('should initialize Dispenser and datatoken class', async () => {
+    dispenser = new Dispenser(
+      web3,
+      8996,
+      addresses.dispenserAddress,
+      DispenserTemplate.abi as AbiItem[]
+    )
+    assert(dispenser !== null)
+
+    datatoken = new Datatoken(web3, 8996, ERC20Template.abi as AbiItem[])
+    assert(datatoken !== null)
   })
 
   it('Deploying an NFT with ERC20', async () => {
@@ -104,17 +108,9 @@ describe('Dispenser tests', async () => {
     )
     assert(tx.events.NFTCreated.event === 'NFTCreated')
     assert(tx.events.TokenCreated.event === 'TokenCreated')
-    transactionHash = tx.transactionHash.toLowerCase()
-    console.log('tx.events', tx.events)
     nftAddress = tx.events.NFTCreated.returnValues.newTokenAddress.toLowerCase()
     dtAddress =
       tx.events.TokenCreated.returnValues.newTokenAddress.toLowerCase()
-
-    // exchangeContract =
-    //   tx.events.NewFixedRate.returnValues.exchangeContract.toLowerCase()
-    // exchangeId = tx.events.NewFixedRate.returnValues.exchangeId.toLowerCase()
-
-    // fixedRateId = `${exchangeContract}-${exchangeId}`
 
     // Check NFT values
     await sleep(sleepMs)
@@ -267,195 +263,23 @@ describe('Dispenser tests', async () => {
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
 
-  it('Test fixedRateExchanges Fields', async () => {
-    const fixedQuery = {
-      query: `query {
-          fixedRateExchange(id: "${fixedRateId}"){  
-            id
-            contract
-            exchangeId
-            owner {
-              id
-            }
-            datatoken {
-              id
-            }
-            baseToken {
-              id
-            }
-            datatokenSupply
-            baseTokenSupply
-            datatokenBalance
-            baseTokenBalance
-            price
-            active
-            totalSwapValue
-            allowedSwapper
-            withMint
-            isMinter
-            updates {
-              id
-            }
-            swaps {
-              id
-            }
-            createdTimestamp
-            tx
-            block
-            publishMarketFeeAddress
-            publishMarketSwapFee
-          }
-        }`
+  it('Make user1 minter', async () => {
+    await datatoken.addMinter(dtAddress, publisher, user1)
+
+    assert((await datatoken.getDTPermissions(dtAddress, user1)).minter === true)
+    await sleep(sleepMs)
+    const minterQuery = {
+      query: `query {token(id: "${dtAddress}"){minter{id}}}`
     }
-    const fixedResponse = await fetch(subgraphUrl, {
+    console.log('minterQuery', minterQuery)
+    const minterResponse = await fetch(subgraphUrl, {
       method: 'POST',
-      body: JSON.stringify(fixedQuery)
+      body: JSON.stringify(minterQuery)
     })
-    const fixed = (await fixedResponse.json()).data.fixedRateExchange
-    const fixedTx: TransactionReceipt = await web3.eth.getTransactionReceipt(
-      fixed.tx
-    )
-    // Test Fixed Rate Exchange Values
-    assert(fixed.id === fixedRateId, 'incorrect value for: id')
-    assert(fixed.contract === exchangeContract, 'incorrect value for: contract')
-    assert(fixed.exchangeId === exchangeId, 'incorrect value for: exchangeId')
-    assert(fixed.owner.id === publisher, 'incorrect value for: owner.id')
-    assert(
-      fixed.datatoken.id === dtAddress,
-      'incorrect value for: datatoken.id'
-    )
-    assert(
-      fixed.baseToken.id === baseTokenAddress,
-      'incorrect value for: baseToken.id'
-    )
-    assert(
-      fixed.datatokenSupply === '0',
-      'incorrect value for: datatokenSupply'
-    )
-    assert(
-      fixed.baseTokenSupply === '0',
-      'incorrect value for: baseTokenSupply'
-    )
-    assert(
-      fixed.datatokenBalance === '0',
-      'incorrect value for: datatokenBalance'
-    )
-    assert(
-      fixed.baseTokenBalance === '0',
-      'incorrect value for: baseTokenBalance'
-    )
-    assert(fixed.price === price, 'incorrect value for: price')
-    assert(fixed.active === true, 'incorrect value for: active')
-    assert(fixed.totalSwapValue === '0', 'incorrect value for: totalSwapValue')
-    assert(
-      fixed.allowedSwapper === ZERO_ADDRESS,
-      'incorrect value for: allowedSwapper'
-    )
-    assert(fixed.withMint === null, 'incorrect value for: withMint')
-    assert(fixed.isMinter === null, 'incorrect value for: isMinter')
-    assert(fixed.updates, 'incorrect value for: updates.id')
-    assert(fixed.swaps, 'incorrect value for: swaps')
-    assert(
-      fixed.createdTimestamp >= time,
-      'incorrect value for: createdTimestamp'
-    )
-    assert(
-      fixed.createdTimestamp < time + 5,
-      'incorrect value for: createdTimestamp'
-    )
-    assert(fixed.tx === transactionHash, 'incorrect value for: tx')
-    assert(fixed.block >= blockNumber, 'incorrect value for: block')
-    assert(fixed.block < blockNumber + 50, 'incorrect value for: block')
-    assert(
-      fixed.publishMarketFeeAddress === marketPlaceFeeAddress,
-      'incorrect value for: publishMarketFeeAddress'
-    )
-    assert(
-      fixed.publishMarketSwapFee === publishMarketSwapFee,
-      'incorrect value for: publishMarketSwapFee'
-    )
-    assert(fixedTx.from === publisher, 'incorrect value for: tx')
-    assert(fixedTx.to === factoryAddress, 'incorrect value for: tx')
+    const minter = (await minterResponse.json()).data.token.minter
+    assert(minter[1] === user1, 'incorrect value for: minter')
   })
 
-  it('Updates Fixed Rate Price', async () => {
-    fixedRate = new FixedRateExchange(web3, fixedRateAddress, 8996)
-    const priceQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){
-          price
-          updates(orderBy: createdTimestamp, orderDirection: desc){
-            exchangeId {
-              id
-            }
-            oldPrice
-            newPrice
-          }
-        }}`
-    }
-
-    // Check initial price
-    const priceResponse1 = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(priceQuery)
-    })
-    const fixedResponse1 = (await priceResponse1.json()).data.fixedRateExchange
-
-    const price1 = fixedResponse1.price
-    const updates1 = fixedResponse1.updates[0]
-
-    assert(price1 === price, 'incorrect value for: price 1')
-    assert(
-      updates1.exchangeId.id === fixedRateId,
-      'incorrect value: initial fixedRateId'
-    )
-    assert(updates1.oldPrice === null, 'incorrect value: initial oldPrice')
-    assert(updates1.newPrice === null, 'incorrect value: initial oldPrice')
-
-    // Update price
-    const newPrice = '999'
-    await fixedRate.setRate(publisher, exchangeId, newPrice)
-    await sleep(sleepMs)
-
-    // Check price after first update
-    const priceResponse2 = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(priceQuery)
-    })
-    const fixedResponse2 = (await priceResponse2.json()).data.fixedRateExchange
-    const price2 = fixedResponse2.price
-    const updates2 = fixedResponse2.updates[0]
-
-    assert(price2 === newPrice, 'incorrect value for: price 2')
-    assert(
-      updates2.exchangeId.id === fixedRateId,
-      'incorrect value: 2nd fixedRateId'
-    )
-    assert(updates2.oldPrice === price1, 'incorrect value: 2nd oldPrice')
-    assert(updates2.newPrice === newPrice, 'incorrect value: 2nd newPrice')
-
-    // Update price a 2nd time
-    const newPrice2 = '1' // '5.123'
-    await fixedRate.setRate(publisher, exchangeId, newPrice2)
-    await sleep(sleepMs)
-
-    // Check price after 2nd update
-    const priceResponse3 = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(priceQuery)
-    })
-
-    const fixedResponse3 = (await priceResponse3.json()).data.fixedRateExchange
-    const price3 = fixedResponse3.price
-    const updates3 = fixedResponse3.updates[0]
-
-    assert(price3 === newPrice2, 'incorrect value for: price 3')
-    assert(
-      updates3.exchangeId.id === fixedRateId,
-      'incorrect value: 3rd fixedRateId'
-    )
-    assert(updates3.oldPrice === newPrice, 'incorrect value: 3rd oldPrice')
-    assert(updates3.newPrice === newPrice2, 'incorrect value: 3rd newPrice')
-  })
   it('Deactivates exchange', async () => {
     const deactiveQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
@@ -470,7 +294,7 @@ describe('Dispenser tests', async () => {
     assert(initialActive === true, 'incorrect value for: initialActive')
 
     // Deactivate exchange
-    await fixedRate.deactivate(publisher, exchangeId)
+    await dispenser.deactivate(publisher, exchangeId)
     await sleep(sleepMs)
 
     // Check the updated value for active
@@ -496,7 +320,7 @@ describe('Dispenser tests', async () => {
     assert(initialActive === false, 'incorrect value for: initialActive')
 
     // Activate exchange
-    await fixedRate.activate(publisher, exchangeId)
+    await dispenser.activate(dtAddress, '100', '100', publisher)
     await sleep(sleepMs)
 
     // Check the updated value for active
@@ -509,174 +333,120 @@ describe('Dispenser tests', async () => {
     assert(updatedActive === true, 'incorrect value for: updatedActive')
   })
 
-  it('Activate Minting', async () => {
-    const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
-    }
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-    const initialMint = (await initialResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(initialMint === null, 'incorrect value for: initialMint')
+  //   it('User1 buys a datatoken', async () => {
+  //     const swapsQuery = {
+  //       query: `query {fixedRateExchange(id: "${fixedRateId}"){
+  //           swaps{
+  //             id
+  //             exchangeId{id}
+  //             by{id}
+  //             baseTokenAmount
+  //             dataTokenAmount
+  //             block
+  //             createdTimestamp
+  //             tx
+  //             __typename
+  //           }
+  //         }}`
+  //     }
+  //     // Check initial swaps
+  //     const initialResponse = await fetch(subgraphUrl, {
+  //       method: 'POST',
+  //       body: JSON.stringify(swapsQuery)
+  //     })
+  //     const initialSwaps = (await initialResponse.json()).data.fixedRateExchange
+  //       .swaps
+  //     assert(initialSwaps.length === 0, 'incorrect value for: initialSwaps')
 
-    // Activate minting
-    await fixedRate.activateMint(publisher, exchangeId)
-    await sleep(sleepMs)
+  //     const datatoken = new Datatoken(web3, 8996)
+  //     // Mint datatokens as initial supply is 0
+  //     await datatoken.mint(dtAddress, publisher, '100')
+  //     await datatoken.approve(dtAddress, fixedRateAddress, '100', publisher)
 
-    // Check the updated value for active
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
+  //     const daiContract = new web3.eth.Contract(
+  //       MockERC20.abi as AbiItem[],
+  //       addresses.MockDAI
+  //     )
+  //     // user1 need DAI so that they can buy the datatoken
+  //     await daiContract.methods
+  //       .transfer(user1, web3.utils.toWei('100'))
+  //       .send({ from: publisher })
+  //     await daiContract.methods
+  //       .approve(fixedRateAddress, web3.utils.toWei('10000000'))
+  //       .send({ from: user1 })
 
-    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(updatedMint === true, 'incorrect value for: updatedMint')
-  })
+  //     // user1 has no DTs before buying one
+  //     let user1Balance = await datatoken.balance(dtAddress, user1)
+  //     assert(user1Balance === '0', 'incorrect value for: user1Balance')
 
-  it('Deactivate Minting', async () => {
-    const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
-    }
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-    const initialMint = (await initialResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(initialMint === true, 'incorrect value for: initialMint')
+  //     const tx = (await dispenser.(user1, exchangeId, dtAmount, '100'))
+  //       .events?.Swapped
+  //     await sleep(sleepMs)
+  //     user1Balance = await datatoken.balance(dtAddress, user1)
+  //     // user1 has 1 datatoken
+  //     assert(user1Balance === dtAmount, 'incorrect value for: user1Balance')
 
-    // Activate minting
-    await fixedRate.deactivateMint(publisher, exchangeId)
-    await sleep(sleepMs)
-
-    // Check the updated value for active
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-
-    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(updatedMint === false, 'incorrect value for: updatedMint')
-  })
-
-  it('User1 buys a datatoken', async () => {
-    const swapsQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){
-          swaps{
-            id
-            exchangeId{id}
-            by{id}
-            baseTokenAmount
-            dataTokenAmount
-            block
-            createdTimestamp
-            tx
-            __typename
-          }  
-        }}`
-    }
-    // Check initial swaps
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(swapsQuery)
-    })
-    const initialSwaps = (await initialResponse.json()).data.fixedRateExchange
-      .swaps
-    assert(initialSwaps.length === 0, 'incorrect value for: initialSwaps')
-
-    const datatoken = new Datatoken(web3, 8996)
-    // Mint datatokens as initial supply is 0
-    await datatoken.mint(dtAddress, publisher, '100')
-    await datatoken.approve(dtAddress, fixedRateAddress, '100', publisher)
-
-    const daiContract = new web3.eth.Contract(
-      MockERC20.abi as AbiItem[],
-      addresses.MockDAI
-    )
-    // user1 need DAI so that they can buy the datatoken
-    await daiContract.methods
-      .transfer(user1, web3.utils.toWei('100'))
-      .send({ from: publisher })
-    await daiContract.methods
-      .approve(fixedRateAddress, web3.utils.toWei('10000000'))
-      .send({ from: user1 })
-
-    // user1 has no DTs before buying one
-    let user1Balance = await datatoken.balance(dtAddress, user1)
-    assert(user1Balance === '0', 'incorrect value for: user1Balance')
-
-    const tx = (await fixedRate.buyDT(user1, exchangeId, dtAmount, '100'))
-      .events?.Swapped
-    await sleep(sleepMs)
-    user1Balance = await datatoken.balance(dtAddress, user1)
-    // user1 has 1 datatoken
-    assert(user1Balance === dtAmount, 'incorrect value for: user1Balance')
-
-    // Check updated swaps
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(swapsQuery)
-    })
-    const swaps = (await updatedResponse.json()).data.fixedRateExchange.swaps[0]
-    const swappedAmount = web3.utils.fromWei(
-      new BN(tx.returnValues.baseTokenSwappedAmount)
-    )
-    assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
-    assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
-    assert(swaps.by.id === user1, 'incorrect value for: id')
-    assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
-    assert(swaps.dataTokenAmount === dtAmount, 'incorrect: dataTokenAmount')
-    assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
-    assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
-    assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
-    assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
-    assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
-  })
-  it('User1 sells a datatoken', async () => {
-    await datatoken.approve(dtAddress, fixedRateAddress, dtAmount, user1)
-    const tx = (await fixedRate.sellDT(user1, exchangeId, '10', '9')).events
-      ?.Swapped
-    assert(tx != null)
-    await sleep(sleepMs)
-    const swapsQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){
-          swaps(orderBy: createdTimestamp, orderDirection: desc){
-            id
-            exchangeId{id}
-            by{id}
-            baseTokenAmount
-            dataTokenAmount
-            block
-            createdTimestamp
-            tx
-            __typename
-          }  
-        }}`
-    }
-    // Check initial swaps
-    const response = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(swapsQuery)
-    })
-    const swaps = (await response.json()).data.fixedRateExchange.swaps[0]
-    const swappedAmount = web3.utils.fromWei(
-      new BN(tx.returnValues.baseTokenSwappedAmount)
-    )
-    assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
-    assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
-    assert(swaps.by.id === user1, 'incorrect value for: id')
-    assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
-    assert(swaps.dataTokenAmount === dtAmount, 'incorrect: dataTokenAmount')
-    assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
-    assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
-    assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
-    assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
-    assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
-  })
+  //     // Check updated swaps
+  //     const updatedResponse = await fetch(subgraphUrl, {
+  //       method: 'POST',
+  //       body: JSON.stringify(swapsQuery)
+  //     })
+  //     const swaps = (await updatedResponse.json()).data.fixedRateExchange.swaps[0]
+  //     const swappedAmount = web3.utils.fromWei(
+  //       new BN(tx.returnValues.baseTokenSwappedAmount)
+  //     )
+  //     assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
+  //     assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
+  //     assert(swaps.by.id === user1, 'incorrect value for: id')
+  //     assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
+  //     assert(swaps.dataTokenAmount === dtAmount, 'incorrect: dataTokenAmount')
+  //     assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
+  //     assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
+  //     assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
+  //     assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
+  //     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
+  //   })
+  //   it('User1 sells a datatoken', async () => {
+  //     await datatoken.approve(dtAddress, fixedRateAddress, dtAmount, user1)
+  //     const tx = (await fixedRate.sellDT(user1, exchangeId, '10', '9')).events
+  //       ?.Swapped
+  //     assert(tx != null)
+  //     await sleep(sleepMs)
+  //     const swapsQuery = {
+  //       query: `query {fixedRateExchange(id: "${fixedRateId}"){
+  //           swaps(orderBy: createdTimestamp, orderDirection: desc){
+  //             id
+  //             exchangeId{id}
+  //             by{id}
+  //             baseTokenAmount
+  //             dataTokenAmount
+  //             block
+  //             createdTimestamp
+  //             tx
+  //             __typename
+  //           }
+  //         }}`
+  //     }
+  //     // Check initial swaps
+  //     const response = await fetch(subgraphUrl, {
+  //       method: 'POST',
+  //       body: JSON.stringify(swapsQuery)
+  //     })
+  //     const swaps = (await response.json()).data.fixedRateExchange.swaps[0]
+  //     const swappedAmount = web3.utils.fromWei(
+  //       new BN(tx.returnValues.baseTokenSwappedAmount)
+  //     )
+  //     assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
+  //     assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
+  //     assert(swaps.by.id === user1, 'incorrect value for: id')
+  //     assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
+  //     assert(swaps.dataTokenAmount === dtAmount, 'incorrect: dataTokenAmount')
+  //     assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
+  //     assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
+  //     assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
+  //     assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
+  //     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
+  //   })
 
   it('Updates allowed swapper', async () => {
     const swapperQuery = {
@@ -694,7 +464,7 @@ describe('Dispenser tests', async () => {
       'incorrect value for: allowedSwapper'
     )
 
-    await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
+    await dispenser.setAllowedSwapper(publisher, exchangeId, user1)
     await sleep(sleepMs)
 
     const swapperResponse2 = await fetch(subgraphUrl, {
