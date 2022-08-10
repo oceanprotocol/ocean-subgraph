@@ -1,4 +1,10 @@
-import { DelegateBoost } from '../@types/veDelegation/veDelegation'
+import { BigInt } from '@graphprotocol/graph-ts'
+import {
+  BurnBoost,
+  DelegateBoost,
+  ExtendBoost,
+  TransferBoost
+} from '../@types/veDelegation/veDelegation'
 import { getveDelegation } from './utils/veUtils'
 
 export function handleDelegation(event: DelegateBoost): void {
@@ -35,6 +41,16 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.save()
+}
+
+export function handleTransferBoost(event: TransferBoost): void {
+  // TODO not sure if we need this
+  // --------------------------------
+  // const _from = event.params._from
+  // const _to = event.params._to
+  // const _tokenId = event.params._token_id
+  // const _amount = event.params._amount
+  // const _expireTime = event.params._expire_time
 }
 export function handleBurnBoost(event: BurnBoost): void {
   const _tokenId = event.params._token_id
