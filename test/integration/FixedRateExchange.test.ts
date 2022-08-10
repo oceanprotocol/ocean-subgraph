@@ -18,6 +18,8 @@ import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
 import BN from 'bn.js'
 
+const sleepMs = 1700
+
 const data = JSON.parse(
   fs.readFileSync(
     process.env.ADDRESS_FILE ||
@@ -127,7 +129,7 @@ describe('Fixed Rate Exchange tests', async () => {
     fixedRateId = `${exchangeContract}-${exchangeId}`
 
     // Check NFT values
-    await sleep(2000)
+    await sleep(sleepMs)
     nftAddress = erc721Address.toLowerCase()
     const nftQuery = {
       query: `query {
@@ -425,7 +427,7 @@ describe('Fixed Rate Exchange tests', async () => {
     // Update price
     const newPrice = '999'
     await fixedRate.setRate(publisher, exchangeId, newPrice)
-    await sleep(2000)
+    await sleep(sleepMs)
 
     // Check price after first update
     const priceResponse2 = await fetch(subgraphUrl, {
@@ -447,7 +449,7 @@ describe('Fixed Rate Exchange tests', async () => {
     // Update price a 2nd time
     const newPrice2 = '1' // '5.123'
     await fixedRate.setRate(publisher, exchangeId, newPrice2)
-    await sleep(2000)
+    await sleep(sleepMs)
 
     // Check price after 2nd update
     const priceResponse3 = await fetch(subgraphUrl, {
@@ -482,7 +484,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
     // Deactivate exchange
     await fixedRate.deactivate(publisher, exchangeId)
-    await sleep(2000)
+    await sleep(sleepMs)
 
     // Check the updated value for active
     const updatedResponse = await fetch(subgraphUrl, {
@@ -508,7 +510,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
     // Activate exchange
     await fixedRate.activate(publisher, exchangeId)
-    await sleep(2000)
+    await sleep(sleepMs)
 
     // Check the updated value for active
     const updatedResponse = await fetch(subgraphUrl, {
@@ -534,7 +536,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
     // Activate minting
     await fixedRate.activateMint(publisher, exchangeId)
-    await sleep(2000)
+    await sleep(sleepMs)
 
     // Check the updated value for active
     const updatedResponse = await fetch(subgraphUrl, {
@@ -561,7 +563,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
     // Activate minting
     await fixedRate.deactivateMint(publisher, exchangeId)
-    await sleep(2000)
+    await sleep(sleepMs)
 
     // Check the updated value for active
     const updatedResponse = await fetch(subgraphUrl, {
@@ -627,7 +629,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
     const tx = (await fixedRate.buyDT(user1, exchangeId, dtAmount, '100'))
       .events?.Swapped
-    await sleep(2000)
+    await sleep(sleepMs)
     user1Balance = await datatoken.balance(datatokenAddress, user1)
     // user1 has 1 datatoken
     assert(user1Balance === dtAmount, 'incorrect value for: user1Balance')
@@ -657,7 +659,7 @@ describe('Fixed Rate Exchange tests', async () => {
     const tx = (await fixedRate.sellDT(user1, exchangeId, '10', '9')).events
       ?.Swapped
     assert(tx != null)
-    await sleep(2000)
+    await sleep(sleepMs)
     const swapsQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){
         swaps(orderBy: createdTimestamp, orderDirection: desc){
@@ -711,7 +713,7 @@ describe('Fixed Rate Exchange tests', async () => {
     )
 
     await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
-    await sleep(2000)
+    await sleep(sleepMs)
 
     const swapperResponse2 = await fetch(subgraphUrl, {
       method: 'POST',
