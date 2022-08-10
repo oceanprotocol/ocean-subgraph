@@ -6,7 +6,7 @@ import {
   VeAllocationUpdate,
   VeDelegation,
   VeOCEAN,
-  Deposit
+  VeDeposit
 } from '../../@types/schema'
 
 export function getveAllocateUser(
@@ -129,11 +129,11 @@ export function getveOCEAN(id: string): VeOCEAN {
   return ve
 }
 
-export function getDeposit(id: string): Deposit {
-  let deposit = Deposit.load(id)
+export function getDeposit(id: string): VeDeposit {
+  let deposit = VeDeposit.load(id)
 
   if (deposit === null) {
-    deposit = new Deposit(id)
+    deposit = new VeDeposit(id)
     deposit.provider = ''
     deposit.value = BigDecimal.zero()
     deposit.unlockTime = BigInt.zero()
