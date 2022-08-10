@@ -19,7 +19,10 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.save()
 }
 
-// TODO add handlers for
-// ExtendBoost
-// TransferBoost
-// BurnBoost
+export function handleBurnBoost(event: BurnBoost): void {
+  const _tokenId = event.params._token_id
+
+  // delete
+  const veDelegation = getveDelegation(_tokenId.toHex())
+  veDelegation.amount = BigInt.zero()
+}
