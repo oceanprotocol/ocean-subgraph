@@ -1,11 +1,11 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 import {
   BurnBoost,
   DelegateBoost,
   ExtendBoost,
   TransferBoost
 } from '../@types/veDelegation/veDelegation'
-import { getveDelegation } from './utils/veUtils'
+import { getveDelegation, getveOCEAN } from './utils/veUtils'
 
 export function handleDelegation(event: DelegateBoost): void {
   const _delegator = event.params._delegator.toHex()
@@ -17,6 +17,7 @@ export function handleDelegation(event: DelegateBoost): void {
 
   const veDelegation = getveDelegation(_tokenId.toHex())
   veDelegation.delegator = _delegator
+  getveOCEAN(_receiver)
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
   veDelegation.amount = _amount
