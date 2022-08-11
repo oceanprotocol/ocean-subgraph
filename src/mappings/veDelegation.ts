@@ -23,6 +23,7 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.amount = _amount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
+  veDelegation.block = event.block.number.toI32()
   veDelegation.save()
 }
 

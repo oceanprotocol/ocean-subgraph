@@ -23,22 +23,8 @@ export function handleDeposit(event: Deposit): void {
   const lockedAmount = weiToDecimal(value.toBigDecimal(), 18)
   veOCEAN.unlockTime = locktime
   veOCEAN.lockedAmount = veOCEAN.lockedAmount.plus(lockedAmount)
+  veOCEAN.block = event.block.number.toI32()
   veOCEAN.save()
-
-  // // calculate veOCEAN balance
-  // const now = ts.toI32()
-  // const totalLockTime = BigInt.fromI32(locktime.toI32() - now).toBigDecimal()
-  // const MAX_TIME = BigInt.fromI32(4 * 365 * 86400).toBigDecimal()
-
-  // log.warning('veOCEAN balance: {}, Slope:{}', [
-  //   MAX_TIME.toString(),
-  //   totalLockTime.toString()
-  // ])
-  // const slope = totalLockTime.div(MAX_TIME)
-  // const bal = veOCEAN.lockedAmount.times(slope)
-
-  // veOCEAN.balance = bal
-  // // ------------------------------
 }
 export function handleSupply(event: Supply): void {}
 export function handleWithdraw(event: Withdraw): void {}

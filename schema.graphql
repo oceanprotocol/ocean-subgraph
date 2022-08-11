@@ -441,6 +441,7 @@ type VeDelegation @entity {
   amount: BigInt!
   cancelTime: BigInt!
   expireTime: BigInt!
+  block: Int!
 }
 
 type VeOCEAN @entity {
@@ -450,6 +451,7 @@ type VeOCEAN @entity {
   unlockTime: BigInt!
   delegation: [VeDelegation!] @derivedFrom(field: "delegator")
   delegates: [VeDelegation!] @derivedFrom(field: "receiver")
+  block: Int!
 }
 
 type VeDeposit @entity {

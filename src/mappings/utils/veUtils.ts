@@ -111,6 +111,7 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.amount = BigInt.zero()
     veDelegation.receiver = ''
     veDelegation.delegator = ''
+    veDelegation.block = 0
     veDelegation.save()
   }
   return veDelegation
@@ -123,6 +124,7 @@ export function getveOCEAN(id: string): VeOCEAN {
     ve = new VeOCEAN(id)
     ve.unlockTime = BigInt.zero()
     ve.lockedAmount = BigDecimal.zero()
+    ve.block = 0
     ve.save()
   }
 
