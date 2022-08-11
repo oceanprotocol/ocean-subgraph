@@ -66,7 +66,7 @@ export function handleDeactivate(event: DispenserDeactivated): void {
     event.params.datatokenAddress
   )
   const dispenser = getDispenser(dispenserID)
-  dispenser.active = true
+  dispenser.active = false
   dispenser.save()
 }
 
