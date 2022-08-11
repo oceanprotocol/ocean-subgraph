@@ -236,10 +236,8 @@ describe('Dispenser tests', async () => {
       dt.publishMarketFeeAmount === feeAmount,
       'incorrect value for: publishMarketFeeAmount'
     )
-    console.log('dt.templateId', dt.templateId)
-    console.log('templateIndex', templateIndex)
 
-    // TODO: assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
+    assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
     assert(dt.orders, 'incorrect value for: orders')
@@ -327,7 +325,6 @@ describe('Dispenser tests', async () => {
       body: JSON.stringify(dispenserQuery)
     })
     const response = (await graphResponse.json()).data.dispenser
-    console.log('response', response)
 
     assert(response.id === dispenserId, 'incorrect value for: id')
     assert(response.contract === dispenserAddress, 'incorrect value: contract')
@@ -346,43 +343,44 @@ describe('Dispenser tests', async () => {
     assert(response.__typename === 'Dispenser', 'incorrect value: __typename')
   })
 
-  it('Deactivates exchange', async () => {
+  it('Deactivates dispenser', async () => {
     const deactiveQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
+      query: `query {dispenser(id: "${dispenserId}"){active}}`
     }
+    console.log('deactiveQuery', deactiveQuery)
 
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(deactiveQuery)
     })
-    const initialActive = (await initialResponse.json()).data.fixedRateExchange
-      .active
+    const initialActive = (await initialResponse.json()).data.dispenser.active
     assert(initialActive === true, 'incorrect value for: initialActive')
 
     // Deactivate exchange
-    await dispenser.deactivate(publisher, exchangeId)
+    const tx = await dispenser.deactivate(dtAddress, publisher)
+    const status = await dispenser.status(dtAddress)
+    assert(status.active === false, 'Dispenser is still active')
     await sleep(sleepMs)
-
+    console.log('tx', tx)
     // Check the updated value for active
     const updatedResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(deactiveQuery)
     })
-    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
-      .active
+    const updatedActive = (await updatedResponse.json()).data.dispenser.active
+    console.log('updatedActive', updatedActive)
     assert(updatedActive === false, 'incorrect value for: updatedActive')
   })
 
   it('Activates exchange', async () => {
     const activeQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
+      query: `query {dispenser(id: "${dispenserId}"){active}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(activeQuery)
     })
-    const initialActive = (await initialResponse.json()).data.fixedRateExchange
-      .active
+    const initialActive = (await initialResponse.json()).data.dispenser.active
     assert(initialActive === false, 'incorrect value for: initialActive')
 
     // Activate exchange
@@ -394,8 +392,7 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(activeQuery)
     })
-    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
-      .active
+    const updatedActive = (await updatedResponse.json()).data.dispenser.active
     assert(updatedActive === true, 'incorrect value for: updatedActive')
   })
 
