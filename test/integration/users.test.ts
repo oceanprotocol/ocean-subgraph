@@ -6,7 +6,9 @@ import {
   FreCreationParams,
   ZERO_ADDRESS,
   FixedRateExchange,
-  Datatoken
+  Datatoken,
+  ProviderFees,
+  signHash
 } from '@oceanprotocol/lib'
 import MockERC20 from '@oceanprotocol/contracts/artifacts/contracts/utils/mock/MockERC20Decimals.sol/MockERC20Decimals.json'
 import { assert } from 'chai'
@@ -25,12 +27,32 @@ const data = JSON.parse(
     'utf8'
   )
 )
+async function userQuery(user: string) {
+  const query = {
+    query: `query {
+              user(id:"${user}"){    
+                  id
+                  tokenBalancesOwned {id}
+                  orders {id}
+                  freSwaps {id}
+                  totalOrders
+                  totalSales
+                  __typename
+              }}`
+  }
+  const response = await fetch(
+    'http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph',
+    {
+      method: 'POST',
+      body: JSON.stringify(query)
+    }
+  )
+  const data = (await response.json()).data.user
+  return data
+}
 
 const addresses = data.development
 const web3 = new Web3('http://127.0.0.1:8545')
-
-const subgraphUrl =
-  'http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
 
 describe('User tests', async () => {
   const nftName = 'test-Fixed-Price-NFT'
@@ -46,7 +68,7 @@ describe('User tests', async () => {
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
-  let marketPlaceFeeAddress: string
+  let feeAddress: string
   let Factory: NftFactory
   let factoryAddress: string
   let accounts: string[]
@@ -55,6 +77,8 @@ describe('User tests', async () => {
   let exchangeId: string
   let fixedRate: FixedRateExchange
   let user1: string
+  let user2: string
+  let user3: string
 
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
@@ -63,10 +87,12 @@ describe('User tests', async () => {
     Factory = new NftFactory(factoryAddress, web3)
     accounts = await web3.eth.getAccounts()
     contractDeployer = accounts[0].toLowerCase()
+    feeAddress = accounts[1].toLowerCase()
     // Using different accounts from other tests to ensure that all user fields start at null
     publisher = accounts[6].toLowerCase()
-    marketPlaceFeeAddress = accounts[7].toLowerCase()
-    user1 = accounts[8].toLowerCase()
+    user1 = accounts[7].toLowerCase()
+    user2 = accounts[8].toLowerCase()
+    user3 = accounts[9].toLowerCase()
   })
 
   it('Deploying a Fixed Rate Exchange & Test User Fields', async () => {
@@ -85,13 +111,13 @@ describe('User tests', async () => {
       paymentCollector: ZERO_ADDRESS,
       feeToken: ZERO_ADDRESS,
       minter: publisher,
-      mpFeeAddress: marketPlaceFeeAddress
+      mpFeeAddress: feeAddress
     }
     const fixedRateParams: FreCreationParams = {
       fixedRateAddress,
       baseTokenAddress,
       owner: publisher,
-      marketFeeCollector: marketPlaceFeeAddress,
+      marketFeeCollector: feeAddress,
       baseTokenDecimals: 18,
       datatokenDecimals: 18,
       fixedRate: price,
@@ -113,23 +139,7 @@ describe('User tests', async () => {
 
     // Check User values
     await sleep(sleepMs)
-    const query = {
-      query: `query {
-                user(id:"${publisher}"){    
-                    id
-                    tokenBalancesOwned {id}
-                    orders {id}
-                    freSwaps {id}
-                    totalOrders
-                    totalSales
-                    __typename
-                }}`
-    }
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(query)
-    })
-    const user = (await initialResponse.json()).data.user
+    const user = await userQuery(publisher)
 
     assert(user.id === publisher, 'incorrect value for: id')
     assert(user.tokenBalancesOwned.length === 0, 'incorrect tokenBalancesOwned')
@@ -141,25 +151,6 @@ describe('User tests', async () => {
   })
 
   it('User1 buys a datatoken', async () => {
-    const query = {
-      query: `query {
-                    user(id:"${user1}"){    
-                        id
-                        tokenBalancesOwned {id}
-                        orders {id}
-                        freSwaps {id}
-                        totalOrders
-                        totalSales
-                        __typename
-                    }}`
-    }
-
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(query)
-    })
-    const initialUser = (await initialResponse.json()).data.user
-
     const datatoken = new Datatoken(web3, 8996)
     // Mint datatokens as initial supply is 0
     await datatoken.mint(datatokenAddress, publisher, '100')
@@ -195,65 +186,110 @@ describe('User tests', async () => {
     assert(user1Balance === dtAmount, 'incorrect value for: user1Balance')
 
     // Check User values
-    await sleep(sleepMs)
-    const response = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(query)
-    })
-    const user = (await response.json()).data.user
+    const user = await userQuery(user1)
+
+    assert(user.id === user1, 'incorrect value for: id')
+    assert(user.tokenBalancesOwned.length === 0, 'incorrect tokenBalancesOwned')
+    assert(user.orders.length === 0, 'incorrect value for: orders')
+    assert(user.freSwaps.length === 1, 'incorrect value for: freSwaps')
+    assert(user.totalOrders === '0', 'incorrect value for: totalOrders')
+    assert(user.totalSales === '0', 'incorrect value for: totalSales')
+    assert(user.__typename === 'User', 'incorrect value for: __typename')
+  })
+  it('User1 sells a datatoken', async () => {
+    const initialUser = await userQuery(user1)
+    await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
+    const tx = (await fixedRate.sellDT(user1, exchangeId, '10', '9')).events
+      ?.Swapped
+
+    assert(tx != null)
+    const user = await userQuery(user1)
 
     assert(user.id === user1, 'incorrect value for: id')
     assert(user.tokenBalancesOwned.length === 0, 'incorrect tokenBalancesOwned')
     assert(user.orders.length === 0, 'incorrect value for: orders')
     assert(
-      user.freSwaps.length === initialUser.freSwaps.length + 1,
+      user.freSwaps.length === initialUser.freSwaps.length,
       'incorrect value for: freSwaps'
     )
     assert(user.totalOrders === '0', 'incorrect value for: totalOrders')
     assert(user.totalSales === '0', 'incorrect value for: totalSales')
     assert(user.__typename === 'User', 'incorrect value for: __typename')
   })
-  it('User1 sells a datatoken', async () => {
-    const query = {
-      query: `query {
-                    user(id:"${user1}"){    
-                        id
-                        tokenBalancesOwned {id}
-                        orders {id}
-                        freSwaps {id}
-                        totalOrders
-                        totalSales
-                        __typename
-                    }}`
+
+  it('Check user fields after publishing & ordering a datatoken', async () => {
+    // Start with publishing a new datatoken
+    const nftParams: NftCreateData = {
+      name: 'newNFT',
+      symbol: 'newTST',
+      templateIndex,
+      tokenURI: '',
+      transferable: true,
+      owner: publisher
     }
-
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(query)
-    })
-    const initialUser = (await initialResponse.json()).data.user
-
-    await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
-    const tx = (await fixedRate.sellDT(user1, exchangeId, '10', '9')).events
-      ?.Swapped
-
-    assert(tx != null)
-
-    await sleep(sleepMs)
-    const response = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(query)
-    })
-    const user = (await response.json()).data.user
-
-    assert(user.id === user1, 'incorrect value for: id')
-    assert(user.tokenBalancesOwned.length === 0, 'incorrect tokenBalancesOwned')
-    assert(user.orders.length === 0, 'incorrect value for: orders')
-    assert(
-      user.freSwaps.length === initialUser.freSwaps.length + 1,
-      'incorrect value for: freSwaps'
+    const erc20Params: Erc20CreateParams = {
+      templateIndex,
+      cap: '100000',
+      feeAmount: '0',
+      paymentCollector: ZERO_ADDRESS,
+      feeToken: ZERO_ADDRESS,
+      minter: publisher,
+      mpFeeAddress: feeAddress
+    }
+    const result = await Factory.createNftWithErc20(
+      publisher,
+      nftParams,
+      erc20Params
     )
-    assert(user.totalOrders === '0', 'incorrect value for: totalOrders')
+    const newDtAddress = result.events.TokenCreated.returnValues[0]
+
+    const datatoken = new Datatoken(web3, 8996)
+    await datatoken.mint(newDtAddress, publisher, '100', user3)
+    const user1balance = await datatoken.balance(newDtAddress, user3)
+    assert(Number(user1balance) === 100, 'Invalid user1 balance')
+
+    const providerData = JSON.stringify({ timeout: 0 })
+    const providerFeeToken = ZERO_ADDRESS
+    const providerFeeAmount = '10000'
+    const providerValidUntil = '0'
+    const message = web3.utils.soliditySha3(
+      { t: 'bytes', v: web3.utils.toHex(web3.utils.asciiToHex(providerData)) },
+      { t: 'address', v: feeAddress },
+      { t: 'address', v: providerFeeToken },
+      { t: 'uint256', v: providerFeeAmount },
+      { t: 'uint256', v: providerValidUntil }
+    )
+    assert(message, 'Invalid message')
+    const { v, r, s } = await signHash(web3, message, feeAddress)
+    const setProviderFee: ProviderFees = {
+      providerFeeAddress: feeAddress,
+      providerFeeToken,
+      providerFeeAmount,
+      v,
+      r,
+      s,
+      providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
+      validUntil: providerValidUntil
+    }
+    assert(setProviderFee, 'Invalid setProviderFee')
+    const orderTx = await datatoken.startOrder(
+      newDtAddress,
+      user3,
+      user2,
+      1,
+      setProviderFee
+    )
+    assert(orderTx.events.OrderStarted, 'Invalid orderTx')
+
+    await sleep(2000)
+
+    const user = await userQuery(user3)
+
+    assert(user.id === user3, 'incorrect value for: id')
+    assert(user.tokenBalancesOwned.length === 0, 'incorrect tokenBalancesOwned')
+    assert(user.orders.length === 1, 'incorrect value for: orders')
+    assert(user.freSwaps.length === 0, 'incorrect value for: freSwaps')
+    assert(user.totalOrders === '1', 'incorrect value for: totalOrders')
     assert(user.totalSales === '0', 'incorrect value for: totalSales')
     assert(user.__typename === 'User', 'incorrect value for: __typename')
   })
