@@ -37,7 +37,7 @@
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.33.0",
     "@graphprotocol/graph-ts": "^0.27.0",
-    "@types/chai": "^4.3.2",
+    "@types/chai": "^4.3.3",
     "@types/chai-spies": "^1.0.3",
     "@types/mocha": "^9.1.1",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
