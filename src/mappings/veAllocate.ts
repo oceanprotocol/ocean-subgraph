@@ -21,17 +21,10 @@ export function handleAllocationSet(event: AllocationSet): void {
   const allocateId = getveAllocateId(event, eventId)
   const veAllocation = getveAllocation(event, eventSender, eventId)
 
-  // update all entities
-  const newUserAllocation = allocateUser.allocatedTotal
-    .plus(allocationAmount)
-    .minus(veAllocation.allocated)
-
-  allocateUser.allocatedTotal = newUserAllocation
   const newIdAllocation = allocateId.allocatedTotal.minus(
     veAllocation.allocatedTotal
   )
   allocateId.allocatedTotal = newIdAllocation.plus(allocationAmount)
-  veAllocation.allocatedTotal = allocateUser.allocatedTotal
   veAllocation.allocated = allocationAmount
   veAllocation.chainId = chainId
   veAllocation.nftAddress = nftAddress
