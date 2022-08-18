@@ -373,6 +373,7 @@ type VeAllocateUser @entity{
   id: ID!
   
   veAllocation: [VeAllocation!] @derivedFrom(field: "allocationUser")  
+  allocatedTotal: BigDecimal!
 
   block: Int!
   firstContact: Int!

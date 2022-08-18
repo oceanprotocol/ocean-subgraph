@@ -21,10 +21,18 @@ export function handleAllocationSet(event: AllocationSet): void {
   const allocateId = getveAllocateId(event, eventId)
   const veAllocation = getveAllocation(event, eventSender, eventId)
 
+  // Update user allocation
+  const newUserAllocation = allocateUser.allocatedTotal.minus(
+    veAllocation.allocated
+  )
+  allocateUser.allocatedTotal = newUserAllocation.plus(allocationAmount)
+
+  // Update id allocation
   const newIdAllocation = allocateId.allocatedTotal.minus(
-    veAllocation.allocatedTotal
+    veAllocation.allocated
   )
   allocateId.allocatedTotal = newIdAllocation.plus(allocationAmount)
+
   veAllocation.allocated = allocationAmount
   veAllocation.chainId = chainId
   veAllocation.nftAddress = nftAddress

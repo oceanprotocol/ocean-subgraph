@@ -59,7 +59,6 @@ export function getveAllocation(
     veAllocation = new VeAllocation(sender + '-' + id)
     veAllocation.allocationUser = getveAllocateUser(event, sender).id
     veAllocation.allocationId = getveAllocateId(event, id).id
-    veAllocation.allocatedTotal = BigDecimal.zero()
     veAllocation.allocated = BigDecimal.zero()
     veAllocation.chainId = BigInt.zero()
     veAllocation.nftAddress = ''
