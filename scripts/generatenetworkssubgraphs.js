@@ -20,6 +20,14 @@ async function replaceContractAddresses() {
     }
     console.log('Creating subgraph.yaml for ' + network)
     let subgraph = fs.readFileSync('./subgraph.template.yaml', 'utf8')
+    const subgraphVe = fs.readFileSync('./subgraph_ve.template.yaml', 'utf8')
+    if (addresses[network].veOCEAN) {
+      // fix identation , due to vs auto format (subgraph_ve.template is moved to left)
+      const lines = subgraphVe.split('\n')
+      for (let line = 0; line < lines.length; line++) {
+        subgraph += '  ' + lines[line] + '\n'
+      }
+    }
 
     subgraph = subgraph.replace(/__NETWORK__/g, network)
     subgraph = subgraph.replace(
