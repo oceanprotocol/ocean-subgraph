@@ -3,8 +3,8 @@
   "version": "2.0.3",
   "scripts": {
     "start": "",
-    "quickstart:development": "if [[ -z '${BARGE_FOLDER}' ]]; then echo 'Using npm artifacts';else cp -v -r $HOME/.ocean/ocean-contracts/artifacts/contracts/* ./node_modules/@oceanprotocol/contracts/artifacts/contracts/;fi;node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local && npm run deploy:local",
-    "quickstart:barge": "node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local-barge && npm run deploy:local-barge",
+    "quickstart:development": "node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:barge": "if [[ -z '${BARGE_FOLDER}' ]]; then echo 'Using npm artifacts';else cp -r $HOME/.ocean/ocean-contracts/artifacts/contracts/* ./node_modules/@oceanprotocol/contracts/artifacts/contracts/;fi;node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local-barge && npm run deploy:local-barge",
     "quickstart:rinkeby": "node ./scripts/generatenetworkssubgraphs.js rinkeby && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:ropsten": "node ./scripts/generatenetworkssubgraphs.js ropsten && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:mumbai": "node ./scripts/generatenetworkssubgraphs.js mumbai && npm run codegen && npm run create:local && npm run deploy:local",
