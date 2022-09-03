@@ -8,6 +8,7 @@ import {
   VeOCEAN,
   VeDeposit
 } from '../../@types/schema'
+import { veAllocationUpdateType } from './constants'
 
 export function getveAllocateUser(
   event: ethereum.Event,
@@ -143,4 +144,51 @@ export function getDeposit(id: string): VeDeposit {
     deposit.save()
   }
   return deposit
+}
+
+export function handleOneAllocation(
+  eventSender: string,
+  nftAddress: string,
+  chainId: BigInt,
+  allocationAmount: BigDecimal,
+  event: ethereum.Event
+): void {
+  const eventId = nftAddress + '-' + chainId.toString()
+
+  const allocateUser = getveAllocateUser(event, eventSender)
+  const allocateId = getveAllocateId(event, eventId)
+  const veAllocation = getveAllocation(event, eventSender, eventId)
+
+  // Update user allocation
+  const newUserAllocation = allocateUser.allocatedTotal.minus(
+    veAllocation.allocated
+  )
+  allocateUser.allocatedTotal = newUserAllocation.plus(allocationAmount)
+
+  // Update id allocation
+  const newIdAllocation = allocateId.allocatedTotal.minus(
+    veAllocation.allocated
+  )
+  allocateId.allocatedTotal = newIdAllocation.plus(allocationAmount)
+
+  veAllocation.allocated = allocationAmount
+  veAllocation.chainId = chainId
+  veAllocation.nftAddress = nftAddress
+
+  allocateUser.lastContact = event.block.timestamp.toI32()
+  allocateId.lastContact = event.block.timestamp.toI32()
+  veAllocation.lastContact = event.block.timestamp.toI32()
+
+  // register allocation update event
+  writeveAllocationUpdate(
+    event,
+    veAllocation.id,
+    veAllocationUpdateType.SET,
+    allocationAmount
+  )
+
+  // save entities
+  allocateUser.save()
+  allocateId.save()
+  veAllocation.save()
 }

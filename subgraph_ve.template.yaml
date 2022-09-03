@@ -18,6 +18,8 @@
     eventHandlers:
       - event: AllocationSet(indexed address,indexed address,indexed uint256,uint256)
         handler: handleAllocationSet
+      - event: AllocationSetMultiple(indexed address,address[],uint256[],uint256[])
+        handler: handleAllocationSetMultiple
 
 - name: veOCEAN
   kind: ethereum/contract
