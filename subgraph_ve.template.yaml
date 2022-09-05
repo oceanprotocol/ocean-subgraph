@@ -1,0 +1,68 @@
+- name: veAllocate
+  kind: ethereum/contract
+  network: __NETWORK__
+  source:
+    abi: veAllocate
+    address: __VEALLOCATEADDRESS__
+    startBlock: __STARTBLOCK__
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.6
+    language: wasm/assemblyscript
+    file: ./src/mappings/veAllocate.ts
+    entities:
+      - veAllocate
+    abis:
+      - name: veAllocate
+        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veAllocate.sol/veAllocate.json
+    eventHandlers:
+      - event: AllocationSet(indexed address,indexed address,indexed uint256,uint256)
+        handler: handleAllocationSet
+      - event: AllocationSetMultiple(indexed address,address[],uint256[],uint256[])
+        handler: handleAllocationSetMultiple
+
+- name: veOCEAN
+  kind: ethereum/contract
+  network: __NETWORK__
+  source:
+    abi: veOCEAN
+    address: __VEOCEANADDRESS__
+    startBlock: __STARTBLOCK__
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.6
+    language: wasm/assemblyscript
+    file: ./src/mappings/veOCEAN.ts
+    entities:
+      - veOCEAN
+    abis:
+      - name: veOCEAN
+        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veOCEAN.vy/veOCEAN.json
+    eventHandlers:
+      - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
+        handler: handleDeposit
+      - event: Withdraw(indexed address,uint256,uint256)
+        handler: handleSupply
+      - event: Supply(uint256,uint256)
+        handler: handleWithdraw
+
+- name: veDelegation
+  kind: ethereum/contract
+  network: __NETWORK__
+  source:
+    abi: veDelegation
+    address: __VEDELEGATIONADDRESS__
+    startBlock: __STARTBLOCK__
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.6
+    language: wasm/assemblyscript
+    file: ./src/mappings/veDelegation.ts
+    entities:
+      - veDelegation
+    abis:
+      - name: veDelegation
+        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veDelegation.vy/veDelegation.json
+    eventHandlers:
+      - event: DelegateBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
+        handler: handleDelegation

@@ -3,71 +3,6 @@ description: Ocean provides data sharing through IDOs
 repository: https://github.com/oceanprotocol/ocean-subgraph
 schema:
   file: ./schema.graphql
-dataSources:
-  - kind: ethereum/contract
-    name: ERC721Factory
-    network: __NETWORK__
-    source:
-      address: __ERC721FACTORYADDRESS__
-      abi: ERC721Factory
-      startBlock: __STARTBLOCK__
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/erc721Factory.ts
-      entities:
-        - ERC721Factory
-      abis:
-        - name: ERC721Factory
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: NFTCreated(address,indexed address,string,indexed address,string,string,bool,indexed address)
-          handler: handleNftCreated
-        - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
-          handler: handleNewToken
-
-  - kind: ethereum/contract
-    name: FactoryRouter
-    network: __NETWORK__
-    source:
-      address: __FACTORYROUTERADDRESS__
-      abi: FactoryRouter
-      startBlock: __STARTBLOCK__
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/factoryRouter.ts
-      entities:
-        - FactoryRouter
-      abis:
-        - name: FactoryRouter
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/FactoryRouter.sol/FactoryRouter.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: TokenAdded(indexed address,indexed address)
-          handler: handleTokenAdded
-        - event: TokenRemoved(indexed address,indexed address)
-          handler: handleTokenRemoved
-        - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
-          handler: handleOPCFeeChanged
-        - event: SSContractAdded(indexed address,indexed address)
-          handler: handleSSContractAdded
-        - event: SSContractRemoved(indexed address,indexed address)
-          handler: handleSSContractRemoved
-        - event: FixedRateContractAdded(indexed address,indexed address)
-          handler: handleFixedRateContractAdded
-        - event: FixedRateContractRemoved(indexed address,indexed address)
-          handler: handleFixedRateContractRemoved
-        - event: DispenserContractAdded(indexed address,indexed address)
-          handler: handleDispenserContractAdded
-        - event: DispenserContractRemoved(indexed address,indexed address)
-          handler: handleDispenserContractRemoved
-
 templates:
   - name: ERC20Template
     kind: ethereum/contract
@@ -230,3 +165,68 @@ templates:
           handler: handlePublishMarketFeeChanged
         - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleTokenCollected
+
+dataSources:
+  - kind: ethereum/contract
+    name: ERC721Factory
+    network: __NETWORK__
+    source:
+      address: __ERC721FACTORYADDRESS__
+      abi: ERC721Factory
+      startBlock: __STARTBLOCK__
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc721Factory.ts
+      entities:
+        - ERC721Factory
+      abis:
+        - name: ERC721Factory
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: NFTCreated(address,indexed address,string,indexed address,string,string,bool,indexed address)
+          handler: handleNftCreated
+        - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
+          handler: handleNewToken
+
+  - kind: ethereum/contract
+    name: FactoryRouter
+    network: __NETWORK__
+    source:
+      address: __FACTORYROUTERADDRESS__
+      abi: FactoryRouter
+      startBlock: __STARTBLOCK__
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/factoryRouter.ts
+      entities:
+        - FactoryRouter
+      abis:
+        - name: FactoryRouter
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/FactoryRouter.sol/FactoryRouter.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: TokenAdded(indexed address,indexed address)
+          handler: handleTokenAdded
+        - event: TokenRemoved(indexed address,indexed address)
+          handler: handleTokenRemoved
+        - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleOPCFeeChanged
+        - event: SSContractAdded(indexed address,indexed address)
+          handler: handleSSContractAdded
+        - event: SSContractRemoved(indexed address,indexed address)
+          handler: handleSSContractRemoved
+        - event: FixedRateContractAdded(indexed address,indexed address)
+          handler: handleFixedRateContractAdded
+        - event: FixedRateContractRemoved(indexed address,indexed address)
+          handler: handleFixedRateContractRemoved
+        - event: DispenserContractAdded(indexed address,indexed address)
+          handler: handleDispenserContractAdded
+        - event: DispenserContractRemoved(indexed address,indexed address)
+          handler: handleDispenserContractRemoved

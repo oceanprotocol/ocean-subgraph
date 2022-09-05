@@ -52,7 +52,7 @@ jobs:
         run: |
           bash -x start_ocean.sh --with-thegraph --skip-subgraph-deploy --no-dashboard 2>&1 > start_ocean.log &
         env:
-          CONTRACTS_VERSION: v1.0.0-alpha.28
+          CONTRACTS_VERSION: v1.1.3
 
       - run: npm ci
 
@@ -69,6 +69,8 @@ jobs:
           sleep 20
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
+          BARGE_FOLDER: /home/runner/.ocean/
       - run: npm run test-integration
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
+          BARGE_FOLDER: /home/runner/.ocean/

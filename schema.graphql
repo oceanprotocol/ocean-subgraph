@@ -360,7 +360,6 @@ type NftUpdate @entity {
   tx: String!
 }
 
-
 type Template @entity{
   id: ID!
   fixedRateTemplates: [String!]
@@ -368,4 +367,98 @@ type Template @entity{
   ssTemplates: [String!]
 }
 
+# Not tracking allocationToId or idToAllocation
+type VeAllocateUser @entity{
+  "id = {user}"
+  id: ID!
+  
+  veAllocation: [VeAllocation!] @derivedFrom(field: "allocationUser")  
+  allocatedTotal: BigDecimal!
 
+  block: Int!
+  firstContact: Int!
+  lastContact: Int!
+  tx: String!
+}
+
+type VeAllocateId @entity{
+  "id = {DataNFT Address}-{chain id}"
+  id: ID!
+  
+  veAllocation: [VeAllocation!] @derivedFrom(field: "allocationId")
+  allocatedTotal: BigDecimal!
+
+  block: Int!
+  firstContact: Int!
+  lastContact: Int!
+  tx: String!
+}
+
+# we need to track allocation of user to id
+type VeAllocation @entity {
+  "id = {user}-{DataNFT Address}-{chain id}"
+  id: ID!
+
+  allocationUser: VeAllocateUser!
+  allocationId: VeAllocateId!
+  
+  updates: [VeAllocationUpdate!] @derivedFrom(field: "veAllocation")
+  allocated: BigDecimal!
+  chainId: BigInt!
+  nftAddress: String!
+
+  block: Int!
+  firstContact: Int!
+  lastContact: Int!
+  tx: String!
+}
+
+enum veAllocationUpdateType {
+  SET,
+  REMOVED
+}
+
+type VeAllocationUpdate @entity {
+  "{tx}-{VeAllocation id}"
+  id: ID!
+ 
+  veAllocation: VeAllocation!
+  type: veAllocationUpdateType!
+  allocatedTotal: BigDecimal!
+
+  block: Int!
+  timestamp: Int!
+  tx: String!
+}
+
+type VeDelegation @entity {
+  "id = tokenId"
+  id: ID!
+  delegator: VeOCEAN!
+  receiver: VeOCEAN!
+  tokenId: BigInt!
+  amount: BigInt!
+  cancelTime: BigInt!
+  expireTime: BigInt!
+  block: Int!
+}
+
+type VeOCEAN @entity {
+  "id = {user address}"
+  id: ID!
+  lockedAmount: BigDecimal!
+  unlockTime: BigInt!
+  delegation: [VeDelegation!] @derivedFrom(field: "delegator")
+  delegates: [VeDelegation!] @derivedFrom(field: "receiver")
+  block: Int!
+}
+
+type VeDeposit @entity {
+  "id = {user address}-{timestamp}"
+  id: ID!
+  provider:String!
+  value: BigDecimal!
+  unlockTime: BigInt!
+  type:BigInt!
+  timestamp: BigInt!
+}
