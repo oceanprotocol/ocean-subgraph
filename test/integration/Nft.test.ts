@@ -1,5 +1,5 @@
 import {
-  Erc20CreateParams,
+  DatatokenCreateParams,
   ProviderInstance,
   Nft,
   NftFactory,
@@ -103,7 +103,7 @@ describe('NFT tests', async () => {
       transferable: true,
       owner: publisher
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex: 1,
       cap: '100000',
       feeAmount: '0',
@@ -112,7 +112,7 @@ describe('NFT tests', async () => {
       minter: publisher,
       mpFeeAddress: '0x0000000000000000000000000000000000000000'
     }
-    const result = await Factory.createNftWithErc20(
+    const result = await Factory.createNftWithDatatoken(
       publisher,
       nftParams,
       erc20Params

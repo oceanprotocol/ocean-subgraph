@@ -1,5 +1,5 @@
 import {
-  Erc20CreateParams,
+  DatatokenCreateParams,
   NftFactory,
   NftCreateData,
   sleep,
@@ -104,7 +104,7 @@ describe('User tests', async () => {
       transferable: true,
       owner: publisher
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap,
       feeAmount,
@@ -126,7 +126,7 @@ describe('User tests', async () => {
       withMint: false
     }
 
-    const result = await Factory.createNftErc20WithFixedRate(
+    const result = await Factory.createNftWithDatatokenWithFixedRate(
       publisher,
       nftParams,
       erc20Params,
@@ -177,8 +177,8 @@ describe('User tests', async () => {
     let user1Balance = await datatoken.balance(datatokenAddress, user1)
     assert(user1Balance === '0', 'incorrect value for: user1Balance')
 
-    fixedRate = new FixedRateExchange(web3, fixedRateAddress, 8996)
-    await fixedRate.buyDT(user1, exchangeId, dtAmount, '100')
+    fixedRate = new FixedRateExchange(fixedRateAddress, web3, 8996)
+    await fixedRate.buyDatatokens(user1, exchangeId, dtAmount, '100')
     await sleep(sleepMs)
 
     user1Balance = await datatoken.balance(datatokenAddress, user1)
@@ -199,8 +199,8 @@ describe('User tests', async () => {
   it('User1 sells a datatoken', async () => {
     const initialUser = await userQuery(user1)
     await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
-    const tx = (await fixedRate.sellDT(user1, exchangeId, '10', '9')).events
-      ?.Swapped
+    const tx = (await fixedRate.sellDatatokens(user1, exchangeId, '10', '9'))
+      .events?.Swapped
 
     assert(tx != null)
     const user = await userQuery(user1)
@@ -227,7 +227,7 @@ describe('User tests', async () => {
       transferable: true,
       owner: publisher
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap: '100000',
       feeAmount: '0',
@@ -236,7 +236,7 @@ describe('User tests', async () => {
       minter: publisher,
       mpFeeAddress: feeAddress
     }
-    const result = await Factory.createNftWithErc20(
+    const result = await Factory.createNftWithDatatoken(
       publisher,
       nftParams,
       erc20Params

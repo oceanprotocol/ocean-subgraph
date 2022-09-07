@@ -1,5 +1,5 @@
 import {
-  Erc20CreateParams,
+  DatatokenCreateParams,
   Nft,
   NftFactory,
   NftCreateData,
@@ -49,7 +49,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       transferable: true,
       owner: publisherAccount
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex: 1,
       cap: '100000',
       feeAmount: '0',
@@ -58,7 +58,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       minter: publisherAccount,
       mpFeeAddress: '0x0000000000000000000000000000000000000000'
     }
-    const result = await Factory.createNftWithErc20(
+    const result = await Factory.createNftWithDatatoken(
       publisherAccount,
       nftParams,
       erc20Params
@@ -89,7 +89,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       transferable: true,
       owner: publisherAccount
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex: 1,
       cap: '100000',
       feeAmount: '0',
@@ -98,7 +98,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       minter: publisherAccount,
       mpFeeAddress: '0x0000000000000000000000000000000000000000'
     }
-    const result = await Factory.createNftWithErc20(
+    const result = await Factory.createNftWithDatatoken(
       publisherAccount,
       nftParams,
       erc20Params

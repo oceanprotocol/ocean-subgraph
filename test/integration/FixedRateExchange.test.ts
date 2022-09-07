@@ -1,5 +1,5 @@
 import {
-  Erc20CreateParams,
+  DatatokenCreateParams,
   NftFactory,
   NftCreateData,
   sleep,
@@ -89,7 +89,7 @@ describe('Fixed Rate Exchange tests', async () => {
       transferable: true,
       owner: publisher
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap,
       feeAmount,
@@ -111,7 +111,7 @@ describe('Fixed Rate Exchange tests', async () => {
       withMint: false
     }
 
-    const result = await Factory.createNftErc20WithFixedRate(
+    const result = await Factory.createNftWithDatatokenWithFixedRate(
       publisher,
       nftParams,
       erc20Params,
@@ -392,7 +392,7 @@ describe('Fixed Rate Exchange tests', async () => {
   })
 
   it('Updates Fixed Rate Price', async () => {
-    fixedRate = new FixedRateExchange(web3, fixedRateAddress, 8996)
+    fixedRate = new FixedRateExchange(fixedRateAddress, web3, 8996)
     const priceQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){
         price
@@ -627,8 +627,9 @@ describe('Fixed Rate Exchange tests', async () => {
     let user1Balance = await datatoken.balance(datatokenAddress, user1)
     assert(user1Balance === '0', 'incorrect value for: user1Balance')
 
-    const tx = (await fixedRate.buyDT(user1, exchangeId, dtAmount, '100'))
-      .events?.Swapped
+    const tx = (
+      await fixedRate.buyDatatokens(user1, exchangeId, dtAmount, '100')
+    ).events?.Swapped
     await sleep(sleepMs)
     user1Balance = await datatoken.balance(datatokenAddress, user1)
     // user1 has 1 datatoken
@@ -656,8 +657,8 @@ describe('Fixed Rate Exchange tests', async () => {
   })
   it('User1 sells a datatoken', async () => {
     await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
-    const tx = (await fixedRate.sellDT(user1, exchangeId, '10', '9')).events
-      ?.Swapped
+    const tx = (await fixedRate.sellDatatokens(user1, exchangeId, '10', '9'))
+      .events?.Swapped
     assert(tx != null)
     await sleep(sleepMs)
     const swapsQuery = {
