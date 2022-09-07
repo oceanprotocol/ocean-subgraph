@@ -16,6 +16,8 @@ export function handleDeposit(event: Deposit): void {
   deposit.unlockTime = locktime
   deposit.type = type
   deposit.timestamp = ts
+  deposit.block = event.block.number.toI32()
+  deposit.tx = event.transaction.hash.toHex()
   deposit.save()
   // --------------------------------------------
 

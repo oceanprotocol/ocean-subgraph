@@ -1,5 +1,5 @@
 import {
-  Erc20CreateParams,
+  DatatokenCreateParams,
   NftFactory,
   NftCreateData,
   sleep,
@@ -70,15 +70,16 @@ describe('Dispenser tests', async () => {
 
   it('should initialize Dispenser and datatoken class', async () => {
     dispenser = new Dispenser(
+      addresses.Dispenser,
       web3,
       8996,
-      addresses.Dispenser,
+      null,
       DispenserTemplate.abi as AbiItem[]
     )
-    assert(dispenser.dispenserAbi !== null)
+    assert(dispenser.getDefaultAbi() !== null)
 
-    datatoken = new Datatoken(web3, 8996, ERC20Template.abi as AbiItem[])
-    assert(datatoken.datatokensAbi !== null)
+    datatoken = new Datatoken(web3, 8996, null, ERC20Template.abi as AbiItem[])
+    assert(datatoken.getDefaultAbi() !== null)
   })
 
   it('Deploying an NFT with ERC20', async () => {
@@ -94,7 +95,7 @@ describe('Dispenser tests', async () => {
       transferable: true,
       owner: publisher
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap,
       feeAmount,
@@ -104,7 +105,7 @@ describe('Dispenser tests', async () => {
       mpFeeAddress: marketPlaceFeeAddress
     }
 
-    const tx = await Factory.createNftWithErc20(
+    const tx = await Factory.createNftWithDatatoken(
       publisher,
       nftParams,
       erc20Params
@@ -263,7 +264,7 @@ describe('Dispenser tests', async () => {
   it('Make user1 minter', async () => {
     await datatoken.addMinter(dtAddress, publisher, user1)
 
-    assert((await datatoken.getDTPermissions(dtAddress, user1)).minter === true)
+    assert((await datatoken.getPermissions(dtAddress, user1)).minter === true)
     await sleep(sleepMs)
     const minterQuery = {
       query: `query {token(id: "${dtAddress}"){minter{id}}}`

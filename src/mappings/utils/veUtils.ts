@@ -141,6 +141,8 @@ export function getDeposit(id: string): VeDeposit {
     deposit.unlockTime = BigInt.zero()
     deposit.type = BigInt.zero()
     deposit.timestamp = BigInt.zero()
+    deposit.tx = ''
+    deposit.block = 0
     deposit.save()
   }
   return deposit

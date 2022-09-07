@@ -1,5 +1,5 @@
 import {
-  Erc20CreateParams,
+  DatatokenCreateParams,
   ProviderInstance,
   Nft,
   NftFactory,
@@ -117,7 +117,7 @@ describe('Datatoken tests', async () => {
       transferable: true,
       owner: publisher
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap,
       feeAmount: publishMarketFeeAmount,
@@ -126,7 +126,7 @@ describe('Datatoken tests', async () => {
       minter: publisher,
       mpFeeAddress: marketPlaceFeeAddress
     }
-    const result = await Factory.createNftWithErc20(
+    const result = await Factory.createNftWithDatatoken(
       publisher,
       nftParams,
       erc20Params
@@ -343,7 +343,7 @@ describe('Datatoken tests', async () => {
       transferable: true,
       owner: publisher
     }
-    const erc20Params: Erc20CreateParams = {
+    const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap: '100000',
       feeAmount: '0',
@@ -352,7 +352,7 @@ describe('Datatoken tests', async () => {
       minter: publisher,
       mpFeeAddress: ZERO_ADDRESS
     }
-    const result = await Factory.createNftWithErc20(
+    const result = await Factory.createNftWithDatatoken(
       publisher,
       nftParams,
       erc20Params
