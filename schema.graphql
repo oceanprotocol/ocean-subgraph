@@ -461,4 +461,6 @@ type VeDeposit @entity {
   unlockTime: BigInt!
   type:BigInt!
   timestamp: BigInt!
+  block: Int!
+  tx: String!
 }
