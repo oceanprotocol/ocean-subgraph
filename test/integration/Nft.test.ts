@@ -285,4 +285,26 @@ describe('NFT tests', async () => {
     assert(updatedNft.block < blockNumber + 50, 'incorrect value for: block')
     assert(updatedNft.orderCount === '0', 'incorrect value for: orderCount')
   })
+
+  it('Set a key/value in erc725 store', async () => {
+    await nft.setData(nftAddress, publisher, 'test_key', 'test_value')
+    await sleep(2000)
+    const query = {
+      query: `query {
+                nft(id:"${nftAddress}"){
+                  nftData{
+                    id
+                    key
+                    value
+                  }
+                }
+              }`
+    }
+    const response = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(query)
+    })
+    const updatedNft = (await response.json()).data.nft
+    assert(updatedNft.nftData.key !== null, 'incorrect value for key')
+  })
 })

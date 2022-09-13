@@ -97,6 +97,8 @@ templates:
           handler: handleCleanedPermissions
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleNftTransferred
+        - event: DataChanged(indexed bytes32,bytes)
+          handler: handleNftData
 
   - name: Dispenser
     kind: ethereum/contract
