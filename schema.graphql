@@ -109,7 +109,10 @@ type Nft @entity{
     block: Int  
 
     "number of orders executed for all underlying datatokens"                                
-    orderCount: BigInt!                                              
+    orderCount: BigInt!  
+
+    "has metadata"
+    hasMetadata: Boolean!                                            
 }
 
 type OrderReuse @entity {
