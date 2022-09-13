@@ -59,6 +59,7 @@ export function createNftToken(address: Address): Nft {
   token.block = 0
   token.tx = ''
   token.orderCount = BigInt.zero()
+  token.hasMetaData = false
   token.save()
   addNft()
   return token
@@ -80,6 +81,18 @@ export function getNftTokenWithID(tokenId: string): Nft {
     nftToken.name = ''
     nftToken.symbol = ''
     nftToken.address = tokenId
+    nftToken.providerUrl = ''
+    nftToken.tokenUri = ''
+    nftToken.owner = ''
+    nftToken.creator = ''
+    nftToken.assetState = 0
+    nftToken.template = ''
+    nftToken.transferable = true
+    nftToken.createdTimestamp = 0
+    nftToken.block = 0
+    nftToken.tx = ''
+    nftToken.orderCount = BigInt.zero()
+    nftToken.hasMetaData = false
     nftToken.save()
     addNft()
   }
