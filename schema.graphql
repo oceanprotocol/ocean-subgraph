@@ -113,7 +113,17 @@ type Nft @entity{
 
     "has metadata"
     hasMetadata: Boolean!                                            
+
+    nftData: [NftData!] @derivedFrom(field: "nft")
 }
+
+type NftData @entity{
+    "nft address+key"
+    id: ID!
+    nft: Nft!
+    key: Bytes
+    value: Bytes
+  }
 
 type OrderReuse @entity {
   id: ID!

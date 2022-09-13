@@ -1,4 +1,4 @@
-import { Nft, NftUpdate } from '../@types/schema'
+import { Nft, NftUpdate, NftData } from '../@types/schema'
 import {
   MetadataCreated,
   MetadataState,
@@ -13,7 +13,8 @@ import {
   RemovedFromMetadataList,
   RemovedManager,
   CleanedPermissions,
-  Transfer
+  Transfer,
+  DataChanged
 } from '../@types/templates/ERC721Template/ERC721Template'
 import { NftUpdateType } from './utils/constants'
 import { getNftToken, getNftTokenWithID } from './utils/tokenUtils'
@@ -257,6 +258,18 @@ export function handleNftTransferred(event: Transfer): void {
   const nft = getNftTokenWithID(id)
   const newOwner = getUser(event.params.to.toHexString())
   nft.owner = newOwner.id
-
   nft.save()
+}
+
+export function handleNftData(event: DataChanged): void {
+  const id = event.address.toHexString() + '-' + event.params.key.toHexString()
+  const nft = getNftToken(event.address)
+  let data = NftData.load(id)
+  if (data == null) {
+    data = new NftData(id)
+  }
+  data.key = event.params.key
+  data.value = event.params.value
+  data.nft = nft.id
+  data.save()
 }
