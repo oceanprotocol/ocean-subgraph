@@ -66,3 +66,26 @@
     eventHandlers:
       - event: DelegateBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
         handler: handleDelegation
+
+- name: DFRewards
+  kind: ethereum/contract
+  network: __NETWORK__
+  source:
+    abi: DFRewards
+    address: __DFREWARDSADDRESS__
+    startBlock: __STARTBLOCK__
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.6
+    language: wasm/assemblyscript
+    file: ./src/mappings/dfRewards.ts
+    entities:
+      - DFRewards
+    abis:
+      - name: DFRewards
+        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/df/DFRewards.sol/DFRewards.json
+    eventHandlers:
+      - event: Allocated(address[],uint256[],address)
+        handler: handleAllocated
+      - event: Claimed(address,uint256,address)
+        handler: handleClaimed

@@ -464,3 +464,39 @@ type VeDeposit @entity {
   block: Int!
   tx: String!
 }
+
+
+enum DFHistoryType {
+  Allocated,
+  Claimed
+}
+
+type DFAvailableClaim @entity {
+  "id = {userId}-{tokenId}"
+  id: ID!
+  receiver: DFReward!
+  amount: BigDecimal!
+  token: Token!
+}
+
+
+type DFHistory @entity {
+  "id = {user-id}-{txId}-{eventId}"
+  id: ID!
+  receiver: DFReward!
+  amount: BigDecimal!
+  token: Token!
+  type: DFHistoryType!
+  timestamp: BigInt!
+  block: Int!
+  tx: String!
+}
+
+
+type DFReward @entity {
+  "id = {user address}"
+  id: ID!
+  receiver: User!
+  availableClaims: [DFAvailableClaim!] @derivedFrom(field: "receiver")
+  history: [DFHistory!] @derivedFrom(field: "receiver")
+}
