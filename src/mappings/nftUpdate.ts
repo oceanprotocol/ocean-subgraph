@@ -30,7 +30,7 @@ export function handleMetadataCreated(event: MetadataCreated): void {
 
   nft.assetState = event.params.state
   nft.providerUrl = event.params.decryptorUrl.toString()
-  nft.hasMetaData = true
+  nft.hasMetadata = true
 
   const nftUpdate = new NftUpdate(
     getId(event.transaction.hash.toHex(), nftAddress)
@@ -58,7 +58,7 @@ export function handleMetadataUpdated(event: MetadataUpdated): void {
   if (!nft) return
 
   nft.assetState = event.params.state
-  nft.hasMetaData = true
+  nft.hasMetadata = true
   const nftUpdate = new NftUpdate(
     getId(event.transaction.hash.toHex(), nftAddress)
   )
