@@ -119,7 +119,7 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
   nftUpdate.block = event.block.number.toI32()
-
+  nftUpdate.assetState = nft.assetState
   nftUpdate.save()
   nft.save()
 }
