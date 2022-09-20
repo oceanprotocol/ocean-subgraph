@@ -6,6 +6,7 @@
     "quickstart:development": "node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:barge": "node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local-barge && npm run deploy:local-barge",
     "quickstart:rinkeby": "node ./scripts/generatenetworkssubgraphs.js rinkeby && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:goerli": "node ./scripts/generatenetworkssubgraphs.js goerli && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:ropsten": "node ./scripts/generatenetworkssubgraphs.js ropsten && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:mumbai": "node ./scripts/generatenetworkssubgraphs.js mumbai && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:moonbase": "node ./scripts/generatenetworkssubgraphs.js moonbase && npm run codegen && npm run create:local && npm run deploy:local",
