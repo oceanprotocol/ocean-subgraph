@@ -134,8 +134,8 @@ type OrderReuse @entity {
   block: Int!
   providerFee: String
   providerFeeValidUntil: BigInt
-  gasPrice: BigInt
-  gasUsed: BigInt
+  gasPrice: BigInt!
+  gasUsed: BigInt!
   }
 
 type Order @entity {  
@@ -169,8 +169,8 @@ type Order @entity {
   lastPriceToken: String!
   lastPriceValue: BigDecimal!
   estimatedUSDValue: BigDecimal!
-  gasUsed: BigInt
-  gasPrice: BigInt
+  gasUsed: BigInt!
+  gasPrice: BigInt!
 }
 
 type User @entity {
