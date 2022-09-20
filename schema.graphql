@@ -167,6 +167,7 @@ type Order @entity {
   lastPriceToken: String!
   lastPriceValue: BigDecimal!
   estimatedUSDValue: BigDecimal!
+  gasUsed: BigInt!
 }
 
 type User @entity {

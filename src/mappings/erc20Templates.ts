@@ -65,6 +65,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     order.lastPriceValue,
     order.createdTimestamp
   )
+  order.gasUsed = event.receipt.gasUsed
   order.save()
   token.save()
   addOrder()
