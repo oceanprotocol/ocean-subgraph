@@ -1,5 +1,6 @@
 import { Order, Nft, OrderReuse } from '../@types/schema'
 import { BigInt } from '@graphprotocol/graph-ts'
+
 import {
   NewPaymentCollector,
   OrderStarted,
@@ -65,10 +66,16 @@ export function handleOrderStarted(event: OrderStarted): void {
     order.lastPriceValue,
     order.createdTimestamp
   )
-  if (event.receipt !== null) order.gasUsed = event.receipt!.gasUsed
-  else order.gasUsed = BigInt.zero()
-  if (event.transaction.gasPrice) order.gasPrice = event.transaction.gasPrice
-  else order.gasPrice = BigInt.zero()
+  if (event.receipt !== null) {
+    order.gasUsed = event.receipt!.gasUsed
+  } else {
+    order.gasUsed = BigInt.zero()
+  }
+  if (event.transaction.gasPrice) {
+    order.gasPrice = event.transaction.gasPrice
+  } else {
+    order.gasPrice = BigInt.zero()
+  }
   order.save()
   token.save()
   addOrder()
@@ -244,6 +251,11 @@ export function handleProviderFee(event: ProviderFee): void {
     orderReuse.tx = event.transaction.hash.toHex()
     orderReuse.block = event.block.number.toI32()
     orderReuse.caller = event.transaction.from.toHex()
+    if (event.transaction.gasPrice)
+      orderReuse.gasPrice = event.transaction.gasPrice
+    else orderReuse.gasPrice = BigInt.zero()
+    if (event.receipt !== null) orderReuse.gasUsed = event.receipt!.gasUsed
+    else orderReuse.gasUsed = BigInt.zero()
     orderReuse.save()
   }
 }
