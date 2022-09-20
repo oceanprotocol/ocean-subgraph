@@ -134,6 +134,8 @@ type OrderReuse @entity {
   block: Int!
   providerFee: String
   providerFeeValidUntil: BigInt
+  gasPrice: BigInt
+  gasUsed: BigInt
   }
 
 type Order @entity {  

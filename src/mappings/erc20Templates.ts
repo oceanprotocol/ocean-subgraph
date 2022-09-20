@@ -93,6 +93,8 @@ export function handlerOrderReused(event: OrderReused): void {
   if (!order) return
 
   const reuseOrder = new OrderReuse(event.transaction.hash.toHex())
+  reuseOrder.gasPrice = event.transaction.gasPrice
+  reuseOrder.gasUsed = event.receipt.gasUsed
   reuseOrder.order = orderId
   reuseOrder.caller = event.params.caller.toHexString()
   reuseOrder.createdTimestamp = event.params.timestamp.toI32()
