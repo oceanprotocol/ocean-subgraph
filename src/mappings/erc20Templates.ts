@@ -67,7 +67,8 @@ export function handleOrderStarted(event: OrderStarted): void {
   )
   if (event.receipt !== null) order.gasUsed = event.receipt!.gasUsed
   else order.gasUsed = BigInt.zero()
-  order.gasPrice = event.transaction.gasPrice
+  if (event.transaction.gasPrice) order.gasPrice = event.transaction.gasPrice
+  else order.gasPrice = BigInt.zero()
   order.save()
   token.save()
   addOrder()
@@ -94,7 +95,9 @@ export function handlerOrderReused(event: OrderReused): void {
   if (!order) return
 
   const reuseOrder = new OrderReuse(event.transaction.hash.toHex())
-  reuseOrder.gasPrice = event.transaction.gasPrice
+  if (event.transaction.gasPrice)
+    reuseOrder.gasPrice = event.transaction.gasPrice
+  else reuseOrder.gasPrice = BigInt.zero()
   if (event.receipt !== null) reuseOrder.gasUsed = event.receipt!.gasUsed
   else reuseOrder.gasUsed = BigInt.zero()
   reuseOrder.order = orderId
