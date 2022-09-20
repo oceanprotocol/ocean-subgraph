@@ -1,5 +1,5 @@
 import { Order, Nft, OrderReuse } from '../@types/schema'
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import {
   NewPaymentCollector,
   OrderStarted,
@@ -65,7 +65,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     order.lastPriceValue,
     order.createdTimestamp
   )
-  order.gasUsed = event.receipt.gasUsed
+  order.gasUsed = event.receipt!.gasUsed
   order.gasPrice = event.transaction.gasPrice
   order.save()
   token.save()
@@ -94,7 +94,7 @@ export function handlerOrderReused(event: OrderReused): void {
 
   const reuseOrder = new OrderReuse(event.transaction.hash.toHex())
   reuseOrder.gasPrice = event.transaction.gasPrice
-  reuseOrder.gasUsed = event.receipt.gasUsed
+  reuseOrder.gasUsed = event.receipt!.gasUsed
   reuseOrder.order = orderId
   reuseOrder.caller = event.params.caller.toHexString()
   reuseOrder.createdTimestamp = event.params.timestamp.toI32()
