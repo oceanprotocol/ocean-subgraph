@@ -11,7 +11,7 @@ templates:
       abi: ERC20Template
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/mappings/erc20Templates.ts
       entities:
@@ -28,8 +28,10 @@ templates:
       eventHandlers:
         - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
           handler: handleOrderStarted
+          receipt: true
         - event: OrderReused(bytes32,address,uint256,uint256)
           handler: handlerOrderReused
+          receipt: true
         - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
           handler: handleNewPaymentCollector
         - event: PublishMarketFee(indexed address,indexed address,uint256)
@@ -48,6 +50,7 @@ templates:
           handler: handleCleanedPermissions
         - event: ProviderFee(indexed address,indexed address,uint256,bytes,uint8,bytes32,bytes32,uint256)
           handler: handleProviderFee
+          receipt: true
 
   - name: ERC721Template
     kind: ethereum/contract
@@ -56,7 +59,7 @@ templates:
       abi: ERC721Template
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/mappings/nftUpdate.ts
       entities:
@@ -107,7 +110,7 @@ templates:
       abi: Dispenser
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/mappings/dispenser.ts
       entities:
@@ -138,7 +141,7 @@ templates:
       abi: FixedRateExchange
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/mappings/fixedRateExchange.ts
       entities:
@@ -178,7 +181,7 @@ dataSources:
       startBlock: __STARTBLOCK__
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/mappings/erc721Factory.ts
       entities:
@@ -203,7 +206,7 @@ dataSources:
       startBlock: __STARTBLOCK__
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/mappings/factoryRouter.ts
       entities:

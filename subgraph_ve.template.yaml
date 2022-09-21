@@ -7,7 +7,7 @@
     startBlock: __STARTBLOCK__
   mapping:
     kind: ethereum/events
-    apiVersion: 0.0.6
+    apiVersion: 0.0.7
     language: wasm/assemblyscript
     file: ./src/mappings/veAllocate.ts
     entities:
@@ -30,7 +30,7 @@
     startBlock: __STARTBLOCK__
   mapping:
     kind: ethereum/events
-    apiVersion: 0.0.6
+    apiVersion: 0.0.7
     language: wasm/assemblyscript
     file: ./src/mappings/veOCEAN.ts
     entities:
@@ -55,7 +55,7 @@
     startBlock: __STARTBLOCK__
   mapping:
     kind: ethereum/events
-    apiVersion: 0.0.6
+    apiVersion: 0.0.7
     language: wasm/assemblyscript
     file: ./src/mappings/veDelegation.ts
     entities:
@@ -76,7 +76,7 @@
     startBlock: __STARTBLOCK__
   mapping:
     kind: ethereum/events
-    apiVersion: 0.0.6
+    apiVersion: 0.0.7
     language: wasm/assemblyscript
     file: ./src/mappings/dfRewards.ts
     entities:

@@ -1,5 +1,5 @@
 import { Order, Nft, OrderReuse } from '../@types/schema'
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 
 import {
   NewPaymentCollector,
@@ -66,10 +66,10 @@ export function handleOrderStarted(event: OrderStarted): void {
     order.lastPriceValue,
     order.createdTimestamp
   )
-  if (event.receipt !== null) {
-    order.gasUsed = event.receipt!.gasUsed
+  if (event.receipt !== null && event.receipt!.gasUsed) {
+    order.gasUsed = event.receipt!.gasUsed.toBigDecimal()
   } else {
-    order.gasUsed = BigInt.zero()
+    order.gasUsed = BigDecimal.zero()
   }
   if (event.transaction.gasPrice) {
     order.gasPrice = event.transaction.gasPrice
@@ -105,8 +105,9 @@ export function handlerOrderReused(event: OrderReused): void {
   if (event.transaction.gasPrice)
     reuseOrder.gasPrice = event.transaction.gasPrice
   else reuseOrder.gasPrice = BigInt.zero()
-  if (event.receipt !== null) reuseOrder.gasUsed = event.receipt!.gasUsed
-  else reuseOrder.gasUsed = BigInt.zero()
+  if (event.receipt !== null && event.receipt!.gasUsed) {
+    reuseOrder.gasUsed = event.receipt!.gasUsed.toBigDecimal()
+  } else reuseOrder.gasUsed = BigDecimal.zero()
   reuseOrder.order = orderId
   reuseOrder.caller = event.params.caller.toHexString()
   reuseOrder.createdTimestamp = event.params.timestamp.toI32()
@@ -254,8 +255,9 @@ export function handleProviderFee(event: ProviderFee): void {
     if (event.transaction.gasPrice)
       orderReuse.gasPrice = event.transaction.gasPrice
     else orderReuse.gasPrice = BigInt.zero()
-    if (event.receipt !== null) orderReuse.gasUsed = event.receipt!.gasUsed
-    else orderReuse.gasUsed = BigInt.zero()
+    if (event.receipt !== null && event.receipt!.gasUsed) {
+      orderReuse.gasUsed = event.receipt!.gasUsed.toBigDecimal()
+    } else orderReuse.gasUsed = BigDecimal.zero()
     orderReuse.save()
   }
 }
