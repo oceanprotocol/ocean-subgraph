@@ -67,7 +67,7 @@
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "@oceanprotocol/contracts": "^1.1.4",
+    "@oceanprotocol/contracts": "^1.1.6",
     "@oceanprotocol/lib": "^2.0.2",
     "cross-fetch": "^3.1.4"
   },
