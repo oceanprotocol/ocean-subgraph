@@ -9,6 +9,7 @@ export function handleDeposit(event: Deposit): void {
   const type = event.params.type
   const ts = event.params.ts
 
+  const veOCEAN = getveOCEAN(provider.toHex())
   // Create new Deposit entity
   const deposit = getDeposit(provider.toHex() + '-' + locktime.toString())
   deposit.provider = provider.toHex()
@@ -18,10 +19,11 @@ export function handleDeposit(event: Deposit): void {
   deposit.timestamp = ts
   deposit.block = event.block.number.toI32()
   deposit.tx = event.transaction.hash.toHex()
+  deposit.sender = event.transaction.from.toHex()
+  deposit.veOcean = veOCEAN.id
   deposit.save()
   // --------------------------------------------
 
-  const veOCEAN = getveOCEAN(provider.toHex())
   const lockedAmount = weiToDecimal(value.toBigDecimal(), 18)
   veOCEAN.unlockTime = locktime
   veOCEAN.lockedAmount = veOCEAN.lockedAmount.plus(lockedAmount)

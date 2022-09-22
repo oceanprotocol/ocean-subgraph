@@ -469,19 +469,24 @@ type VeOCEAN @entity {
   unlockTime: BigInt!
   delegation: [VeDelegation!] @derivedFrom(field: "delegator")
   delegates: [VeDelegation!] @derivedFrom(field: "receiver")
+  deposits: [VeDeposit!] @derivedFrom(field: "veOcean")
   block: Int!
 }
 
 type VeDeposit @entity {
   "id = {user address}-{timestamp}"
   id: ID!
+  "destination user"
   provider:String!
+  "who initiated the tx"
+  sender: String!
   value: BigDecimal!
   unlockTime: BigInt!
   type:BigInt!
   timestamp: BigInt!
   block: Int!
   tx: String!
+  veOcean: VeOCEAN!
 }
 
 

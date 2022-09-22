@@ -137,13 +137,15 @@ export function getDeposit(id: string): VeDeposit {
   if (deposit === null) {
     deposit = new VeDeposit(id)
     deposit.provider = ''
+    deposit.sender = ''
     deposit.value = BigDecimal.zero()
     deposit.unlockTime = BigInt.zero()
     deposit.type = BigInt.zero()
     deposit.timestamp = BigInt.zero()
     deposit.tx = ''
     deposit.block = 0
-    deposit.save()
+    // do not save it
+    // deposit.save()
   }
   return deposit
 }
