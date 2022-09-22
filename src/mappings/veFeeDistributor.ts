@@ -31,7 +31,7 @@ export function handleClaimed(event: Claimed): void {
   claim.save()
 }
 
-export function handlhandleCheckpoint(event: CheckpointToken): void {
+export function handleCheckpoint(event: CheckpointToken): void {
   const distributor = getVeFeeDistributor(event.address)
   const id =
     event.transaction.hash.toHexString() + '-' + event.logIndex.toString()
