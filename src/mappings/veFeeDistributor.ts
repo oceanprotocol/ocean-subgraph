@@ -7,7 +7,6 @@ import { weiToDecimal } from './utils/generic'
 import { getveOCEAN, getVeFeeDistributor } from './utils/veUtils'
 import { VeClaim, VeFeeDistributorCheckPoint } from '../@types/schema'
 import { getToken } from './utils/tokenUtils'
-import { TokensDispensed } from '../@types/templates/Dispenser/Dispenser'
 
 export function handleClaimed(event: Claimed): void {
   const distributor = getVeFeeDistributor(event.address)
