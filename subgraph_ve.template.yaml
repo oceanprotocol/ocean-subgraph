@@ -67,6 +67,29 @@
       - event: DelegateBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
         handler: handleDelegation
 
+- name: veFeeDistributor
+  kind: ethereum/contract
+  network: __NETWORK__
+  source:
+    abi: veFeeDistributor
+    address: __VEFEEDISTRIBUTORNADDRESS__
+    startBlock: __STARTBLOCK__
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.7
+    language: wasm/assemblyscript
+    file: ./src/mappings/veFeeDistributor.ts
+    entities:
+      - veFeeDistributor
+    abis:
+      - name: veFeeDistributor
+        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veFeeDistributor.vy/veFeeDistributor.json
+    eventHandlers:
+      - event: Claimed(indexed address,uint256,uint256,uint256)
+        handler: handleClaimed
+      - event: CheckpointToken(uint256,uint256)
+        handler: handleCheckpoint
+
 - name: DFRewards
   kind: ethereum/contract
   network: __NETWORK__

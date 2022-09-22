@@ -1,4 +1,4 @@
-import { BigDecimal, ethereum, BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, ethereum, BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   VeAllocateUser,
   VeAllocateId,
@@ -6,9 +6,12 @@ import {
   VeAllocationUpdate,
   VeDelegation,
   VeOCEAN,
-  VeDeposit
+  VeDeposit,
+  VeFeeDistributor
 } from '../../@types/schema'
+import { veFeeDistributor as VeFeeDistributorContract } from '../../@types/veFeeDistributor/veFeeDistributor'
 import { veAllocationUpdateType } from './constants'
+import { getToken } from './tokenUtils'
 
 export function getveAllocateUser(
   event: ethereum.Event,
@@ -195,4 +198,18 @@ export function handleOneAllocation(
   allocateUser.save()
   allocateId.save()
   veAllocation.save()
+}
+
+export function getVeFeeDistributor(id: Address): VeFeeDistributor {
+  let distributor = VeFeeDistributor.load(id.toHexString())
+
+  if (distributor === null) {
+    distributor = new VeFeeDistributor(id.toHexString())
+    const contract = VeFeeDistributorContract.bind(id)
+    const tokenAddress = contract.try_token()
+    const token = getToken(tokenAddress.value, false)
+    distributor.token = token.id
+    distributor.save()
+  }
+  return distributor
 }

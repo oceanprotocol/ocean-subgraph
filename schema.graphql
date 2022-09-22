@@ -489,6 +489,39 @@ type VeDeposit @entity {
   veOcean: VeOCEAN!
 }
 
+type VeFeeDistributor @entity {
+  "id = contract address"
+  id: ID!
+  token: Token!
+  claims: [VeClaim!] @derivedFrom(field: "VeFeeDistributor")
+  checkpoints: [VeFeeDistributorCheckPoint!] @derivedFrom(field: "VeFeeDistributor")
+}
+
+type VeFeeDistributorCheckPoint @entity {
+  "id = {tx}-{eventno}"
+  id: ID!
+  time: BigInt!
+  tokens: BigDecimal!
+  "who initiated the tx"
+  sender: String!
+  VeFeeDistributor: VeFeeDistributor!
+  timestamp: BigInt!
+  block: Int!
+  tx: String!
+}
+
+type VeClaim @entity {
+  "id = {tx}-{eventno}"
+  id: ID!
+  amount: BigDecimal!
+  claim_epoch: BigInt
+  max_epoch: BigInt
+  timestamp: BigInt!
+  block: Int!
+  tx: String!
+  veOcean: VeOCEAN!
+  VeFeeDistributor: VeFeeDistributor!
+}
 
 enum DFHistoryType {
   Allocated,
