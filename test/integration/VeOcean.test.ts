@@ -543,6 +543,7 @@ describe('veOcean tests', async () => {
     await veFeeDistributor.claim(Alice)
   })
   it('Alice should withdraw locked tokens', async () => {
+    await evmIncreaseTime(60 * 60 * 24 * 7)
     await veOcean.withdraw(Alice)
   })
 })
