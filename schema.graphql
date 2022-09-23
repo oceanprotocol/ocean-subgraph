@@ -398,6 +398,7 @@ type VeAllocateUser @entity{
   firstContact: Int!
   lastContact: Int!
   tx: String!
+  veOcean: VeOCEAN!
 }
 
 type VeAllocateId @entity{
@@ -465,25 +466,75 @@ type VeDelegation @entity {
 type VeOCEAN @entity {
   "id = {user address}"
   id: ID!
+  "total amount of locked tokens"
   lockedAmount: BigDecimal!
+  "unlock timestamp"
   unlockTime: BigInt!
   delegation: [VeDelegation!] @derivedFrom(field: "delegator")
   delegates: [VeDelegation!] @derivedFrom(field: "receiver")
+  deposits: [VeDeposit!] @derivedFrom(field: "veOcean")
+  claims: [VeClaim!] @derivedFrom(field: "veOcean")
+  allocation: VeAllocateUser! @derivedFrom(field: "veOcean")
   block: Int!
 }
 
 type VeDeposit @entity {
   "id = {user address}-{timestamp}"
   id: ID!
+  "veOcean holder"
   provider:String!
+  "who initiated the tx"
+  sender: String!
+  "amount of tokens locked"
   value: BigDecimal!
+  "unlock timestamp"
   unlockTime: BigInt!
+  "deposit type: DEPOSIT_FOR = 0, CREATE_LOCK_TYPE = 1,INCREASE_LOCK_AMOUNT = 2,INCREASE_UNLOCK_TIME = 3, WITHDRAW = 4"
   type:BigInt!
+  timestamp: BigInt!
+  block: Int!
+  tx: String!
+  veOcean: VeOCEAN!
+}
+
+
+type VeFeeDistributor @entity {
+  "id = contract address"
+  id: ID!
+  "token used by FeeDistributor"
+  token: Token!
+  claims: [VeClaim!] @derivedFrom(field: "VeFeeDistributor")
+  checkpoints: [VeFeeDistributorCheckPoint!] @derivedFrom(field: "VeFeeDistributor")
+}
+
+type VeFeeDistributorCheckPoint @entity {
+  "id = {tx}-{eventno}"
+  id: ID!
+  "amount of tokens for rewards"
+  tokens: BigDecimal!
+  "who initiated the tx"
+  sender: String!
+  VeFeeDistributor: VeFeeDistributor!
   timestamp: BigInt!
   block: Int!
   tx: String!
 }
 
+type VeClaim @entity {
+  "id = {tx}-{eventno}"
+  id: ID!
+  "amount of tokens claimed"
+  amount: BigDecimal!
+  "claim epoch"
+  claim_epoch: BigInt
+  "max_epoch"
+  max_epoch: BigInt
+  timestamp: BigInt!
+  block: Int!
+  tx: String!
+  veOcean: VeOCEAN!
+  VeFeeDistributor: VeFeeDistributor!
+}
 
 enum DFHistoryType {
   Allocated,

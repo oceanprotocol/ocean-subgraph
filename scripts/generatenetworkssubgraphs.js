@@ -60,6 +60,11 @@ async function replaceContractAddresses() {
     )
 
     subgraph = subgraph.replace(
+      /__VEFEEDISTRIBUTORNADDRESS__/g,
+      "'" + addresses[network].veFeeDistributor + "'"
+    )
+
+    subgraph = subgraph.replace(
       /__DFREWARDSADDRESS__/g,
       "'" + addresses[network].DFRewards + "'"
     )

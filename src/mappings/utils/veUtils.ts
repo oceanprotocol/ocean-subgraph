@@ -1,4 +1,4 @@
-import { BigDecimal, ethereum, BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, ethereum, BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   VeAllocateUser,
   VeAllocateId,
@@ -6,9 +6,26 @@ import {
   VeAllocationUpdate,
   VeDelegation,
   VeOCEAN,
-  VeDeposit
+  VeDeposit,
+  VeFeeDistributor
 } from '../../@types/schema'
+import { veFeeDistributor as VeFeeDistributorContract } from '../../@types/veFeeDistributor/veFeeDistributor'
 import { veAllocationUpdateType } from './constants'
+import { getToken } from './tokenUtils'
+
+export function getveOCEAN(id: string): VeOCEAN {
+  let ve = VeOCEAN.load(id)
+
+  if (ve === null) {
+    ve = new VeOCEAN(id)
+    ve.unlockTime = BigInt.zero()
+    ve.lockedAmount = BigDecimal.zero()
+    ve.block = 0
+    ve.save()
+  }
+
+  return ve
+}
 
 export function getveAllocateUser(
   event: ethereum.Event,
@@ -23,6 +40,8 @@ export function getveAllocateUser(
     allocateUser.tx = event.transaction.hash.toHex()
     allocateUser.block = event.block.number.toI32()
     allocateUser.lastContact = 0
+    const veOcean = getveOCEAN(sender)
+    allocateUser.veOcean = veOcean.id
 
     allocateUser.save()
   }
@@ -117,33 +136,21 @@ export function getveDelegation(id: string): VeDelegation {
   return veDelegation
 }
 
-export function getveOCEAN(id: string): VeOCEAN {
-  let ve = VeOCEAN.load(id)
-
-  if (ve === null) {
-    ve = new VeOCEAN(id)
-    ve.unlockTime = BigInt.zero()
-    ve.lockedAmount = BigDecimal.zero()
-    ve.block = 0
-    ve.save()
-  }
-
-  return ve
-}
-
 export function getDeposit(id: string): VeDeposit {
   let deposit = VeDeposit.load(id)
 
   if (deposit === null) {
     deposit = new VeDeposit(id)
     deposit.provider = ''
+    deposit.sender = ''
     deposit.value = BigDecimal.zero()
     deposit.unlockTime = BigInt.zero()
     deposit.type = BigInt.zero()
     deposit.timestamp = BigInt.zero()
     deposit.tx = ''
     deposit.block = 0
-    deposit.save()
+    // do not save it
+    // deposit.save()
   }
   return deposit
 }
@@ -193,4 +200,18 @@ export function handleOneAllocation(
   allocateUser.save()
   allocateId.save()
   veAllocation.save()
+}
+
+export function getVeFeeDistributor(id: Address): VeFeeDistributor {
+  let distributor = VeFeeDistributor.load(id.toHexString())
+
+  if (distributor === null) {
+    distributor = new VeFeeDistributor(id.toHexString())
+    const contract = VeFeeDistributorContract.bind(id)
+    const tokenAddress = contract.try_token()
+    const token = getToken(tokenAddress.value, false)
+    distributor.token = token.id
+    distributor.save()
+  }
+  return distributor
 }

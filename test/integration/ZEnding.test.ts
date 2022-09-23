@@ -19,8 +19,8 @@ describe('Ending tests', () => {
   let result: any
   let lastblock
   it('Get Graph status', async () => {
-    await sleep(1000) // let graph ingest our last transactions
     lastblock = await web3.eth.getBlockNumber()
+    await sleep(3000) // let graph ingest our last transactions
     const query = {
       query: `query {
         _meta{hasIndexingErrors,
@@ -36,10 +36,10 @@ describe('Ending tests', () => {
     result = await response.json()
   })
 
-  it('Make sure that graph has no sync errors', async () => {
+  it('Make sure that graph has no index errors', async () => {
     assert(result.data._meta.hasIndexingErrors == false)
   })
   it('Make sure that graph has synced to last block', async () => {
-    assert(result.data._meta.block.number === lastblock)
+    assert(result.data._meta.block.number >= lastblock)
   })
 })
