@@ -37,7 +37,6 @@ export function handleCheckpoint(event: CheckpointToken): void {
     event.transaction.hash.toHexString() + '-' + event.logIndex.toString()
   const token = getToken(Address.fromString(distributor.token), false)
   const checkpoint = new VeFeeDistributorCheckPoint(id)
-  checkpoint.time = event.params.time
   checkpoint.tokens = weiToDecimal(
     event.params.tokens.toBigDecimal(),
     token.decimals
@@ -45,6 +44,7 @@ export function handleCheckpoint(event: CheckpointToken): void {
   checkpoint.sender = event.transaction.from.toHexString()
   checkpoint.block = event.block.number.toI32()
   checkpoint.tx = event.transaction.hash.toHex()
-  checkpoint.timestamp = event.block.timestamp
+  checkpoint.timestamp = event.params.time
+  checkpoint.VeFeeDistributor = distributor.id
   checkpoint.save()
 }

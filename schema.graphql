@@ -465,7 +465,9 @@ type VeDelegation @entity {
 type VeOCEAN @entity {
   "id = {user address}"
   id: ID!
+  "total amount of locked tokens"
   lockedAmount: BigDecimal!
+  "unlock timestamp"
   unlockTime: BigInt!
   delegation: [VeDelegation!] @derivedFrom(field: "delegator")
   delegates: [VeDelegation!] @derivedFrom(field: "receiver")
@@ -477,12 +479,15 @@ type VeOCEAN @entity {
 type VeDeposit @entity {
   "id = {user address}-{timestamp}"
   id: ID!
-  "destination user"
+  "veOcean holder"
   provider:String!
   "who initiated the tx"
   sender: String!
+  "amount of tokens locked"
   value: BigDecimal!
+  "unlock timestamp"
   unlockTime: BigInt!
+  "deposit type: DEPOSIT_FOR = 0, CREATE_LOCK_TYPE = 1,INCREASE_LOCK_AMOUNT = 2,INCREASE_UNLOCK_TIME = 3"
   type:BigInt!
   timestamp: BigInt!
   block: Int!
@@ -493,6 +498,7 @@ type VeDeposit @entity {
 type VeFeeDistributor @entity {
   "id = contract address"
   id: ID!
+  "token used by FeeDistributor"
   token: Token!
   claims: [VeClaim!] @derivedFrom(field: "VeFeeDistributor")
   checkpoints: [VeFeeDistributorCheckPoint!] @derivedFrom(field: "VeFeeDistributor")
@@ -501,7 +507,7 @@ type VeFeeDistributor @entity {
 type VeFeeDistributorCheckPoint @entity {
   "id = {tx}-{eventno}"
   id: ID!
-  time: BigInt!
+  "amount of tokens for rewards"
   tokens: BigDecimal!
   "who initiated the tx"
   sender: String!
@@ -514,8 +520,11 @@ type VeFeeDistributorCheckPoint @entity {
 type VeClaim @entity {
   "id = {tx}-{eventno}"
   id: ID!
+  "amount of tokens claimed"
   amount: BigDecimal!
+  "claim epoch"
   claim_epoch: BigInt
+  "max_epoch"
   max_epoch: BigInt
   timestamp: BigInt!
   block: Int!
