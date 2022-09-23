@@ -13,6 +13,20 @@ import { veFeeDistributor as VeFeeDistributorContract } from '../../@types/veFee
 import { veAllocationUpdateType } from './constants'
 import { getToken } from './tokenUtils'
 
+export function getveOCEAN(id: string): VeOCEAN {
+  let ve = VeOCEAN.load(id)
+
+  if (ve === null) {
+    ve = new VeOCEAN(id)
+    ve.unlockTime = BigInt.zero()
+    ve.lockedAmount = BigDecimal.zero()
+    ve.block = 0
+    ve.save()
+  }
+
+  return ve
+}
+
 export function getveAllocateUser(
   event: ethereum.Event,
   sender: string
@@ -26,6 +40,8 @@ export function getveAllocateUser(
     allocateUser.tx = event.transaction.hash.toHex()
     allocateUser.block = event.block.number.toI32()
     allocateUser.lastContact = 0
+    const veOcean = getveOCEAN(sender)
+    allocateUser.veOcean = veOcean.id
 
     allocateUser.save()
   }
@@ -118,20 +134,6 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.save()
   }
   return veDelegation
-}
-
-export function getveOCEAN(id: string): VeOCEAN {
-  let ve = VeOCEAN.load(id)
-
-  if (ve === null) {
-    ve = new VeOCEAN(id)
-    ve.unlockTime = BigInt.zero()
-    ve.lockedAmount = BigDecimal.zero()
-    ve.block = 0
-    ve.save()
-  }
-
-  return ve
 }
 
 export function getDeposit(id: string): VeDeposit {
