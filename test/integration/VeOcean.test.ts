@@ -6,9 +6,11 @@ import {
   sendTx,
   approve,
   ConfigHelper,
-  sleep
+  sleep,
+  VeFeeDistributor
 } from '@oceanprotocol/lib'
 import { AbiItem } from 'web3-utils'
+import { HttpProvider } from 'web3-providers-http'
 import { assert } from 'chai'
 import Web3 from 'web3'
 import { homedir } from 'os'
@@ -29,10 +31,64 @@ const web3 = new Web3('http://127.0.0.1:8545')
 const subgraphUrl =
   'http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
 
+function evmMine() {
+  const provider = web3.currentProvider as HttpProvider
+  return new Promise((resolve, reject) => {
+    provider.send(
+      {
+        jsonrpc: '2.0',
+        method: 'evm_mine',
+        id: new Date().getTime()
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error)
+        }
+        return resolve(result)
+      }
+    )
+  })
+}
+function evmIncreaseTime(seconds) {
+  const provider = web3.currentProvider as HttpProvider
+  return new Promise((resolve, reject) => {
+    provider.send(
+      {
+        method: 'evm_increaseTime',
+        params: [seconds],
+        jsonrpc: '2.0',
+        id: new Date().getTime()
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error)
+        }
+        return evmMine().then(() => resolve(result))
+      }
+    )
+  })
+}
+
+const minAbi = [
+  {
+    constant: false,
+    inputs: [
+      { name: 'to', type: 'address' },
+      { name: 'value', type: 'uint256' }
+    ],
+    name: 'mint',
+    outputs: [{ name: '', type: 'bool' }],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function'
+  }
+] as AbiItem[]
+
 describe('veOcean tests', async () => {
   let nftFactory
   let veOcean: VeOcean
   let veAllocate: VeAllocate
+  let veFeeDistributor: VeFeeDistributor
   let ownerAccount: string
   let Alice: string
   let Bob: string
@@ -47,26 +103,13 @@ describe('veOcean tests', async () => {
     ownerAccount = accounts[0]
     Alice = accounts[1]
     Bob = accounts[2]
-    const minAbi = [
-      {
-        constant: false,
-        inputs: [
-          { name: 'to', type: 'address' },
-          { name: 'value', type: 'uint256' }
-        ],
-        name: 'mint',
-        outputs: [{ name: '', type: 'bool' }],
-        payable: false,
-        stateMutability: 'nonpayable',
-        type: 'function'
-      }
-    ] as AbiItem[]
+
     const tokenContract = new web3.eth.Contract(minAbi, addresses.Ocean)
     const estGas = await calculateEstimatedGas(
       ownerAccount,
       tokenContract.methods.mint,
       Alice,
-      web3.utils.toWei('1000')
+      web3.utils.toWei('100000')
     )
     await sendTx(
       ownerAccount,
@@ -75,7 +118,7 @@ describe('veOcean tests', async () => {
       1,
       tokenContract.methods.mint,
       Alice,
-      web3.utils.toWei('1000')
+      web3.utils.toWei('100000')
     )
     await sendTx(
       ownerAccount,
@@ -84,11 +127,12 @@ describe('veOcean tests', async () => {
       1,
       tokenContract.methods.mint,
       Bob,
-      web3.utils.toWei('1000')
+      web3.utils.toWei('100000')
     )
     veOcean = new VeOcean(addresses.veOCEAN, web3)
     veAllocate = new VeAllocate(addresses.veAllocate, web3)
     nftFactory = new NftFactory(addresses.ERC721Factory, web3)
+    veFeeDistributor = new VeFeeDistributor(addresses.veFeeDistributor, web3)
   })
 
   it('Alice should lock 100 Ocean', async () => {
@@ -358,5 +402,144 @@ describe('veOcean tests', async () => {
       'Expected totalAllocation 1000 to equal subgraph value ' +
         info[0].allocatedTotal
     )
+  })
+
+  it('Alice should advance chain one day', async () => {
+    await evmIncreaseTime(60 * 60 * 24)
+  })
+
+  it('Alice should add ocean rewards to feeDistrib', async () => {
+    // mint 10 ocean and send them to feeDistrib
+    let tokenContract = new web3.eth.Contract(minAbi, addresses.Ocean)
+    let estGas = await calculateEstimatedGas(
+      ownerAccount,
+      tokenContract.methods.mint,
+      addresses.veFeeDistributor,
+      web3.utils.toWei('10')
+    )
+    await sendTx(
+      ownerAccount,
+      estGas,
+      web3,
+      1,
+      tokenContract.methods.mint,
+      addresses.veFeeDistributor,
+      web3.utils.toWei('10')
+    )
+    const minAbiFee = [
+      {
+        name: 'checkpoint_token',
+        outputs: [],
+        inputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        gas: 820723
+      },
+      {
+        name: 'checkpoint_total_supply',
+        outputs: [],
+        inputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        gas: 10592405
+      }
+    ] as AbiItem[]
+    tokenContract = new web3.eth.Contract(minAbiFee, addresses.veFeeDistributor)
+    estGas = await calculateEstimatedGas(
+      ownerAccount,
+      tokenContract.methods.checkpoint_token
+    )
+
+    await sendTx(
+      ownerAccount,
+      estGas,
+      web3,
+      1,
+      tokenContract.methods.checkpoint_token
+    )
+    estGas = await calculateEstimatedGas(
+      ownerAccount,
+      tokenContract.methods.checkpoint_total_supply
+    )
+    await sendTx(
+      ownerAccount,
+      estGas,
+      web3,
+      1,
+      tokenContract.methods.checkpoint_total_supply
+    )
+  })
+
+  it('Alice should advance chain 7 day', async () => {
+    await evmIncreaseTime(60 * 60 * 24 * 7)
+  })
+
+  it('Alice should add again ocean rewards to feeDistrib', async () => {
+    // mint 20 ocean and send them to feeDistrib
+    let tokenContract = new web3.eth.Contract(minAbi, addresses.Ocean)
+    let estGas = await calculateEstimatedGas(
+      ownerAccount,
+      tokenContract.methods.mint,
+      addresses.veFeeDistributor,
+      web3.utils.toWei('20')
+    )
+    await sendTx(
+      ownerAccount,
+      estGas,
+      web3,
+      1,
+      tokenContract.methods.mint,
+      addresses.veFeeDistributor,
+      web3.utils.toWei('20')
+    )
+    const minAbiFee = [
+      {
+        name: 'checkpoint_token',
+        outputs: [],
+        inputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        gas: 820723
+      },
+      {
+        name: 'checkpoint_total_supply',
+        outputs: [],
+        inputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        gas: 10592405
+      }
+    ] as AbiItem[]
+    tokenContract = new web3.eth.Contract(minAbiFee, addresses.veFeeDistributor)
+    estGas = await calculateEstimatedGas(
+      ownerAccount,
+      tokenContract.methods.checkpoint_token
+    )
+    await sendTx(
+      ownerAccount,
+      estGas,
+      web3,
+      1,
+      tokenContract.methods.checkpoint_token
+    )
+    estGas = await calculateEstimatedGas(
+      ownerAccount,
+      tokenContract.methods.checkpoint_total_supply
+    )
+    await sendTx(
+      ownerAccount,
+      estGas,
+      web3,
+      1,
+      tokenContract.methods.checkpoint_total_supply
+    )
+  })
+
+  it('Alice should advance chain 7 day', async () => {
+    await evmIncreaseTime(60 * 60 * 24 * 7)
+  })
+
+  it('Alice should claim rewards', async () => {
+    await veFeeDistributor.claim(Alice)
   })
 })
