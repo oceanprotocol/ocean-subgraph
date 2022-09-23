@@ -489,13 +489,14 @@ type VeDeposit @entity {
   value: BigDecimal!
   "unlock timestamp"
   unlockTime: BigInt!
-  "deposit type: DEPOSIT_FOR = 0, CREATE_LOCK_TYPE = 1,INCREASE_LOCK_AMOUNT = 2,INCREASE_UNLOCK_TIME = 3"
+  "deposit type: DEPOSIT_FOR = 0, CREATE_LOCK_TYPE = 1,INCREASE_LOCK_AMOUNT = 2,INCREASE_UNLOCK_TIME = 3, WITHDRAW = 4"
   type:BigInt!
   timestamp: BigInt!
   block: Int!
   tx: String!
   veOcean: VeOCEAN!
 }
+
 
 type VeFeeDistributor @entity {
   "id = contract address"

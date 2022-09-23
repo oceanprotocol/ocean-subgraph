@@ -542,4 +542,7 @@ describe('veOcean tests', async () => {
   it('Alice should claim rewards', async () => {
     await veFeeDistributor.claim(Alice)
   })
+  it('Alice should withdraw locked tokens', async () => {
+    await veOcean.withdraw(Alice)
+  })
 })

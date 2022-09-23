@@ -42,9 +42,9 @@
       - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
         handler: handleDeposit
       - event: Withdraw(indexed address,uint256,uint256)
-        handler: handleSupply
-      - event: Supply(uint256,uint256)
         handler: handleWithdraw
+      - event: Supply(uint256,uint256)
+        handler: handleSupply
 
 - name: veDelegation
   kind: ethereum/contract
