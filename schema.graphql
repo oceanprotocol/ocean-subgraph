@@ -474,7 +474,7 @@ type VeOCEAN @entity {
   delegates: [VeDelegation!] @derivedFrom(field: "receiver")
   deposits: [VeDeposit!] @derivedFrom(field: "veOcean")
   claims: [VeClaim!] @derivedFrom(field: "veOcean")
-  allocation: VeAllocateUser! @derivedFrom(field: "veOcean")
+  allocation: [VeAllocateUser!] @derivedFrom(field: "veOcean")
   block: Int!
 }
 
