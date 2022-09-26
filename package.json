@@ -1,6 +1,6 @@
 {
   "name": "ocean-subgraph",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "scripts": {
     "start": "",
     "quickstart:development": "node ./scripts/generatenetworkssubgraphs.js development && npm run codegen && npm run create:local && npm run deploy:local",
