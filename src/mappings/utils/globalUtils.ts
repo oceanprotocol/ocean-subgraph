@@ -13,7 +13,7 @@ export function getGlobalStats(): GlobalStatistic {
   let globalStats = GlobalStatistic.load(GLOBAL_ID)
   if (!globalStats) {
     globalStats = new GlobalStatistic(GLOBAL_ID)
-    globalStats.version = '2.1.1'
+    globalStats.version = '2.1.2'
     globalStats.orderCount = 0
     globalStats.fixedCount = 0
     globalStats.datatokenCount = 0
