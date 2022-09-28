@@ -86,7 +86,7 @@ export function handleTokenRemoved(event: TokenRemoved): void {
   while (existingTokens.length > 0) {
     const role = existingTokens.shift().toString()
     if (!role) break
-    if (role !== event.params.token.toHexString()) newList.push(role)
+    if (role != event.params.token.toHexString()) newList.push(role)
   }
   opc.approvedTokens = newList
   opc.save()
@@ -112,7 +112,7 @@ export function handleSSContractRemoved(event: SSContractRemoved): void {
   while (existingContracts.length > 0) {
     const role = existingContracts.shift().toString()
     if (!role) break
-    if (role !== event.params.contractAddress.toHexString()) newList.push(role)
+    if (role != event.params.contractAddress.toHexString()) newList.push(role)
   }
   templates.ssTemplates = newList
   templates.save()
@@ -144,7 +144,7 @@ export function handleFixedRateContractRemoved(
   while (existingContracts.length > 0) {
     const role = existingContracts.shift().toString()
     if (!role) break
-    if (role !== event.params.contractAddress.toHexString()) newList.push(role)
+    if (role != event.params.contractAddress.toHexString()) newList.push(role)
   }
   templates.fixedRateTemplates = newList
   templates.save()
@@ -175,7 +175,7 @@ export function handleDispenserContractRemoved(
   while (existingContracts.length > 0) {
     const role = existingContracts.shift().toString()
     if (!role) break
-    if (role !== event.params.contractAddress.toHexString()) newList.push(role)
+    if (role != event.params.contractAddress.toHexString()) newList.push(role)
   }
   templates.dispenserTemplates = newList
   templates.save()
