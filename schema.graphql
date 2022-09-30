@@ -404,7 +404,9 @@ type VeAllocateUser @entity{
 type VeAllocateId @entity{
   "id = {DataNFT Address}-{chain id}"
   id: ID!
-  
+  nftAddress: String!
+  chainId: BigInt!
+
   veAllocation: [VeAllocation!] @derivedFrom(field: "allocationId")
   allocatedTotal: BigDecimal!
 
