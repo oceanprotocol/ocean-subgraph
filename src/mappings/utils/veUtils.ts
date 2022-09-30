@@ -196,6 +196,9 @@ export function handleOneAllocation(
     allocationAmount
   )
 
+  allocateId.chainId = chainId
+  allocateId.nftAddress = nftAddress
+
   // save entities
   allocateUser.save()
   allocateId.save()
