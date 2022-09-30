@@ -62,6 +62,8 @@ export function getveAllocateId(
     allocateId.tx = event.transaction.hash.toHex()
     allocateId.block = event.block.number.toI32()
     allocateId.lastContact = 0
+    allocateId.chainId = BigInt.zero()
+    allocateId.nftAddress = ''
 
     allocateId.save()
   }
