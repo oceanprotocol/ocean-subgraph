@@ -167,7 +167,7 @@ type Order @entity {
   tx: String!
   block: Int!
 
-  lastPriceToken: String!
+  lastPriceToken: Token!
   lastPriceValue: BigDecimal!
   estimatedUSDValue: BigDecimal!
   gasUsed: BigDecimal
