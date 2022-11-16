@@ -581,8 +581,8 @@ type NftTransferHistory @entity {
   nft: Nft!
   oldOwner: User!
   newOwner: User!
-  txId: string
-  timestamp: Bigint!
+  txId: String
+  timestamp: BigInt!
   block: Int!
 }
 
