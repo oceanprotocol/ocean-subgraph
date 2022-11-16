@@ -76,9 +76,9 @@ type Nft @entity{
     tokenUri: String
   
     "address of the owner of the nft"                                     
-    owner: String!     
+    owner: User!      
     "address of the creator of the nft"                                     
-    creator: String!     
+    creator: User!      
 
     "same as id, it's just for easy discoverability"                                    
     address: String!     
@@ -115,6 +115,7 @@ type Nft @entity{
     hasMetadata: Boolean!                                            
 
     nftData: [NftData!] @derivedFrom(field: "nft")
+    transferHistory: [NftTransferHistory!]
 }
 
 type NftData @entity{
@@ -148,6 +149,7 @@ type Order @entity {
   payer: User!
   amount: BigDecimal!
   serviceIndex: Int!
+  nftOwner: User!
 
 
   # the fees will be updated from an event that will be created after (todo)
@@ -572,3 +574,15 @@ type DFReward @entity {
   availableClaims: [DFAvailableClaim!] @derivedFrom(field: "receiver")
   history: [DFHistory!] @derivedFrom(field: "receiver")
 }
+
+type NftTransferHistory @entity {
+  # ID = hash(nftAddress+txId+eventNumber)
+  id: ID!
+  nft: Nft!
+  oldOwner: User!
+  newOwner: User!
+  txId: string
+  timestamp: Bigint!
+  block: Int!
+}
+
