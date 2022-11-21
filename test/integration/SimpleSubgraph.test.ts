@@ -112,13 +112,13 @@ describe('Tests coverage without provider/aquarius', async () => {
     await sleep(2000)
     const query2 = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner, transferable}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner{id}, transferable}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query2)
     })
     const queryResult = await response.json()
-    assert(queryResult.data.nft.owner === newOwnerAccount)
+    assert(queryResult.data.nft.owner.id === newOwnerAccount)
   })
 })
