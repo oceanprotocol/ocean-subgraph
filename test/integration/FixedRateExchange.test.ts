@@ -273,10 +273,6 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(dtTx.blockNumber >= blockNumber, 'incorrect value for: tx')
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
-    assert(
-      dt.lastPriceToken === '0x0000000000000000000000000000000000000000',
-      'incorrect value for: lastPriceToken'
-    )
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
 

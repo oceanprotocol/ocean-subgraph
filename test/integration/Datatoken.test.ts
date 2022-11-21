@@ -162,7 +162,6 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceToken,
           lastPriceValue
         }}`
     }
@@ -214,10 +213,6 @@ describe('Datatoken tests', async () => {
     assert(tx.blockNumber >= blockNumber, 'incorrect value for: tx')
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
-    assert(
-      dt.lastPriceToken === '0x0000000000000000000000000000000000000000',
-      'incorrect value for: lastPriceToken'
-    )
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
 
@@ -275,7 +270,6 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceToken,
           lastPriceValue
         }}`
     }
@@ -326,10 +320,6 @@ describe('Datatoken tests', async () => {
     assert(tx.blockNumber >= blockNumber, 'incorrect value for: tx')
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
-    assert(
-      dt.lastPriceToken === '0x0000000000000000000000000000000000000000',
-      'incorrect value for: lastPriceToken'
-    )
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
   })
 
@@ -368,7 +358,7 @@ describe('Datatoken tests', async () => {
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
 
     const query = {
-      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id}}}`
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, lastPriceToken{id}}}}`
     }
 
     await sleep(2000)
@@ -428,5 +418,6 @@ describe('Datatoken tests', async () => {
     assert(token, 'Invalid token')
     assert(token.orderCount === '1', 'Invalid orderCount after order')
     assert(token.orders[0].id === orderId)
+    assert(token.orders[0].lastPriceToken.id === ZERO_ADDRESS)
   })
 })

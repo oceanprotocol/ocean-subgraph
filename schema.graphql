@@ -56,7 +56,7 @@ type Token @entity {
     "block number when it was created"                                   
     block: Int!           
 
-    lastPriceToken: String!
+    lastPriceToken: Token
     lastPriceValue: BigDecimal!
 }
 
@@ -168,7 +168,7 @@ type Order @entity {
   tx: String!
   block: Int!
 
-  lastPriceToken: String!
+  lastPriceToken: Token
   lastPriceValue: BigDecimal!
   estimatedUSDValue: BigDecimal!
   gasUsed: BigDecimal

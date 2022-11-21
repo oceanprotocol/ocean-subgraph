@@ -282,7 +282,9 @@ describe('Simple Publish & consume test', async () => {
     )
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}`
 
-    const query = { query: `query {order(id:"${orderId}"){id, providerFee}}` }
+    const query = {
+      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
+    }
 
     await sleep(2000)
     const response = await fetch(subgraphUrl, {
@@ -293,6 +295,9 @@ describe('Simple Publish & consume test', async () => {
     const queryResult = await response.json()
 
     const providerFeeJSON = JSON.parse(queryResult.data.order.providerFee)
+    const lastPriceToken = queryResult.data.order.lastPriceToken.id
+
+    assert(lastPriceToken === ZERO_ADDRESS, 'Wrong lastPriceToken')
 
     assert(
       providerFeeJSON.providerFeeAddress.toLowerCase() ===
@@ -352,7 +357,7 @@ describe('Simple Publish & consume test', async () => {
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}`
 
     const initialQuery = {
-      query: `query {order(id:"${orderId}"){id, providerFee}}`
+      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
     }
     await sleep(2000)
     const initialResponse = await fetch(subgraphUrl, {
@@ -363,7 +368,9 @@ describe('Simple Publish & consume test', async () => {
     const initialProviderFeeJSON = JSON.parse(
       initialQueryResult.data.order.providerFee
     )
+    const lastPriceToken = initialQueryResult.data.order.lastPriceToken.id
 
+    assert(lastPriceToken === ZERO_ADDRESS, 'Wrong initial lastPriceToken set')
     assert(
       initialProviderFeeJSON.providerFeeAddress.toLowerCase() ===
         setInitialProviderFee.providerFeeAddress.toLowerCase(),
