@@ -115,7 +115,7 @@ type Nft @entity{
     hasMetadata: Boolean!                                            
 
     nftData: [NftData!] @derivedFrom(field: "nft")
-    transferHistory: [NftTransferHistory!]
+    transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
 }
 
 type NftData @entity{

@@ -259,19 +259,17 @@ export function handleNftTransferred(event: Transfer): void {
   const oldOwner = nft.owner
   const newOwner = getUser(event.params.to.toHexString())
   nft.owner = newOwner.id
+  nft.save()
+
   const transferId = `${nft.address}-${id}-${event.logIndex}`
   const newTransfer = new NftTransferHistory(transferId)
-  newTransfer.nft = nft.id
   newTransfer.oldOwner = oldOwner
+  newTransfer.nft = nft.id
   newTransfer.newOwner = newOwner.id
-  newTransfer.txId = id
+  newTransfer.txId = event.transaction.hash.toHex()
   newTransfer.timestamp = event.block.timestamp.toI32()
   newTransfer.block = event.block.number.toI32()
   newTransfer.save()
-  if (nft.transferHistory && typeof newTransfer.id === 'string') {
-    nft.transferHistory!.push(newTransfer.id)
-  }
-  nft.save()
 }
 
 export function handleNftData(event: DataChanged): void {
