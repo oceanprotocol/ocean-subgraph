@@ -1,4 +1,4 @@
-import { Nft, NftUpdate, NftData } from '../@types/schema'
+import { Nft, NftUpdate, NftData, NftTransferHistory } from '../@types/schema'
 import {
   MetadataCreated,
   MetadataState,
@@ -256,8 +256,21 @@ export function handleCleanedPermissions(event: CleanedPermissions): void {
 export function handleNftTransferred(event: Transfer): void {
   const id = event.address.toHex()
   const nft = getNftTokenWithID(id)
+  const oldOwner = nft.owner
   const newOwner = getUser(event.params.to.toHexString())
   nft.owner = newOwner.id
+  const transferId = `${nft.address}-${id}-${event.logIndex}`
+  const newTransfer = new NftTransferHistory(transferId)
+  newTransfer.nft = nft.id
+  newTransfer.oldOwner = oldOwner
+  newTransfer.newOwner = newOwner.id
+  newTransfer.txId = id
+  newTransfer.timestamp = event.block.timestamp.toI32()
+  newTransfer.block = event.block.number.toI32()
+  newTransfer.save()
+  if (nft.transferHistory && typeof newTransfer.id === 'string') {
+    nft.transferHistory!.push(newTransfer.id)
+  }
   nft.save()
 }
 

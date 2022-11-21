@@ -26,6 +26,7 @@ export function handleNftCreated(event: NFTCreated): void {
   nft.tx = event.transaction.hash.toHex()
   nft.block = event.block.number.toI32()
   nft.transferable = event.params.transferable
+  nft.transferHistory = []
 
   nft.save()
 }
