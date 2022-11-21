@@ -21,8 +21,6 @@ const data = JSON.parse(
 
 const addresses = data.development
 const web3 = new Web3('http://127.0.0.1:8545')
-const date = new Date()
-const time = Math.floor(date.getTime() / 1000)
 
 const subgraphUrl =
   'http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
@@ -33,6 +31,7 @@ describe('Tests coverage without provider/aquarius', async () => {
   let accounts: string[]
   let publisherAccount: string
   let newOwnerAccount: string
+  let time: number
 
   before(async () => {
     nft = new Nft(web3)
@@ -40,6 +39,8 @@ describe('Tests coverage without provider/aquarius', async () => {
     accounts = await web3.eth.getAccounts()
     publisherAccount = accounts[0]
     newOwnerAccount = accounts[1].toLowerCase()
+    const date = new Date()
+    time = Math.floor(date.getTime() / 1000)
   })
 
   it('should publish a dataset (create NFT + ERC20)', async () => {
@@ -143,8 +144,8 @@ describe('Tests coverage without provider/aquarius', async () => {
     assert(transferHistory.txId === tx.transactionHash, 'invalid txId')
     assert(transferHistory.timestamp)
 
-    assert(transferHistory.timestamp >= time - 50, 'incorrect value: timestamp')
-    assert(transferHistory.timestamp < time + 50, 'incorrect value: timestamp')
+    assert(transferHistory.timestamp >= time - 500, 'incorrect value timestamp')
+    assert(transferHistory.timestamp < time + 500, 'incorrect value timestamp')
     assert(transferHistory.block === tx.blockNumber, 'blockNumber')
   })
 })
