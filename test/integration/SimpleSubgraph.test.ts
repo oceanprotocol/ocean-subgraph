@@ -124,7 +124,7 @@ describe('Tests coverage without provider/aquarius', async () => {
             id,
             owner{id}, 
             transferable, 
-            transferHistory(orderBy: createdTimestamp, orderDirection: desc){id,nft,oldOwner,newOwner,txId,timestamp,block}
+            transferHistory(orderBy: timestamp, orderDirection: desc){id,nft,oldOwner,newOwner,txId,timestamp,block}
           }}`
     }
     const response = await fetch(subgraphUrl, {
