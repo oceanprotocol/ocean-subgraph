@@ -38,12 +38,6 @@ export function handleOrderStarted(event: OrderStarted): void {
   const consumer = getUser(event.params.consumer.toHex())
   order.consumer = consumer.id
 
-  if (token.nft) {
-    const nft = Nft.load(token.nft as string) as Nft
-    const nftOwner = getUser(nft.owner)
-    order.nftOwner = nftOwner.id
-  }
-
   const payer = getUser(event.params.payer.toHex())
   payer.totalOrders = payer.totalOrders.plus(integer.ONE)
   payer.save()
