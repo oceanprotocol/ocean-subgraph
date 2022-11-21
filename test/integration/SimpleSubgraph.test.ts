@@ -21,6 +21,8 @@ const data = JSON.parse(
 
 const addresses = data.development
 const web3 = new Web3('http://127.0.0.1:8545')
+const date = new Date()
+const time = Math.floor(date.getTime() / 1000)
 
 const subgraphUrl =
   'http://127.0.0.1:9000/subgraphs/name/oceanprotocol/ocean-subgraph'
@@ -105,14 +107,19 @@ describe('Tests coverage without provider/aquarius', async () => {
     )
     await sleep(2000)
     const erc721Address = result.events.NFTCreated.returnValues[0]
-    const graphNftToken = erc721Address.toLowerCase()
+    const nftAddress = erc721Address.toLowerCase()
 
     // Transfer the NFT
-    await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
+    const tx = await nft.transferNft(
+      nftAddress,
+      publisherAccount,
+      newOwnerAccount
+    )
+
     await sleep(2000)
     const query2 = {
       query: `query {
-          nft(id:"${graphNftToken}"){
+          nft(id:"${nftAddress}"){
             symbol,
             id,
             owner{id}, 
@@ -125,9 +132,19 @@ describe('Tests coverage without provider/aquarius', async () => {
       body: JSON.stringify(query2)
     })
     const queryResult = await response.json()
-    console.log('queryResult', queryResult)
-    console.log(queryResult.data.nft.transferHistory)
-    console.log(queryResult.data.nft.transferHistory[0])
+    const transferHistory = queryResult.data.nft.transferHistory[0]
+
     assert(queryResult.data.nft.owner.id === newOwnerAccount)
+    assert(
+      transferHistory.id ===
+        `${nftAddress}-${tx.transactionHash}-${tx.events.Transfer.logIndex}`,
+      'Invalid transferHistory Id'
+    )
+    assert(transferHistory.txId === tx.transactionHash, 'invalid txId')
+    assert(transferHistory.timestamp)
+
+    assert(transferHistory.timestamp >= time - 50, 'incorrect value: timestamp')
+    assert(transferHistory.timestamp < time + 50, 'incorrect value: timestamp')
+    assert(transferHistory.block === tx.blockNumber, 'blockNumber')
   })
 })

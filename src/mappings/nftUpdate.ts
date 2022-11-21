@@ -261,7 +261,9 @@ export function handleNftTransferred(event: Transfer): void {
   nft.owner = newOwner.id
   nft.save()
 
-  const transferId = `${nft.address}-${id}-${event.logIndex}`
+  const transferId = `${nft.address}-${event.transaction.hash.toHex()}-${
+    event.logIndex
+  }`
   const newTransfer = new NftTransferHistory(transferId)
   newTransfer.oldOwner = oldOwner
   newTransfer.nft = nft.id
