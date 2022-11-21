@@ -368,7 +368,7 @@ describe('Datatoken tests', async () => {
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
 
     const query = {
-      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id}}}`
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}}}}`
     }
 
     await sleep(2000)
@@ -428,5 +428,6 @@ describe('Datatoken tests', async () => {
     assert(token, 'Invalid token')
     assert(token.orderCount === '1', 'Invalid orderCount after order')
     assert(token.orders[0].id === orderId)
+    assert(token.orders[0].nftOwner.id === publisher, 'invalid nftOwner')
   })
 })
