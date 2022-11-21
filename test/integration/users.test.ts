@@ -33,7 +33,7 @@ async function userQuery(user: string) {
               user(id:"${user}"){    
                   id
                   tokenBalancesOwned {id}
-                  orders {id}
+                  orders {id, lastPriceToken{id}}
                   freSwaps {id}
                   totalOrders
                   totalSales
@@ -284,7 +284,6 @@ describe('User tests', async () => {
     await sleep(2000)
 
     const user = await userQuery(user3)
-
     assert(user.id === user3, 'incorrect value for: id')
     assert(user.tokenBalancesOwned.length === 0, 'incorrect tokenBalancesOwned')
     assert(user.orders.length === 1, 'incorrect value for: orders')
@@ -292,5 +291,9 @@ describe('User tests', async () => {
     assert(user.totalOrders === '1', 'incorrect value for: totalOrders')
     assert(user.totalSales === '0', 'incorrect value for: totalSales')
     assert(user.__typename === 'User', 'incorrect value for: __typename')
+    assert(
+      user.orders[0].lastPriceToken.id === ZERO_ADDRESS,
+      'incorrect value for: lastPriceToken'
+    )
   })
 })
