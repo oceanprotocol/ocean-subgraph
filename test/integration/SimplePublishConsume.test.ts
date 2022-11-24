@@ -191,7 +191,7 @@ describe('Simple Publish & consume test', async () => {
 
     const queryOriginalOwner = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner{id}}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -200,7 +200,7 @@ describe('Simple Publish & consume test', async () => {
     const initialResult = await initialResponse.json()
     // Checking original owner account has been set correctly
     assert(
-      initialResult.data.nft.owner.toLowerCase() ===
+      initialResult.data.nft.owner.id.toLowerCase() ===
         publisherAccount.toLowerCase()
     )
 
@@ -235,14 +235,14 @@ describe('Simple Publish & consume test', async () => {
     await sleep(2000)
     const query2 = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner, transferable}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner{id}, transferable}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query2)
     })
     const queryResult = await response.json()
-    assert(queryResult.data.nft.owner === newOwnerAccount)
+    assert(queryResult.data.nft.owner.id === newOwnerAccount)
   })
 
   it('should save  provider fees after startOrder is called', async () => {

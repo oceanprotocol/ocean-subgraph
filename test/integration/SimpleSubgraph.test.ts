@@ -31,6 +31,7 @@ describe('Tests coverage without provider/aquarius', async () => {
   let accounts: string[]
   let publisherAccount: string
   let newOwnerAccount: string
+  let time: number
 
   before(async () => {
     nft = new Nft(web3)
@@ -38,6 +39,8 @@ describe('Tests coverage without provider/aquarius', async () => {
     accounts = await web3.eth.getAccounts()
     publisherAccount = accounts[0]
     newOwnerAccount = accounts[1].toLowerCase()
+    const date = new Date()
+    time = Math.floor(date.getTime() / 1000)
   })
 
   it('should publish a dataset (create NFT + ERC20)', async () => {
@@ -105,20 +108,44 @@ describe('Tests coverage without provider/aquarius', async () => {
     )
     await sleep(2000)
     const erc721Address = result.events.NFTCreated.returnValues[0]
-    const graphNftToken = erc721Address.toLowerCase()
+    const nftAddress = erc721Address.toLowerCase()
 
     // Transfer the NFT
-    await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
+    const tx = await nft.transferNft(
+      nftAddress,
+      publisherAccount,
+      newOwnerAccount
+    )
+
     await sleep(2000)
     const query2 = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner, transferable}}`
+          nft(id:"${nftAddress}"){
+            symbol,
+            id,
+            owner{id}, 
+            transferable, 
+            transferHistory(orderBy: timestamp, orderDirection: desc){id,nft,oldOwner,newOwner,txId,timestamp,block}
+          }}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query2)
     })
     const queryResult = await response.json()
-    assert(queryResult.data.nft.owner === newOwnerAccount)
+    const transferHistory = queryResult.data.nft.transferHistory[0]
+
+    assert(queryResult.data.nft.owner.id === newOwnerAccount)
+    assert(
+      transferHistory.id ===
+        `${nftAddress}-${tx.transactionHash}-${tx.events.Transfer.logIndex}`,
+      'Invalid transferHistory Id'
+    )
+    assert(transferHistory.txId === tx.transactionHash, 'invalid txId')
+    assert(transferHistory.timestamp)
+
+    assert(transferHistory.timestamp >= time - 500, 'incorrect value timestamp')
+    assert(transferHistory.timestamp < time + 500, 'incorrect value timestamp')
+    assert(transferHistory.block === tx.blockNumber, 'blockNumber')
   })
 })

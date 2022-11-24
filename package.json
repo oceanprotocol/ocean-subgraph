@@ -26,7 +26,7 @@
     "test": "npm run codegen && npm run lint && npm run type-check",
     "test-integration": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/**/*.test.ts'",
     "test-dispenser": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/Dispenser.test.ts'",
-    "test-simple": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/SimplePublishConsume.test.ts'",
+    "test-simple": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/SimpleSubgraph.test.ts'",
     "test-fixed": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/FixedRateExchange.test.ts'",
     "test-users": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/users.test.ts'",
     "test-ve": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/VeOcean.test.ts'",
