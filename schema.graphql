@@ -149,6 +149,7 @@ type Order @entity {
   payer: User!
   amount: BigDecimal!
   serviceIndex: Int!
+  nftOwner: User!
 
 
   # the fees will be updated from an event that will be created after (todo)
