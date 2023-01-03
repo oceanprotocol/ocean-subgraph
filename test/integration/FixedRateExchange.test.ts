@@ -45,6 +45,7 @@ describe('Fixed Rate Exchange tests', async () => {
   const templateIndex = 1
   const dtAmount = '10'
   const datatoken = new Datatoken(web3, 8996)
+  const oceanFeeAmount = (Number(dtAmount) * Number(feeAmount)) / 100
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
@@ -584,6 +585,7 @@ describe('Fixed Rate Exchange tests', async () => {
           block
           createdTimestamp
           tx
+          oceanFeeAmount
           __typename
         }  
       }}`
@@ -648,6 +650,10 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
     assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
+    assert(
+      swaps.oceanFeeAmount === `${oceanFeeAmount}`,
+      'incorrect: oceanFeeAmount'
+    )
     assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
@@ -668,6 +674,7 @@ describe('Fixed Rate Exchange tests', async () => {
           block
           createdTimestamp
           tx
+          oceanFeeAmount
           __typename
         }  
       }}`
@@ -689,6 +696,10 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
     assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
+    assert(
+      swaps.oceanFeeAmount === `${oceanFeeAmount}`,
+      'incorrect: oceanFeeAmount'
+    )
     assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
