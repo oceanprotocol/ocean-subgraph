@@ -176,12 +176,6 @@ export function handleSwap(event: Swapped): void {
   swap.exchangeId = fixedRateId
   swap.by = getUser(event.params.by.toHex()).id
 
-  // Track OPC swap fee
-  swap.oceanFeeAmount = weiToDecimal(
-    event.params.oceanFeeAmount.toBigDecimal(),
-    BigInt.fromI32(18).toI32()
-  )
-
   // we need to fetch the decimals of the base token
   const baseToken = getToken(
     Address.fromString(fixedRateExchange.baseToken),
@@ -195,6 +189,12 @@ export function handleSwap(event: Swapped): void {
   swap.dataTokenAmount = weiToDecimal(
     event.params.datatokenSwappedAmount.toBigDecimal(),
     BigInt.fromI32(18).toI32()
+  )
+
+  // Track OPC swap fee
+  swap.oceanFeeAmount = weiToDecimal(
+    event.params.oceanFeeAmount.toBigDecimal(),
+    BigInt.fromI32(baseToken.decimals).toI32()
   )
 
   swap.save()
