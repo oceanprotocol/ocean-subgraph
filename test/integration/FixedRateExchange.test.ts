@@ -45,7 +45,6 @@ describe('Fixed Rate Exchange tests', async () => {
   const templateIndex = 1
   const dtAmount = '10'
   const datatoken = new Datatoken(web3, 8996)
-  const oceanFeeAmount = String((Number(dtAmount) * Number(feeAmount)) / 100)
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
@@ -628,6 +627,11 @@ describe('Fixed Rate Exchange tests', async () => {
     const tx = (
       await fixedRate.buyDatatokens(user1, exchangeId, dtAmount, '100')
     ).events?.Swapped
+
+    const oceanFeeAmount = web3.utils.fromWei(
+      new BN(tx.returnValues.oceanFeeAmount)
+    )
+
     await sleep(sleepMs)
     user1Balance = await datatoken.balance(datatokenAddress, user1)
     // user1 has 1 datatoken
@@ -658,6 +662,9 @@ describe('Fixed Rate Exchange tests', async () => {
     await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
     const tx = (await fixedRate.sellDatatokens(user1, exchangeId, '10', '9'))
       .events?.Swapped
+    const oceanFeeAmount = web3.utils.fromWei(
+      new BN(tx.returnValues.oceanFeeAmount)
+    )
     assert(tx != null)
     await sleep(sleepMs)
     const swapsQuery = {
