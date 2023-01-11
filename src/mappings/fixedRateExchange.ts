@@ -191,9 +191,17 @@ export function handleSwap(event: Swapped): void {
     BigInt.fromI32(18).toI32()
   )
 
-  // Track OPC swap fee
+  // Track fees
   swap.oceanFeeAmount = weiToDecimal(
     event.params.oceanFeeAmount.toBigDecimal(),
+    BigInt.fromI32(baseToken.decimals).toI32()
+  )
+  swap.marketFeeAmount = weiToDecimal(
+    event.params.marketFeeAmount.toBigDecimal(),
+    BigInt.fromI32(baseToken.decimals).toI32()
+  )
+  swap.consumeMarketFeeAmount = weiToDecimal(
+    event.params.consumeMarketFeeAmount.toBigDecimal(),
     BigInt.fromI32(baseToken.decimals).toI32()
   )
 

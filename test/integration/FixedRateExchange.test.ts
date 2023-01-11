@@ -585,6 +585,8 @@ describe('Fixed Rate Exchange tests', async () => {
           createdTimestamp
           tx
           oceanFeeAmount
+          marketFeeAmount
+          consumeMarketFeeAmount
           __typename
         }  
       }}`
@@ -631,6 +633,12 @@ describe('Fixed Rate Exchange tests', async () => {
     const oceanFeeAmount = web3.utils.fromWei(
       new BN(tx.returnValues.oceanFeeAmount)
     )
+    const marketFeeAmount = web3.utils.fromWei(
+      new BN(tx.returnValues.marketFeeAmount)
+    )
+    const consumeMarketFeeAmount = web3.utils.fromWei(
+      new BN(tx.returnValues.consumeMarketFeeAmount)
+    )
 
     await sleep(sleepMs)
     user1Balance = await datatoken.balance(datatokenAddress, user1)
@@ -655,6 +663,11 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
     assert(swaps.oceanFeeAmount === oceanFeeAmount, 'incorrect: oceanFeeAmount')
+    assert(swaps.marketFeeAmount === marketFeeAmount, 'wrong marketFeeAmount')
+    assert(
+      swaps.consumeMarketFeeAmount === consumeMarketFeeAmount,
+      'wrong consumeMarketFeeAmount'
+    )
     assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
