@@ -257,6 +257,9 @@ type FixedRateExchangeSwap @entity {
   block: Int!
   createdTimestamp: Int!
   tx: String!
+  oceanFeeAmount: BigDecimal!
+  marketFeeAmount:  BigDecimal!
+  consumeMarketFeeAmount: BigDecimal!
 }
 
 
