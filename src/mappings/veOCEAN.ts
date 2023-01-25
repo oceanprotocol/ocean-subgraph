@@ -12,7 +12,13 @@ export function handleDeposit(event: Deposit): void {
 
   const veOCEAN = getveOCEAN(provider.toHex())
   // Create new Deposit entity
-  const deposit = getDeposit(provider.toHex() + '-' + locktime.toString())
+  const deposit = getDeposit(
+    provider.toHex() +
+      '-' +
+      event.transaction.hash.toHex() +
+      '-' +
+      event.logIndex.toString()
+  )
   deposit.provider = provider.toHex()
   deposit.value = weiToDecimal(value.toBigDecimal(), 18)
   deposit.unlockTime = locktime
@@ -39,7 +45,13 @@ export function handleWithdraw(event: Withdraw): void {
 
   const veOCEAN = getveOCEAN(provider.toHex())
   // Create new Deposit entity
-  const deposit = getDeposit(provider.toHex() + '-' + ts.toString())
+  const deposit = getDeposit(
+    provider.toHex() +
+      '-' +
+      event.transaction.hash.toHex() +
+      '-' +
+      event.logIndex.toString()
+  )
   deposit.provider = provider.toHex()
   deposit.value = weiToDecimal(value.toBigDecimal(), 18).neg()
   deposit.unlockTime = BigInt.zero()
