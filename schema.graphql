@@ -486,7 +486,7 @@ type VeOCEAN @entity {
 }
 
 type VeDeposit @entity {
-  "id = {user address}-{timestamp}"
+  "id = {user address}-{tx}-{eventIndex}"
   id: ID!
   "veOcean holder"
   provider:String!
