@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.38.0",
-    "@graphprotocol/graph-ts": "^0.29.1",
+    "@graphprotocol/graph-ts": "^0.29.3",
     "@types/chai": "^4.3.4",
     "@types/chai-spies": "^1.0.3",
     "@types/mocha": "^10.0.1",
