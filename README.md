@@ -30,10 +30,13 @@
 
 This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` namespace for all networks the Ocean Protocol contracts are deployed to:
 
-- [v4.subgraph.ropsten.oceanprotocol.com](https://v4.subgraph.ropsten.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
-- [v4.subgraph.rinkeby.oceanprotocol.com](https://v4.subgraph.rinkeby.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.mainnet.oceanprotocol.com](https://v4.subgraph.mainnet.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.polygon.oceanprotocol.com](https://v4.subgraph.polygon.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.bsc.oceanprotocol.com](https://v4.subgraph.bsc.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.moonriver.oceanprotocol.com](https://v4.subgraph.moonriver.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.energyweb.oceanprotocol.com](https://v4.subgraph.energyweb.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
+- [v4.subgraph.goerli.oceanprotocol.com](https://v4.subgraph.goerli.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [v4.subgraph.mumbai.oceanprotocol.com](https://v4.subgraph.mumbai.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
-- [v4.subgraph.moonbase.oceanprotocol.com](https://v4.subgraph.moonbase.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
 ## ⛵ Example Queries
 
