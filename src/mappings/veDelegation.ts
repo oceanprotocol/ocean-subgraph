@@ -18,6 +18,10 @@ export function handleDelegation(event: DelegateBoost): void {
   const veDelegation = getveDelegation(_tokenId.toHex())
   veDelegation.delegator = _delegator
   getveOCEAN(_receiver)
+  const delegatorVeOcean = getveOCEAN(_delegator)
+  veDelegation.amountFraction = _amount.divDecimal(
+    delegatorVeOcean.lockedAmount
+  )
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
   veDelegation.amount = _amount
@@ -36,6 +40,10 @@ export function handleExtendBoost(event: ExtendBoost): void {
   const _expireTime = event.params._expire_time
 
   const veDelegation = getveDelegation(_tokenId.toHex())
+  const delegatorVeOcean = getveOCEAN(_delegator)
+  veDelegation.amountFraction = _amount.divDecimal(
+    delegatorVeOcean.lockedAmount
+  )
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
