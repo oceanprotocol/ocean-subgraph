@@ -179,5 +179,7 @@ describe('veOcean tests', async () => {
       0
     )
     console.log('TX3: ', tx3)
+    assert(tx3, 'Transaction failed')
+    assert(tx3.events.DelegateBoost, 'No Delegate boost event')
   })
 })
