@@ -105,7 +105,7 @@ describe('veOcean tests', async () => {
       amount
     )
     const timestamp = Math.floor(Date.now() / 1000)
-    const unlockTime = timestamp + 7
+    const unlockTime = timestamp + 7 * 86400
 
     if (parseInt(currentBalance) > 0 || currentLock > 0) {
       // we already have some locked tokens, so our transaction should fail
@@ -135,11 +135,13 @@ describe('veOcean tests', async () => {
       body: JSON.stringify(initialQuery)
     })
     const info = (await initialResponse.json()).data.veOCEANs
-    assert(info[0].id === Alice.toLowerCase())
-    assert(info[0].lockedAmount === currentBalance)
-    assert(info[0].unlockTime === currentLock)
+    assert(info[0].id === Alice.toLowerCase(), 'ID is incorrect')
+    assert(info[0].lockedAmount === currentBalance, 'LockedAmount is incorrect')
+    assert(info[0].unlockTime === currentLock, 'Unlock time is not correct')
 
     const lockTime = await veOcean.lockEnd(Alice)
+    const extLockTime = Number(lockTime) + 31556926
+    console.log('LockTime: ', lockTime)
 
     const tx1 = await delegateContract.methods
       .setApprovalForAll(Alice, true)
@@ -147,13 +149,8 @@ describe('veOcean tests', async () => {
         from: Alice
       })
     console.log('TX1: ', tx1)
-    console.log('Date.now() ', Date.now())
-    console.log('lockTime', lockTime)
-    const extLockTime = Number(lockTime) + 7000000
-    console.log('extLockTime', extLockTime)
 
     const tx2 = await veOcean.increaseUnlockTime(Alice, extLockTime)
-
     console.log('TX2: ', tx2)
 
     const estGas = await calculateEstimatedGas(
@@ -166,15 +163,7 @@ describe('veOcean tests', async () => {
       extLockTime,
       0
     )
-
     console.log('estGas', estGas)
-
-    // const tx = await delegateContract.methods
-    //   .create_boost(Alice, Bob, 10000, 0, extLockTime, 0)
-    //   .send({
-    //     from: Alice
-    //   })
-    // console.log('TX: ', tx)
 
     const tx3 = await sendTx(
       Alice,
