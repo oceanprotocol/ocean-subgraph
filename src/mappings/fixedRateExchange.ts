@@ -89,6 +89,7 @@ export function handleMintStateChanged(event: ExchangeMintStateChanged): void {
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
   fixedRateExchange.withMint = event.params.withMint
+  fixedRateExchange.tx = event.transaction.hash.toHex()
   fixedRateExchange.save()
 }
 
@@ -226,6 +227,7 @@ export function handleSwap(event: Swapped): void {
   )
   datatoken.lastPriceToken = priceToken.id
   datatoken.lastPriceValue = fixedRateExchange.price
+  datatoken.tx = event.transaction.hash.toHex()
   datatoken.save()
 }
 
@@ -244,6 +246,7 @@ export function handlePublishMarketFeeChanged(
       event.params.swapFee.toBigDecimal(),
       BigInt.fromI32(18).toI32()
     )
+    fixedRateExchange.tx = event.transaction.hash.toHex()
     fixedRateExchange.save()
   }
 }
@@ -261,7 +264,7 @@ export function handleTokenCollected(event: TokenCollected): void {
       fixedRateExchange.baseTokenBalance.minus(
         weiToDecimal(event.params.amount.toBigDecimal(), baseToken.decimals)
       )
-
+    fixedRateExchange.tx = event.transaction.hash.toHex()
     fixedRateExchange.save()
   }
 }

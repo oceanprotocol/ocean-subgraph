@@ -121,6 +121,7 @@ type Nft @entity{
 type NftData @entity{
     "nft address+key"
     id: ID!
+    tx: String!
     nft: Nft!
     key: Bytes
     value: Bytes
@@ -353,6 +354,7 @@ type OPC @entity {
     "fee in percent taken by OPC from providerFees"
     providerFee: BigDecimal
     approvedTokens: [Token!]
+    tx: String!
 }
 
  enum NftUpdateType {
@@ -386,6 +388,7 @@ type NftUpdate @entity {
 
 type Template @entity{
   id: ID!
+  tx: String!
   fixedRateTemplates: [String!]
   dispenserTemplates: [String!]
   ssTemplates: [String!]
@@ -468,6 +471,7 @@ type VeDelegation @entity {
   cancelTime: BigInt!
   expireTime: BigInt!
   block: Int!
+  tx: String!
 }
 
 type VeOCEAN @entity {
@@ -551,6 +555,7 @@ enum DFHistoryType {
 type DFAvailableClaim @entity {
   "id = {userId}-{tokenId}"
   id: ID!
+  txId: String!
   receiver: DFReward!
   amount: BigDecimal!
   token: Token!
@@ -573,6 +578,7 @@ type DFHistory @entity {
 type DFReward @entity {
   "id = {user address}"
   id: ID!
+  txId: String!
   receiver: User!
   availableClaims: [DFAvailableClaim!] @derivedFrom(field: "receiver")
   history: [DFHistory!] @derivedFrom(field: "receiver")
@@ -584,7 +590,7 @@ type NftTransferHistory @entity {
   nft: Nft!
   oldOwner: User!
   newOwner: User!
-  txId: String
+  txId: String!
   timestamp: Int!
   block: Int!
 }

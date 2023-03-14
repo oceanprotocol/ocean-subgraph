@@ -57,6 +57,7 @@ export function handleActivate(event: DispenserActivated): void {
   )
   const dispenser = getDispenser(dispenserID)
   dispenser.active = true
+  dispenser.tx = event.transaction.hash.toHex()
   dispenser.save()
 }
 
@@ -67,6 +68,7 @@ export function handleDeactivate(event: DispenserDeactivated): void {
   )
   const dispenser = getDispenser(dispenserID)
   dispenser.active = false
+  dispenser.tx = event.transaction.hash.toHex()
   dispenser.save()
 }
 
@@ -76,6 +78,7 @@ export function handleAllowedSwapperChanged(
   const dispenserID = getDispenserGraphID(event.address, event.params.datatoken)
   const dispenser = getDispenser(dispenserID)
   dispenser.allowedSwapper = event.params.newAllowedSwapper.toHex()
+  dispenser.tx = event.transaction.hash.toHex()
   dispenser.save()
 }
 
@@ -111,5 +114,6 @@ export function handleOwnerWinthdraw(event: OwnerWithdrawed): void {
   const dispenserID = getDispenserGraphID(event.address, event.params.datatoken)
   const dispenser = getDispenser(dispenserID)
   dispenser.balance = decimal.ZERO
+  dispenser.tx = event.transaction.hash.toHex()
   dispenser.save()
 }
