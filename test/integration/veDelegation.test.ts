@@ -43,7 +43,7 @@ const minAbi = [
   }
 ] as AbiItem[]
 
-describe('veOcean tests', async () => {
+describe('Delegation tests', async () => {
   let veOcean: VeOcean
   let ownerAccount: string
   let Alice: string
@@ -141,17 +141,12 @@ describe('veOcean tests', async () => {
 
     const lockTime = await veOcean.lockEnd(Alice)
     const extLockTime = Number(lockTime) + 31556926
-    console.log('LockTime: ', lockTime)
 
-    const tx1 = await delegateContract.methods
-      .setApprovalForAll(Alice, true)
-      .send({
-        from: Alice
-      })
-    console.log('TX1: ', tx1)
+    await delegateContract.methods.setApprovalForAll(Alice, true).send({
+      from: Alice
+    })
 
-    const tx2 = await veOcean.increaseUnlockTime(Alice, extLockTime)
-    console.log('TX2: ', tx2)
+    await veOcean.increaseUnlockTime(Alice, extLockTime)
 
     const estGas = await calculateEstimatedGas(
       Alice,
@@ -163,7 +158,6 @@ describe('veOcean tests', async () => {
       extLockTime,
       0
     )
-    console.log('estGas', estGas)
 
     const tx3 = await sendTx(
       Alice,
@@ -181,5 +175,31 @@ describe('veOcean tests', async () => {
     console.log('TX3: ', tx3)
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
+
+    const delegateQuery = {
+      query: `query {
+        VeDelegation(id:"${Alice.toLowerCase()}"){    
+          id
+          delegator {
+            id
+          }
+          receiver {
+            id
+          }
+          tokenId
+          amount
+          cancelTime
+          expireTime
+          block
+                    }
+                  }`
+    }
+
+    const delegateResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(delegateQuery)
+    })
+    const data = (await delegateResponse.json()).data.VeDelegation
+    console.log('Data', data)
   })
 })
