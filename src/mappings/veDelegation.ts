@@ -24,6 +24,7 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.block = event.block.number.toI32()
+  veDelegation.tx = event.transaction.hash.toHex()
   veDelegation.save()
 }
 
@@ -42,6 +43,7 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegation.amount = _amount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
+  veDelegation.tx = event.transaction.hash.toHex()
   veDelegation.save()
 }
 
@@ -60,4 +62,5 @@ export function handleBurnBoost(event: BurnBoost): void {
   // delete
   const veDelegation = getveDelegation(_tokenId.toHex())
   veDelegation.amount = BigInt.zero()
+  veDelegation.tx = event.transaction.hash.toHex()
 }

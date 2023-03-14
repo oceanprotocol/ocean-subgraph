@@ -1,4 +1,4 @@
-import { Address, BigDecimal, String } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal } from '@graphprotocol/graph-ts'
 import { DFAvailableClaim, DFReward } from '../../@types/schema'
 import { getUser } from './userUtils'
 
