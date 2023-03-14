@@ -151,7 +151,7 @@ describe('veOcean tests', async () => {
     const tx = await delegateContract.methods
       .create_boost(Alice, Bob, 100, 0, lockTime, 0)
       .send({
-        from: Bob
+        from: Alice
       })
     console.log('TX: ', tx)
   })
