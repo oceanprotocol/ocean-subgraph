@@ -13,7 +13,6 @@ import { homedir } from 'os'
 import fs from 'fs'
 import { fetch } from 'cross-fetch'
 import veDelegation from '@oceanprotocol/contracts/artifacts/contracts/ve/veDelegation.vy/veDelegation.json'
-import moment from 'moment'
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -140,18 +139,7 @@ describe('veOcean tests', async () => {
     assert(info[0].lockedAmount === currentBalance)
     assert(info[0].unlockTime === currentLock)
 
-    console.log('Alice', Alice)
-
-    const estGas = await calculateEstimatedGas(
-      Alice,
-      delegateContract.methods.setApprovalForAll,
-      Alice,
-      0
-    )
-    console.log('estGas', estGas)
-    console.log('info[0].unlockTime.unix', moment().unix())
     const lockTime = await veOcean.lockEnd(Alice)
-    console.log('lockTime', lockTime)
 
     const tx1 = await delegateContract.methods
       .setApprovalForAll(Alice, true)
@@ -161,7 +149,7 @@ describe('veOcean tests', async () => {
     console.log('TX1: ', tx1)
 
     const tx = await delegateContract.methods
-      .create_boost(Bob, Alice, 1000, 0, lockTime, 0)
+      .create_boost(Alice, Bob, 100, 0, lockTime, 0)
       .send({
         from: Bob
       })
