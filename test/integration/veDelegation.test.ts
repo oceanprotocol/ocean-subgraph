@@ -173,12 +173,15 @@ describe('Delegation tests', async () => {
       0
     )
     console.log('TX3: ', tx3)
+    console.log('Events: ', tx3.events.DelegateBoost)
+    console.log('Events: ', tx3.events.DelegateBoost.returnValues)
+
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
 
     const delegateQuery = {
       query: `query {
-        VeDelegation(id:"${Alice.toLowerCase()}"){    
+        veDelegations{    
           id
           delegator {
             id
@@ -199,7 +202,10 @@ describe('Delegation tests', async () => {
       method: 'POST',
       body: JSON.stringify(delegateQuery)
     })
-    const data = (await delegateResponse.json()).data.VeDelegation
-    console.log('Data', data)
+    const json = await delegateResponse.json()
+    console.log('Json', json)
+    console.log('Data', json?.data)
+    console.log('veDelegation', json?.data?.veDelegations)
+    assert(json?.data?.veDelegations, 'No veDelegations')
   })
 })
