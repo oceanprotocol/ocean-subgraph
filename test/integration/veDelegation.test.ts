@@ -106,6 +106,7 @@ describe('Delegation tests', async () => {
     )
     const timestamp = Math.floor(Date.now() / 1000)
     const unlockTime = timestamp + 7 * 86400
+    console.log('unlock time', unlockTime)
 
     if (parseInt(currentBalance) > 0 || currentLock > 0) {
       // we already have some locked tokens, so our transaction should fail
@@ -175,13 +176,15 @@ describe('Delegation tests', async () => {
     console.log('TX3: ', tx3)
     console.log('Events: ', tx3.events.DelegateBoost)
     console.log('Events: ', tx3.events.DelegateBoost.returnValues)
+    console.log('Events: ', tx3.events.DelegateBoost.returnValues._token_id)
 
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
 
+    sleep(3000)
     const delegateQuery = {
       query: `query {
-        veDelegations{    
+        veDelegation(id:"${tx3.events.DelegateBoost.returnValues._token_id}"){    
           id
           delegator {
             id
