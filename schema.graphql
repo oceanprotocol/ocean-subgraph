@@ -361,6 +361,7 @@ type OPC @entity {
     "fee in percent taken by OPC from providerFees"
     providerFee: BigDecimal
     approvedTokens: [Token!]
+    eventIndex: BigInt!
 }
 
  enum NftUpdateType {
@@ -398,6 +399,7 @@ type Template @entity{
   fixedRateTemplates: [String!]
   dispenserTemplates: [String!]
   ssTemplates: [String!]
+  eventIndex: BigInt!
 }
 
 # Not tracking allocationToId or idToAllocation
