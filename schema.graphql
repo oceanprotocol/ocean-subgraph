@@ -58,7 +58,7 @@ type Token @entity {
 
     lastPriceToken: Token
     lastPriceValue: BigDecimal!
-    eventIndex: Int!
+    eventIndex: BigInt!
 }
 
 "utility type"
@@ -117,7 +117,7 @@ type Nft @entity{
 
     nftData: [NftData!] @derivedFrom(field: "nft")
     transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
-    eventIndex: Int!
+    eventIndex: BigInt!
 }
 
 type NftData @entity{
@@ -140,7 +140,7 @@ type OrderReuse @entity {
   "gas price in Wei"
   gasPrice: BigInt
   gasUsed: BigDecimal
-  eventIndex: Int!
+  eventIndex: BigInt!
   }
 
 type Order @entity {  
@@ -178,7 +178,7 @@ type Order @entity {
   gasUsed: BigDecimal
   "gas price in Wei"
   gasPrice: BigInt
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type User @entity {
@@ -231,7 +231,7 @@ type FixedRateExchange @entity {
 
   "fee amount. Fixed value"             
   publishMarketSwapFee: BigDecimal
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type FixedRateExchangeUpdate @entity {
@@ -250,7 +250,7 @@ type FixedRateExchangeUpdate @entity {
   block: Int!
   createdTimestamp: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type FixedRateExchangeSwap @entity {
@@ -265,7 +265,7 @@ type FixedRateExchangeSwap @entity {
   oceanFeeAmount: BigDecimal!
   marketFeeAmount:  BigDecimal!
   consumeMarketFeeAmount: BigDecimal!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 
@@ -293,7 +293,7 @@ type Dispenser @entity {
   tx: String!                 
   
   dispenses: [DispenserTransaction!] @derivedFrom(field: "dispenser")
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type DispenserTransaction @entity {
@@ -305,7 +305,7 @@ type DispenserTransaction @entity {
   block: Int!
   createdTimestamp: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 "utility type"
@@ -390,7 +390,7 @@ type NftUpdate @entity {
   block: Int!
   timestamp: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type Template @entity{
@@ -413,7 +413,7 @@ type VeAllocateUser @entity{
   lastContact: Int!
   tx: String!
   veOcean: VeOCEAN!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type VeAllocateId @entity{
@@ -429,7 +429,7 @@ type VeAllocateId @entity{
   firstContact: Int!
   lastContact: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 # we need to track allocation of user to id
@@ -449,7 +449,7 @@ type VeAllocation @entity {
   firstContact: Int!
   lastContact: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 enum veAllocationUpdateType {
@@ -468,7 +468,7 @@ type VeAllocationUpdate @entity {
   block: Int!
   timestamp: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type VeDelegation @entity {
@@ -481,7 +481,7 @@ type VeDelegation @entity {
   cancelTime: BigInt!
   expireTime: BigInt!
   block: Int!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type VeOCEAN @entity {
@@ -497,11 +497,11 @@ type VeOCEAN @entity {
   claims: [VeClaim!] @derivedFrom(field: "veOcean")
   allocation: VeAllocateUser @derivedFrom(field: "veOcean")
   block: Int!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type VeDeposit @entity {
-  "id = {user address}-{tx}-{eventIndex}"
+  "id = {user address}-{tx}-{eventIndex: BigDecimal!}"
   id: ID!
   "veOcean holder"
   provider:String!
@@ -517,7 +517,7 @@ type VeDeposit @entity {
   block: Int!
   tx: String!
   veOcean: VeOCEAN!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 
@@ -541,7 +541,7 @@ type VeFeeDistributorCheckPoint @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 type VeClaim @entity {
@@ -558,7 +558,7 @@ type VeClaim @entity {
   tx: String!
   veOcean: VeOCEAN!
   VeFeeDistributor: VeFeeDistributor!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 enum DFHistoryType {
@@ -585,7 +585,7 @@ type DFHistory @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
 
@@ -606,6 +606,6 @@ type NftTransferHistory @entity {
   txId: String
   timestamp: Int!
   block: Int!
-  eventIndex: Int!
+  eventIndex: BigInt!
 }
 
