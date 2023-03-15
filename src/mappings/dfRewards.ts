@@ -28,7 +28,7 @@ export function handleAllocated(event: Allocated): void {
     history.timestamp = event.block.timestamp
     history.tx = event.transaction.hash.toHex()
     history.block = event.block.number.toI32()
-    history.eventId = event.logIndex
+    history.eventIndex = event.logIndex
     history.save()
 
     // update available claims
