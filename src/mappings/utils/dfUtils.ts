@@ -22,7 +22,7 @@ export function getDFReward(address: Address, txId: String): DFReward {
 export function getDFAvailableClaim(
   user: Address,
   token: Address,
-  txId: String,
+  txId: String
 ): DFAvailableClaim {
   const id = user.toHexString() + '-' + token.toHexString()
   let dfClaim = DFAvailableClaim.load(id)
