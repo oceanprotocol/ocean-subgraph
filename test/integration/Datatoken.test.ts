@@ -162,7 +162,8 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceValue
+          lastPriceValue,
+          eventIndex
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {
@@ -272,7 +273,8 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceValue
+          lastPriceValue,
+          eventIndex
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {
@@ -362,7 +364,7 @@ describe('Datatoken tests', async () => {
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
 
     const query = {
-      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}}}}`
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}},eventIndex}}`
     }
 
     await sleep(2000)

@@ -499,7 +499,6 @@ type VeOCEAN @entity {
   claims: [VeClaim!] @derivedFrom(field: "veOcean")
   allocation: VeAllocateUser @derivedFrom(field: "veOcean")
   block: Int!
-  eventIndex: BigInt!
 }
 
 type VeDeposit @entity {

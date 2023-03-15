@@ -36,7 +36,6 @@ export function handleDeposit(event: Deposit): void {
   veOCEAN.unlockTime = locktime
   veOCEAN.lockedAmount = veOCEAN.lockedAmount.plus(lockedAmount)
   veOCEAN.block = event.block.number.toI32()
-  veOCEAN.eventIndex = event.logIndex
   veOCEAN.save()
 }
 export function handleSupply(event: Supply): void {}
@@ -70,6 +69,5 @@ export function handleWithdraw(event: Withdraw): void {
   veOCEAN.lockedAmount = BigDecimal.zero()
   veOCEAN.unlockTime = BigInt.zero()
   veOCEAN.block = event.block.number.toI32()
-  veOCEAN.eventIndex = event.logIndex
   veOCEAN.save()
 }

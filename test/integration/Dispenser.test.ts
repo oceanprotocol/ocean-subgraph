@@ -139,7 +139,8 @@ describe('Dispenser tests', async () => {
                   createdTimestamp,
                   tx,
                   block,
-                  orderCount}}`
+                  orderCount,
+                  eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -202,7 +203,8 @@ describe('Dispenser tests', async () => {
             createdTimestamp,
             tx,
             block,
-            lastPriceValue
+            lastPriceValue,
+            eventIndex
           }}`
     }
     const dtResponse = await fetch(subgraphUrl, {
@@ -262,7 +264,7 @@ describe('Dispenser tests', async () => {
     assert((await datatoken.getPermissions(dtAddress, user1)).minter === true)
     await sleep(sleepMs)
     const minterQuery = {
-      query: `query {token(id: "${dtAddress}"){minter{id}}}`
+      query: `query {token(id: "${dtAddress}"){minter{id},eventIndex}}`
     }
 
     const minterResponse = await fetch(subgraphUrl, {
@@ -313,6 +315,7 @@ describe('Dispenser tests', async () => {
             dispenses {
               id
             }
+            eventIndex
             __typename
         }}`
     }
@@ -342,7 +345,7 @@ describe('Dispenser tests', async () => {
 
   it('Deactivates dispenser', async () => {
     const deactiveQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){active}}`
+      query: `query {dispenser(id: "${dispenserId}"){active,eventIndex}}`
     }
 
     const initialResponse = await fetch(subgraphUrl, {
@@ -368,7 +371,7 @@ describe('Dispenser tests', async () => {
 
   it('Activates exchange', async () => {
     const activeQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){active}}`
+      query: `query {dispenser(id: "${dispenserId}"){active,eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -402,6 +405,7 @@ describe('Dispenser tests', async () => {
           block
           createdTimestamp
           tx
+          eventIndex
           __typename
         }}}`
     }
@@ -440,7 +444,7 @@ describe('Dispenser tests', async () => {
 
     // Check balance after owner withdraw
     const balanceQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){balance}}`
+      query: `query {dispenser(id: "${dispenserId}"){balance,eventIndex}}`
     }
 
     const response = await fetch(subgraphUrl, {
@@ -454,7 +458,7 @@ describe('Dispenser tests', async () => {
 
   it('Updates allowed swapper', async () => {
     const swapperQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){allowedSwapper}}`
+      query: `query {dispenser(id: "${dispenserId}"){allowedSwapper,eventIndex}}`
     }
     // Check initial allowedSwapper
     const swapperResponse1 = await fetch(subgraphUrl, {

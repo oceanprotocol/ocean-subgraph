@@ -50,6 +50,7 @@ async function getSubgraphApprovedTokens() {
                 id
               }
             }
+            eventIndex
           }`
   }
   const initialResponse = await fetch(subgraphUrl, {

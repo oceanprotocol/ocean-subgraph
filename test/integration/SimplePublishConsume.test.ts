@@ -152,7 +152,7 @@ describe('Simple Publish & consume test', async () => {
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id}}`
+          nft(id:"${graphNftToken}"){symbol,id,eventIndex}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
@@ -191,7 +191,7 @@ describe('Simple Publish & consume test', async () => {
 
     const queryOriginalOwner = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner{id}}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner{id},eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -235,7 +235,7 @@ describe('Simple Publish & consume test', async () => {
     await sleep(2000)
     const query2 = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner{id}, transferable}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner{id}, transferable,eventIndex}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
@@ -283,7 +283,7 @@ describe('Simple Publish & consume test', async () => {
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}`
 
     const query = {
-      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
+      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
     }
 
     await sleep(2000)
@@ -357,7 +357,7 @@ describe('Simple Publish & consume test', async () => {
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}`
 
     const initialQuery = {
-      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
+      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
     }
     await sleep(2000)
     const initialResponse = await fetch(subgraphUrl, {
@@ -426,7 +426,7 @@ describe('Simple Publish & consume test', async () => {
     // Check the new provider fee has been set in OrderReuse
 
     const reuseQuery = {
-      query: `query {orderReuse(id:"${reusedOrder.transactionHash}"){id, providerFee}}`
+      query: `query {orderReuse(id:"${reusedOrder.transactionHash}"){id, providerFee, eventIndex}}`
     }
 
     await sleep(2000)

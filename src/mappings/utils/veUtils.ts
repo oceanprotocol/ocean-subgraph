@@ -21,7 +21,6 @@ export function getveOCEAN(id: string): VeOCEAN {
     ve.unlockTime = BigInt.zero()
     ve.lockedAmount = BigDecimal.zero()
     ve.block = 0
-    ve.eventIndex = BigInt.zero()
     ve.save()
   }
 
