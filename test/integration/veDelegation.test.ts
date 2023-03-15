@@ -46,7 +46,7 @@ const minAbi = [
 describe('Delegation tests', async () => {
   let veOcean: VeOcean
   let ownerAccount: string
-  let Alice: string
+  let Eve: string
   let Bob: string
   let delegateContract
   const configHelper = new ConfigHelper()
@@ -55,8 +55,8 @@ describe('Delegation tests', async () => {
   before(async () => {
     const accounts = await web3.eth.getAccounts()
     ownerAccount = accounts[0]
-    Alice = accounts[1]
     Bob = accounts[2]
+    Eve = accounts[4]
     delegateContract = new web3.eth.Contract(
       veDelegation.abi as AbiItem[],
       addresses.veDelegation
@@ -66,7 +66,7 @@ describe('Delegation tests', async () => {
     const estGas = await calculateEstimatedGas(
       ownerAccount,
       tokenContract.methods.mint,
-      Alice,
+      Eve,
       web3.utils.toWei('100000')
     )
     await sendTx(
@@ -75,7 +75,7 @@ describe('Delegation tests', async () => {
       web3,
       1,
       tokenContract.methods.mint,
-      Alice,
+      Eve,
       web3.utils.toWei('100000')
     )
     await sendTx(
@@ -90,69 +90,67 @@ describe('Delegation tests', async () => {
     veOcean = new VeOcean(addresses.veOCEAN, web3)
   })
 
-  it('Alice should lock 100 Ocean and Delegate them to Bob', async () => {
+  it('Eve should lock 100 Ocean and Delegate them to Bob', async () => {
     // since we can only lock once, we test if tx fails or not
     // so if there is already a lock, skip it
-    let currentBalance = await veOcean.getLockedAmount(Alice)
-    let currentLock = await veOcean.lockEnd(Alice)
+    let currentBalance = await veOcean.getLockedAmount(Eve)
+    let currentLock = await veOcean.lockEnd(Eve)
     const amount = '100'
-    await approve(
-      web3,
-      config,
-      Alice,
-      addresses.Ocean,
-      addresses.veOCEAN,
-      amount
-    )
+    await approve(web3, config, Eve, addresses.Ocean, addresses.veOCEAN, amount)
     const timestamp = Math.floor(Date.now() / 1000)
-    const unlockTime = timestamp + 7 * 86400
+    const unlockTime = timestamp + 30 * 86400
     console.log('unlock time', unlockTime)
 
     if (parseInt(currentBalance) > 0 || currentLock > 0) {
       // we already have some locked tokens, so our transaction should fail
       try {
-        await veOcean.lockTokens(Alice, amount, unlockTime)
+        await veOcean.lockTokens(Eve, amount, unlockTime)
         assert(false, 'This should fail!')
       } catch (e) {
         // do nothing
       }
     } else {
-      await veOcean.lockTokens(Alice, amount, unlockTime)
+      await veOcean.lockTokens(Eve, amount, unlockTime)
     }
-    currentBalance = await veOcean.getLockedAmount(Alice)
-    currentLock = await veOcean.lockEnd(Alice)
+    currentBalance = await veOcean.getLockedAmount(Eve)
+    currentLock = await veOcean.lockEnd(Eve)
     await sleep(2000)
     const initialQuery = {
       query: `query {
-                    veOCEANs(id:"${Alice.toLowerCase()}"){    
+                    veOCEANs(id:"${Eve.toLowerCase()}"){    
                       id,
                       lockedAmount,
                       unlockTime
                     }
                   }`
     }
+    await sleep(2000)
+
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
+    await sleep(2000)
+    console.log('initial response', initialResponse)
     const info = (await initialResponse.json()).data.veOCEANs
-    assert(info[0].id === Alice.toLowerCase(), 'ID is incorrect')
+    console.log('info', info)
+    assert(info[0].id === Eve.toLowerCase(), 'ID is incorrect')
     assert(info[0].lockedAmount === currentBalance, 'LockedAmount is incorrect')
     assert(info[0].unlockTime === currentLock, 'Unlock time is not correct')
 
-    const lockTime = await veOcean.lockEnd(Alice)
+    const lockTime = await veOcean.lockEnd(Eve)
     const extLockTime = Number(lockTime) + 31556926
 
-    await delegateContract.methods.setApprovalForAll(Alice, true).send({
-      from: Alice
+    await delegateContract.methods.setApprovalForAll(Eve, true).send({
+      from: Eve
     })
 
-    await veOcean.increaseUnlockTime(Alice, extLockTime)
+    await veOcean.increaseUnlockTime(Eve, extLockTime)
 
     const estGas = await calculateEstimatedGas(
-      Alice,
+      Eve,
       delegateContract.methods.create_boost,
-      Alice,
+      Eve,
       Bob,
       10000,
       0,
@@ -161,12 +159,12 @@ describe('Delegation tests', async () => {
     )
 
     const tx3 = await sendTx(
-      Alice,
+      Eve,
       estGas,
       web3,
       1,
       delegateContract.methods.create_boost,
-      Alice,
+      Eve,
       Bob,
       10000,
       0,
