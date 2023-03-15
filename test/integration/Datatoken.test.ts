@@ -171,8 +171,10 @@ describe('Datatoken tests', async () => {
     })
     await sleep(2000)
     const dt = (await initialResponse.json()).data.token
+    assert(dt !== undefined, 'undefined token')
+    const dtTx = dt.tx
 
-    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dtTx)
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')
@@ -279,8 +281,10 @@ describe('Datatoken tests', async () => {
     })
     await sleep(2000)
     const dt = (await initialResponse.json()).data.token
+    assert(dt !== undefined, 'undefined token')
+    const dtTx = dt.tx
 
-    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dtTx)
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')

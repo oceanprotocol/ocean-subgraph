@@ -281,7 +281,6 @@ export function handleNftData(event: DataChanged): void {
   if (data == null) {
     data = new NftData(id)
   }
-  data.tx = event.transaction.hash.toHex()
   data.key = event.params.key
   data.value = event.params.value
   data.nft = nft.id
