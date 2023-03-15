@@ -58,6 +58,7 @@ type Token @entity {
 
     lastPriceToken: Token
     lastPriceValue: BigDecimal!
+    eventIndex: Int!
 }
 
 "utility type"
@@ -116,6 +117,7 @@ type Nft @entity{
 
     nftData: [NftData!] @derivedFrom(field: "nft")
     transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
+    eventIndex: Int!
 }
 
 type NftData @entity{
@@ -138,6 +140,7 @@ type OrderReuse @entity {
   "gas price in Wei"
   gasPrice: BigInt
   gasUsed: BigDecimal
+  eventIndex: Int!
   }
 
 type Order @entity {  
@@ -175,6 +178,7 @@ type Order @entity {
   gasUsed: BigDecimal
   "gas price in Wei"
   gasPrice: BigInt
+  eventIndex: Int!
 }
 
 type User @entity {
@@ -226,8 +230,8 @@ type FixedRateExchange @entity {
   publishMarketFeeAddress: String 
 
   "fee amount. Fixed value"             
-  publishMarketSwapFee: BigDecimal   
-
+  publishMarketSwapFee: BigDecimal
+  eventIndex: Int!
 }
 
 type FixedRateExchangeUpdate @entity {
@@ -246,6 +250,7 @@ type FixedRateExchangeUpdate @entity {
   block: Int!
   createdTimestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type FixedRateExchangeSwap @entity {
@@ -260,6 +265,7 @@ type FixedRateExchangeSwap @entity {
   oceanFeeAmount: BigDecimal!
   marketFeeAmount:  BigDecimal!
   consumeMarketFeeAmount: BigDecimal!
+  eventIndex: Int!
 }
 
 
@@ -287,6 +293,7 @@ type Dispenser @entity {
   tx: String!                 
   
   dispenses: [DispenserTransaction!] @derivedFrom(field: "dispenser")
+  eventIndex: Int!
 }
 
 type DispenserTransaction @entity {
@@ -298,6 +305,7 @@ type DispenserTransaction @entity {
   block: Int!
   createdTimestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 "utility type"
@@ -382,6 +390,7 @@ type NftUpdate @entity {
   block: Int!
   timestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type Template @entity{
@@ -404,6 +413,7 @@ type VeAllocateUser @entity{
   lastContact: Int!
   tx: String!
   veOcean: VeOCEAN!
+  eventIndex: Int!
 }
 
 type VeAllocateId @entity{
@@ -419,6 +429,7 @@ type VeAllocateId @entity{
   firstContact: Int!
   lastContact: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 # we need to track allocation of user to id
@@ -438,6 +449,7 @@ type VeAllocation @entity {
   firstContact: Int!
   lastContact: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 enum veAllocationUpdateType {
@@ -456,6 +468,7 @@ type VeAllocationUpdate @entity {
   block: Int!
   timestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type VeDelegation @entity {
@@ -468,6 +481,7 @@ type VeDelegation @entity {
   cancelTime: BigInt!
   expireTime: BigInt!
   block: Int!
+  eventIndex: Int!
 }
 
 type VeOCEAN @entity {
@@ -483,6 +497,7 @@ type VeOCEAN @entity {
   claims: [VeClaim!] @derivedFrom(field: "veOcean")
   allocation: VeAllocateUser @derivedFrom(field: "veOcean")
   block: Int!
+  eventIndex: Int!
 }
 
 type VeDeposit @entity {
@@ -502,6 +517,7 @@ type VeDeposit @entity {
   block: Int!
   tx: String!
   veOcean: VeOCEAN!
+  eventIndex: Int!
 }
 
 
@@ -525,6 +541,7 @@ type VeFeeDistributorCheckPoint @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type VeClaim @entity {
@@ -541,6 +558,7 @@ type VeClaim @entity {
   tx: String!
   veOcean: VeOCEAN!
   VeFeeDistributor: VeFeeDistributor!
+  eventIndex: Int!
 }
 
 enum DFHistoryType {
@@ -567,6 +585,7 @@ type DFHistory @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 
@@ -587,5 +606,6 @@ type NftTransferHistory @entity {
   txId: String
   timestamp: Int!
   block: Int!
+  eventIndex: Int!
 }
 

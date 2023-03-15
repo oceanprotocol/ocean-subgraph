@@ -35,6 +35,7 @@ export function handleOPCFeeChanged(event: OPCFeeChanged): void {
     event.params.newProviderFee.toBigDecimal(),
     decimals
   )
+  opc.eventIndex = event.logIndex
   opc.save()
 }
 
@@ -73,6 +74,7 @@ export function handleTokenAdded(event: TokenAdded): void {
 
   opc.approvedTokens = existingTokens
 
+  opc.eventIndex = event.logIndex
   opc.save()
 }
 
@@ -89,6 +91,7 @@ export function handleTokenRemoved(event: TokenRemoved): void {
     if (role != event.params.token.toHexString()) newList.push(role)
   }
   opc.approvedTokens = newList
+  opc.eventIndex = event.logIndex
   opc.save()
 }
 export function handleSSContractAdded(event: SSContractAdded): void {
@@ -100,6 +103,7 @@ export function handleSSContractAdded(event: SSContractAdded): void {
   if (!existingContracts.includes(event.params.contractAddress.toHexString()))
     existingContracts.push(event.params.contractAddress.toHexString())
   templates.ssTemplates = existingContracts
+  templates.eventIndex = event.logIndex
   templates.save()
 }
 export function handleSSContractRemoved(event: SSContractRemoved): void {
@@ -115,6 +119,7 @@ export function handleSSContractRemoved(event: SSContractRemoved): void {
     if (role != event.params.contractAddress.toHexString()) newList.push(role)
   }
   templates.ssTemplates = newList
+  templates.eventIndex = event.logIndex
   templates.save()
 }
 
@@ -130,6 +135,7 @@ export function handleFixedRateContractAdded(
   if (!existingContracts.includes(event.params.contractAddress.toHexString()))
     existingContracts.push(event.params.contractAddress.toHexString())
   templates.fixedRateTemplates = existingContracts
+  templates.eventIndex = event.logIndex
   templates.save()
 }
 export function handleFixedRateContractRemoved(
@@ -147,6 +153,7 @@ export function handleFixedRateContractRemoved(
     if (role != event.params.contractAddress.toHexString()) newList.push(role)
   }
   templates.fixedRateTemplates = newList
+  templates.eventIndex = event.logIndex
   templates.save()
 }
 export function handleDispenserContractAdded(
@@ -161,6 +168,7 @@ export function handleDispenserContractAdded(
   if (!existingContracts.includes(event.params.contractAddress.toHexString()))
     existingContracts.push(event.params.contractAddress.toHexString())
   templates.dispenserTemplates = existingContracts
+  templates.eventIndex = event.logIndex
   templates.save()
 }
 export function handleDispenserContractRemoved(
@@ -178,5 +186,6 @@ export function handleDispenserContractRemoved(
     if (role != event.params.contractAddress.toHexString()) newList.push(role)
   }
   templates.dispenserTemplates = newList
+  templates.eventIndex = event.logIndex
   templates.save()
 }

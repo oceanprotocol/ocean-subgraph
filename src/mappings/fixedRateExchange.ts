@@ -51,6 +51,7 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedRateExchange.createdTimestamp = event.block.timestamp.toI32()
   fixedRateExchange.tx = event.transaction.hash.toHex()
   fixedRateExchange.block = event.block.number.toI32()
+  fixedRateExchange.eventIndex = event.logIndex
   fixedRateExchange.save()
 
   addFixedRateExchange()
@@ -77,6 +78,7 @@ export function handleRateChange(event: ExchangeRateChanged): void {
     BigInt.fromI32(18).toI32()
   )
   newExchangeUpdate.newPrice = fixedRateExchange.price
+  newExchangeUpdate.eventIndex = event.logIndex
 
   newExchangeUpdate.save()
   fixedRateExchange.save()
@@ -89,6 +91,7 @@ export function handleMintStateChanged(event: ExchangeMintStateChanged): void {
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
   fixedRateExchange.withMint = event.params.withMint
+  fixedRateExchange.eventIndex = event.logIndex
   fixedRateExchange.save()
 }
 
@@ -109,6 +112,7 @@ export function handleActivated(event: ExchangeActivated): void {
   newExchangeUpdate.block = event.block.number.toI32()
 
   fixedRateExchange.active = true
+  newExchangeUpdate.eventIndex = event.logIndex
 
   newExchangeUpdate.save()
   fixedRateExchange.save()
@@ -132,6 +136,7 @@ export function handleDeactivated(event: ExchangeDeactivated): void {
   newExchangeUpdate.block = event.block.number.toI32()
 
   fixedRateExchange.active = false
+  newExchangeUpdate.eventIndex = event.logIndex
   newExchangeUpdate.save()
   fixedRateExchange.save()
 }
@@ -154,6 +159,7 @@ export function handleAllowedSwapperChanged(
   newExchangeUpdate.exchangeId = fixedRateId
   fixedRateExchange.allowedSwapper = event.params.allowedSwapper.toHex()
   newExchangeUpdate.newAllowedSwapper = fixedRateExchange.allowedSwapper
+  newExchangeUpdate.eventIndex = event.logIndex
   newExchangeUpdate.save()
   fixedRateExchange.save()
 }
@@ -205,6 +211,7 @@ export function handleSwap(event: Swapped): void {
     BigInt.fromI32(baseToken.decimals).toI32()
   )
 
+  swap.eventIndex = event.logIndex
   swap.save()
 
   updateFixedRateExchangeSupply(event.params.exchangeId, event.address)
@@ -226,6 +233,7 @@ export function handleSwap(event: Swapped): void {
   )
   datatoken.lastPriceToken = priceToken.id
   datatoken.lastPriceValue = fixedRateExchange.price
+  datatoken.eventIndex = event.logIndex
   datatoken.save()
 }
 
@@ -244,6 +252,7 @@ export function handlePublishMarketFeeChanged(
       event.params.swapFee.toBigDecimal(),
       BigInt.fromI32(18).toI32()
     )
+    fixedRateExchange.eventIndex = event.logIndex
     fixedRateExchange.save()
   }
 }
@@ -261,6 +270,7 @@ export function handleTokenCollected(event: TokenCollected): void {
       fixedRateExchange.baseTokenBalance.minus(
         weiToDecimal(event.params.amount.toBigDecimal(), baseToken.decimals)
       )
+    fixedRateExchange.eventIndex = event.logIndex
     fixedRateExchange.save()
   }
 }

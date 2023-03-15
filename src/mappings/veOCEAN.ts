@@ -28,6 +28,7 @@ export function handleDeposit(event: Deposit): void {
   deposit.tx = event.transaction.hash.toHex()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
+  deposit.eventIndex = event.logIndex
   deposit.save()
   // --------------------------------------------
 
@@ -35,6 +36,7 @@ export function handleDeposit(event: Deposit): void {
   veOCEAN.unlockTime = locktime
   veOCEAN.lockedAmount = veOCEAN.lockedAmount.plus(lockedAmount)
   veOCEAN.block = event.block.number.toI32()
+  veOCEAN.eventIndex = event.logIndex
   veOCEAN.save()
 }
 export function handleSupply(event: Supply): void {}
@@ -61,11 +63,13 @@ export function handleWithdraw(event: Withdraw): void {
   deposit.tx = event.transaction.hash.toHex()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
+  deposit.eventIndex = event.logIndex
   deposit.save()
   // --------------------------------------------
 
   veOCEAN.lockedAmount = BigDecimal.zero()
   veOCEAN.unlockTime = BigInt.zero()
   veOCEAN.block = event.block.number.toI32()
+  veOCEAN.eventIndex = event.logIndex
   veOCEAN.save()
 }

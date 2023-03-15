@@ -21,6 +21,7 @@ export function getveOCEAN(id: string): VeOCEAN {
     ve.unlockTime = BigInt.zero()
     ve.lockedAmount = BigDecimal.zero()
     ve.block = 0
+    ve.eventIndex = 0
     ve.save()
   }
 
@@ -42,6 +43,7 @@ export function getveAllocateUser(
     allocateUser.lastContact = 0
     const veOcean = getveOCEAN(sender)
     allocateUser.veOcean = veOcean.id
+    allocateUser.eventIndex = event.logIndex
 
     allocateUser.save()
   }
@@ -64,6 +66,7 @@ export function getveAllocateId(
     allocateId.lastContact = 0
     allocateId.chainId = BigInt.zero()
     allocateId.nftAddress = ''
+    allocateId.eventIndex = event.logIndex
 
     allocateId.save()
   }
@@ -89,6 +92,7 @@ export function getveAllocation(
     veAllocation.tx = event.transaction.hash.toHex()
     veAllocation.block = event.block.number.toI32()
     veAllocation.lastContact = 0
+    veAllocation.eventIndex = event.logIndex
 
     veAllocation.save()
   }
@@ -114,6 +118,7 @@ export function writeveAllocationUpdate(
     allocationUpdate.timestamp = event.block.timestamp.toI32()
     allocationUpdate.tx = event.transaction.hash.toHex()
     allocationUpdate.block = event.block.number.toI32()
+    allocationUpdate.eventIndex = event.logIndex
 
     allocationUpdate.save()
   }
@@ -133,6 +138,7 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.receiver = ''
     veDelegation.delegator = ''
     veDelegation.block = 0
+    veDelegation.eventIndex = 0
     veDelegation.save()
   }
   return veDelegation
@@ -151,6 +157,7 @@ export function getDeposit(id: string): VeDeposit {
     deposit.timestamp = BigInt.zero()
     deposit.tx = ''
     deposit.block = 0
+    deposit.eventIndex = 0
     // do not save it
     // deposit.save()
   }
@@ -200,6 +207,10 @@ export function handleOneAllocation(
 
   allocateId.chainId = chainId
   allocateId.nftAddress = nftAddress
+
+  allocateUser.eventIndex = event.logIndex
+  allocateId.eventIndex = event.logIndex
+  veAllocation.eventIndex = event.logIndex
 
   // save entities
   allocateUser.save()

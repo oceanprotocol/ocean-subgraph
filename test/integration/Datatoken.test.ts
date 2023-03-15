@@ -169,7 +169,7 @@ describe('Datatoken tests', async () => {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2000)
+    await sleep(2500)
     const dt = (await initialResponse.json()).data.token
     assert(dt !== undefined, 'undefined token')
     const dtTx = dt.tx

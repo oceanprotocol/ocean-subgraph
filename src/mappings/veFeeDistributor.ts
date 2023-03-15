@@ -28,6 +28,7 @@ export function handleClaimed(event: Claimed): void {
   claim.block = event.block.number.toI32()
   claim.tx = event.transaction.hash.toHex()
   claim.timestamp = event.block.timestamp
+  claim.eventIndex = event.logIndex
   claim.save()
 }
 
@@ -46,5 +47,6 @@ export function handleCheckpoint(event: CheckpointToken): void {
   checkpoint.tx = event.transaction.hash.toHex()
   checkpoint.timestamp = event.params.time
   checkpoint.VeFeeDistributor = distributor.id
+  checkpoint.eventIndex = event.logIndex
   checkpoint.save()
 }
