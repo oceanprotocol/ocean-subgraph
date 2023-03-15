@@ -9,10 +9,7 @@ export function handleAllocated(event: Allocated): void {
   // loop all allocations
   const token = getToken(event.params.tokenAddress, false)
   for (let i = 0; i < event.params.tos.length; i++) {
-    const reward = getDFReward(
-      event.params.tos[i],
-      event.transaction.hash.toHex()
-    )
+    const reward = getDFReward(event.params.tos[i])
 
     const history = new DFHistory(
       event.params.tos[i].toHexString() +
@@ -36,8 +33,7 @@ export function handleAllocated(event: Allocated): void {
     // update available claims
     const claim = getDFAvailableClaim(
       event.params.tos[i],
-      event.params.tokenAddress,
-      event.transaction.hash.toHex()
+      event.params.tokenAddress
     )
     claim.amount = claim.amount.plus(history.amount)
     claim.save()
@@ -47,7 +43,7 @@ export function handleAllocated(event: Allocated): void {
 export function handleClaimed(event: Claimed): void {
   // loop all allocations
   const token = getToken(event.params.tokenAddress, false)
-  const reward = getDFReward(event.params.to, event.transaction.hash.toHex())
+  const reward = getDFReward(event.params.to)
   const history = new DFHistory(
     event.transaction.hash.toHex() + '-' + event.logIndex.toString()
   )
@@ -64,11 +60,7 @@ export function handleClaimed(event: Claimed): void {
   history.save()
 
   // update available claims
-  const claim = getDFAvailableClaim(
-    event.params.to,
-    event.params.tokenAddress,
-    event.transaction.hash.toHex()
-  )
+  const claim = getDFAvailableClaim(event.params.to, event.params.tokenAddress)
   claim.amount = claim.amount.minus(history.amount)
   claim.save()
 }

@@ -35,7 +35,6 @@ export function handleOPCFeeChanged(event: OPCFeeChanged): void {
     event.params.newProviderFee.toBigDecimal(),
     decimals
   )
-  opc.tx = event.transaction.hash.toHex()
   opc.save()
 }
 
@@ -73,7 +72,6 @@ export function handleTokenAdded(event: TokenAdded): void {
   }
 
   opc.approvedTokens = existingTokens
-  opc.tx = event.transaction.hash.toHex()
 
   opc.save()
 }
@@ -91,13 +89,11 @@ export function handleTokenRemoved(event: TokenRemoved): void {
     if (role != event.params.token.toHexString()) newList.push(role)
   }
   opc.approvedTokens = newList
-  opc.tx = event.transaction.hash.toHex()
   opc.save()
 }
 export function handleSSContractAdded(event: SSContractAdded): void {
   // add token to approvedTokens
   const templates = getTemplates()
-  templates.tx = event.transaction.hash.toHex()
   let existingContracts: string[]
   if (!templates.ssTemplates) existingContracts = []
   else existingContracts = templates.ssTemplates as string[]
@@ -108,7 +104,6 @@ export function handleSSContractAdded(event: SSContractAdded): void {
 }
 export function handleSSContractRemoved(event: SSContractRemoved): void {
   const templates = getTemplates()
-  templates.tx = event.transaction.hash.toHex()
   const newList: string[] = []
   let existingContracts: string[]
   if (!templates.ssTemplates) existingContracts = []
@@ -129,7 +124,6 @@ export function handleFixedRateContractAdded(
   FixedRateExchange.create(event.params.contractAddress)
   // add token to approvedTokens
   const templates = getTemplates()
-  templates.tx = event.transaction.hash.toHex()
   let existingContracts: string[]
   if (!templates.fixedRateTemplates) existingContracts = []
   else existingContracts = templates.fixedRateTemplates as string[]
@@ -142,7 +136,6 @@ export function handleFixedRateContractRemoved(
   event: FixedRateContractRemoved
 ): void {
   const templates = getTemplates()
-  templates.tx = event.transaction.hash.toHex()
   const newList: string[] = []
   let existingContracts: string[]
   if (!templates.fixedRateTemplates) existingContracts = []
@@ -162,7 +155,6 @@ export function handleDispenserContractAdded(
   Dispenser.create(event.params.contractAddress)
 
   const templates = getTemplates()
-  templates.tx = event.transaction.hash.toHex()
   let existingContracts: string[]
   if (!templates.dispenserTemplates) existingContracts = []
   else existingContracts = templates.dispenserTemplates as string[]
@@ -175,7 +167,6 @@ export function handleDispenserContractRemoved(
   event: DispenserContractRemoved
 ): void {
   const templates = getTemplates()
-  templates.tx = event.transaction.hash.toHex()
   const newList: string[] = []
   let existingContracts: string[]
   if (!templates.dispenserTemplates) existingContracts = []

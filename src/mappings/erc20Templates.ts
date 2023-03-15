@@ -149,7 +149,6 @@ export function handlePublishMarketFeeChanged(
     event.params.PublishMarketFeeAmount.toBigDecimal(),
     decimals
   )
-  token.tx = event.transaction.hash.toHex()
   token.save()
   // TODO - shold we have a history
 }
@@ -164,7 +163,6 @@ export function handleAddedMinter(event: AddedMinter): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   token.minter = existingRoles
-  token.tx = event.transaction.hash.toHex()
   token.save()
 }
 
@@ -181,7 +179,6 @@ export function handleRemovedMinter(event: RemovedMinter): void {
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   token.minter = newList
-  token.tx = event.transaction.hash.toHex()
   token.save()
 }
 
@@ -193,7 +190,6 @@ export function handleAddedPaymentManager(event: AddedPaymentManager): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   token.paymentManager = existingRoles
-  token.tx = event.transaction.hash.toHex()
   token.save()
 }
 export function handleRemovedPaymentManager(
@@ -211,7 +207,6 @@ export function handleRemovedPaymentManager(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   token.paymentManager = newList
-  token.tx = event.transaction.hash.toHex()
   token.save()
 }
 export function handleCleanedPermissions(event: CleanedPermissions): void {
@@ -222,14 +217,12 @@ export function handleCleanedPermissions(event: CleanedPermissions): void {
   const nft = Nft.load(token.nft as string)
   if (nft) token.paymentCollector = nft.owner
   else token.paymentCollector = '0x0000000000000000000000000000000000000000'
-  token.tx = event.transaction.hash.toHex()
   token.save()
 }
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {
   const token = getToken(event.address, true)
   token.paymentCollector = event.params._newPaymentCollector.toHexString()
-  token.tx = event.transaction.hash.toHex()
   token.save()
 }
 
@@ -252,7 +245,6 @@ export function handleProviderFee(event: ProviderFee): void {
   if (order) {
     order.providerFee = providerFee
     order.providerFeeValidUntil = event.params.validUntil
-    order.tx = event.transaction.hash.toHex()
     order.save()
     return
   }
@@ -261,7 +253,6 @@ export function handleProviderFee(event: ProviderFee): void {
   if (orderReuse) {
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.tx = event.transaction.hash.toHex()
     orderReuse.save()
   } else {
     orderReuse = new OrderReuse(event.transaction.hash.toHex())
