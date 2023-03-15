@@ -30,7 +30,7 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   token.createdTimestamp = 0
   token.block = 0
   token.tx = ''
-  token.eventIndex = 0
+  token.eventIndex = BigInt.zero()
   token.save()
   return token
 }
@@ -61,7 +61,7 @@ export function createNftToken(address: Address): Nft {
   token.tx = ''
   token.orderCount = BigInt.zero()
   token.hasMetadata = false
-  token.eventIndex = 0
+  token.eventIndex = BigInt.zero()
   token.save()
   addNft()
   return token
@@ -95,7 +95,7 @@ export function getNftTokenWithID(tokenId: string): Nft {
     nftToken.tx = ''
     nftToken.orderCount = BigInt.zero()
     nftToken.hasMetadata = false
-    nftToken.eventIndex = 0
+    nftToken.eventIndex = BigInt.zero()
     nftToken.save()
     addNft()
   }

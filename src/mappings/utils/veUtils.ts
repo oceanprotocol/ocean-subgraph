@@ -21,7 +21,7 @@ export function getveOCEAN(id: string): VeOCEAN {
     ve.unlockTime = BigInt.zero()
     ve.lockedAmount = BigDecimal.zero()
     ve.block = 0
-    ve.eventIndex = 0
+    ve.eventIndex = BigInt.zero()
     ve.save()
   }
 
@@ -138,7 +138,7 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.receiver = ''
     veDelegation.delegator = ''
     veDelegation.block = 0
-    veDelegation.eventIndex = 0
+    veDelegation.eventIndex = BigInt.zero()
     veDelegation.save()
   }
   return veDelegation
@@ -157,7 +157,7 @@ export function getDeposit(id: string): VeDeposit {
     deposit.timestamp = BigInt.zero()
     deposit.tx = ''
     deposit.block = 0
-    deposit.eventIndex = 0
+    deposit.eventIndex = BigInt.zero()
     // do not save it
     // deposit.save()
   }
