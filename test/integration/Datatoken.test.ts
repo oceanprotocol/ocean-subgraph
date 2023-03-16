@@ -135,7 +135,7 @@ describe('Datatoken tests', async () => {
     datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
 
     // Check values before updating metadata
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -162,14 +162,15 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceValue
+          lastPriceValue,
+          eventIndex
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2000)
+    await sleep(3000)
     const dt = (await initialResponse.json()).data.token
 
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -214,6 +215,7 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    assert(dt.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 
   it('Correct Datatoken fields after updating metadata', async () => {
@@ -243,7 +245,7 @@ describe('Datatoken tests', async () => {
     )
 
     // Check values before updating metadata
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -270,14 +272,15 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceValue
+          lastPriceValue,
+          eventIndex
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2000)
+    await sleep(3000)
     const dt = (await initialResponse.json()).data.token
 
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -321,6 +324,7 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    assert(dt.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 
   it('Check datatoken orders are updated correctly after publishing & ordering a datatoken', async () => {
@@ -347,7 +351,7 @@ describe('Datatoken tests', async () => {
       nftParams,
       erc20Params
     )
-    await sleep(2000)
+    await sleep(3000)
     const newDtAddress = result.events.TokenCreated.returnValues[0]
 
     const datatoken = new Datatoken(web3, 8996)
@@ -358,20 +362,21 @@ describe('Datatoken tests', async () => {
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
 
     const query = {
-      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}}}}`
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}}, eventIndex}}`
     }
 
-    await sleep(2000)
+    await sleep(3000)
     let response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
-
+    await sleep(3000)
     const initialToken = (await response.json()).data.token
 
     assert(initialToken, 'Invalid initialToken')
     assert(initialToken.orderCount === '0', 'Invalid initial orderCount')
     assert(initialToken.orders.length === 0, 'Invalid initial orders')
+    assert(initialToken.eventIndex !== null, 'Invalid eventIndex')
 
     const providerData = JSON.stringify({ timeout: 0 })
     const providerFeeToken = ZERO_ADDRESS
@@ -407,11 +412,12 @@ describe('Datatoken tests', async () => {
     assert(orderTx, 'Invalid orderTx')
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}`
 
-    await sleep(2000)
+    await sleep(3000)
     response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
+    await sleep(3000)
 
     const token = (await response.json()).data.token
 
@@ -420,5 +426,6 @@ describe('Datatoken tests', async () => {
     assert(token.orders[0].id === orderId)
     assert(token.orders[0].lastPriceToken.id === ZERO_ADDRESS)
     assert(token.orders[0].nftOwner.id === publisher, 'invalid nftOwner')
+    assert(token.eventIndex !== null, 'Invalid eventIndex')
   })
 })

@@ -58,6 +58,7 @@ type Token @entity {
 
     lastPriceToken: Token
     lastPriceValue: BigDecimal!
+    eventIndex: Int!
 }
 
 "utility type"
@@ -116,6 +117,8 @@ type Nft @entity{
 
     nftData: [NftData!] @derivedFrom(field: "nft")
     transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
+
+    eventIndex: Int!
 }
 
 type NftData @entity{

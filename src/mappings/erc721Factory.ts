@@ -25,6 +25,7 @@ export function handleNftCreated(event: NFTCreated): void {
   nft.createdTimestamp = event.block.timestamp.toI32()
   nft.tx = event.transaction.hash.toHex()
   nft.block = event.block.number.toI32()
+  nft.eventIndex = event.logIndex.toI32()
   nft.transferable = event.params.transferable
 
   nft.save()
@@ -39,6 +40,7 @@ export function handleNewToken(event: TokenCreated): void {
   token.createdTimestamp = event.block.timestamp.toI32()
   token.tx = event.transaction.hash.toHex()
   token.block = event.block.number.toI32()
+  token.eventIndex = event.logIndex.toI32()
 
   token.nft = event.params.creator.toHexString()
 
