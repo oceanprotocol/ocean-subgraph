@@ -73,7 +73,7 @@ describe('Tests coverage without provider/aquarius', async () => {
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,eventIndex}}`
+          nft(id:"${graphNftToken}"){symbol,id}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
@@ -125,7 +125,7 @@ describe('Tests coverage without provider/aquarius', async () => {
             id,
             owner{id}, 
             transferable, 
-            transferHistory(orderBy: timestamp, orderDirection: desc){id,nft,oldOwner,newOwner,txId,timestamp,block,eventIndex}
+            transferHistory(orderBy: timestamp, orderDirection: desc){id,nft,oldOwner,newOwner,txId,timestamp,block}
           }}`
     }
     const response = await fetch(subgraphUrl, {

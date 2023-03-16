@@ -24,7 +24,6 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.block = event.block.number.toI32()
-  veDelegation.eventIndex = event.logIndex
   veDelegation.save()
 }
 
@@ -43,7 +42,6 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegation.amount = _amount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
-  veDelegation.eventIndex = event.logIndex
   veDelegation.save()
 }
 

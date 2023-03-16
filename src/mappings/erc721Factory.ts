@@ -26,7 +26,6 @@ export function handleNftCreated(event: NFTCreated): void {
   nft.tx = event.transaction.hash.toHex()
   nft.block = event.block.number.toI32()
   nft.transferable = event.params.transferable
-  nft.eventIndex = event.logIndex
 
   nft.save()
 }
@@ -66,7 +65,7 @@ export function handleNewToken(event: TokenCreated): void {
       token.templateId = 1 + i
     }
   }
-  token.eventIndex = event.logIndex
+
   token.save()
   addDatatoken()
 }

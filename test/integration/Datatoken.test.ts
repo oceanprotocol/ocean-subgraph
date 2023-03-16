@@ -162,20 +162,17 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceValue,
-          eventIndex
+          lastPriceValue
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2500)
+    await sleep(2000)
     const dt = (await initialResponse.json()).data.token
-    assert(dt !== undefined, 'undefined token')
-    const dtTx = dt.tx
 
-    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dtTx)
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')
@@ -273,8 +270,7 @@ describe('Datatoken tests', async () => {
           createdTimestamp,
           tx,
           block,
-          lastPriceValue,
-          eventIndex
+          lastPriceValue
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {
@@ -283,10 +279,8 @@ describe('Datatoken tests', async () => {
     })
     await sleep(2000)
     const dt = (await initialResponse.json()).data.token
-    assert(dt !== undefined, 'undefined token')
-    const dtTx = dt.tx
 
-    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dtTx)
+    const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')
@@ -364,7 +358,7 @@ describe('Datatoken tests', async () => {
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
 
     const query = {
-      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}},eventIndex}}`
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}}}}`
     }
 
     await sleep(2000)

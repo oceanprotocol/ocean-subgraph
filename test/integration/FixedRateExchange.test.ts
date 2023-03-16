@@ -152,8 +152,7 @@ describe('Fixed Rate Exchange tests', async () => {
                 createdTimestamp,
                 tx,
                 block,
-                orderCount,
-                eventIndex}}`
+                orderCount}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -223,8 +222,7 @@ describe('Fixed Rate Exchange tests', async () => {
           tx,
           block,
           lastPriceToken,
-          lastPriceValue,
-          eventIndex
+          lastPriceValue
         }}`
     }
     const dtResponse = await fetch(subgraphUrl, {
@@ -314,8 +312,7 @@ describe('Fixed Rate Exchange tests', async () => {
           tx
           block
           publishMarketFeeAddress
-          publishMarketSwapFee,
-          eventIndex
+          publishMarketSwapFee
         }
       }`
     }
@@ -401,7 +398,6 @@ describe('Fixed Rate Exchange tests', async () => {
           }
           oldPrice
           newPrice
-          eventIndex
         }
       }}`
     }
@@ -471,7 +467,7 @@ describe('Fixed Rate Exchange tests', async () => {
   })
   it('Deactivates exchange', async () => {
     const deactiveQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active,eventIndex}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
     }
 
     const initialResponse = await fetch(subgraphUrl, {
@@ -498,7 +494,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
   it('Activates exchange', async () => {
     const activeQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active,eventIndex}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -524,7 +520,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
   it('Activate Minting', async () => {
     const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint,eventIndex}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -551,7 +547,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
   it('Deactivate Minting', async () => {
     const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint,eventIndex}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -591,7 +587,6 @@ describe('Fixed Rate Exchange tests', async () => {
           oceanFeeAmount
           marketFeeAmount
           consumeMarketFeeAmount
-          eventIndex
           __typename
         }  
       }}`
@@ -697,7 +692,6 @@ describe('Fixed Rate Exchange tests', async () => {
           createdTimestamp
           tx
           oceanFeeAmount
-          eventIndex
           __typename
         }  
       }}`
@@ -726,7 +720,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
   it('Updates allowed swapper', async () => {
     const swapperQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper,eventIndex}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper}}`
     }
     // Check initial allowedSwapper
     const swapperResponse1 = await fetch(subgraphUrl, {

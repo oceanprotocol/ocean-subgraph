@@ -144,8 +144,7 @@ describe('NFT tests', async () => {
                 createdTimestamp,
                 tx,
                 block,
-                orderCount,
-                eventIndex}}`
+                orderCount}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -234,8 +233,7 @@ describe('NFT tests', async () => {
                 createdTimestamp,
                 tx,
                 block,
-                orderCount,
-                eventIndex}}`
+                orderCount}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',

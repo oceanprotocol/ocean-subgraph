@@ -28,7 +28,6 @@ export function handleDeposit(event: Deposit): void {
   deposit.tx = event.transaction.hash.toHex()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
-  deposit.eventIndex = event.logIndex
   deposit.save()
   // --------------------------------------------
 
@@ -62,7 +61,6 @@ export function handleWithdraw(event: Withdraw): void {
   deposit.tx = event.transaction.hash.toHex()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
-  deposit.eventIndex = event.logIndex
   deposit.save()
   // --------------------------------------------
 

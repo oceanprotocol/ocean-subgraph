@@ -159,7 +159,6 @@ describe('DFRewards tests', async () => {
               }
               type
               tx
-              eventIndex
             }
           }        
                 }`
@@ -220,7 +219,6 @@ describe('DFRewards tests', async () => {
               }
               type
               tx
-              eventIndex
             }
           }        
                 }`

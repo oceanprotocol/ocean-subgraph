@@ -10,7 +10,6 @@ export function handleAllocated(event: Allocated): void {
   const token = getToken(event.params.tokenAddress, false)
   for (let i = 0; i < event.params.tos.length; i++) {
     const reward = getDFReward(event.params.tos[i])
-
     const history = new DFHistory(
       event.params.tos[i].toHexString() +
         '-' +
@@ -28,7 +27,6 @@ export function handleAllocated(event: Allocated): void {
     history.timestamp = event.block.timestamp
     history.tx = event.transaction.hash.toHex()
     history.block = event.block.number.toI32()
-    history.eventIndex = event.logIndex
     history.save()
 
     // update available claims
@@ -58,7 +56,6 @@ export function handleClaimed(event: Claimed): void {
   history.timestamp = event.block.timestamp
   history.tx = event.transaction.hash.toHex()
   history.block = event.block.number.toI32()
-  history.eventIndex = event.logIndex
   history.save()
 
   // update available claims
