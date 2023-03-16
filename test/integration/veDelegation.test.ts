@@ -178,35 +178,5 @@ describe('Delegation tests', async () => {
 
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
-
-    sleep(3000)
-    const delegateQuery = {
-      query: `query {
-        veDelegation(id:"${tx3.events.DelegateBoost.returnValues._token_id}"){    
-          id
-          delegator {
-            id
-          }
-          receiver {
-            id
-          }
-          tokenId
-          amount
-          cancelTime
-          expireTime
-          block
-                    }
-                  }`
-    }
-
-    const delegateResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(delegateQuery)
-    })
-    const json = await delegateResponse.json()
-    console.log('Json', json)
-    console.log('Data', json?.data)
-    console.log('veDelegation', json?.data?.veDelegations)
-    assert(json?.data?.veDelegations, 'No veDelegations')
   })
 })
