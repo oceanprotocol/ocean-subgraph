@@ -44,6 +44,7 @@ export function handleCheckpoint(event: CheckpointToken): void {
   checkpoint.sender = event.transaction.from.toHexString()
   checkpoint.block = event.block.number.toI32()
   checkpoint.tx = event.transaction.hash.toHex()
+  checkpoint.eventIndex = event.logIndex.toI32()
   checkpoint.timestamp = event.params.time
   checkpoint.VeFeeDistributor = distributor.id
   checkpoint.save()

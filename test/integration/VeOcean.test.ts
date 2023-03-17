@@ -287,7 +287,7 @@ describe('veOcean tests', async () => {
   })
 
   it('Alice should allocate 10% to NFT1', async () => {
-    await veAllocate.setAllocation(Alice, '1000', nft1, chainId)
+    const tx = await veAllocate.setAllocation(Alice, '1000', nft1, chainId)
     const newTotalAllocation = await veAllocate.getTotalAllocation(Alice)
     await sleep(2000)
     let initialQuery = {
@@ -295,6 +295,7 @@ describe('veOcean tests', async () => {
                 veAllocateUsers(id:"${Alice.toLowerCase()}"){    
                     id,
                     allocatedTotal
+                    eventIndex
                   }
                 }`
     }
@@ -310,13 +311,15 @@ describe('veOcean tests', async () => {
         ' to equal subgraph value ' +
         info[0].allocatedTotal
     )
+    assert(info[0].eventIndex === tx.events.AllocationSet.logIndex)
     initialQuery = {
       query: `query {
         veAllocations(
           where: {allocationUser:"${Alice.toLowerCase()}", chainId:"${chainId}", nftAddress:"${nft1.toLowerCase()}"}
         ){    
                     id,
-                    allocated
+                    allocated,
+                    eventIndex
                   }
                 }`
     }
@@ -330,10 +333,11 @@ describe('veOcean tests', async () => {
       'Expected totalAllocation 1000 to equal subgraph value ' +
         info[0].allocatedTotal
     )
+    assert(info[0].eventIndex === tx.events.AllocationSet.logIndex)
   })
 
   it('Alice should allocate 10% to NFT2 and 20% to NFT3', async () => {
-    await veAllocate.setBatchAllocation(
+    const tx = await veAllocate.setBatchAllocation(
       Alice,
       ['1000', '2000'],
       [nft2, nft3],
@@ -346,7 +350,8 @@ describe('veOcean tests', async () => {
       query: `query {
                 veAllocateUsers(id:"${Alice.toLowerCase()}"){    
                     id,
-                    allocatedTotal
+                    allocatedTotal,
+                    eventIndex
                   }
                 }`
     }
@@ -362,13 +367,15 @@ describe('veOcean tests', async () => {
         ' to equal subgraph value ' +
         info[0].allocatedTotal
     )
+    assert(info[0].eventIndex === tx.events.AllocationSetMultiple.logIndex)
     initialQuery = {
       query: `query {
         veAllocations(
           where: {allocationUser:"${Alice.toLowerCase()}", chainId:"${chainId}", nftAddress:"${nft2.toLowerCase()}"}
         ){
                     id,
-                    allocated
+                    allocated,
+                    eventIndex
                   }
                 }`
     }
@@ -382,6 +389,7 @@ describe('veOcean tests', async () => {
       'Expected totalAllocation 1000 to equal subgraph value ' +
         info[0].allocatedTotal
     )
+    assert(info[0].eventIndex === tx.events.AllocationSetMultiple.logIndex)
     initialQuery = {
       query: `query {
         veAllocations(

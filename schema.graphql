@@ -412,6 +412,7 @@ type VeAllocateUser @entity{
   firstContact: Int!
   lastContact: Int!
   tx: String!
+  eventIndex: Int!
   veOcean: VeOCEAN!
 }
 
@@ -428,6 +429,7 @@ type VeAllocateId @entity{
   firstContact: Int!
   lastContact: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 # we need to track allocation of user to id
@@ -447,6 +449,7 @@ type VeAllocation @entity {
   firstContact: Int!
   lastContact: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 enum veAllocationUpdateType {
@@ -465,6 +468,7 @@ type VeAllocationUpdate @entity {
   block: Int!
   timestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type VeDelegation @entity {
@@ -510,6 +514,7 @@ type VeDeposit @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
+  eventIndex: Int!
   veOcean: VeOCEAN!
 }
 
@@ -534,6 +539,7 @@ type VeFeeDistributorCheckPoint @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type VeClaim @entity {
@@ -548,6 +554,7 @@ type VeClaim @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
+  eventIndex: Int!
   veOcean: VeOCEAN!
   VeFeeDistributor: VeFeeDistributor!
 }

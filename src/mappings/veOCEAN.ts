@@ -26,6 +26,7 @@ export function handleDeposit(event: Deposit): void {
   deposit.timestamp = ts
   deposit.block = event.block.number.toI32()
   deposit.tx = event.transaction.hash.toHex()
+  deposit.eventIndex = event.logIndex.toI32()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
   deposit.save()
@@ -59,6 +60,7 @@ export function handleWithdraw(event: Withdraw): void {
   deposit.timestamp = ts
   deposit.block = event.block.number.toI32()
   deposit.tx = event.transaction.hash.toHex()
+  deposit.eventIndex = event.logIndex.toI32()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
   deposit.save()

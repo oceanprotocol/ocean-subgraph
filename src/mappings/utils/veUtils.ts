@@ -38,6 +38,7 @@ export function getveAllocateUser(
 
     allocateUser.firstContact = event.block.timestamp.toI32()
     allocateUser.tx = event.transaction.hash.toHex()
+    allocateUser.eventIndex = event.logIndex.toI32()
     allocateUser.block = event.block.number.toI32()
     allocateUser.lastContact = 0
     const veOcean = getveOCEAN(sender)
@@ -60,6 +61,7 @@ export function getveAllocateId(
 
     allocateId.firstContact = event.block.timestamp.toI32()
     allocateId.tx = event.transaction.hash.toHex()
+    allocateId.eventIndex = event.logIndex.toI32()
     allocateId.block = event.block.number.toI32()
     allocateId.lastContact = 0
     allocateId.chainId = BigInt.zero()
@@ -87,6 +89,7 @@ export function getveAllocation(
 
     veAllocation.firstContact = event.block.timestamp.toI32()
     veAllocation.tx = event.transaction.hash.toHex()
+    veAllocation.eventIndex = event.logIndex.toI32()
     veAllocation.block = event.block.number.toI32()
     veAllocation.lastContact = 0
 
@@ -113,6 +116,7 @@ export function writeveAllocationUpdate(
 
     allocationUpdate.timestamp = event.block.timestamp.toI32()
     allocationUpdate.tx = event.transaction.hash.toHex()
+    allocationUpdate.eventIndex = event.logIndex.toI32()
     allocationUpdate.block = event.block.number.toI32()
 
     allocationUpdate.save()
@@ -150,6 +154,7 @@ export function getDeposit(id: string): VeDeposit {
     deposit.type = BigInt.zero()
     deposit.timestamp = BigInt.zero()
     deposit.tx = ''
+    deposit.eventIndex = 0
     deposit.block = 0
     // do not save it
     // deposit.save()
