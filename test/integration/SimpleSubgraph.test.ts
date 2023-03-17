@@ -69,18 +69,23 @@ describe('Tests coverage without provider/aquarius', async () => {
     const erc721Address = result.events.NFTCreated.returnValues[0]
 
     // graph tests here
-    await sleep(2000)
+    await sleep(3000)
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id}}`
+          nft(id:"${graphNftToken}"){symbol,id,eventIndex}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
+    await sleep(3000)
     const queryResult = await response.json()
     assert(queryResult.data.nft.id === graphNftToken)
+    assert(
+      queryResult.data.nft.eventIndex !== null &&
+        queryResult.data.nft.eventIndex > 0
+    )
   })
 
   it('should publish and transfer an NFT', async () => {
@@ -106,7 +111,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       nftParams,
       erc20Params
     )
-    await sleep(2000)
+    await sleep(3000)
     const erc721Address = result.events.NFTCreated.returnValues[0]
     const nftAddress = erc721Address.toLowerCase()
 
@@ -117,7 +122,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       newOwnerAccount
     )
 
-    await sleep(2000)
+    await sleep(3000)
     const query2 = {
       query: `query {
           nft(id:"${nftAddress}"){
@@ -125,13 +130,14 @@ describe('Tests coverage without provider/aquarius', async () => {
             id,
             owner{id}, 
             transferable, 
-            transferHistory(orderBy: timestamp, orderDirection: desc){id,nft,oldOwner,newOwner,txId,timestamp,block}
+            transferHistory(orderBy: timestamp, orderDirection: desc){id,nft,oldOwner,newOwner,txId,eventIndex,timestamp,block}
           }}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query2)
     })
+    await sleep(3000)
     const queryResult = await response.json()
     const transferHistory = queryResult.data.nft.transferHistory[0]
 
@@ -142,6 +148,10 @@ describe('Tests coverage without provider/aquarius', async () => {
       'Invalid transferHistory Id'
     )
     assert(transferHistory.txId === tx.transactionHash, 'invalid txId')
+    assert(
+      transferHistory.eventIndex === tx.events.Transfer.logIndex,
+      'invalid eventIndex'
+    )
     assert(transferHistory.timestamp)
 
     assert(transferHistory.timestamp >= time - 500, 'incorrect value timestamp')

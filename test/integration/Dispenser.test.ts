@@ -18,7 +18,7 @@ import { fetch } from 'cross-fetch'
 import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
 
-const sleepMs = 3000
+const sleepMs = 1800
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -334,7 +334,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(dispenserQuery)
     })
-    await sleep(sleepMs)
     const response = (await graphResponse.json()).data.dispenser
 
     assert(response.id === dispenserId, 'incorrect value for: id')
@@ -351,7 +350,10 @@ describe('Dispenser tests', async () => {
     assert(response.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(response.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(response.tx === tx.transactionHash, 'incorrect value for: tx')
-    assert(response.eventIndex !== null, 'incorrect value for: eventIndex')
+    assert(
+      response.eventIndex !== null && response.eventIndex === tx.logIndex,
+      'incorrect value for: eventIndex'
+    )
     assert(response.dispenses.length === 0, 'incorrect value for: dispenses')
     assert(response.__typename === 'Dispenser', 'incorrect value: __typename')
   })
@@ -369,7 +371,7 @@ describe('Dispenser tests', async () => {
     assert(initialActive === true, 'incorrect value for: initialActive')
 
     // Deactivate exchange
-    await dispenser.deactivate(dtAddress, publisher)
+    const tx = await dispenser.deactivate(dtAddress, publisher)
     const status = await dispenser.status(dtAddress)
     assert(status.active === false, 'Dispenser is still active')
     await sleep(sleepMs)
@@ -382,6 +384,10 @@ describe('Dispenser tests', async () => {
     const updatedActive = (await updatedResponse.json()).data.dispenser
     assert(updatedActive.active === false, 'incorrect value for: updatedActive')
     assert(updatedActive.eventIndex !== null, 'incorrect value for: eventIndex')
+    assert(
+      updatedActive.eventIndex === tx.events.DispenserDeactivated.logIndex,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Activates exchange', async () => {
@@ -398,7 +404,7 @@ describe('Dispenser tests', async () => {
     assert(initialActive.eventIndex !== null, 'incorrect value for: eventIndex')
 
     // Activate exchange
-    await dispenser.activate(dtAddress, '100', '100', publisher)
+    const tx = await dispenser.activate(dtAddress, '100', '100', publisher)
     await sleep(sleepMs)
 
     // Check the updated value for active
@@ -410,6 +416,10 @@ describe('Dispenser tests', async () => {
     const updatedActive = (await updatedResponse.json()).data.dispenser
     assert(updatedActive.active === true, 'incorrect value for: updatedActive')
     assert(updatedActive.eventIndex !== null, 'incorrect value for: eventIndex')
+    assert(
+      updatedActive.eventIndex === tx.events.DispenserActivated.logIndex,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('User2 gets datatokens from the dispenser', async () => {
@@ -445,7 +455,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(dispenseQuery)
     })
-    await sleep(sleepMs)
     const dispense = (await response2.json()).data.dispenser.dispenses[0]
 
     assert(dispense.id === `${tx.transactionHash}-${dispenserId}`, 'wrong id')
@@ -496,7 +505,7 @@ describe('Dispenser tests', async () => {
       'incorrect value for: allowedSwapper'
     )
 
-    await dispenser.setAllowedSwapper(dtAddress, publisher, user1)
+    const tx = await dispenser.setAllowedSwapper(dtAddress, publisher, user1)
     await sleep(sleepMs)
 
     const swapperResponse2 = await fetch(subgraphUrl, {
@@ -511,7 +520,9 @@ describe('Dispenser tests', async () => {
       'incorrect value for: allowedSwapper 2'
     )
     assert(
-      allowedSwapper2.eventIndex !== null,
+      allowedSwapper2.eventIndex !== null &&
+        allowedSwapper2.eventIndex ===
+          tx.events.DispenserAllowedSwapperChanged.logIndex,
       'incorrect value for: eventIndex'
     )
   })
