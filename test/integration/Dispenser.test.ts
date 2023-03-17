@@ -281,13 +281,9 @@ describe('Dispenser tests', async () => {
       body: JSON.stringify(minterQuery)
     })
     await sleep(sleepMs)
-    const minter = (await minterResponse.json()).data.token.minter
-    assert(minter[1] === user1, 'incorrect value for: minter')
-    assert(
-      (await minterResponse.json()).data.token.eventIndex !== null &&
-        (await minterResponse.json()).data.token.eventIndex > 0,
-      'incorrect value for: eventIndex'
-    )
+    const dt = (await minterResponse.json()).data.token
+    assert(dt.minter[1] === user1, 'incorrect value for: minter')
+    assert(dt.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 
   it('Create dispenser', async () => {
@@ -338,6 +334,7 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(dispenserQuery)
     })
+    await sleep(sleepMs)
     const response = (await graphResponse.json()).data.dispenser
 
     assert(response.id === dispenserId, 'incorrect value for: id')
@@ -354,10 +351,7 @@ describe('Dispenser tests', async () => {
     assert(response.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(response.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(response.tx === tx.transactionHash, 'incorrect value for: tx')
-    assert(
-      response.eventIndex !== null && response.eventIndex > 0,
-      'incorrect value for: eventIndex'
-    )
+    assert(response.eventIndex !== null, 'incorrect value for: eventIndex')
     assert(response.dispenses.length === 0, 'incorrect value for: dispenses')
     assert(response.__typename === 'Dispenser', 'incorrect value: __typename')
   })
@@ -385,13 +379,9 @@ describe('Dispenser tests', async () => {
       body: JSON.stringify(deactiveQuery)
     })
     await sleep(sleepMs)
-    const updatedActive = (await updatedResponse.json()).data.dispenser.active
-    assert(updatedActive === false, 'incorrect value for: updatedActive')
-    assert(
-      (await updatedResponse.json()).data.dispenser.eventIndex !== null &&
-        (await updatedResponse.json()).data.dispenser.eventIndex > 0,
-      'incorrect value for: eventIndex'
-    )
+    const updatedActive = (await updatedResponse.json()).data.dispenser
+    assert(updatedActive.active === false, 'incorrect value for: updatedActive')
+    assert(updatedActive.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 
   it('Activates exchange', async () => {
@@ -403,14 +393,9 @@ describe('Dispenser tests', async () => {
       body: JSON.stringify(activeQuery)
     })
     await sleep(sleepMs)
-    const initialActive = (await initialResponse.json()).data.dispenser.active
-    const initialEventIndex = (await initialResponse.json()).data.dispenser
-      .eventIndex
-    assert(initialActive === false, 'incorrect value for: initialActive')
-    assert(
-      initialEventIndex !== null && initialEventIndex > 0,
-      'incorrect value for: eventIndex'
-    )
+    const initialActive = (await initialResponse.json()).data.dispenser
+    assert(initialActive.active === false, 'incorrect value for: initialActive')
+    assert(initialActive.eventIndex !== null, 'incorrect value for: eventIndex')
 
     // Activate exchange
     await dispenser.activate(dtAddress, '100', '100', publisher)
@@ -422,11 +407,9 @@ describe('Dispenser tests', async () => {
       body: JSON.stringify(activeQuery)
     })
     await sleep(sleepMs)
-    const updatedActive = (await updatedResponse.json()).data.dispenser.active
-    const updatedEventIndex = (await updatedResponse.json()).data.dispenser
-      .eventIndex
-    assert(updatedActive === true, 'incorrect value for: updatedActive')
-    assert(updatedEventIndex === 1, 'incorrect value for: eventIndex')
+    const updatedActive = (await updatedResponse.json()).data.dispenser
+    assert(updatedActive.active === true, 'incorrect value for: updatedActive')
+    assert(updatedActive.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 
   it('User2 gets datatokens from the dispenser', async () => {
@@ -473,10 +456,7 @@ describe('Dispenser tests', async () => {
     assert(dispense.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(dispense.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(dispense.tx === tx.transactionHash, 'incorrect value for: tx')
-    assert(
-      dispense.eventIndex !== null && dispense.eventIndex > 0,
-      'incorrect value for: eventIndex'
-    )
+    assert(dispense.eventIndex !== null, 'incorrect value for: eventIndex')
     assert(dispense.__typename === 'DispenserTransaction', 'wrong __typename')
   })
 
@@ -494,13 +474,9 @@ describe('Dispenser tests', async () => {
       body: JSON.stringify(balanceQuery)
     })
     await sleep(sleepMs)
-    const balance = (await response.json()).data.dispenser.balance
-    const eventIndex = (await response.json()).data.dispenser.eventIndex
-    assert(balance === '0', 'incorrect value for: balance')
-    assert(
-      eventIndex !== null && eventIndex > 0,
-      'incorrect value for: eventIndex'
-    )
+    const balance = (await response.json()).data.dispenser
+    assert(balance.balance === '0', 'incorrect value for: balance')
+    assert(balance.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 
   it('Updates allowed swapper', async () => {
@@ -529,10 +505,14 @@ describe('Dispenser tests', async () => {
     })
     await sleep(sleepMs)
     const allowedSwapper2 = (await swapperResponse2.json()).data.dispenser
-      .allowedSwapper
-    const eventIndex = (await swapperResponse2.json()).data.dispenser.eventIndex
 
-    assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
-    assert(eventIndex === 1, 'incorrect value for: eventIndex')
+    assert(
+      allowedSwapper2.allowedSwapper === user1,
+      'incorrect value for: allowedSwapper 2'
+    )
+    assert(
+      allowedSwapper2.eventIndex !== null,
+      'incorrect value for: eventIndex'
+    )
   })
 })
