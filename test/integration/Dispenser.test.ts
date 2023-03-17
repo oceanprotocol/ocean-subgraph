@@ -18,7 +18,7 @@ import { fetch } from 'cross-fetch'
 import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
 
-const sleepMs = 1800
+const sleepMs = 3000
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -138,6 +138,7 @@ describe('Dispenser tests', async () => {
                   transferable,
                   createdTimestamp,
                   tx,
+                  eventIndex,
                   block,
                   orderCount}}`
     }
@@ -172,6 +173,10 @@ describe('Dispenser tests', async () => {
     assert(nft.block >= blockNumber, 'incorrect value for: block')
     assert(nft.block < blockNumber + 50, 'incorrect value for: block')
     assert(nft.orderCount === '0', 'incorrect value for: orderCount')
+    assert(
+      nft.eventIndex !== null && nft.eventIndex > 0,
+      'Invalid eventIndex for NFT creation'
+    )
   })
 
   it('Test all DT Fields after deploying', async () => {
@@ -201,6 +206,7 @@ describe('Dispenser tests', async () => {
             dispensers {id},
             createdTimestamp,
             tx,
+            eventIndex,
             block,
             lastPriceValue
           }}`
@@ -209,6 +215,7 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(dtQuery)
     })
+    await sleep(sleepMs)
     dt = (await dtResponse.json()).data.token
 
     const dtTx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -254,6 +261,10 @@ describe('Dispenser tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    assert(
+      dt.eventIndex !== null && dt.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Make user1 minter', async () => {
@@ -262,15 +273,21 @@ describe('Dispenser tests', async () => {
     assert((await datatoken.getPermissions(dtAddress, user1)).minter === true)
     await sleep(sleepMs)
     const minterQuery = {
-      query: `query {token(id: "${dtAddress}"){minter{id}}}`
+      query: `query {token(id: "${dtAddress}"){minter{id}, eventIndex}}`
     }
 
     const minterResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(minterQuery)
     })
+    await sleep(sleepMs)
     const minter = (await minterResponse.json()).data.token.minter
     assert(minter[1] === user1, 'incorrect value for: minter')
+    assert(
+      (await minterResponse.json()).data.token.eventIndex !== null &&
+        (await minterResponse.json()).data.token.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Create dispenser', async () => {
@@ -310,6 +327,7 @@ describe('Dispenser tests', async () => {
             block
             createdTimestamp
             tx
+            eventIndex
             dispenses {
               id
             }
@@ -336,13 +354,17 @@ describe('Dispenser tests', async () => {
     assert(response.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(response.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(response.tx === tx.transactionHash, 'incorrect value for: tx')
+    assert(
+      response.eventIndex !== null && response.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
     assert(response.dispenses.length === 0, 'incorrect value for: dispenses')
     assert(response.__typename === 'Dispenser', 'incorrect value: __typename')
   })
 
   it('Deactivates dispenser', async () => {
     const deactiveQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){active}}`
+      query: `query {dispenser(id: "${dispenserId}"){active, eventIndex}}`
     }
 
     const initialResponse = await fetch(subgraphUrl, {
@@ -362,20 +384,33 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(deactiveQuery)
     })
+    await sleep(sleepMs)
     const updatedActive = (await updatedResponse.json()).data.dispenser.active
     assert(updatedActive === false, 'incorrect value for: updatedActive')
+    assert(
+      (await updatedResponse.json()).data.dispenser.eventIndex !== null &&
+        (await updatedResponse.json()).data.dispenser.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Activates exchange', async () => {
     const activeQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){active}}`
+      query: `query {dispenser(id: "${dispenserId}"){active, eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(activeQuery)
     })
+    await sleep(sleepMs)
     const initialActive = (await initialResponse.json()).data.dispenser.active
+    const initialEventIndex = (await initialResponse.json()).data.dispenser
+      .eventIndex
     assert(initialActive === false, 'incorrect value for: initialActive')
+    assert(
+      initialEventIndex !== null && initialEventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
 
     // Activate exchange
     await dispenser.activate(dtAddress, '100', '100', publisher)
@@ -386,8 +421,12 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(activeQuery)
     })
+    await sleep(sleepMs)
     const updatedActive = (await updatedResponse.json()).data.dispenser.active
+    const updatedEventIndex = (await updatedResponse.json()).data.dispenser
+      .eventIndex
     assert(updatedActive === true, 'incorrect value for: updatedActive')
+    assert(updatedEventIndex === 1, 'incorrect value for: eventIndex')
   })
 
   it('User2 gets datatokens from the dispenser', async () => {
@@ -402,6 +441,7 @@ describe('Dispenser tests', async () => {
           block
           createdTimestamp
           tx
+          eventIndex
           __typename
         }}}`
     }
@@ -410,6 +450,7 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(dispenseQuery)
     })
+    await sleep(sleepMs)
     const before = (await response1.json()).data.dispenser.dispenses
     assert(before.length === 0, 'incorrect value for: dispenses')
 
@@ -421,6 +462,7 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(dispenseQuery)
     })
+    await sleep(sleepMs)
     const dispense = (await response2.json()).data.dispenser.dispenses[0]
 
     assert(dispense.id === `${tx.transactionHash}-${dispenserId}`, 'wrong id')
@@ -431,6 +473,10 @@ describe('Dispenser tests', async () => {
     assert(dispense.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(dispense.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(dispense.tx === tx.transactionHash, 'incorrect value for: tx')
+    assert(
+      dispense.eventIndex !== null && dispense.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
     assert(dispense.__typename === 'DispenserTransaction', 'wrong __typename')
   })
 
@@ -440,27 +486,33 @@ describe('Dispenser tests', async () => {
 
     // Check balance after owner withdraw
     const balanceQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){balance}}`
+      query: `query {dispenser(id: "${dispenserId}"){balance, eventIndex}}`
     }
 
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(balanceQuery)
     })
+    await sleep(sleepMs)
     const balance = (await response.json()).data.dispenser.balance
-
+    const eventIndex = (await response.json()).data.dispenser.eventIndex
     assert(balance === '0', 'incorrect value for: balance')
+    assert(
+      eventIndex !== null && eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Updates allowed swapper', async () => {
     const swapperQuery = {
-      query: `query {dispenser(id: "${dispenserId}"){allowedSwapper}}`
+      query: `query {dispenser(id: "${dispenserId}"){allowedSwapper, eventIndex}}`
     }
     // Check initial allowedSwapper
     const swapperResponse1 = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(swapperQuery)
     })
+    await sleep(sleepMs)
     const allowedSwapper1 = (await swapperResponse1.json()).data.dispenser
       .allowedSwapper
     assert(
@@ -475,9 +527,12 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(swapperQuery)
     })
+    await sleep(sleepMs)
     const allowedSwapper2 = (await swapperResponse2.json()).data.dispenser
       .allowedSwapper
+    const eventIndex = (await swapperResponse2.json()).data.dispenser.eventIndex
 
     assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
+    assert(eventIndex === 1, 'incorrect value for: eventIndex')
   })
 })

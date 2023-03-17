@@ -288,7 +288,8 @@ type Dispenser @entity {
   block: Int!
   createdTimestamp: Int!
   tx: String!                 
-  
+  eventIndex: Int!
+
   dispenses: [DispenserTransaction!] @derivedFrom(field: "dispenser")
 }
 
@@ -301,6 +302,7 @@ type DispenserTransaction @entity {
   block: Int!
   createdTimestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 "utility type"

@@ -43,6 +43,7 @@ export function handleNewDispenser(event: DispenserCreated): void {
   dispenser.allowedSwapper = event.params.allowedSwapper.toHex()
   dispenser.createdTimestamp = event.block.timestamp.toI32()
   dispenser.tx = event.transaction.hash.toHex()
+  dispenser.eventIndex = event.logIndex.toI32()
   dispenser.block = event.block.number.toI32()
   dispenser.save()
 
@@ -57,6 +58,7 @@ export function handleActivate(event: DispenserActivated): void {
   )
   const dispenser = getDispenser(dispenserID)
   dispenser.active = true
+  dispenser.eventIndex = event.logIndex.toI32()
   dispenser.save()
 }
 
@@ -67,6 +69,7 @@ export function handleDeactivate(event: DispenserDeactivated): void {
   )
   const dispenser = getDispenser(dispenserID)
   dispenser.active = false
+  dispenser.eventIndex = event.logIndex.toI32()
   dispenser.save()
 }
 
@@ -76,6 +79,7 @@ export function handleAllowedSwapperChanged(
   const dispenserID = getDispenserGraphID(event.address, event.params.datatoken)
   const dispenser = getDispenser(dispenserID)
   dispenser.allowedSwapper = event.params.newAllowedSwapper.toHex()
+  dispenser.eventIndex = event.logIndex.toI32()
   dispenser.save()
 }
 
@@ -98,6 +102,7 @@ export function handleTokensDispensed(event: TokensDispensed): void {
 
   dispenserTransaction.createdTimestamp = event.block.timestamp.toI32()
   dispenserTransaction.tx = event.transaction.hash.toHex()
+  dispenserTransaction.eventIndex = event.logIndex.toI32()
   dispenserTransaction.block = event.block.number.toI32()
   const token = getToken(event.params.datatokenAddress, true)
   dispenserTransaction.amount = weiToDecimal(
@@ -111,5 +116,6 @@ export function handleOwnerWinthdraw(event: OwnerWithdrawed): void {
   const dispenserID = getDispenserGraphID(event.address, event.params.datatoken)
   const dispenser = getDispenser(dispenserID)
   dispenser.balance = decimal.ZERO
+  dispenser.eventIndex = event.logIndex.toI32()
   dispenser.save()
 }
