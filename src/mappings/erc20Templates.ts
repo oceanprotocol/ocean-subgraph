@@ -64,6 +64,7 @@ export function handleOrderStarted(event: OrderStarted): void {
 
   order.createdTimestamp = event.block.timestamp.toI32()
   order.tx = event.transaction.hash.toHex()
+  order.eventIndex = event.logIndex.toI32()
   order.block = event.block.number.toI32()
   const tokenId = token.lastPriceToken
   if (tokenId) {
@@ -123,6 +124,7 @@ export function handlerOrderReused(event: OrderReused): void {
   reuseOrder.caller = event.params.caller.toHexString()
   reuseOrder.createdTimestamp = event.params.timestamp.toI32()
   reuseOrder.tx = event.transaction.hash.toHex()
+  reuseOrder.eventIndex = event.logIndex.toI32()
   reuseOrder.block = event.params.number.toI32()
 
   reuseOrder.save()
@@ -149,6 +151,7 @@ export function handlePublishMarketFeeChanged(
     event.params.PublishMarketFeeAmount.toBigDecimal(),
     decimals
   )
+  token.eventIndex = event.logIndex.toI32()
   token.save()
   // TODO - shold we have a history
 }
@@ -163,6 +166,7 @@ export function handleAddedMinter(event: AddedMinter): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   token.minter = existingRoles
+  token.eventIndex = event.logIndex.toI32()
   token.save()
 }
 
@@ -179,6 +183,7 @@ export function handleRemovedMinter(event: RemovedMinter): void {
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   token.minter = newList
+  token.eventIndex = event.logIndex.toI32()
   token.save()
 }
 
@@ -190,6 +195,7 @@ export function handleAddedPaymentManager(event: AddedPaymentManager): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   token.paymentManager = existingRoles
+  token.eventIndex = event.logIndex.toI32()
   token.save()
 }
 export function handleRemovedPaymentManager(
@@ -207,6 +213,7 @@ export function handleRemovedPaymentManager(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   token.paymentManager = newList
+  token.eventIndex = event.logIndex.toI32()
   token.save()
 }
 export function handleCleanedPermissions(event: CleanedPermissions): void {
@@ -217,12 +224,14 @@ export function handleCleanedPermissions(event: CleanedPermissions): void {
   const nft = Nft.load(token.nft as string)
   if (nft) token.paymentCollector = nft.owner
   else token.paymentCollector = '0x0000000000000000000000000000000000000000'
+  token.eventIndex = event.logIndex.toI32()
   token.save()
 }
 
 export function handleNewPaymentCollector(event: NewPaymentCollector): void {
   const token = getToken(event.address, true)
   token.paymentCollector = event.params._newPaymentCollector.toHexString()
+  token.eventIndex = event.logIndex.toI32()
   token.save()
 }
 
@@ -245,6 +254,7 @@ export function handleProviderFee(event: ProviderFee): void {
   if (order) {
     order.providerFee = providerFee
     order.providerFeeValidUntil = event.params.validUntil
+    order.eventIndex = event.logIndex.toI32()
     order.save()
     return
   }
@@ -253,6 +263,7 @@ export function handleProviderFee(event: ProviderFee): void {
   if (orderReuse) {
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
+    orderReuse.eventIndex = event.logIndex.toI32()
     orderReuse.save()
   } else {
     orderReuse = new OrderReuse(event.transaction.hash.toHex())
@@ -261,6 +272,7 @@ export function handleProviderFee(event: ProviderFee): void {
     orderReuse.order = orderId
     orderReuse.createdTimestamp = event.block.timestamp.toI32()
     orderReuse.tx = event.transaction.hash.toHex()
+    orderReuse.eventIndex = event.logIndex.toI32()
     orderReuse.block = event.block.number.toI32()
     orderReuse.caller = event.transaction.from.toHex()
     if (event.transaction.gasPrice)

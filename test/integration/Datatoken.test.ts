@@ -215,7 +215,10 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
-    assert(dt.eventIndex !== null, 'incorrect value for: eventIndex')
+    assert(
+      dt.eventIndex !== null && dt.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Correct Datatoken fields after updating metadata', async () => {
@@ -324,7 +327,10 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
-    assert(dt.eventIndex !== null, 'incorrect value for: eventIndex')
+    assert(
+      dt.eventIndex !== null && dt.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Check datatoken orders are updated correctly after publishing & ordering a datatoken', async () => {
@@ -362,7 +368,7 @@ describe('Datatoken tests', async () => {
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
 
     const query = {
-      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}}, eventIndex}}`
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}, eventIndex}, eventIndex}}`
     }
 
     await sleep(3000)
@@ -376,7 +382,10 @@ describe('Datatoken tests', async () => {
     assert(initialToken, 'Invalid initialToken')
     assert(initialToken.orderCount === '0', 'Invalid initial orderCount')
     assert(initialToken.orders.length === 0, 'Invalid initial orders')
-    assert(initialToken.eventIndex !== null, 'Invalid eventIndex')
+    assert(
+      initialToken.eventIndex !== null && initialToken.eventIndex > 0,
+      'Invalid eventIndex'
+    )
 
     const providerData = JSON.stringify({ timeout: 0 })
     const providerFeeToken = ZERO_ADDRESS
@@ -426,6 +435,11 @@ describe('Datatoken tests', async () => {
     assert(token.orders[0].id === orderId)
     assert(token.orders[0].lastPriceToken.id === ZERO_ADDRESS)
     assert(token.orders[0].nftOwner.id === publisher, 'invalid nftOwner')
+    assert(token.orders[0].eventIndex === 1, 'invalid order eventIndex')
     assert(token.eventIndex !== null, 'Invalid eventIndex')
+    assert(
+      token.eventIndex !== token.orders[0].eventIndex,
+      'Invalid log indeces'
+    )
   })
 })

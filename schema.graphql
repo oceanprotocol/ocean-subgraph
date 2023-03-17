@@ -133,6 +133,7 @@ type OrderReuse @entity {
   caller: String!
   createdTimestamp: Int!
   tx: String!
+  eventIndex: Int!
   block: Int!
   providerFee: String
   providerFeeValidUntil: BigInt
@@ -168,6 +169,7 @@ type Order @entity {
 
   createdTimestamp: Int!
   tx: String!
+  eventIndex: Int!
   block: Int!
 
   lastPriceToken: Token
