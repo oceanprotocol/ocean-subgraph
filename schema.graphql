@@ -576,6 +576,7 @@ type DFHistory @entity {
   timestamp: BigInt!
   block: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 
