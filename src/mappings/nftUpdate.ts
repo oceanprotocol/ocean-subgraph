@@ -47,6 +47,7 @@ export function handleMetadataCreated(event: MetadataCreated): void {
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
 
   nftUpdate.save()
@@ -71,6 +72,7 @@ export function handleMetadataUpdated(event: MetadataUpdated): void {
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
 
   nftUpdate.save()
@@ -95,6 +97,7 @@ export function handleMetadataState(event: MetadataState): void {
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
 
   nftUpdate.save()
@@ -118,6 +121,7 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
   nftUpdate.tokenUri = nft.tokenUri
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
   nftUpdate.assetState = nft.assetState
   nftUpdate.save()
@@ -133,6 +137,7 @@ export function handleAddedManager(event: AddedManager): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.managerRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 export function handleRemovedManager(event: RemovedManager): void {
@@ -148,6 +153,7 @@ export function handleRemovedManager(event: RemovedManager): void {
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.managerRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -160,6 +166,7 @@ export function handleAddedTo725StoreList(event: AddedTo725StoreList): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.storeUpdateRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -178,6 +185,7 @@ export function handleRemovedFrom725StoreList(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.storeUpdateRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -192,6 +200,7 @@ export function handleAddedToCreateERC20List(
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.erc20DeployerRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -210,6 +219,7 @@ export function handleRemovedFromCreateERC20List(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.erc20DeployerRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -222,6 +232,7 @@ export function handleAddedToMetadataList(event: AddedToMetadataList): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.metadataRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -240,6 +251,7 @@ export function handleRemovedFromMetadataList(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.metadataRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -250,6 +262,7 @@ export function handleCleanedPermissions(event: CleanedPermissions): void {
   nft.erc20DeployerRole = newList
   nft.storeUpdateRole = newList
   nft.managerRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -269,6 +282,7 @@ export function handleNftTransferred(event: Transfer): void {
   newTransfer.nft = nft.id
   newTransfer.newOwner = newOwner.id
   newTransfer.txId = event.transaction.hash.toHex()
+  newTransfer.eventIndex = event.logIndex.toI32()
   newTransfer.timestamp = event.block.timestamp.toI32()
   newTransfer.block = event.block.number.toI32()
   newTransfer.save()

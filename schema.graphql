@@ -385,6 +385,7 @@ type NftUpdate @entity {
   block: Int!
   timestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type Template @entity{
@@ -588,6 +589,7 @@ type NftTransferHistory @entity {
   oldOwner: User!
   newOwner: User!
   txId: String
+  eventIndex: Int!
   timestamp: Int!
   block: Int!
 }

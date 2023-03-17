@@ -216,7 +216,7 @@ describe('NFT tests', async () => {
     )
 
     // graph tests here
-    await sleep(2000)
+    await sleep(3000)
     const query = {
       query: `query {
               nft(id:"${nftAddress}"){    
@@ -237,6 +237,7 @@ describe('NFT tests', async () => {
                 transferable,
                 createdTimestamp,
                 tx,
+                eventIndex,
                 block,
                 orderCount}}`
     }
@@ -244,6 +245,7 @@ describe('NFT tests', async () => {
       method: 'POST',
       body: JSON.stringify(query)
     })
+    await sleep(3000)
     const updatedNft = (await response.json()).data.nft
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(
       updatedNft.tx
@@ -289,6 +291,10 @@ describe('NFT tests', async () => {
     assert(updatedNft.block >= blockNumber, 'incorrect value for: block')
     assert(updatedNft.block < blockNumber + 50, 'incorrect value for: block')
     assert(updatedNft.orderCount === '0', 'incorrect value for: orderCount')
+    assert(
+      updatedNft.eventIndex !== null && updatedNft.eventIndex > 0,
+      'Invalid eventIndex for NFT update'
+    )
   })
 
   it('Set a key/value in erc725 store', async () => {
@@ -302,6 +308,7 @@ describe('NFT tests', async () => {
                     key
                     value
                   }
+                  eventIndex
                 }
               }`
     }
@@ -311,5 +318,9 @@ describe('NFT tests', async () => {
     })
     const updatedNft = (await response.json()).data.nft
     assert(updatedNft.nftData.key !== null, 'incorrect value for key')
+    assert(
+      updatedNft.eventIndex !== null && updatedNft.eventIndex > 0,
+      'Invalid eventIndex for NFT update'
+    )
   })
 })
