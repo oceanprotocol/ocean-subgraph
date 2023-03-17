@@ -161,9 +161,9 @@ describe('Datatoken tests', async () => {
           dispensers {id},
           createdTimestamp,
           tx,
+          eventIndex,
           block,
-          lastPriceValue,
-          eventIndex
+          lastPriceValue
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {
@@ -271,9 +271,9 @@ describe('Datatoken tests', async () => {
           dispensers {id},
           createdTimestamp,
           tx,
+          eventIndex,
           block,
-          lastPriceValue,
-          eventIndex
+          lastPriceValue
         }}`
     }
     const initialResponse = await fetch(subgraphUrl, {

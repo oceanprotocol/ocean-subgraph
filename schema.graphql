@@ -52,13 +52,12 @@ type Token @entity {
 
     "datatoken creation transaction id"                         
     tx: String!        
-
+    eventIndex: Int!
     "block number when it was created"                                   
     block: Int!           
 
     lastPriceToken: Token
     lastPriceValue: BigDecimal!
-    eventIndex: Int!
 }
 
 "utility type"
@@ -106,6 +105,7 @@ type Nft @entity{
     createdTimestamp: Int!                                  
     "nft creation transaction id"
     tx: String!   
+    eventIndex: Int!
     "block number when it was created"                                            
     block: Int  
 
@@ -117,8 +117,6 @@ type Nft @entity{
 
     nftData: [NftData!] @derivedFrom(field: "nft")
     transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
-
-    eventIndex: Int!
 }
 
 type NftData @entity{
