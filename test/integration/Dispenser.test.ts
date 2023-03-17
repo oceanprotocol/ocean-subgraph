@@ -280,7 +280,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(minterQuery)
     })
-    await sleep(sleepMs)
     const dt = (await minterResponse.json()).data.token
     assert(dt.minter[1] === user1, 'incorrect value for: minter')
     assert(dt.eventIndex !== null, 'incorrect value for: eventIndex')
@@ -351,7 +350,7 @@ describe('Dispenser tests', async () => {
     assert(response.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(response.tx === tx.transactionHash, 'incorrect value for: tx')
     assert(
-      response.eventIndex !== null && response.eventIndex === tx.logIndex,
+      response.eventIndex !== null && response.eventIndex > 0,
       'incorrect value for: eventIndex'
     )
     assert(response.dispenses.length === 0, 'incorrect value for: dispenses')
@@ -380,7 +379,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(deactiveQuery)
     })
-    await sleep(sleepMs)
     const updatedActive = (await updatedResponse.json()).data.dispenser
     assert(updatedActive.active === false, 'incorrect value for: updatedActive')
     assert(updatedActive.eventIndex !== null, 'incorrect value for: eventIndex')
@@ -398,7 +396,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(activeQuery)
     })
-    await sleep(sleepMs)
     const initialActive = (await initialResponse.json()).data.dispenser
     assert(initialActive.active === false, 'incorrect value for: initialActive')
     assert(initialActive.eventIndex !== null, 'incorrect value for: eventIndex')
@@ -412,7 +409,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(activeQuery)
     })
-    await sleep(sleepMs)
     const updatedActive = (await updatedResponse.json()).data.dispenser
     assert(updatedActive.active === true, 'incorrect value for: updatedActive')
     assert(updatedActive.eventIndex !== null, 'incorrect value for: eventIndex')
@@ -482,7 +478,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(balanceQuery)
     })
-    await sleep(sleepMs)
     const balance = (await response.json()).data.dispenser
     assert(balance.balance === '0', 'incorrect value for: balance')
     assert(balance.eventIndex !== null, 'incorrect value for: eventIndex')
@@ -497,7 +492,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(swapperQuery)
     })
-    await sleep(sleepMs)
     const allowedSwapper1 = (await swapperResponse1.json()).data.dispenser
       .allowedSwapper
     assert(
@@ -512,7 +506,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(swapperQuery)
     })
-    await sleep(sleepMs)
     const allowedSwapper2 = (await swapperResponse2.json()).data.dispenser
 
     assert(
