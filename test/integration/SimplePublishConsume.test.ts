@@ -306,9 +306,8 @@ describe('Simple Publish & consume test', async () => {
       1,
       setProviderFee
     )
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}-${
-      orderTx.events.OrderStarted.logIndex
-    }`
+    console.log('orderTx: ', orderTx)
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toString()}`
 
     const query = {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
@@ -321,8 +320,10 @@ describe('Simple Publish & consume test', async () => {
     })
     await sleep(3000)
     const queryResult = await response.json()
+    console.log('queryResult: ', queryResult)
 
     const providerFeeJSON = JSON.parse(queryResult.data.order.providerFee)
+    console.log('provider fee: ', providerFeeJSON)
     const lastPriceToken = queryResult.data.order.lastPriceToken.id
 
     assert(lastPriceToken === ZERO_ADDRESS, 'Wrong lastPriceToken')
@@ -387,9 +388,7 @@ describe('Simple Publish & consume test', async () => {
     assert(orderTx.transactionHash, 'Failed to start order')
 
     // Check initial provider fee has been set correctly
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}-${
-      orderTx.events.OrderStarted.logIndex
-    }`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toString()}`
 
     const initialQuery = {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
@@ -467,7 +466,9 @@ describe('Simple Publish & consume test', async () => {
     // Check the new provider fee has been set in OrderReuse
 
     const reuseQuery = {
-      query: `query {orderReuse(id:"${reusedOrder.transactionHash}-${reusedOrder.events.OrderReused.logIndex}"){id, providerFee, eventIndex}}`
+      query: `query {orderReuse(id:"${
+        reusedOrder.transactionHash
+      }-${reusedOrder.events.OrderReused.logIndex.toString()}"){id, providerFee, eventIndex}}`
     }
 
     await sleep(2000)

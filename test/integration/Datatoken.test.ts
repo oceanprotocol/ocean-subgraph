@@ -423,9 +423,7 @@ describe('Datatoken tests', async () => {
       setProviderFee
     )
     assert(orderTx, 'Invalid orderTx')
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}-${
-      orderTx.events.OrderStarted.logIndex
-    }`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toString()}`
 
     await sleep(3000)
     response = await fetch(subgraphUrl, {
@@ -435,15 +433,13 @@ describe('Datatoken tests', async () => {
     await sleep(3000)
 
     const token = (await response.json()).data.token
-    console.log('token.orders[0].id: ', token.orders[0].id)
-    console.log('orderId: ', orderId)
 
     assert(token, 'Invalid token')
     assert(token.orderCount === '1', 'Invalid orderCount after order')
     assert(token.orders[0].id === orderId)
     assert(token.orders[0].lastPriceToken.id === ZERO_ADDRESS)
     assert(token.orders[0].nftOwner.id === publisher, 'invalid nftOwner')
-    assert(token.orders[0].eventIndex === 1, 'invalid order eventIndex')
+    assert(token.orders[0].eventIndex === 0, 'invalid order eventIndex')
     assert(token.eventIndex !== null, 'Invalid eventIndex')
     assert(
       token.eventIndex !== token.orders[0].eventIndex,

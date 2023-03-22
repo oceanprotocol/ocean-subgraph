@@ -28,7 +28,7 @@ export function handleOrderStarted(event: OrderStarted): void {
       event.transaction.hash.toHex(),
       event.address.toHex(),
       event.transaction.from.toHex(),
-      BigInt.fromI32(event.logIndex).toI32()
+      event.logIndex.toI32().toString()
     )
   )
 
@@ -90,7 +90,6 @@ export function handleOrderStarted(event: OrderStarted): void {
     order.gasPrice = BigInt.zero()
   }
   order.save()
-  token.orders.concat(order.id)
   token.save()
   addOrder()
   if (token.nft) {
@@ -110,14 +109,14 @@ export function handlerOrderReused(event: OrderReused): void {
     event.params.orderTxId.toHexString(),
     event.address.toHex(),
     event.params.caller.toHex(),
-    parseInt(event.logIndex.toString())
+    event.logIndex.toI32().toString()
   )
   const order = Order.load(orderId)
 
   if (!order) return
 
   const reuseOrder = new OrderReuse(
-    `${event.transaction.hash.toHex()}-${parseInt(event.logIndex.toString())}`
+    `${event.transaction.hash.toHex()}-${event.logIndex.toI32().toString()}`
   )
   if (event.transaction.gasPrice)
     reuseOrder.gasPrice = event.transaction.gasPrice
@@ -253,7 +252,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.transaction.hash.toHex(),
     event.address.toHex(),
     event.transaction.from.toHex(),
-    parseInt(event.logIndex.toString())
+    event.logIndex.toI32().toString()
   )
   const order = Order.load(orderId)
 
@@ -265,14 +264,18 @@ export function handleProviderFee(event: ProviderFee): void {
     return
   }
 
-  let orderReuse = OrderReuse.load(event.transaction.hash.toHex())
+  let orderReuse = OrderReuse.load(
+    `${event.transaction.hash.toHex()}-${event.logIndex.toI32().toString()}`
+  )
   if (orderReuse) {
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.eventIndex = event.logIndex.toI32()
     orderReuse.save()
   } else {
-    orderReuse = new OrderReuse(event.transaction.hash.toHex())
+    orderReuse = new OrderReuse(
+      `${event.transaction.hash.toHex()}-${event.logIndex.toI32().toString()}`
+    )
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.order = orderId
