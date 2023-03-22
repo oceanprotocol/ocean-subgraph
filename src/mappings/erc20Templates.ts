@@ -28,7 +28,7 @@ export function handleOrderStarted(event: OrderStarted): void {
       event.transaction.hash.toHex(),
       event.address.toHex(),
       event.transaction.from.toHex(),
-      event.logIndex.toI32().toString()
+      event.logIndex.toI32()
     )
   )
 
@@ -109,7 +109,7 @@ export function handlerOrderReused(event: OrderReused): void {
     event.params.orderTxId.toHexString(),
     event.address.toHex(),
     event.params.caller.toHex(),
-    event.logIndex.toI32().toString()
+    event.logIndex.toI32()
   )
   const order = Order.load(orderId)
 
@@ -250,7 +250,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.transaction.hash.toHex(),
     event.address.toHex(),
     event.transaction.from.toHex(),
-    event.logIndex.toI32().toString()
+    event.logIndex.toI32()
   )
   const order = Order.load(orderId)
 

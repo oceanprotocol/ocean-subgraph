@@ -4,7 +4,7 @@ export function getOrderId(
   tx: string,
   tokenAddress: string,
   fromAddress: string,
-  eventIndex: string
+  eventIndex: number
 ): string {
   return `${tx}-${tokenAddress}-${fromAddress}-${eventIndex}`
 }
@@ -18,7 +18,7 @@ export function getOrder(
   transactionHash: string,
   address: string,
   transactionFrom: string,
-  eventIndex: string
+  eventIndex: number
 ): Order {
   const orderId = getOrderId(
     transactionHash,
