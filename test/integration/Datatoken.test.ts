@@ -435,6 +435,8 @@ describe('Datatoken tests', async () => {
     await sleep(3000)
 
     const token = (await response.json()).data.token
+    console.log('token.orders[0].id: ', token.orders[0].id)
+    console.log('orderId: ', orderId)
 
     assert(token, 'Invalid token')
     assert(token.orderCount === '1', 'Invalid orderCount after order')

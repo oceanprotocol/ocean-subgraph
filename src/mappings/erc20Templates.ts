@@ -28,7 +28,7 @@ export function handleOrderStarted(event: OrderStarted): void {
       event.transaction.hash.toHex(),
       event.address.toHex(),
       event.transaction.from.toHex(),
-      event.logIndex.toI32()
+      BigInt.fromI32(event.logIndex).toI32()
     )
   )
 
@@ -90,6 +90,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     order.gasPrice = BigInt.zero()
   }
   order.save()
+  token.orders.concat(order.id)
   token.save()
   addOrder()
   if (token.nft) {
@@ -109,13 +110,15 @@ export function handlerOrderReused(event: OrderReused): void {
     event.params.orderTxId.toHexString(),
     event.address.toHex(),
     event.params.caller.toHex(),
-    event.logIndex.toI32()
+    parseInt(event.logIndex.toString())
   )
   const order = Order.load(orderId)
 
   if (!order) return
 
-  const reuseOrder = new OrderReuse(event.transaction.hash.toHex())
+  const reuseOrder = new OrderReuse(
+    `${event.transaction.hash.toHex()}-${parseInt(event.logIndex.toString())}`
+  )
   if (event.transaction.gasPrice)
     reuseOrder.gasPrice = event.transaction.gasPrice
   else reuseOrder.gasPrice = BigInt.zero()
@@ -250,7 +253,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.transaction.hash.toHex(),
     event.address.toHex(),
     event.transaction.from.toHex(),
-    event.logIndex.toI32()
+    parseInt(event.logIndex.toString())
   )
   const order = Order.load(orderId)
 
