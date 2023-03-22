@@ -306,7 +306,9 @@ describe('Simple Publish & consume test', async () => {
       1,
       setProviderFee
     )
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}-${
+      orderTx.events.OrderStarted.logIndex
+    }`
 
     const query = {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
@@ -385,7 +387,9 @@ describe('Simple Publish & consume test', async () => {
     assert(orderTx.transactionHash, 'Failed to start order')
 
     // Check initial provider fee has been set correctly
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}-${
+      orderTx.events.OrderStarted.logIndex
+    }`
 
     const initialQuery = {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
@@ -463,7 +467,7 @@ describe('Simple Publish & consume test', async () => {
     // Check the new provider fee has been set in OrderReuse
 
     const reuseQuery = {
-      query: `query {orderReuse(id:"${reusedOrder.transactionHash}"){id, providerFee, eventIndex}}`
+      query: `query {orderReuse(id:"${reusedOrder.transactionHash}-${reusedOrder.events.OrderReused.logIndex}"){id, providerFee, eventIndex}}`
     }
 
     await sleep(2000)
