@@ -130,7 +130,7 @@ describe('DFRewards tests', async () => {
       datatokenAddress1
     )
     // check subgraph
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         dfrewards(where: {id:"${user1.toLowerCase()}"}){
@@ -190,7 +190,7 @@ describe('DFRewards tests', async () => {
       datatokenAddress1
     )
     // check subgraph
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         dfrewards(where: {id:"${user2.toLowerCase()}"}){

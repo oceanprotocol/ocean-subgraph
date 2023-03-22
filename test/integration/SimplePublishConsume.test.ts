@@ -148,7 +148,7 @@ describe('Simple Publish & consume test', async () => {
     )
 
     // graph tests here
-    await sleep(2000)
+    await sleep(3000)
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
@@ -184,7 +184,7 @@ describe('Simple Publish & consume test', async () => {
       nftParams,
       erc20Params
     )
-    await sleep(2000)
+    await sleep(3000)
     const erc721Address = result.events.NFTCreated.returnValues[0]
     const datatokenAddress = result.events.TokenCreated.returnValues[0]
     const graphNftToken = erc721Address.toLowerCase()
@@ -228,11 +228,11 @@ describe('Simple Publish & consume test', async () => {
       encryptedResponse,
       '0x' + metadataHash
     )
-    await sleep(2000)
+    await sleep(3000)
 
     // Transfer the NFT
     await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
-    await sleep(2000)
+    await sleep(3000)
     const query2 = {
       query: `query {
           nft(id:"${graphNftToken}"){symbol,id,owner{id}, transferable}}`
@@ -286,7 +286,7 @@ describe('Simple Publish & consume test', async () => {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
     }
 
-    await sleep(2000)
+    await sleep(3000)
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
@@ -359,7 +359,7 @@ describe('Simple Publish & consume test', async () => {
     const initialQuery = {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
     }
-    await sleep(2000)
+    await sleep(3000)
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
@@ -429,7 +429,7 @@ describe('Simple Publish & consume test', async () => {
       query: `query {orderReuse(id:"${reusedOrder.transactionHash}"){id, providerFee}}`
     }
 
-    await sleep(2000)
+    await sleep(3000)
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(reuseQuery)

@@ -135,7 +135,7 @@ describe('Datatoken tests', async () => {
     datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
 
     // Check values before updating metadata
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -169,7 +169,7 @@ describe('Datatoken tests', async () => {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2000)
+    await sleep(3000)
     const dt = (await initialResponse.json()).data.token
 
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -243,7 +243,7 @@ describe('Datatoken tests', async () => {
     )
 
     // Check values before updating metadata
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -277,7 +277,7 @@ describe('Datatoken tests', async () => {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2000)
+    await sleep(3000)
     const dt = (await initialResponse.json()).data.token
 
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -347,7 +347,7 @@ describe('Datatoken tests', async () => {
       nftParams,
       erc20Params
     )
-    await sleep(2000)
+    await sleep(3000)
     const newDtAddress = result.events.TokenCreated.returnValues[0]
 
     const datatoken = new Datatoken(web3, 8996)
@@ -361,7 +361,7 @@ describe('Datatoken tests', async () => {
       query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}}}}`
     }
 
-    await sleep(2000)
+    await sleep(3000)
     let response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
@@ -407,7 +407,7 @@ describe('Datatoken tests', async () => {
     assert(orderTx, 'Invalid orderTx')
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}`
 
-    await sleep(2000)
+    await sleep(3000)
     response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)

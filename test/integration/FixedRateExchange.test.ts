@@ -18,7 +18,7 @@ import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
 import BN from 'bn.js'
 
-const sleepMs = 1700
+const sleepMs = 3000
 
 const data = JSON.parse(
   fs.readFileSync(

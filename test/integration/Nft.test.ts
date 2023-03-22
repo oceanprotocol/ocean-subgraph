@@ -121,7 +121,7 @@ describe('NFT tests', async () => {
     datatokenAddress = result.events.TokenCreated.returnValues[0]
 
     // Check values before updating metadata
-    await sleep(2000)
+    await sleep(3000)
     nftAddress = erc721Address.toLowerCase()
     const initialQuery = {
       query: `query {
@@ -150,7 +150,7 @@ describe('NFT tests', async () => {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2000)
+    await sleep(3000)
     const nft = (await initialResponse.json()).data.nft
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(nft.tx)
     assert(nft.id === nftAddress, 'incorrect value for: id')
@@ -211,7 +211,7 @@ describe('NFT tests', async () => {
     )
 
     // graph tests here
-    await sleep(2000)
+    await sleep(3000)
     const query = {
       query: `query {
               nft(id:"${nftAddress}"){    
@@ -288,7 +288,7 @@ describe('NFT tests', async () => {
 
   it('Set a key/value in erc725 store', async () => {
     await nft.setData(nftAddress, publisher, 'test_key', 'test_value')
-    await sleep(2000)
+    await sleep(3000)
     const query = {
       query: `query {
                 nft(id:"${nftAddress}"){

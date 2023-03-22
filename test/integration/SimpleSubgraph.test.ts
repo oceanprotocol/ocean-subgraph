@@ -69,7 +69,7 @@ describe('Tests coverage without provider/aquarius', async () => {
     const erc721Address = result.events.NFTCreated.returnValues[0]
 
     // graph tests here
-    await sleep(2000)
+    await sleep(3000)
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
@@ -106,7 +106,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       nftParams,
       erc20Params
     )
-    await sleep(2000)
+    await sleep(3000)
     const erc721Address = result.events.NFTCreated.returnValues[0]
     const nftAddress = erc721Address.toLowerCase()
 
@@ -117,7 +117,7 @@ describe('Tests coverage without provider/aquarius', async () => {
       newOwnerAccount
     )
 
-    await sleep(2000)
+    await sleep(3000)
     const query2 = {
       query: `query {
           nft(id:"${nftAddress}"){

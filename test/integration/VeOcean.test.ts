@@ -165,7 +165,7 @@ describe('veOcean tests', async () => {
     }
     currentBalance = await veOcean.getLockedAmount(Alice)
     currentLock = await veOcean.lockEnd(Alice)
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
                   veOCEANs(id:"${Alice.toLowerCase()}"){    
@@ -190,7 +190,7 @@ describe('veOcean tests', async () => {
     const newLock = parseInt(String(currentLock)) + 7 * 86400
     await veOcean.increaseUnlockTime(Alice, newLock)
     const newCurrentLock = await veOcean.lockEnd(Alice)
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
                   veOCEANs(id:"${Alice.toLowerCase()}"){    
@@ -227,7 +227,7 @@ describe('veOcean tests', async () => {
     await veOcean.increaseAmount(Alice, amount)
     const newCurrentBalance = await veOcean.getLockedAmount(Alice)
     const newCurrentLock = await veOcean.lockEnd(Alice)
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
                   veOCEANs(id:"${Alice.toLowerCase()}"){    
@@ -289,7 +289,7 @@ describe('veOcean tests', async () => {
   it('Alice should allocate 10% to NFT1', async () => {
     await veAllocate.setAllocation(Alice, '1000', nft1, chainId)
     const newTotalAllocation = await veAllocate.getTotalAllocation(Alice)
-    await sleep(2000)
+    await sleep(3000)
     let initialQuery = {
       query: `query {
                 veAllocateUsers(id:"${Alice.toLowerCase()}"){    
@@ -341,7 +341,7 @@ describe('veOcean tests', async () => {
     )
     const totalAllocation = await veAllocate.getTotalAllocation(Alice)
 
-    await sleep(2000)
+    await sleep(3000)
     let initialQuery = {
       query: `query {
                 veAllocateUsers(id:"${Alice.toLowerCase()}"){    
