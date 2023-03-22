@@ -222,18 +222,22 @@ describe('Datatoken tests', async () => {
   })
 
   it('Correct Datatoken fields after updating metadata', async () => {
+    const chain = await web3.eth.getChainId()
     // create the files encrypted string
-    let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
+    let providerResponse = await ProviderInstance.encrypt(
+      assetUrl,
+      chain,
+      providerUrl
+    )
     ddo.services[0].files = await providerResponse
     ddo.services[0].datatokenAddress = datatokenAddress
     // update ddo and set the right did
     ddo.nftAddress = erc721Address
-    const chain = await web3.eth.getChainId()
     ddo.id =
       'did:op:' +
       SHA256(web3.utils.toChecksumAddress(erc721Address) + chain.toString(10))
 
-    providerResponse = await ProviderInstance.encrypt(ddo, providerUrl)
+    providerResponse = await ProviderInstance.encrypt(ddo, chain, providerUrl)
     const encryptedResponse = await providerResponse
     const metadataHash = getHash(JSON.stringify(ddo))
     await nft.setMetadata(
