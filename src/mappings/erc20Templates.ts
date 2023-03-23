@@ -248,11 +248,13 @@ export function handleProviderFee(event: ProviderFee): void {
     event.params.validUntil
   }"}`
 
+  const orderEventIndex = event.logIndex.toI32() - 1
+
   const orderId = getOrderId(
     event.transaction.hash.toHex(),
     event.address.toHex(),
     event.transaction.from.toHex(),
-    event.logIndex.toI32().toString()
+    orderEventIndex.toString()
   )
   const order = Order.load(orderId)
 

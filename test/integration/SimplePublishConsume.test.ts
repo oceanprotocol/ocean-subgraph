@@ -322,7 +322,25 @@ describe('Simple Publish & consume test', async () => {
     const queryResult = await response.json()
     console.log('queryResult: ', queryResult)
 
-    const providerFeeJSON = JSON.parse(queryResult.data.order.providerFee)
+    const orderIdForProviderFees = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.ProviderFee.logIndex.toString()}`
+    console.log('orderIdForProviderFees: ', orderIdForProviderFees)
+    const queryForProviderFees = {
+      query: `query {order(id:"${orderIdForProviderFees}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
+    }
+
+    await sleep(3000)
+    const responseProviderFees = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(queryForProviderFees)
+    })
+    await sleep(3000)
+    const queryResultProviderFees = await responseProviderFees.json()
+
+    console.log('queryResultProviderFees: ', queryResultProviderFees)
+
+    const providerFeeJSON = JSON.parse(
+      queryResultProviderFees.data.order.providerFee
+    )
     console.log('provider fee: ', providerFeeJSON)
     const lastPriceToken = queryResult.data.order.lastPriceToken.id
 
