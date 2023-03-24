@@ -18,12 +18,12 @@ export function handleDelegation(event: DelegateBoost): void {
   const veDelegation = getveDelegation(_tokenId.toHex())
   veDelegation.delegator = _delegator
   getveOCEAN(_receiver)
-  // const delegatorVeOcean = getveOCEAN(_delegator)
-  // if (_amount && delegatorVeOcean.lockedAmount) {
-  //   veDelegation.amountFraction = _amount.divDecimal(
-  //     delegatorVeOcean.lockedAmount
-  //   )
-  // }
+  const delegatorVeOcean = getveOCEAN(_delegator)
+  if (_amount && delegatorVeOcean.lockedAmount) {
+    veDelegation.amountFraction = _amount.divDecimal(
+      delegatorVeOcean.lockedAmount
+    )
+  }
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
   veDelegation.amount = _amount

@@ -465,7 +465,7 @@ type VeDelegation @entity {
   receiver: VeOCEAN!
   tokenId: BigInt!
   amount: BigInt!
-  # amountFraction: BigDecimal!
+  amountFraction: BigDecimal!
   cancelTime: BigInt!
   expireTime: BigInt!
   block: Int!
