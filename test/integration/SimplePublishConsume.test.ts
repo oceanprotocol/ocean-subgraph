@@ -122,18 +122,22 @@ describe('Simple Publish & consume test', async () => {
     const erc721Address = result.events.NFTCreated.returnValues[0]
     datatokenAddress = result.events.TokenCreated.returnValues[0]
 
+    const chain = await web3.eth.getChainId()
     // create the files encrypted string
-    let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
+    let providerResponse = await ProviderInstance.encrypt(
+      assetUrl,
+      chain,
+      providerUrl
+    )
     ddo.services[0].files = await providerResponse
     ddo.services[0].datatokenAddress = datatokenAddress
     // update ddo and set the right did
     ddo.nftAddress = erc721Address
-    const chain = await web3.eth.getChainId()
     ddo.id =
       'did:op:' +
       SHA256(web3.utils.toChecksumAddress(erc721Address) + chain.toString(10))
 
-    providerResponse = await ProviderInstance.encrypt(ddo, providerUrl)
+    providerResponse = await ProviderInstance.encrypt(ddo, chain, providerUrl)
     const encryptedResponse = await providerResponse
     const metadataHash = getHash(JSON.stringify(ddo))
     await nft.setMetadata(
@@ -203,19 +207,22 @@ describe('Simple Publish & consume test', async () => {
       initialResult.data.nft.owner.id.toLowerCase() ===
         publisherAccount.toLowerCase()
     )
-
+    const chain = await web3.eth.getChainId()
     // create the files encrypted string
-    let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl)
+    let providerResponse = await ProviderInstance.encrypt(
+      assetUrl,
+      chain,
+      providerUrl
+    )
     ddo.services[0].files = await providerResponse
     ddo.services[0].datatokenAddress = datatokenAddress
     // update ddo and set the right did
     ddo.nftAddress = erc721Address
-    const chain = await web3.eth.getChainId()
     ddo.id =
       'did:op:' +
       SHA256(web3.utils.toChecksumAddress(erc721Address) + chain.toString(10))
 
-    providerResponse = await ProviderInstance.encrypt(ddo, providerUrl)
+    providerResponse = await ProviderInstance.encrypt(ddo, chain, providerUrl)
     const encryptedResponse = await providerResponse
     const metadataHash = getHash(JSON.stringify(ddo))
     await nft.setMetadata(
