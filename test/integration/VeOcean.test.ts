@@ -649,10 +649,10 @@ describe('veOcean tests', async () => {
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
 
-    sleep(2000)
+    sleep(3000)
     const delegateQuery = {
       query: `query {
-        veDelegation(id:"${tx3.events.DelegateBoost.returnValues._token_id}"){    
+        veDelegations{
           id
           delegator {
             id
@@ -661,12 +661,8 @@ describe('veOcean tests', async () => {
             id
           }
           tokenId
-          amount
-          cancelTime
-          expireTime
-          block
-                    }
-                  }`
+        }
+        }`
     }
 
     const delegateResponse = await fetch(subgraphUrl, {
