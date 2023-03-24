@@ -18,7 +18,7 @@ import { fetch } from 'cross-fetch'
 import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
 
-const sleepMs = 3000
+const sleepMs = 1800
 
 const data = JSON.parse(
   fs.readFileSync(

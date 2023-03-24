@@ -18,7 +18,7 @@ import fs from 'fs'
 import { fetch } from 'cross-fetch'
 import { AbiItem } from 'web3-utils/types'
 
-const sleepMs = 3000
+const sleepMs = 1700
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -281,7 +281,7 @@ describe('User tests', async () => {
     )
     assert(orderTx.events.OrderStarted, 'Invalid orderTx')
 
-    await sleep(3000)
+    await sleep(2000)
 
     const user = await userQuery(user3)
     assert(user.id === user3, 'incorrect value for: id')

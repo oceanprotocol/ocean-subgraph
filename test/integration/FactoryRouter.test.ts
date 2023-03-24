@@ -149,7 +149,7 @@ describe('FactoryRouter tests', async () => {
     )
     datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
     await router.addApprovedToken(ownerAccount, datatokenAddress)
-    await sleep(3000)
+    await sleep(2000)
     const tokens = await getSubgraphApprovedTokens()
     assert(tokens.includes(datatokenAddress.toLowerCase()))
     assert(tokens.length === 2)
@@ -157,7 +157,7 @@ describe('FactoryRouter tests', async () => {
 
   it('Owner should remove token from the approved list', async () => {
     await router.removeApprovedToken(ownerAccount, datatokenAddress)
-    await sleep(3000)
+    await sleep(2000)
     const tokens = await getSubgraphApprovedTokens()
     assert(!tokens.includes(datatokenAddress.toLowerCase()))
     assert(tokens.length === 1)
