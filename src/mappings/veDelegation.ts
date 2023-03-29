@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import {
   BurnBoost,
   DelegateBoost,
@@ -71,6 +71,6 @@ export function handleBurnBoost(event: BurnBoost): void {
 
   // delete
   const veDelegation = getveDelegation(_tokenId.toHex())
-  veDelegation.amountFraction = BigInt.zero()
+  veDelegation.amountFraction = BigDecimal.zero()
   veDelegation.amount = BigInt.zero()
 }
