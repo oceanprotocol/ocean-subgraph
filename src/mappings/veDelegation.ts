@@ -42,12 +42,12 @@ export function handleExtendBoost(event: ExtendBoost): void {
   const _expireTime = event.params._expire_time
 
   const veDelegation = getveDelegation(_tokenId.toHex())
-  // const delegatorVeOcean = getveOCEAN(_delegator)
-  // if (_amount && delegatorVeOcean.lockedAmount) {
-  //   veDelegation.amountFraction = _amount.divDecimal(
-  //     delegatorVeOcean.lockedAmount
-  //   )
-  // }
+  const delegatorVeOcean = getveOCEAN(_delegator)
+  if (_amount && delegatorVeOcean.lockedAmount) {
+    veDelegation.amountFraction = _amount.divDecimal(
+      delegatorVeOcean.lockedAmount
+    )
+  }
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
