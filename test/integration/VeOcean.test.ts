@@ -601,9 +601,7 @@ describe('veOcean tests', async () => {
       body: JSON.stringify(initialQuery)
     })
     await sleep(2000)
-    console.log('initial response', initialResponse)
     const info = (await initialResponse.json()).data.veOCEANs
-    console.log('info', info)
     assert(info[0].id === Alice.toLowerCase(), 'ID is incorrect')
     assert(info[0].lockedAmount === currentBalance, 'LockedAmount is incorrect')
     assert(info[0].unlockTime === currentLock, 'Unlock time is not correct')
@@ -641,15 +639,11 @@ describe('veOcean tests', async () => {
       extLockTime,
       0
     )
-    console.log('TX3: ', tx3)
-    console.log('Events: ', tx3.events.DelegateBoost)
-    console.log('Events: ', tx3.events.DelegateBoost.returnValues)
-    console.log('Events: ', tx3.events.DelegateBoost.returnValues._token_id)
 
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
 
-    sleep(3000)
+    sleep(2000)
     const delegateQuery = {
       query: `query {
         veDelegations{
@@ -670,9 +664,6 @@ describe('veOcean tests', async () => {
       body: JSON.stringify(delegateQuery)
     })
     const json = await delegateResponse.json()
-    console.log('Json', json)
-    console.log('Data', json?.data)
-    console.log('veDelegation', json?.data?.veDelegations)
     assert(json?.data?.veDelegations, 'No veDelegations')
   })
 })
