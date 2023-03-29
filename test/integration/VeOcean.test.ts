@@ -646,15 +646,19 @@ describe('veOcean tests', async () => {
     sleep(2000)
     const delegateQuery = {
       query: `query {
-        veDelegations{
-          id
+        veDelegation(id:"${tx3.events.DelegateBoost.returnValues._token_id}"){  
+          id,
           delegator {
             id
-          }
+          },
           receiver {
             id
-          }
-          tokenId
+          },
+          tokenId,
+          amount,
+          cancelTime,
+          expireTime,
+          amountFraction
         }
         }`
     }
@@ -664,6 +668,16 @@ describe('veOcean tests', async () => {
       body: JSON.stringify(delegateQuery)
     })
     const json = await delegateResponse.json()
-    assert(json?.data?.veDelegations, 'No veDelegations')
+    console.log('json', json)
+    console.log('json?.data?.veDelegation', json?.data?.veDelegation)
+    console.log(
+      'json?.data?.veDelegation',
+      json?.data?.veDelegation?.amountFraction
+    )
+    assert(json?.data?.veDelegation, 'No veDelegations')
+    assert(
+      json?.data?.veDelegation.amountFraction,
+      'No veDelegation amountFraction'
+    )
   })
 })
