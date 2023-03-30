@@ -129,6 +129,7 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.cancelTime = BigInt.zero()
     veDelegation.expireTime = BigInt.zero()
     veDelegation.tokenId = BigInt.zero()
+    veDelegation.amountFraction = BigDecimal.zero()
     veDelegation.amount = BigInt.zero()
     veDelegation.receiver = ''
     veDelegation.delegator = ''

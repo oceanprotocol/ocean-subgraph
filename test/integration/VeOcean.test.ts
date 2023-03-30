@@ -16,6 +16,7 @@ import Web3 from 'web3'
 import { homedir } from 'os'
 import fs from 'fs'
 import { fetch } from 'cross-fetch'
+import veDelegation from '@oceanprotocol/contracts/artifacts/contracts/ve/veDelegation.vy/veDelegation.json'
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -87,6 +88,7 @@ const minAbi = [
 describe('veOcean tests', async () => {
   let nftFactory
   let veOcean: VeOcean
+  let delegateContract
   let veAllocate: VeAllocate
   let veFeeDistributor: VeFeeDistributor
   let ownerAccount: string
@@ -103,6 +105,10 @@ describe('veOcean tests', async () => {
     ownerAccount = accounts[0]
     Alice = accounts[1]
     Bob = accounts[2]
+    delegateContract = new web3.eth.Contract(
+      veDelegation.abi as AbiItem[],
+      addresses.veDelegation
+    )
 
     const tokenContract = new web3.eth.Contract(minAbi, addresses.Ocean)
     const estGas = await calculateEstimatedGas(
@@ -545,5 +551,125 @@ describe('veOcean tests', async () => {
   it('Alice should withdraw locked tokens', async () => {
     await evmIncreaseTime(60 * 60 * 24 * 7)
     await veOcean.withdraw(Alice)
+  })
+
+  it('Alice should lock 100 Ocean and Delegate them to Bob', async () => {
+    // since we can only lock once, we test if tx fails or not
+    // so if there is already a lock, skip it
+    let currentBalance = await veOcean.getLockedAmount(Alice)
+    let currentLock = await veOcean.lockEnd(Alice)
+    const amount = '100'
+    await approve(
+      web3,
+      config,
+      Alice,
+      addresses.Ocean,
+      addresses.veOCEAN,
+      amount
+    )
+    const timestamp = Math.floor(Date.now() / 1000)
+    const unlockTime = timestamp + 30 * 86400
+    console.log('unlock time', unlockTime)
+
+    if (parseInt(currentBalance) > 0 || currentLock > 0) {
+      // we already have some locked tokens, so our transaction should fail
+      try {
+        await veOcean.lockTokens(Alice, amount, unlockTime)
+        assert(false, 'This should fail!')
+      } catch (e) {
+        // do nothing
+      }
+    } else {
+      await veOcean.lockTokens(Alice, amount, unlockTime)
+    }
+    currentBalance = await veOcean.getLockedAmount(Alice)
+    currentLock = await veOcean.lockEnd(Alice)
+    await sleep(2000)
+    const initialQuery = {
+      query: `query {
+                      veOCEANs(id:"${Alice.toLowerCase()}"){    
+                        id,
+                        lockedAmount,
+                        unlockTime
+                      }
+                    }`
+    }
+    await sleep(2000)
+
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(initialQuery)
+    })
+    await sleep(2000)
+    const info = (await initialResponse.json()).data.veOCEANs
+    assert(info[0].id === Alice.toLowerCase(), 'ID is incorrect')
+    assert(info[0].lockedAmount === currentBalance, 'LockedAmount is incorrect')
+    assert(info[0].unlockTime === currentLock, 'Unlock time is not correct')
+
+    const lockTime = await veOcean.lockEnd(Alice)
+    const extLockTime = Number(lockTime) + 31556926
+
+    await delegateContract.methods.setApprovalForAll(Alice, true).send({
+      from: Alice
+    })
+
+    await veOcean.increaseUnlockTime(Alice, extLockTime)
+
+    const estGas = await calculateEstimatedGas(
+      Alice,
+      delegateContract.methods.create_boost,
+      Alice,
+      Bob,
+      10000,
+      0,
+      extLockTime,
+      0
+    )
+
+    const tx3 = await sendTx(
+      Alice,
+      estGas,
+      web3,
+      1,
+      delegateContract.methods.create_boost,
+      Alice,
+      Bob,
+      10000,
+      0,
+      extLockTime,
+      0
+    )
+
+    assert(tx3, 'Transaction failed')
+    assert(tx3.events.DelegateBoost, 'No Delegate boost event')
+
+    sleep(4000)
+    const delegateQuery = {
+      query: `query {
+        veDelegations{  
+          id,
+          delegator {
+            id
+          },
+          receiver {
+            id
+          },
+          tokenId,
+          amount,
+          amountFraction,
+          cancelTime,
+          expireTime
+        }
+        }`
+    }
+
+    const delegateResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(delegateQuery)
+    })
+    const json = await delegateResponse.json()
+    console.log('json', json)
+    console.log('json?.data?.veDelegations', json?.data?.veDelegations)
+    assert(json?.data?.veDelegations, 'No veDelegations')
   })
 })
