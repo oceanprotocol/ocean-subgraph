@@ -643,11 +643,22 @@ describe('veOcean tests', async () => {
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
 
-    sleep(2000)
+    sleep(4000)
     const delegateQuery = {
       query: `query {
         veDelegations{  
-          id
+          id,
+          delegator {
+            id
+          },
+          receiver {
+            id
+          },
+          tokenId,
+          amount,
+          amountFraction,
+          cancelTime,
+          expireTime
         }
         }`
     }
