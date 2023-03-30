@@ -647,18 +647,7 @@ describe('veOcean tests', async () => {
     const delegateQuery = {
       query: `query {
         veDelegations{  
-          id,
-          delegator {
-            id
-          },
-          receiver {
-            id
-          },
-          tokenId,
-          amount,
-          cancelTime,
-          expireTime,
-          amountFraction
+          id
         }
         }`
     }
