@@ -6,6 +6,7 @@ import {
   TransferBoost
 } from '../@types/veDelegation/veDelegation'
 import { getveDelegation, getveOCEAN } from './utils/veUtils'
+import { weiToDecimal } from './utils/generic'
 
 export function handleDelegation(event: DelegateBoost): void {
   const _delegator = event.params._delegator.toHex()
@@ -44,7 +45,7 @@ export function handleExtendBoost(event: ExtendBoost): void {
   const veDelegation = getveDelegation(_tokenId.toHex())
   const delegatorVeOcean = getveOCEAN(_delegator)
   if (_amount && delegatorVeOcean.lockedAmount) {
-    veDelegation.amountFraction = _amount.divDecimal(
+    veDelegation.amountFraction = weiToDecimal(_amount.toBigDecimal(), 18).div(
       delegatorVeOcean.lockedAmount
     )
   }
