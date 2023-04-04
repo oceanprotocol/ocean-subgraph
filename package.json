@@ -32,7 +32,6 @@
     "test-ve": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/VeOcean.test.ts'",
     "test-df": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/DFRewards.test.ts'",
     "test-dt": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/Datatoken.test.ts'",
-    "test-delegation": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/veDelegation.test.ts'",
     "test-zend": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/ZEnding.test.ts'",
     "lint": "eslint --ignore-path .gitignore --ext .js --ext .ts --ext .tsx .",
     "lint:fix": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx . --fix",
