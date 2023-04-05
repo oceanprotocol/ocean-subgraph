@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { BigInt } from '@graphprotocol/graph-ts'
 import {
   BurnBoost,
   DelegateBoost,
@@ -6,7 +6,6 @@ import {
   TransferBoost
 } from '../@types/veDelegation/veDelegation'
 import { getveDelegation, getveOCEAN } from './utils/veUtils'
-import { weiToDecimal } from './utils/generic'
 
 export function handleDelegation(event: DelegateBoost): void {
   const _delegator = event.params._delegator.toHex()
@@ -25,6 +24,7 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.block = event.block.number.toI32()
+  veDelegation.timestamp = event.block.timestamp.toI32()
   veDelegation.save()
 }
 
@@ -43,6 +43,7 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegation.amount = _amount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
+  veDelegation.timestamp = event.block.timestamp.toI32()
   veDelegation.save()
 }
 

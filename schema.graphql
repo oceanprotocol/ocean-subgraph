@@ -468,6 +468,7 @@ type VeDelegation @entity {
   cancelTime: BigInt!
   expireTime: BigInt!
   block: Int!
+  timestamp: Int!
 }
 
 type VeOCEAN @entity {
