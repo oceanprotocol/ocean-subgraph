@@ -37,17 +37,13 @@ export function getOrder(
 export function searchOrderForEvent(event: ethereum.Event): Order {
   let firstEventIndex = event.logIndex.toI32() - 1
   while (true) {
-    console.log('first event index: ', firstEventIndex)
     const orderId = getOrderId(
       event.transaction.hash.toHex(),
       event.address.toHex(),
       event.transaction.from.toHex(),
       firstEventIndex.toString()
     )
-    console.log('orderId: ', orderId)
     const order = Order.load(orderId)
-    console.log('order datatoken: ', order.datatoken)
-    console.log('event address: ', event.address.toString())
     if (order !== null && order.datatoken === event.address.toString()) {
       return order
     }
