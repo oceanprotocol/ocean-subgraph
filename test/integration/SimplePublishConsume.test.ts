@@ -308,7 +308,7 @@ describe('Simple Publish & consume test', async () => {
     )
     console.log('orderTx: ', orderTx)
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toString()}`
-
+    console.log('orderId: ', orderId)
     const query = {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
     }
