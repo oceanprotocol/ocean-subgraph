@@ -656,7 +656,6 @@ describe('veOcean tests', async () => {
           },
           tokenId,
           amount,
-          amountFraction,
           cancelTime,
           expireTime
         }
