@@ -1,4 +1,5 @@
 import { Order } from '../../@types/schema'
+import { ethereum } from '@graphprotocol/graph-ts'
 
 export function getOrderId(
   tx: string,
@@ -31,4 +32,21 @@ export function getOrder(
     newOrder = createOrder(orderId)
   }
   return newOrder
+}
+
+export function searchOrderForEvent(event: ethereum.Event): Order {
+  let firstEventIndex = event.logIndex.toI32() - 1
+  while (true) {
+    const orderId = getOrderId(
+      event.transaction.hash.toHex(),
+      event.address.toHex(),
+      event.transaction.from.toHex(),
+      firstEventIndex.toString()
+    )
+    const order = Order.load(orderId)
+    if (order !== null && order.datatoken === event.address.toHexString()) {
+      return order
+    }
+    firstEventIndex--
+  }
 }

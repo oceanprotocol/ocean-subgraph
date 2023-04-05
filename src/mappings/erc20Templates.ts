@@ -20,7 +20,7 @@ import { weiToDecimal } from './utils/generic'
 import { addOrder } from './utils/globalUtils'
 import { getToken, getUSDValue } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
-import { getOrderId } from './utils/orderUtils'
+import { getOrderId, searchOrderForEvent } from './utils/orderUtils'
 
 export function handleOrderStarted(event: OrderStarted): void {
   const order = new Order(
@@ -105,13 +105,7 @@ export function handleOrderStarted(event: OrderStarted): void {
 }
 
 export function handlerOrderReused(event: OrderReused): void {
-  const orderId = getOrderId(
-    event.params.orderTxId.toHexString(),
-    event.address.toHex(),
-    event.params.caller.toHex(),
-    event.logIndex.toI32().toString()
-  )
-  const order = Order.load(orderId)
+  const order = searchOrderForEvent(event)
 
   if (!order) return
 
@@ -124,7 +118,7 @@ export function handlerOrderReused(event: OrderReused): void {
   if (event.receipt !== null && event.receipt!.gasUsed) {
     reuseOrder.gasUsed = event.receipt!.gasUsed.toBigDecimal()
   } else reuseOrder.gasUsed = BigDecimal.zero()
-  reuseOrder.order = orderId
+  reuseOrder.order = order.id
   reuseOrder.caller = event.params.caller.toHexString()
   reuseOrder.createdTimestamp = event.params.timestamp.toI32()
   reuseOrder.tx = event.transaction.hash.toHex()
@@ -248,15 +242,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.params.validUntil
   }"}`
 
-  const orderEventIndex = event.logIndex.toI32() - 1
-
-  const orderId = getOrderId(
-    event.transaction.hash.toHex(),
-    event.address.toHex(),
-    event.transaction.from.toHex(),
-    orderEventIndex.toString()
-  )
-  const order = Order.load(orderId)
+  const order = searchOrderForEvent(event)
 
   if (order) {
     order.providerFee = providerFee
@@ -280,7 +266,7 @@ export function handleProviderFee(event: ProviderFee): void {
     )
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.order = orderId
+    orderReuse.order = order.id
     orderReuse.createdTimestamp = event.block.timestamp.toI32()
     orderReuse.tx = event.transaction.hash.toHex()
     orderReuse.eventIndex = event.logIndex.toI32()
