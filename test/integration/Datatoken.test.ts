@@ -222,8 +222,8 @@ describe('Datatoken tests', async () => {
   })
 
   it('Correct Datatoken fields after updating metadata', async () => {
-    const chain = await web3.eth.getChainId()
     // create the files encrypted string
+    const chain = await web3.eth.getChainId()
     let providerResponse = await ProviderInstance.encrypt(
       assetUrl,
       chain,
