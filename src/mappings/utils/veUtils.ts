@@ -133,6 +133,7 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.receiver = ''
     veDelegation.delegator = ''
     veDelegation.block = 0
+    veDelegation.timestamp = 0
     veDelegation.save()
   }
   return veDelegation
