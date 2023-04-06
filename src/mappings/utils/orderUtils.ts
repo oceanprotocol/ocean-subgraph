@@ -1,5 +1,5 @@
-import { Order } from '../../@types/schema'
-import { ethereum } from '@graphprotocol/graph-ts'
+import { Order, OrderReuse } from '../../@types/schema'
+import { ethereum, log } from '@graphprotocol/graph-ts'
 
 export function getOrderId(
   tx: string,
@@ -36,6 +36,7 @@ export function getOrder(
 
 export function searchOrderForEvent(event: ethereum.Event): Order {
   let firstEventIndex = event.logIndex.toI32() - 1
+  log.info('firstEventIndex on simple order: ', [firstEventIndex.toString()])
   while (true) {
     const orderId = getOrderId(
       event.transaction.hash.toHex(),
@@ -43,10 +44,44 @@ export function searchOrderForEvent(event: ethereum.Event): Order {
       event.transaction.from.toHex(),
       firstEventIndex.toString()
     )
+    log.info('orderId as trial: ', [orderId])
     const order = Order.load(orderId)
+    if (order !== null) {
+      log.info('order datatoken: ', [order.datatoken])
+    }
+    log.info('event address: ', [event.address.toString()])
     if (order !== null && order.datatoken === event.address.toString()) {
       return order
     }
+    firstEventIndex--
+  }
+}
+
+export function searchOrderResusedForEvent(event: ethereum.Event): OrderReuse {
+  let firstEventIndex = event.logIndex.toI32() - 1
+  log.info('firstEventIndex on simple order: ', [firstEventIndex.toString()])
+  while (true) {
+    const orderReused = OrderReuse.load(
+      `${event.transaction.hash.toHex()}-${firstEventIndex}`
+    )
+
+    if (orderReused !== null) {
+      log.info('order reused order: ', [orderReused.order])
+      const order = Order.load(orderReused.order)
+      if (order !== null) {
+        log.info('order datatoken: ', [order.datatoken])
+      }
+      log.info('event address: ', [event.address.toString()])
+
+      if (
+        orderReused !== null &&
+        order !== null &&
+        order.datatoken === event.address.toString()
+      ) {
+        return orderReused
+      }
+    }
+
     firstEventIndex--
   }
 }

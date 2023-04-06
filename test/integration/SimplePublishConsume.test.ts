@@ -307,6 +307,8 @@ describe('Simple Publish & consume test', async () => {
       setProviderFee
     )
     console.log('orderTx: ', orderTx)
+    console.log('order tx id: ', orderTx.events.OrderStarted.returnValues)
+    console.log('provider fee: ', orderTx.events.ProviderFee.returnValues)
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toString()}`
     console.log('orderId: ', orderId)
     const query = {
@@ -318,7 +320,7 @@ describe('Simple Publish & consume test', async () => {
       method: 'POST',
       body: JSON.stringify(query)
     })
-    await sleep(3000)
+    await sleep(6000)
     const queryResult = await response.json()
     console.log('queryResult: ', queryResult)
 

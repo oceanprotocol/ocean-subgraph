@@ -1,5 +1,5 @@
 import { Order, Nft, OrderReuse } from '../@types/schema'
-import { BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal, Address, log } from '@graphprotocol/graph-ts'
 
 import {
   NewPaymentCollector,
@@ -20,7 +20,11 @@ import { weiToDecimal } from './utils/generic'
 import { addOrder } from './utils/globalUtils'
 import { getToken, getUSDValue } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
-import { getOrderId, searchOrderForEvent } from './utils/orderUtils'
+import {
+  getOrderId,
+  searchOrderForEvent,
+  searchOrderResusedForEvent
+} from './utils/orderUtils'
 
 export function handleOrderStarted(event: OrderStarted): void {
   const order = new Order(
@@ -247,37 +251,13 @@ export function handleProviderFee(event: ProviderFee): void {
   if (order) {
     order.providerFee = providerFee
     order.providerFeeValidUntil = event.params.validUntil
-    order.eventIndex = event.logIndex.toI32()
     order.save()
-    return
-  }
-
-  let orderReuse = OrderReuse.load(
-    `${event.transaction.hash.toHex()}-${event.logIndex.toI32().toString()}`
-  )
-  if (orderReuse) {
-    orderReuse.providerFee = providerFee
-    orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.eventIndex = event.logIndex.toI32()
-    orderReuse.save()
   } else {
-    orderReuse = new OrderReuse(
-      `${event.transaction.hash.toHex()}-${event.logIndex.toI32().toString()}`
-    )
-    orderReuse.providerFee = providerFee
-    orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.order = order.id
-    orderReuse.createdTimestamp = event.block.timestamp.toI32()
-    orderReuse.tx = event.transaction.hash.toHex()
-    orderReuse.eventIndex = event.logIndex.toI32()
-    orderReuse.block = event.block.number.toI32()
-    orderReuse.caller = event.transaction.from.toHex()
-    if (event.transaction.gasPrice)
-      orderReuse.gasPrice = event.transaction.gasPrice
-    else orderReuse.gasPrice = BigInt.zero()
-    if (event.receipt !== null && event.receipt!.gasUsed) {
-      orderReuse.gasUsed = event.receipt!.gasUsed.toBigDecimal()
-    } else orderReuse.gasUsed = BigDecimal.zero()
-    orderReuse.save()
+    const orderReuse = searchOrderResusedForEvent(event)
+    if (orderReuse) {
+      orderReuse.providerFee = providerFee
+      orderReuse.providerFeeValidUntil = event.params.validUntil
+      orderReuse.save()
+    }
   }
 }
