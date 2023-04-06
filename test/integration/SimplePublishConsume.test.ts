@@ -320,7 +320,7 @@ describe('Simple Publish & consume test', async () => {
       method: 'POST',
       body: JSON.stringify(query)
     })
-    await sleep(6000)
+    await sleep(3000)
     const queryResult = await response.json()
     console.log('queryResult: ', queryResult)
 

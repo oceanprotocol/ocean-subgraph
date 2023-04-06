@@ -109,7 +109,12 @@ export function handleOrderStarted(event: OrderStarted): void {
 }
 
 export function handlerOrderReused(event: OrderReused): void {
-  const order = searchOrderForEvent(event)
+  const order = searchOrderForEvent(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.transaction.from.toHex(),
+    event.logIndex.toI32()
+  )
 
   if (!order) return
 
@@ -245,15 +250,26 @@ export function handleProviderFee(event: ProviderFee): void {
   }", "r": "${event.params.r.toHexString()}", "s": "${event.params.s.toHexString()}", "validUntil": "${
     event.params.validUntil
   }"}`
+  log.info('provider fee: {}', [providerFee])
+  log.info('event address: {}', [event.address.toHexString()])
 
-  const order = searchOrderForEvent(event)
+  const order = searchOrderForEvent(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.transaction.from.toHex(),
+    event.logIndex.toI32()
+  )
 
   if (order) {
     order.providerFee = providerFee
     order.providerFeeValidUntil = event.params.validUntil
     order.save()
   } else {
-    const orderReuse = searchOrderResusedForEvent(event)
+    const orderReuse = searchOrderResusedForEvent(
+      event.transaction.hash.toHex(),
+      event.address.toHex(),
+      event.logIndex.toI32()
+    )
     if (orderReuse) {
       orderReuse.providerFee = providerFee
       orderReuse.providerFeeValidUntil = event.params.validUntil
