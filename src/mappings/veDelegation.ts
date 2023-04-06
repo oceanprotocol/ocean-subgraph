@@ -25,6 +25,7 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.expireTime = _expireTime
   veDelegation.block = event.block.number.toI32()
   veDelegation.timestamp = event.block.timestamp.toI32()
+  veDelegation.tx = event.transaction.hash.toHex()
   veDelegation.save()
 }
 
@@ -44,6 +45,7 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.timestamp = event.block.timestamp.toI32()
+  veDelegation.tx = event.transaction.hash.toHex()
   veDelegation.save()
 }
 

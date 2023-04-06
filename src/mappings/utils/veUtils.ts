@@ -134,6 +134,7 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.delegator = ''
     veDelegation.block = 0
     veDelegation.timestamp = 0
+    veDelegation.tx = ''
     veDelegation.save()
   }
   return veDelegation

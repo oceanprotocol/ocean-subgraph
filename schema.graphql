@@ -469,6 +469,7 @@ type VeDelegation @entity {
   expireTime: BigInt!
   block: Int!
   timestamp: Int!
+  tx: String!
 }
 
 type VeOCEAN @entity {
