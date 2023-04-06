@@ -306,6 +306,7 @@ describe('Simple Publish & consume test', async () => {
       1,
       setProviderFee
     )
+    await sleep(3000)
     console.log('orderTx: ', orderTx)
     console.log('order tx id: ', orderTx.events.OrderStarted.returnValues)
     console.log('provider fee: ', orderTx.events.ProviderFee.returnValues)
