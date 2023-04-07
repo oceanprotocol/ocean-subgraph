@@ -5,7 +5,7 @@ export function getOrderId(
   tx: string,
   tokenAddress: string,
   fromAddress: string,
-  eventIndex: string
+  eventIndex: number
 ): string {
   return `${tx}-${tokenAddress}-${fromAddress}-${eventIndex}`
 }
@@ -19,7 +19,7 @@ export function getOrder(
   transactionHash: string,
   address: string,
   transactionFrom: string,
-  eventIndex: string
+  eventIndex: number
 ): Order {
   const orderId = getOrderId(
     transactionHash,
@@ -42,30 +42,24 @@ export function searchOrderForEvent(
 ): Order {
   let firstEventIndex = eventIndex - 1
 
-  log.info('firstEventIndex on simple order: {}', [
-    firstEventIndex.toString().replace('0.0', '0')
-  ])
+  log.info('firstEventIndex on simple order: {}', [firstEventIndex.toString()])
   while (firstEventIndex >= 0) {
     const orderId = getOrderId(
       transactionHash,
       address,
       transactionFrom,
-      firstEventIndex.toString().replace('0.0', '0')
+      firstEventIndex
     )
     log.info('orderId as trial: {}', [orderId])
     const order = Order.load(orderId)
     if (order !== null && order.datatoken === address) {
+      log.info('order datatoken: {}', [order.datatoken])
       return order
     }
     firstEventIndex--
   }
   // return a default Order if it cannot find the right one
-  return getOrder(
-    transactionHash,
-    address,
-    transactionFrom,
-    firstEventIndex.toString().replace('0.0', '0')
-  )
+  return getOrder(transactionHash, address, transactionFrom, firstEventIndex)
 }
 
 export function searchOrderResusedForEvent(
@@ -76,20 +70,17 @@ export function searchOrderResusedForEvent(
   let firstEventIndex = eventIndex - 1
   log.info('firstEventIndex on simple order: {}', [firstEventIndex.toString()])
   while (firstEventIndex >= 0) {
-    const orderReused = OrderReuse.load(
-      `${transactionHash}-${firstEventIndex.toString()}`
-    )
-    const order = Order.load(orderReused.order)
-    if (
-      orderReused !== null &&
-      order !== null &&
-      order.datatoken === eventAddress
-    ) {
-      return orderReused
+    const orderReused = OrderReuse.load(`${transactionHash}-${firstEventIndex}`)
+
+    if (orderReused !== null) {
+      const order = Order.load(orderReused.order)
+      if (order !== null && order.datatoken === eventAddress) {
+        return orderReused
+      }
     }
 
     firstEventIndex--
   }
   // return a default Order if it cannot find the right one
-  return new OrderReuse(`${transactionHash}-${firstEventIndex.toString()}`)
+  return new OrderReuse(`${transactionHash}-${firstEventIndex}`)
 }

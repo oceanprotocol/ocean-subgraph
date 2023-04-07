@@ -32,7 +32,7 @@ export function handleOrderStarted(event: OrderStarted): void {
       event.transaction.hash.toHex(),
       event.address.toHex(),
       event.transaction.from.toHex(),
-      event.logIndex.toI32().toString()
+      event.logIndex.toI32()
     )
   )
 
@@ -119,7 +119,7 @@ export function handlerOrderReused(event: OrderReused): void {
   if (!order) return
 
   const reuseOrder = new OrderReuse(
-    `${event.transaction.hash.toHex()}-${event.logIndex.toI32().toString()}`
+    `${event.transaction.hash.toHex()}-${event.logIndex.toI32()}`
   )
   if (event.transaction.gasPrice)
     reuseOrder.gasPrice = event.transaction.gasPrice
