@@ -75,5 +75,5 @@ jobs:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
           BARGE_FOLDER: /home/runner/.ocean/
       - name:  docker logs
-        run: grep -E -w 'firstEventIndex|trial|order datatoken' docker logs ocean_graph-node_1
+        run: docker logs ocean_graph-node_1 | grep -E -w 'firstEventIndex|trial|order datatoken'
         if: ${{ failure() }}
