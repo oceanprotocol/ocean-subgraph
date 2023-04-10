@@ -263,7 +263,7 @@ export function handleProviderFee(event: ProviderFee): void {
 
   const order = searchOrderForEvent(
     event.transaction.hash.toHex(),
-    event.address.toHex(),
+    event.address.toString(),
     event.transaction.from.toHex(),
     event.logIndex.toI32()
   )
