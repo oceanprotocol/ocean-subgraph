@@ -1,5 +1,6 @@
 import { Order, OrderReuse } from '../../@types/schema'
 import { log } from '@graphprotocol/graph-ts'
+import { toChecksumAddress } from 'ethereumjs-util'
 
 export function getOrderId(
   tx: string,
@@ -52,7 +53,10 @@ export function searchOrderForEvent(
     )
     log.info('orderId as trial: {}', [orderId])
     const order = Order.load(orderId)
-    if (order !== null && order.datatoken === address) {
+    if (
+      order !== null &&
+      toChecksumAddress(order.datatoken) === toChecksumAddress(address)
+    ) {
       log.info('order datatoken: {}', [order.datatoken])
       log.info('event address: {}', [address])
       log.info('typeof order datatoken: {}', [typeof order.datatoken])
