@@ -57,7 +57,13 @@ export function searchOrderForEvent(
       log.info('event address: {}', [address])
       log.info('typeof order datatoken: {}', [typeof order.datatoken])
       log.info('typeof hex event address: {}', [typeof address])
-      return order
+      // add break
+      return getOrder(
+        transactionHash,
+        address,
+        transactionFrom,
+        firstEventIndex
+      )
     }
     firstEventIndex--
   }
