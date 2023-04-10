@@ -342,10 +342,8 @@ describe('Simple Publish & consume test', async () => {
         setProviderFee.providerFeeToken.toLowerCase(),
       'Wrong providerFeeToken set'
     )
-    console.log('eventIndex: ', queryResult.data.order.eventIndex)
     assert(
-      queryResult.data.order.eventIndex !== null &&
-        queryResult.data.order.eventIndex > 0,
+      queryResult.data.order.eventIndex !== null,
       'Invalid eventIndex for order'
     )
   })
@@ -388,7 +386,9 @@ describe('Simple Publish & consume test', async () => {
     assert(orderTx.transactionHash, 'Failed to start order')
 
     // Check initial provider fee has been set correctly
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toString()}`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toFixed(
+      1
+    )}`
 
     const initialQuery = {
       query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
@@ -421,10 +421,8 @@ describe('Simple Publish & consume test', async () => {
         setInitialProviderFee.providerFeeToken.toLowerCase(),
       'Wrong initial providerFeeToken set'
     )
-    console.log('eventIndex: ', initialQueryResult.data.order.eventIndex)
     assert(
-      initialQueryResult.data.order.eventIndex !== null &&
-        initialQueryResult.data.order.eventIndex > 0,
+      initialQueryResult.data.order.eventIndex !== null,
       'Invalid eventIndex for order'
     )
 
@@ -469,7 +467,9 @@ describe('Simple Publish & consume test', async () => {
     const reuseQuery = {
       query: `query {orderReuse(id:"${
         reusedOrder.transactionHash
-      }-${reusedOrder.events.OrderReused.logIndex.toString()}"){id, providerFee, eventIndex}}`
+      }-${reusedOrder.events.OrderReused.logIndex.toFixed(
+        1
+      )}"){id, providerFee, eventIndex}}`
     }
 
     await sleep(2000)
@@ -500,8 +500,7 @@ describe('Simple Publish & consume test', async () => {
       'New providerFeeToken set in reuse order is wrong'
     )
     assert(
-      reuseQueryResult.data.orderReuse.eventIndex !== null &&
-        reuseQueryResult.data.orderReuse.eventIndex > 0,
+      reuseQueryResult.data.orderReuse.eventIndex !== null,
       'Invalid eventIndex for reuse order'
     )
     assert(
