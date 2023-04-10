@@ -54,6 +54,9 @@ export function searchOrderForEvent(
     const order = Order.load(orderId)
     if (order !== null) {
       log.info('order datatoken: {}', [order.datatoken])
+      log.info('event address: {}', [address])
+      log.info('typeof order datatoken: {}', [typeof order.datatoken])
+      log.info('typeof hex event address: {}', [typeof address])
       return order
     }
     firstEventIndex--
