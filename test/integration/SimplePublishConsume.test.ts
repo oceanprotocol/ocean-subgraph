@@ -342,6 +342,7 @@ describe('Simple Publish & consume test', async () => {
         setProviderFee.providerFeeToken.toLowerCase(),
       'Wrong providerFeeToken set'
     )
+    console.log('eventIndex: ', queryResult.data.order.eventIndex)
     assert(
       queryResult.data.order.eventIndex !== null &&
         queryResult.data.order.eventIndex > 0,
