@@ -258,8 +258,6 @@ export function handleProviderFee(event: ProviderFee): void {
   }", "r": "${event.params.r.toHexString()}", "s": "${event.params.s.toHexString()}", "validUntil": "${
     event.params.validUntil
   }"}`
-  log.info('provider fee: {}', [providerFee])
-  log.info('event address: {}', [event.address.toHexString()])
 
   const order = searchOrderForEvent(
     event.transaction.hash.toHex(),

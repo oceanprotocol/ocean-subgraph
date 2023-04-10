@@ -480,6 +480,7 @@ describe('Simple Publish & consume test', async () => {
     })
 
     const reuseQueryResult = await response.json()
+    console.log('reuse query result: ', reuseQueryResult)
 
     const reuseProviderFeeJSON = JSON.parse(
       reuseQueryResult.data.orderReuse.providerFee
