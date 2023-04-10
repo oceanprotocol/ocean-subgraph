@@ -420,6 +420,7 @@ describe('Simple Publish & consume test', async () => {
         setInitialProviderFee.providerFeeToken.toLowerCase(),
       'Wrong initial providerFeeToken set'
     )
+    console.log('eventIndex: ', initialQueryResult.data.order.eventIndex)
     assert(
       initialQueryResult.data.order.eventIndex !== null &&
         initialQueryResult.data.order.eventIndex > 0,
