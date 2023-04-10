@@ -123,6 +123,7 @@ export function handlerOrderReused(event: OrderReused): void {
     event.transaction.from.toHex(),
     event.logIndex.toI32()
   )
+  log.info('searched order id: {}', [order.id])
 
   if (!order) return
 
@@ -265,6 +266,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.transaction.from.toHex(),
     event.logIndex.toI32()
   )
+  const orderId = order.id
 
   if (order) {
     order.providerFee = providerFee
@@ -272,6 +274,7 @@ export function handleProviderFee(event: ProviderFee): void {
     order.save()
     return
   }
+
   let orderReuse = searchOrderReusedForEvent(
     event.transaction.hash.toHex(),
     event.address.toHex(),
@@ -280,12 +283,13 @@ export function handleProviderFee(event: ProviderFee): void {
   if (orderReuse) {
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
+    log.info('order reused id: {}', [orderReuse.id])
     orderReuse.save()
   } else {
     orderReuse = new OrderReuse(event.transaction.hash.toHex())
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.order = order.id
+    orderReuse.order = orderId!
     orderReuse.createdTimestamp = event.block.timestamp.toI32()
     orderReuse.tx = event.transaction.hash.toHex()
     orderReuse.block = event.block.number.toI32()

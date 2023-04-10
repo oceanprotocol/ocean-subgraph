@@ -41,6 +41,23 @@ export function searchOrderForEvent(
   eventIndex: number
 ): Order {
   let firstEventIndex = eventIndex - 1
+  if (eventIndex === 0) {
+    const orderId = getOrderId(
+      transactionHash,
+      address,
+      transactionFrom,
+      eventIndex
+    )
+    log.info('trying with this orderId: {}', [orderId])
+    const order = Order.load(orderId)
+    if (order !== null && order.datatoken == address) {
+      log.info('found order datatoken: {} and event address: {}', [
+        order.datatoken,
+        address
+      ])
+      return order
+    }
+  }
   while (firstEventIndex >= 0) {
     const orderId = getOrderId(
       transactionHash,
@@ -69,12 +86,29 @@ export function searchOrderReusedForEvent(
   eventIndex: number
 ): OrderReuse {
   let firstEventIndex = eventIndex - 1
+  if (eventIndex === 0) {
+    const orderReused = OrderReuse.load(`${transactionHash}-${eventIndex}`)
+    if (orderReused !== null) {
+      log.info('found reused order: {} ', [orderReused.id])
+      const order = Order.load(orderReused.order)
+      if (order !== null && order.datatoken == eventAddress) {
+        log.info('found order: {} ', [order.id])
+        log.info('found reused order datatoken: {} and event address: {}', [
+          order.datatoken,
+          eventAddress
+        ])
+        return orderReused
+      }
+    }
+  }
   while (firstEventIndex >= 0) {
     const orderReused = OrderReuse.load(`${transactionHash}-${firstEventIndex}`)
 
     if (orderReused !== null) {
+      log.info('found reused order: {} ', [orderReused.id])
       const order = Order.load(orderReused.order)
       if (order !== null && order.datatoken == eventAddress) {
+        log.info('found order: {} ', [order.id])
         log.info('found reused order datatoken: {} and event address: {}', [
           order.datatoken,
           eventAddress
