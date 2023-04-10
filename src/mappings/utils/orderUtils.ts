@@ -41,8 +41,6 @@ export function searchOrderForEvent(
   eventIndex: number
 ): Order {
   let firstEventIndex = eventIndex - 1
-
-  log.info('firstEventIndex on simple order: {}', [firstEventIndex.toString()])
   while (firstEventIndex >= 0) {
     const orderId = getOrderId(
       transactionHash,
@@ -50,20 +48,13 @@ export function searchOrderForEvent(
       transactionFrom,
       firstEventIndex
     )
-    log.info('orderId as trial: {}', [orderId])
+    log.info('trying with this orderId: {}', [orderId])
     const order = Order.load(orderId)
     if (order !== null && order.datatoken == address) {
-      log.info('order datatoken: {}', [order.datatoken])
-      log.info('event address: {}', [address])
-      log.info('typeof order datatoken: {}', [typeof order.datatoken])
-      log.info('typeof hex event address: {}', [typeof address])
-      // add break
-      // return getOrder(
-      //   transactionHash,
-      //   address,
-      //   transactionFrom,
-      //   firstEventIndex
-      // )
+      log.info('found order datatoken: {} and event address: {}', [
+        order.datatoken,
+        address
+      ])
       return order
     }
     firstEventIndex--
@@ -78,22 +69,22 @@ export function searchOrderResusedForEvent(
   eventIndex: number
 ): OrderReuse {
   let firstEventIndex = eventIndex - 1
-  log.info('firstEventIndex on simple order: {}', [firstEventIndex.toString()])
   while (firstEventIndex >= 0) {
     const orderReused = OrderReuse.load(`${transactionHash}-${firstEventIndex}`)
 
     if (orderReused !== null) {
       const order = Order.load(orderReused.order)
-      if (
-        order !== null &&
-        order.datatoken.toString().toLowerCase() === eventAddress.toLowerCase()
-      ) {
+      if (order !== null && order.datatoken == eventAddress) {
+        log.info('found reused order datatoken: {} and event address: {}', [
+          order.datatoken,
+          eventAddress
+        ])
         return orderReused
       }
     }
 
     firstEventIndex--
   }
-  // return a default Order if it cannot find the right one
+  // return a default OrderReuse if it cannot find the right one
   return new OrderReuse(`${transactionHash}-${firstEventIndex}`)
 }
