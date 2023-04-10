@@ -400,6 +400,7 @@ describe('Simple Publish & consume test', async () => {
     })
     await sleep(3000)
     const initialQueryResult = await initialResponse.json()
+    console.log('initial query result: ', initialQueryResult)
     const initialProviderFeeJSON = JSON.parse(
       initialQueryResult.data.order.providerFee
     )
