@@ -63,7 +63,7 @@ export function searchOrderForEvent(
   return getOrder(transactionHash, address, transactionFrom, firstEventIndex)
 }
 
-export function searchOrderResusedForEvent(
+export function searchOrderReusedForEvent(
   transactionHash: string,
   eventAddress: string,
   eventIndex: number
@@ -81,6 +81,8 @@ export function searchOrderResusedForEvent(
         ])
         return orderReused
       }
+      firstEventIndex--
+      continue
     }
 
     firstEventIndex--

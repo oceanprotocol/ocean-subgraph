@@ -23,7 +23,7 @@ import { getUser } from './utils/userUtils'
 import {
   getOrderId,
   searchOrderForEvent,
-  searchOrderResusedForEvent
+  searchOrderReusedForEvent
 } from './utils/orderUtils'
 
 export function handleOrderStarted(event: OrderStarted): void {
@@ -270,16 +270,32 @@ export function handleProviderFee(event: ProviderFee): void {
     order.providerFee = providerFee
     order.providerFeeValidUntil = event.params.validUntil
     order.save()
+    return
+  }
+  let orderReuse = searchOrderReusedForEvent(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.logIndex.toI32()
+  )
+  if (orderReuse) {
+    orderReuse.providerFee = providerFee
+    orderReuse.providerFeeValidUntil = event.params.validUntil
+    orderReuse.save()
   } else {
-    const orderReuse = searchOrderResusedForEvent(
-      event.transaction.hash.toHex(),
-      event.address.toHex(),
-      event.logIndex.toI32()
-    )
-    if (orderReuse) {
-      orderReuse.providerFee = providerFee
-      orderReuse.providerFeeValidUntil = event.params.validUntil
-      orderReuse.save()
-    }
+    orderReuse = new OrderReuse(event.transaction.hash.toHex())
+    orderReuse.providerFee = providerFee
+    orderReuse.providerFeeValidUntil = event.params.validUntil
+    orderReuse.order = order.id
+    orderReuse.createdTimestamp = event.block.timestamp.toI32()
+    orderReuse.tx = event.transaction.hash.toHex()
+    orderReuse.block = event.block.number.toI32()
+    orderReuse.caller = event.transaction.from.toHex()
+    if (event.transaction.gasPrice)
+      orderReuse.gasPrice = event.transaction.gasPrice
+    else orderReuse.gasPrice = BigInt.zero()
+    if (event.receipt !== null && event.receipt!.gasUsed) {
+      orderReuse.gasUsed = event.receipt!.gasUsed.toBigDecimal()
+    } else orderReuse.gasUsed = BigDecimal.zero()
+    orderReuse.save()
   }
 }
