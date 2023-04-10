@@ -52,7 +52,10 @@ export function searchOrderForEvent(
     )
     log.info('orderId as trial: {}', [orderId])
     const order = Order.load(orderId)
-    if (order !== null && order.datatoken === address) {
+    if (
+      order !== null &&
+      order.datatoken.toLowerCase() === address.toLowerCase()
+    ) {
       log.info('order datatoken: {}', [order.datatoken])
       return order
     }
@@ -74,7 +77,10 @@ export function searchOrderResusedForEvent(
 
     if (orderReused !== null) {
       const order = Order.load(orderReused.order)
-      if (order !== null && order.datatoken === eventAddress) {
+      if (
+        order !== null &&
+        order.datatoken.toLowerCase() === eventAddress.toLowerCase()
+      ) {
         return orderReused
       }
     }

@@ -263,7 +263,7 @@ export function handleProviderFee(event: ProviderFee): void {
 
   const order = searchOrderForEvent(
     event.transaction.hash.toHex(),
-    event.address.toHex(),
+    event.address.toHexString(),
     event.transaction.from.toHex(),
     event.logIndex.toI32()
   )
@@ -275,7 +275,7 @@ export function handleProviderFee(event: ProviderFee): void {
   } else {
     const orderReuse = searchOrderResusedForEvent(
       event.transaction.hash.toHex(),
-      event.address.toHex(),
+      event.address.toHexString(),
       event.logIndex.toI32()
     )
     if (orderReuse) {
