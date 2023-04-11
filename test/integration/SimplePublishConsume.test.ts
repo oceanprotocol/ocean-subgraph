@@ -466,11 +466,7 @@ describe('Simple Publish & consume test', async () => {
     // Check the new provider fee has been set in OrderReuse
 
     const reuseQuery = {
-      query: `query {orderReuse(id:"${
-        reusedOrder.transactionHash
-      }-${reusedOrder.events.OrderReused.logIndex.toFixed(
-        1
-      )}"){id, providerFee, eventIndex}}`
+      query: `query {orderReuse(id:"${reusedOrder.transactionHash}-${reusedOrder.events.OrderReused.logIndex}"){id, providerFee, eventIndex}}`
     }
 
     await sleep(2000)

@@ -261,7 +261,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.params.validUntil
   }"}`
   log.info('event address in provider fee handler: {}', [
-    event.address.toString()
+    event.address.toHexString()
   ])
 
   const order = searchOrderForEvent(
