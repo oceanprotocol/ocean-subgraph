@@ -52,6 +52,8 @@ export function searchOrderForEvent(
       return order
     }
   }
+  // return an Order just for compilation schema
+  return getOrder(transactionHash, address, transactionFrom, eventIndex)
 }
 
 export function searchOrderReusedForEvent(
@@ -75,4 +77,6 @@ export function searchOrderReusedForEvent(
       return orderReused
     }
   }
+  // return an OrderReuse just for compilation schema
+  return new OrderReuse(`${transactionHash}-${eventIndex}`)
 }

@@ -142,6 +142,7 @@ export function handlerOrderReused(event: OrderReused): void {
   reuseOrder.tx = event.transaction.hash.toHex()
   reuseOrder.eventIndex = event.logIndex.toI32()
   reuseOrder.block = event.params.number.toI32()
+  log.info('saved reuse order: {}', [reuseOrder.id])
 
   reuseOrder.save()
 }
@@ -259,6 +260,9 @@ export function handleProviderFee(event: ProviderFee): void {
   }", "r": "${event.params.r.toHexString()}", "s": "${event.params.s.toHexString()}", "validUntil": "${
     event.params.validUntil
   }"}`
+  log.info('event address in provider fee handler: {}', [
+    event.address.toString()
+  ])
 
   const order = searchOrderForEvent(
     event.transaction.hash.toHex(),
@@ -274,12 +278,14 @@ export function handleProviderFee(event: ProviderFee): void {
     order.save()
     return
   }
+  log.info('order id in provider fee handler: {}', [orderId])
 
   let orderReuse = searchOrderReusedForEvent(
     event.transaction.hash.toHex(),
     event.address.toHex(),
     event.logIndex.toI32()
   )
+  log.info('order reuse id in provider fee handler: {}', [orderReuse.id])
   if (orderReuse) {
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
@@ -287,6 +293,7 @@ export function handleProviderFee(event: ProviderFee): void {
     orderReuse.save()
   } else {
     orderReuse = new OrderReuse(event.transaction.hash.toHex())
+    log.info('create a new order reuse: {}', [orderReuse.id])
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.order = orderId!
