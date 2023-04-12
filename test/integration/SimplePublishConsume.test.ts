@@ -472,7 +472,7 @@ describe('Simple Publish & consume test', async () => {
     console.log('transaction hash for start order: ', orderTx.transactionHash)
     console.log(
       'log index for reuse order: ',
-      reusedOrder.events.OrderReuse.logIndex
+      reusedOrder.events.OrderReused.logIndex
     )
     console.log(
       'log index for start order: ',
@@ -503,7 +503,6 @@ describe('Simple Publish & consume test', async () => {
     })
 
     const reuseQueryResult = await response.json()
-    console.log('reuse query result: ', reuseQueryResult)
 
     const reuseProviderFeeJSON = JSON.parse(
       reuseQueryResult.data.orderReuse.providerFee
