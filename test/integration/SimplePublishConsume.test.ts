@@ -464,6 +464,28 @@ describe('Simple Publish & consume test', async () => {
 
     sleep(4000)
     // Check the new provider fee has been set in OrderReuse
+    console.log('reused order: ', reusedOrder)
+    console.log(
+      'transaction hash for reuse order: ',
+      reusedOrder.transactionHash
+    )
+    console.log('transaction hash for start order: ', orderTx.transactionHash)
+    console.log(
+      'log index for reuse order: ',
+      reusedOrder.events.OrderReuse.logIndex
+    )
+    console.log(
+      'log index for start order: ',
+      orderTx.events.OrderStarted.logIndex
+    )
+    console.log(
+      'log index for reuse order provider fees: ',
+      reusedOrder.events.ProviderFee.logIndex
+    )
+    console.log(
+      'log index for start order provider fees: ',
+      orderTx.events.ProviderFee.logIndex
+    )
 
     const reuseQuery = {
       query: `query {orderReuse(id:"${reusedOrder.transactionHash}-${reusedOrder.events.OrderReused.logIndex}"){id, providerFee, eventIndex}}`

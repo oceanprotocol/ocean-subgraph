@@ -53,12 +53,7 @@ export function searchOrderForEvent(
     }
   }
   // return an Order just for compilation schema
-  let tempEventIndex = eventIndex - 1
-  log.info('return the default order: {}', [tempEventIndex.toString()])
-  if (tempEventIndex < 0) {
-    tempEventIndex = eventIndex
-  }
-  return getOrder(transactionHash, address, transactionFrom, tempEventIndex)
+  return getOrder(transactionHash, address, transactionFrom, eventIndex)
 }
 
 export function searchOrderReusedForEvent(
