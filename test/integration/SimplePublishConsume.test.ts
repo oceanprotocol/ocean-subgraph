@@ -488,8 +488,13 @@ describe('Simple Publish & consume test', async () => {
     )
 
     const reuseQuery = {
-      query: `query {orderReuse(id:"${reusedOrder.transactionHash}-${reusedOrder.events.OrderReused.logIndex}"){id, providerFee, eventIndex}}`
+      query: `query {orderReuse(id:"${
+        reusedOrder.transactionHash
+      }-${reusedOrder.events.OrderReused.logIndex.toFixed(
+        1
+      )}"){id, providerFee, eventIndex}}`
     }
+    console.log('print query: ', reuseQuery)
 
     await sleep(2000)
     const response = await fetch(subgraphUrl, {
