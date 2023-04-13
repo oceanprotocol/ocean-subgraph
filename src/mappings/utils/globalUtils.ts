@@ -19,7 +19,7 @@ export function getGlobalStats(): GlobalStatistic {
     globalStats.datatokenCount = 0
     globalStats.dispenserCount = 0
     globalStats.nftCount = 0
-    globalStats.totalOceanLocked = 0
+    globalStats.totalOceanLocked = BigDecimal.zero()
     globalStats.save()
   }
   return globalStats
