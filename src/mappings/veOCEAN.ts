@@ -2,6 +2,10 @@ import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { Deposit, Supply, Withdraw } from '../@types/veOCEAN/veOCEAN'
 import { weiToDecimal } from './utils/generic'
 import { getDeposit, getveOCEAN } from './utils/veUtils'
+import {
+  getTotalOceanLocked,
+  updateTotalOceanLocked
+} from './utils/globalUtils'
 
 export function handleDeposit(event: Deposit): void {
   const provider = event.params.provider
@@ -9,7 +13,7 @@ export function handleDeposit(event: Deposit): void {
   const locktime = event.params.locktime
   const type = event.params.type
   const ts = event.params.ts
-
+  const totalOceanLocked = getTotalOceanLocked()
   const veOCEAN = getveOCEAN(provider.toHex())
   // Create new Deposit entity
   const deposit = getDeposit(
@@ -28,6 +32,10 @@ export function handleDeposit(event: Deposit): void {
   deposit.tx = event.transaction.hash.toHex()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
+
+  deposit.totalOceanLocked = totalOceanLocked.plus(deposit.value)
+  updateTotalOceanLocked(deposit.totalOceanLocked)
+
   deposit.save()
   // --------------------------------------------
 
@@ -39,6 +47,7 @@ export function handleDeposit(event: Deposit): void {
 }
 export function handleSupply(event: Supply): void {}
 export function handleWithdraw(event: Withdraw): void {
+  const totalOceanLocked = getTotalOceanLocked()
   const provider = event.params.provider
   const value = event.params.value
   const ts = event.params.ts
@@ -61,6 +70,8 @@ export function handleWithdraw(event: Withdraw): void {
   deposit.tx = event.transaction.hash.toHex()
   deposit.sender = event.transaction.from.toHex()
   deposit.veOcean = veOCEAN.id
+  deposit.totalOceanLocked = totalOceanLocked.plus(deposit.value) // it's already negated above
+  updateTotalOceanLocked(deposit.totalOceanLocked)
   deposit.save()
   // --------------------------------------------
 
