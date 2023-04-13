@@ -35,11 +35,7 @@ export function getOPC(): OPC {
 }
 
 export function getTotalOceanLocked(): BigDecimal {
-  let globalStats = OPC.load(GLOBAL_ID)
-  if (!globalStats) {
-    globalStats = new OPC(GLOBAL_ID)
-    globalStats.save()
-  }
+  const globalStats = getGlobalStats()
   return globalStats.totalOceanLocked
 }
 
