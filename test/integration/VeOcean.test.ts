@@ -187,6 +187,9 @@ describe('veOcean tests', async () => {
     } else {
       await veOcean.lockTokens(Alice, amount, unlockTime)
     }
+    currentBalance = await veOcean.getLockedAmount(Alice)
+    currentLock = await veOcean.lockEnd(Alice)
+    await sleep(2000)
     const totalOceanLockedAfter = await getTotalLockedOcean()
     assert(
       parseFloat(totalOceanLockedAfter) > parseFloat(totalOceanLockedBefore),
@@ -200,9 +203,6 @@ describe('veOcean tests', async () => {
         parseFloat(totalOceanLockedBefore + amount),
       'Invalid totalOceanLockedAfter (' + totalOceanLockedAfter + ')'
     )
-    currentBalance = await veOcean.getLockedAmount(Alice)
-    currentLock = await veOcean.lockEnd(Alice)
-    await sleep(2000)
     const initialQuery = {
       query: `query {
                   veOCEANs(id:"${Alice.toLowerCase()}"){    
@@ -583,8 +583,8 @@ describe('veOcean tests', async () => {
     await evmIncreaseTime(60 * 60 * 24 * 7)
     const totalOceanLockedBefore = await getTotalLockedOcean()
     await veOcean.withdraw(Alice)
+    await sleep(2000)
     const totalOceanLockedAfter = await getTotalLockedOcean()
-    assert(totalOceanLockedAfter < totalOceanLockedBefore)
     assert(
       parseFloat(totalOceanLockedAfter) < parseFloat(totalOceanLockedBefore),
       'After (' +
