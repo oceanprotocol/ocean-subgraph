@@ -188,8 +188,18 @@ describe('veOcean tests', async () => {
       await veOcean.lockTokens(Alice, amount, unlockTime)
     }
     const totalOceanLockedAfter = await getTotalLockedOcean()
-    assert(totalOceanLockedAfter > totalOceanLockedBefore)
-    assert(totalOceanLockedAfter == parseFloat(totalOceanLockedBefore + amount))
+    assert(
+      parseFloat(totalOceanLockedAfter) > parseFloat(totalOceanLockedBefore),
+      'After (' +
+        totalOceanLockedAfter +
+        ') shold be higher then ' +
+        totalOceanLockedBefore
+    )
+    assert(
+      parseFloat(totalOceanLockedAfter) ==
+        parseFloat(totalOceanLockedBefore + amount),
+      'Invalid totalOceanLockedAfter (' + totalOceanLockedAfter + ')'
+    )
     currentBalance = await veOcean.getLockedAmount(Alice)
     currentLock = await veOcean.lockEnd(Alice)
     await sleep(2000)
@@ -575,6 +585,13 @@ describe('veOcean tests', async () => {
     await veOcean.withdraw(Alice)
     const totalOceanLockedAfter = await getTotalLockedOcean()
     assert(totalOceanLockedAfter < totalOceanLockedBefore)
+    assert(
+      parseFloat(totalOceanLockedAfter) < parseFloat(totalOceanLockedBefore),
+      'After (' +
+        totalOceanLockedAfter +
+        ') shold be lower then ' +
+        totalOceanLockedBefore
+    )
   })
 
   it('Alice should lock 100 Ocean and Delegate them to Bob', async () => {
