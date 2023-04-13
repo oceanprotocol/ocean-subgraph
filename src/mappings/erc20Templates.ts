@@ -296,7 +296,7 @@ export function handleProviderFee(event: ProviderFee): void {
     log.info('create a new order reuse: {}', [orderReuse.id])
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.order = orderId!
+    orderReuse.order = orderId
     orderReuse.createdTimestamp = event.block.timestamp.toI32()
     orderReuse.tx = event.transaction.hash.toHex()
     orderReuse.block = event.block.number.toI32()
