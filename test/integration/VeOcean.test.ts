@@ -70,6 +70,23 @@ function evmIncreaseTime(seconds) {
   })
 }
 
+async function getTotalLockedOcean() {
+  const initialQuery = {
+    query: `query{
+      globalStatistics{
+        totalOceanLocked
+      }
+    }`
+  }
+  const initialResponse = await fetch(subgraphUrl, {
+    method: 'POST',
+    body: JSON.stringify(initialQuery)
+  })
+  const data = (await initialResponse.json()).data.globalStatistics
+  if (data.length == 0) return 0
+
+  return data[0].totalOceanLocked
+}
 const minAbi = [
   {
     constant: false,
@@ -144,6 +161,7 @@ describe('veOcean tests', async () => {
   it('Alice should lock 100 Ocean', async () => {
     // since we can only lock once, we test if tx fails or not
     // so if there is already a lock, skip it
+    const totalOceanLockedBefore = await getTotalLockedOcean()
     let currentBalance = await veOcean.getLockedAmount(Alice)
     let currentLock = await veOcean.lockEnd(Alice)
     const amount = '100'
@@ -172,6 +190,19 @@ describe('veOcean tests', async () => {
     currentBalance = await veOcean.getLockedAmount(Alice)
     currentLock = await veOcean.lockEnd(Alice)
     await sleep(2000)
+    const totalOceanLockedAfter = await getTotalLockedOcean()
+    assert(
+      parseFloat(totalOceanLockedAfter) > parseFloat(totalOceanLockedBefore),
+      'After (' +
+        totalOceanLockedAfter +
+        ') shold be higher then ' +
+        totalOceanLockedBefore
+    )
+    assert(
+      parseFloat(totalOceanLockedAfter) ==
+        parseFloat(totalOceanLockedBefore + amount),
+      'Invalid totalOceanLockedAfter (' + totalOceanLockedAfter + ')'
+    )
     const initialQuery = {
       query: `query {
                   veOCEANs(id:"${Alice.toLowerCase()}"){    
@@ -550,7 +581,17 @@ describe('veOcean tests', async () => {
   })
   it('Alice should withdraw locked tokens', async () => {
     await evmIncreaseTime(60 * 60 * 24 * 7)
+    const totalOceanLockedBefore = await getTotalLockedOcean()
     await veOcean.withdraw(Alice)
+    await sleep(2000)
+    const totalOceanLockedAfter = await getTotalLockedOcean()
+    assert(
+      parseFloat(totalOceanLockedAfter) < parseFloat(totalOceanLockedBefore),
+      'After (' +
+        totalOceanLockedAfter +
+        ') shold be lower then ' +
+        totalOceanLockedBefore
+    )
   })
 
   it('Alice should lock 100 Ocean and Delegate them to Bob', async () => {
