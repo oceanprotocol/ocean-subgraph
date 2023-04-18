@@ -39,12 +39,20 @@ export function searchOrderForEvent(
   address: string,
   transactionFrom: string,
   eventIndex: number
-): Order {
+): Order | null {
   for (let i = eventIndex - 1; i >= 0; i--) {
     log.info('i for order started: {}', [i.toString()])
     const orderId = getOrderId(transactionHash, address, transactionFrom, i)
     log.info('trying with this orderId: {}', [orderId])
     const order = Order.load(orderId)
+    log.info('loaded order with this orderId: {}', [orderId])
+    if (order) {
+      log.info('order with this orderId: {}', [order.id])
+      log.info('found order datatoken: {} and event address: {}', [
+        order.datatoken,
+        address
+      ])
+    }
     if (order && order.datatoken == address) {
       log.info('found order datatoken: {} and event address: {}', [
         order.datatoken,
@@ -57,14 +65,14 @@ export function searchOrderForEvent(
     }
   }
   // return an Order just for compilation schema
-  return getOrder(transactionHash, address, transactionFrom, eventIndex)
+  return null
 }
 
 export function searchOrderReusedForEvent(
   transactionHash: string,
   eventAddress: string,
   eventIndex: number
-): OrderReuse {
+): OrderReuse | null {
   for (let i = eventIndex - 1; i >= 0; i--) {
     log.info('i in order reused: {}', [i.toString()])
     const orderReused = OrderReuse.load(`${transactionHash}-${i}`)
@@ -85,5 +93,5 @@ export function searchOrderReusedForEvent(
     }
   }
   // return an OrderReuse just for compilation schema
-  return new OrderReuse(`${transactionHash}-${eventIndex}`)
+  return null
 }

@@ -123,7 +123,7 @@ export function handlerOrderReused(event: OrderReused): void {
     event.transaction.from.toHex(),
     event.logIndex.toI32()
   )
-  log.info('searched order id: {}', [order.id])
+  // log.info('searched order id: {}', [order.id])
 
   if (!order) return
 
@@ -270,43 +270,22 @@ export function handleProviderFee(event: ProviderFee): void {
     event.transaction.from.toHex(),
     event.logIndex.toI32()
   )
-  const orderId = order.id
 
-  if (order) {
-    order.providerFee = providerFee
-    order.providerFeeValidUntil = event.params.validUntil
-    order.save()
-    return
-  }
-  log.info('order id in provider fee handler: {}', [orderId])
-
-  let orderReuse = searchOrderReusedForEvent(
+  const orderReuse = searchOrderReusedForEvent(
     event.transaction.hash.toHex(),
     event.address.toHex(),
     event.logIndex.toI32()
   )
-  log.info('order reuse id in provider fee handler: {}', [orderReuse.id])
-  if (orderReuse) {
+
+  if (order) {
+    log.info('order id in provider fee handler: {}', [order.id])
+    order.providerFee = providerFee
+    order.providerFeeValidUntil = event.params.validUntil
+    order.save()
+  } else if (orderReuse) {
+    log.info('order reuse id in provider fee handler: {}', [orderReuse.id])
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
-    log.info('order reused id: {}', [orderReuse.id])
-    orderReuse.save()
-  } else {
-    orderReuse = new OrderReuse(event.transaction.hash.toHex())
-    log.info('create a new order reuse: {}', [orderReuse.id])
-    orderReuse.providerFee = providerFee
-    orderReuse.providerFeeValidUntil = event.params.validUntil
-    orderReuse.order = orderId
-    orderReuse.createdTimestamp = event.block.timestamp.toI32()
-    orderReuse.tx = event.transaction.hash.toHex()
-    orderReuse.block = event.block.number.toI32()
-    orderReuse.caller = event.transaction.from.toHex()
-    if (event.transaction.gasPrice)
-      orderReuse.gasPrice = event.transaction.gasPrice
-    else orderReuse.gasPrice = BigInt.zero()
-    if (event.receipt !== null && event.receipt!.gasUsed) {
-      orderReuse.gasUsed = event.receipt!.gasUsed.toBigDecimal()
-    } else orderReuse.gasUsed = BigDecimal.zero()
     orderReuse.save()
   }
 }
