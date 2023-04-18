@@ -117,15 +117,17 @@ export function handleOrderStarted(event: OrderStarted): void {
 }
 
 export function handlerOrderReused(event: OrderReused): void {
+  log.info('searched order tx: {}', [event.params.orderTxId.toHexString()])
   const order = searchOrderForEvent(
-    event.transaction.hash.toHex(),
+    event.params.orderTxId.toHexString(),
     event.address.toHex(),
-    event.transaction.from.toHex(),
+    event.params.caller.toHex(),
     event.logIndex.toI32()
   )
-  // log.info('searched order id: {}', [order.id])
 
   if (!order) return
+
+  log.info('found order id after searching: {}', [order.id])
 
   const reuseOrder = new OrderReuse(
     `${event.transaction.hash.toHex()}-${event.logIndex.toI32()}`
@@ -271,21 +273,61 @@ export function handleProviderFee(event: ProviderFee): void {
     event.logIndex.toI32()
   )
 
-  const orderReuse = searchOrderReusedForEvent(
-    event.transaction.hash.toHex(),
-    event.address.toHex(),
-    event.logIndex.toI32()
-  )
+  // const orderReuse = searchOrderReusedForEvent(
+  //   event.transaction.hash.toHex(),
+  //   event.address.toHex(),
+  //   event.logIndex.toI32()
+  // )
 
   if (order) {
     log.info('order id in provider fee handler: {}', [order.id])
     order.providerFee = providerFee
     order.providerFeeValidUntil = event.params.validUntil
     order.save()
-  } else if (orderReuse) {
+    return
+  }
+  const orderReuse = searchOrderReusedForEvent(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.logIndex.toI32()
+  )
+  if (orderReuse) {
     log.info('order reuse id in provider fee handler: {}', [orderReuse.id])
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.save()
   }
+  // if (order) {
+  //   order.providerFee = providerFee
+  //   order.providerFeeValidUntil = event.params.validUntil
+  //   order.save()
+  //   return
+  // }
+
+  // let orderReuse = searchOrderReusedForEvent(
+  //   event.transaction.hash.toHex(),
+  //   event.address.toHex(),
+  //   event.logIndex.toI32()
+  // )
+  // if (orderReuse) {
+  //   orderReuse.providerFee = providerFee
+  //   orderReuse.providerFeeValidUntil = event.params.validUntil
+  //   orderReuse.save()
+  // } else {
+  //   orderReuse = new OrderReuse(event.transaction.hash.toHex())
+  //   orderReuse.providerFee = providerFee
+  //   orderReuse.providerFeeValidUntil = event.params.validUntil
+  //   orderReuse.order = order!.id
+  //   orderReuse.createdTimestamp = event.block.timestamp.toI32()
+  //   orderReuse.tx = event.transaction.hash.toHex()
+  //   orderReuse.block = event.block.number.toI32()
+  //   orderReuse.caller = event.transaction.from.toHex()
+  //   if (event.transaction.gasPrice)
+  //     orderReuse.gasPrice = event.transaction.gasPrice
+  //   else orderReuse.gasPrice = BigInt.zero()
+  //   if (event.receipt !== null && event.receipt!.gasUsed) {
+  //     orderReuse.gasUsed = event.receipt!.gasUsed.toBigDecimal()
+  //   } else orderReuse.gasUsed = BigDecimal.zero()
+  //   orderReuse.save()
+  // }
 }

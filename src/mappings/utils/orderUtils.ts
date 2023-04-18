@@ -60,11 +60,8 @@ export function searchOrderForEvent(
       ])
       log.info('found order, exit searching: {}', [order.id])
       return order
-    } else {
-      continue
     }
   }
-  // return an Order just for compilation schema
   return null
 }
 
@@ -75,12 +72,20 @@ export function searchOrderReusedForEvent(
 ): OrderReuse | null {
   for (let i = eventIndex - 1; i >= 0; i--) {
     log.info('i in order reused: {}', [i.toString()])
+    log.info('transactionHash in order reused: {}', [
+      transactionHash.toString()
+    ])
     const orderReused = OrderReuse.load(`${transactionHash}-${i}`)
+    log.info('loaded order reused with this id: {}', [
+      `${transactionHash}-${i}`
+    ])
     if (!orderReused) {
       continue
     }
     log.info('found reused order: {} ', [orderReused.id])
+    log.info('loaded reused order with this orderId: {}', [orderReused.order])
     const order = Order.load(orderReused.order)
+
     if (order && order.datatoken == eventAddress) {
       log.info('found order: {} ', [order.id])
       log.info('found reused order datatoken: {} and event address: {}', [
@@ -88,10 +93,7 @@ export function searchOrderReusedForEvent(
         eventAddress
       ])
       return orderReused
-    } else {
-      continue
     }
   }
-  // return an OrderReuse just for compilation schema
   return null
 }
