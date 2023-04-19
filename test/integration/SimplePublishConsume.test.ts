@@ -400,7 +400,6 @@ describe('Simple Publish & consume test', async () => {
     })
     await sleep(3000)
     const initialQueryResult = await initialResponse.json()
-    console.log('initial query result: ', initialQueryResult)
     const initialProviderFeeJSON = JSON.parse(
       initialQueryResult.data.order.providerFee
     )
@@ -454,7 +453,7 @@ describe('Simple Publish & consume test', async () => {
 
     const reusedOrder = await datatoken.reuseOrder(
       datatokenAddress,
-      user2,
+      user4,
       orderTx.transactionHash,
       setNewProviderFee
     )
@@ -464,28 +463,6 @@ describe('Simple Publish & consume test', async () => {
 
     sleep(4000)
     // Check the new provider fee has been set in OrderReuse
-    console.log('reused order: ', reusedOrder)
-    console.log(
-      'transaction hash for reuse order: ',
-      reusedOrder.transactionHash
-    )
-    console.log('transaction hash for start order: ', orderTx.transactionHash)
-    console.log(
-      'log index for reuse order: ',
-      reusedOrder.events.OrderReused.logIndex
-    )
-    console.log(
-      'log index for start order: ',
-      orderTx.events.OrderStarted.logIndex
-    )
-    console.log(
-      'log index for reuse order provider fees: ',
-      reusedOrder.events.ProviderFee.logIndex
-    )
-    console.log(
-      'log index for start order provider fees: ',
-      orderTx.events.ProviderFee.logIndex
-    )
 
     const reuseQuery = {
       query: `query {orderReuse(id:"${
@@ -494,7 +471,6 @@ describe('Simple Publish & consume test', async () => {
         1
       )}"){id, providerFee, eventIndex}}`
     }
-    console.log('print query: ', reuseQuery)
 
     await sleep(2000)
     const response = await fetch(subgraphUrl, {
@@ -528,11 +504,11 @@ describe('Simple Publish & consume test', async () => {
       'Invalid eventIndex for reuse order'
     )
     assert(
-      reuseQueryResult.data.orderReuse.eventIndex === 1,
+      reuseQueryResult.data.orderReuse.eventIndex === 0,
       'Invalid reuse order event index'
     )
     assert(
-      initialQueryResult.data.order.eventIndex === 1,
+      initialQueryResult.data.order.eventIndex === 0,
       'Invalid start order event index'
     )
   })

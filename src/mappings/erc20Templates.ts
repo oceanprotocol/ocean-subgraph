@@ -117,7 +117,6 @@ export function handleOrderStarted(event: OrderStarted): void {
 }
 
 export function handlerOrderReused(event: OrderReused): void {
-  log.info('searched order tx: {}', [event.params.orderTxId.toHexString()])
   const order = searchOrderForEvent(
     event.params.orderTxId.toHexString(),
     event.address.toHex(),
@@ -126,11 +125,10 @@ export function handlerOrderReused(event: OrderReused): void {
   )
 
   if (!order) return
-
-  log.info('found order id after searching: {}', [order.id])
+  const eventIndex: number = event.logIndex.toI32()
 
   const reuseOrder = new OrderReuse(
-    `${event.transaction.hash.toHex()}-${event.logIndex.toI32()}`
+    `${event.transaction.hash.toHex()}-${eventIndex}`
   )
   if (event.transaction.gasPrice)
     reuseOrder.gasPrice = event.transaction.gasPrice
@@ -262,9 +260,6 @@ export function handleProviderFee(event: ProviderFee): void {
   }", "r": "${event.params.r.toHexString()}", "s": "${event.params.s.toHexString()}", "validUntil": "${
     event.params.validUntil
   }"}`
-  log.info('event address in provider fee handler: {}', [
-    event.address.toHexString()
-  ])
 
   const order = searchOrderForEvent(
     event.transaction.hash.toHex(),
@@ -273,14 +268,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.logIndex.toI32()
   )
 
-  // const orderReuse = searchOrderReusedForEvent(
-  //   event.transaction.hash.toHex(),
-  //   event.address.toHex(),
-  //   event.logIndex.toI32()
-  // )
-
   if (order) {
-    log.info('order id in provider fee handler: {}', [order.id])
     order.providerFee = providerFee
     order.providerFeeValidUntil = event.params.validUntil
     order.save()
@@ -297,37 +285,4 @@ export function handleProviderFee(event: ProviderFee): void {
     orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.save()
   }
-  // if (order) {
-  //   order.providerFee = providerFee
-  //   order.providerFeeValidUntil = event.params.validUntil
-  //   order.save()
-  //   return
-  // }
-
-  // let orderReuse = searchOrderReusedForEvent(
-  //   event.transaction.hash.toHex(),
-  //   event.address.toHex(),
-  //   event.logIndex.toI32()
-  // )
-  // if (orderReuse) {
-  //   orderReuse.providerFee = providerFee
-  //   orderReuse.providerFeeValidUntil = event.params.validUntil
-  //   orderReuse.save()
-  // } else {
-  //   orderReuse = new OrderReuse(event.transaction.hash.toHex())
-  //   orderReuse.providerFee = providerFee
-  //   orderReuse.providerFeeValidUntil = event.params.validUntil
-  //   orderReuse.order = order!.id
-  //   orderReuse.createdTimestamp = event.block.timestamp.toI32()
-  //   orderReuse.tx = event.transaction.hash.toHex()
-  //   orderReuse.block = event.block.number.toI32()
-  //   orderReuse.caller = event.transaction.from.toHex()
-  //   if (event.transaction.gasPrice)
-  //     orderReuse.gasPrice = event.transaction.gasPrice
-  //   else orderReuse.gasPrice = BigInt.zero()
-  //   if (event.receipt !== null && event.receipt!.gasUsed) {
-  //     orderReuse.gasUsed = event.receipt!.gasUsed.toBigDecimal()
-  //   } else orderReuse.gasUsed = BigDecimal.zero()
-  //   orderReuse.save()
-  // }
 }
