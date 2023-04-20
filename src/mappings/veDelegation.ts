@@ -64,4 +64,5 @@ export function handleBurnBoost(event: BurnBoost): void {
   // delete
   const veDelegation = getveDelegation(_tokenId.toHex())
   veDelegation.amount = BigInt.zero()
+  veDelegation.save()
 }
