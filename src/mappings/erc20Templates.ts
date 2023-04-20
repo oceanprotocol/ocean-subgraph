@@ -35,14 +35,6 @@ export function handleOrderStarted(event: OrderStarted): void {
       event.logIndex.toI32()
     )
   )
-  log.info('order created id: {}', [
-    getOrderId(
-      event.transaction.hash.toHex(),
-      event.address.toHex(),
-      event.transaction.from.toHex(),
-      event.logIndex.toI32()
-    )
-  ])
 
   const token = getToken(event.address, true)
   order.datatoken = token.id
