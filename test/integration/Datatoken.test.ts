@@ -423,7 +423,9 @@ describe('Datatoken tests', async () => {
       setProviderFee
     )
     assert(orderTx, 'Invalid orderTx')
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toString()}`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toFixed(
+      1
+    )}`
 
     await sleep(3000)
     response = await fetch(subgraphUrl, {
