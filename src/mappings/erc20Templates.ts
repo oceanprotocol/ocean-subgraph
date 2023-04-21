@@ -134,12 +134,44 @@ export function handlerOrderReused(event: OrderReused): void {
   reuseOrder.tx = event.transaction.hash.toHex()
   reuseOrder.eventIndex = event.logIndex.toI32()
   reuseOrder.block = event.params.number.toI32()
-  log.info('saved reuse order: {}', [reuseOrder.id])
 
   reuseOrder.save()
 }
 
-export function handlePublishMarketFee(event: PublishMarketFee): void {}
+export function handlePublishMarketFee(event: PublishMarketFee): void {
+  const order = searchOrderForEvent(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.transaction.from.toHex(),
+    event.logIndex.toI32()
+  )
+
+  if (!order) return
+  log.info('found order: {}', [order.id])
+  const publishMarket = getUser(event.params.PublishMarketFeeAddress.toHex())
+  order.publishingMarket = publishMarket.id
+  log.info('order.publishingMarket: {}', [
+    event.params.PublishMarketFeeAddress.toHex()
+  ])
+
+  const publishMarketToken = getToken(
+    event.params.PublishMarketFeeAddress,
+    false
+  )
+  order.publishingMarketToken = publishMarketToken.id
+  log.info('order.publishingMarketToken: {}', [
+    event.params.PublishMarketFeeAddress.toHexString()
+  ])
+  log.info('event.params.PublishMarketFeeAmount: {}', [
+    event.params.PublishMarketFeeAmount.toBigDecimal().toString()
+  ])
+  order.publishingMarketAmmount = weiToDecimal(
+    event.params.PublishMarketFeeAmount.toBigDecimal(),
+    publishMarketToken.decimals
+  )
+
+  order.save()
+}
 export function handlePublishMarketFeeChanged(
   event: PublishMarketFeeChanged
 ): void {

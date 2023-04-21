@@ -338,7 +338,34 @@ describe('Datatoken tests', async () => {
   })
 
   it('Check datatoken orders are updated correctly after publishing & ordering a datatoken', async () => {
-    // Start with publishing a new datatoken
+    // Publish a datatoken for publishingMarketFeeToken
+    const nftParams1: NftCreateData = {
+      name: 'newNFT1',
+      symbol: 'newTST1',
+      templateIndex,
+      tokenURI: '',
+      transferable: true,
+      owner: publisher
+    }
+    const erc20Params1: DatatokenCreateParams = {
+      templateIndex,
+      cap: '100000',
+      feeAmount: '0',
+      paymentCollector: ZERO_ADDRESS,
+      feeToken: ZERO_ADDRESS,
+      minter: publisher,
+      mpFeeAddress: ZERO_ADDRESS
+    }
+    const result1 = await Factory.createNftWithDatatoken(
+      publisher,
+      nftParams1,
+      erc20Params1
+    )
+    await sleep(3000)
+    const publishingTokenAddress = result1.events.TokenCreated.returnValues[0]
+    const publishingDatatoken = new Datatoken(web3, 8996)
+
+    // Start with publishing the datatoken used for startOrder
     const nftParams: NftCreateData = {
       name: 'newNFT',
       symbol: 'newTST',
@@ -350,11 +377,11 @@ describe('Datatoken tests', async () => {
     const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap: '100000',
-      feeAmount: '0',
+      feeAmount: '0.2',
       paymentCollector: ZERO_ADDRESS,
-      feeToken: ZERO_ADDRESS,
+      feeToken: publishingTokenAddress,
       minter: publisher,
-      mpFeeAddress: ZERO_ADDRESS
+      mpFeeAddress: publisher
     }
     const result = await Factory.createNftWithDatatoken(
       publisher,
@@ -365,11 +392,41 @@ describe('Datatoken tests', async () => {
     const newDtAddress = result.events.TokenCreated.returnValues[0]
 
     const datatoken = new Datatoken(web3, 8996)
+
+    await datatoken.approve(
+      newDtAddress,
+      publishingTokenAddress,
+      '100000000000000000000000000',
+      user1
+    )
+    await publishingDatatoken.approve(
+      publishingTokenAddress,
+      newDtAddress,
+      '100000000000000000000000000',
+      user1
+    )
     await datatoken.mint(newDtAddress, publisher, '100', user1)
+    await publishingDatatoken.mint(
+      publishingTokenAddress,
+      publisher,
+      '100',
+      user1
+    )
     const user1balance = await datatoken.balance(newDtAddress, user1)
     const user2balance = await datatoken.balance(newDtAddress, user2)
     assert(Number(user1balance) === 100, 'Invalid user1 balance')
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
+
+    const user1balanceOfPublishing = await datatoken.balance(
+      publishingTokenAddress,
+      user1
+    )
+    const user2balanceOfPublishing = await datatoken.balance(
+      publishingTokenAddress,
+      user2
+    )
+    assert(Number(user1balanceOfPublishing) === 100, 'Invalid user1 balance')
+    assert(Number(user2balanceOfPublishing) === 0, 'Invalid user2 balance')
 
     const query = {
       query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}, eventIndex}, eventIndex}}`
@@ -447,5 +504,19 @@ describe('Datatoken tests', async () => {
       token.eventIndex !== token.orders[0].eventIndex,
       'Invalid log indeces'
     )
+    const orderQuery = {
+      query: `query {order(id:"${orderId}"){id, publishingMarketAmmount, eventIndex}}`
+    }
+    // publishingMarket, publishingMarketToken
+
+    await sleep(3000)
+    const orderResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(orderQuery)
+    })
+    await sleep(3000)
+    const queryResult = await orderResponse.json()
+    const order = queryResult.data.order
+    assert(order.publishingMarketAmmount === erc20Params.feeAmount)
   })
 })
