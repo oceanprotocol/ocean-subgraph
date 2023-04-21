@@ -6,6 +6,7 @@ import {
   OrderStarted,
   PublishMarketFee,
   PublishMarketFeeChanged,
+  ConsumeMarketFee,
   AddedMinter,
   AddedPaymentManager,
   RemovedMinter,
@@ -63,9 +64,6 @@ export function handleOrderStarted(event: OrderStarted): void {
 
   const publishMarket = getUser(event.params.publishMarketAddress.toHex())
   order.publishingMarket = publishMarket.id
-
-  // const consumeMarket = getUser(event.params..toHex())
-  // order.consumerMarket = consumeMarket.id
 
   order.createdTimestamp = event.block.timestamp.toI32()
   order.tx = event.transaction.hash.toHex()
@@ -195,6 +193,37 @@ export function handlePublishMarketFeeChanged(
   token.eventIndex = event.logIndex.toI32()
   token.save()
   // TODO - shold we have a history
+}
+
+export function handleConsumeMarketFee(event: ConsumeMarketFee): void {
+  const order = searchOrderForEvent(
+    event.transaction.hash.toHex(),
+    event.address.toHex(),
+    event.transaction.from.toHex(),
+    event.logIndex.toI32()
+  )
+
+  if (!order) return
+  const consumeMarket = getUser(event.params.consumeMarketFeeAddress.toHex())
+  order.consumerMarket = consumeMarket.id
+  log.info('order.consumerMarket: {}', [
+    event.params.consumeMarketFeeAddress.toHexString()
+  ])
+
+  const consumeMarketToken = getToken(event.params.consumeMarketFeeToken, false)
+  order.consumerMarketToken = consumeMarketToken.id
+  log.info('order.consumerMarketToken: {}', [
+    event.params.consumeMarketFeeToken.toHexString()
+  ])
+  log.info('event.params.consumerMarketAmmount: {}', [
+    event.params.consumeMarketFeeAmount.toBigDecimal().toString()
+  ])
+  order.consumerMarketAmmount = weiToDecimal(
+    event.params.consumeMarketFeeAmount.toBigDecimal(),
+    consumeMarketToken.decimals
+  )
+
+  order.save()
 }
 
 // roles

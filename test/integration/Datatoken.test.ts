@@ -471,13 +471,19 @@ describe('Datatoken tests', async () => {
       providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
       validUntil: providerValidUntil
     }
+    const consumeMarketFees = {
+      consumeMarketFeeAddress: publisher,
+      consumeMarketFeeToken: publishingTokenAddress,
+      consumeMarketFeeAmount: '20000'
+    }
     assert(setProviderFee, 'Invalid setProviderFee')
     const orderTx = await datatoken.startOrder(
       newDtAddress,
       user1,
       user2,
       1,
-      setProviderFee
+      setProviderFee,
+      consumeMarketFees
     )
     assert(orderTx, 'Invalid orderTx')
     const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toFixed(
@@ -505,9 +511,10 @@ describe('Datatoken tests', async () => {
       'Invalid log indeces'
     )
     const orderQuery = {
-      query: `query {order(id:"${orderId}"){id, publishingMarketAmmount, eventIndex}}`
+      query: `query {order(id:"${orderId}"){id, publishingMarketAmmount, consumerMarketAmmount, eventIndex}}`
     }
     // publishingMarket, publishingMarketToken
+    // consumerMarket, consumerMarketToken,
 
     await sleep(3000)
     const orderResponse = await fetch(subgraphUrl, {
@@ -518,5 +525,6 @@ describe('Datatoken tests', async () => {
     const queryResult = await orderResponse.json()
     const order = queryResult.data.order
     assert(order.publishingMarketAmmount === erc20Params.feeAmount)
+    assert(order.consumerMarketAmmount === '0.00000000000002')
   })
 })
