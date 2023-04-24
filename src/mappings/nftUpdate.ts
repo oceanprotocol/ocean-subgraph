@@ -20,8 +20,8 @@ import { NftUpdateType } from './utils/constants'
 import { getNftToken, getNftTokenWithID } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
-function getId(tx: string, nftAddress: string): string {
-  return `${tx}-${nftAddress}`
+function getId(tx: string, nftAddress: string, eventIndex: number): string {
+  return `${tx}-${nftAddress}-${eventIndex}`
 }
 
 export function handleMetadataCreated(event: MetadataCreated): void {
@@ -33,8 +33,9 @@ export function handleMetadataCreated(event: MetadataCreated): void {
   nft.providerUrl = event.params.decryptorUrl.toString()
   nft.hasMetadata = true
 
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
 
   nftUpdate.type = NftUpdateType.METADATA_CREATED
@@ -55,15 +56,15 @@ export function handleMetadataCreated(event: MetadataCreated): void {
 }
 
 export function handleMetadataUpdated(event: MetadataUpdated): void {
-  // TODO la updates
   const nftAddress = event.address.toHex()
   const nft = Nft.load(nftAddress)
   if (!nft) return
 
   nft.assetState = event.params.state
   nft.hasMetadata = true
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
 
   nftUpdate.nft = nft.id
@@ -86,9 +87,9 @@ export function handleMetadataState(event: MetadataState): void {
   if (!nft) return
 
   nft.assetState = event.params.state
-
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
 
   nftUpdate.nft = nft.id
@@ -112,9 +113,9 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
   if (!nft) return
 
   nft.tokenUri = event.params.tokenURI.toString()
-
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
   nftUpdate.nft = nft.id
   nftUpdate.type = NftUpdateType.TOKENURI_UPDATED
@@ -274,10 +275,10 @@ export function handleNftTransferred(event: Transfer): void {
   const newOwner = getUser(event.params.to.toHexString())
   nft.owner = newOwner.id
   nft.save()
-
-  const transferId = `${nft.address}-${event.transaction.hash.toHex()}-${
-    event.logIndex
-  }`
+  const eventIndex: number = event.logIndex.toI32()
+  const transferId = `${
+    nft.address
+  }-${event.transaction.hash.toHex()}-${eventIndex}`
   const newTransfer = new NftTransferHistory(transferId)
   newTransfer.oldOwner = oldOwner
   newTransfer.nft = nft.id
