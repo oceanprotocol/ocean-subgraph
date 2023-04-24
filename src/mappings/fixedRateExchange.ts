@@ -64,8 +64,9 @@ export function handleRateChange(event: ExchangeRateChanged): void {
     event.address
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
+  const eventIndex: number = event.logIndex.toI32()
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId, eventIndex)
   )
   newExchangeUpdate.oldPrice = fixedRateExchange.price
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
@@ -101,8 +102,9 @@ export function handleActivated(event: ExchangeActivated): void {
     event.address
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
+  const eventIndex: number = event.logIndex.toI32()
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId, eventIndex)
   )
   newExchangeUpdate.exchangeId = fixedRateId
   newExchangeUpdate.oldActive = fixedRateExchange.active
@@ -124,8 +126,9 @@ export function handleDeactivated(event: ExchangeDeactivated): void {
     event.address
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
+  const eventIndex: number = event.logIndex.toI32()
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId, eventIndex)
   )
   newExchangeUpdate.oldActive = fixedRateExchange.active
   newExchangeUpdate.newActive = false
@@ -149,8 +152,9 @@ export function handleAllowedSwapperChanged(
     event.address
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
+  const eventIndex: number = event.logIndex.toI32()
   const newExchangeUpdate = new FixedRateExchangeUpdate(
-    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId, eventIndex)
   )
   newExchangeUpdate.createdTimestamp = event.block.timestamp.toI32()
   newExchangeUpdate.tx = event.transaction.hash.toHex()
@@ -172,9 +176,9 @@ export function handleSwap(event: Swapped): void {
     event.address
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
-
+  const eventIndex: number = event.logIndex.toI32()
   const swap = new FixedRateExchangeSwap(
-    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId)
+    getUpdateOrSwapId(event.transaction.hash.toHex(), fixedRateId, eventIndex)
   )
   swap.createdTimestamp = event.block.timestamp.toI32()
   swap.tx = event.transaction.hash.toHex()

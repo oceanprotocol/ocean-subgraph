@@ -692,7 +692,11 @@ describe('Fixed Rate Exchange tests', async () => {
     const swappedAmount = web3.utils.fromWei(
       new BN(tx.returnValues.baseTokenSwappedAmount)
     )
-    assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
+    assert(
+      swaps.id ===
+        `${tx.transactionHash}-${fixedRateId}-${tx.logIndex.toFixed(1)}`,
+      'incorrect: id'
+    )
     assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
     assert(swaps.by.id === user1, 'incorrect value for: id')
     assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
@@ -745,7 +749,11 @@ describe('Fixed Rate Exchange tests', async () => {
     const swappedAmount = web3.utils.fromWei(
       new BN(tx.returnValues.baseTokenSwappedAmount)
     )
-    assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
+    assert(
+      swaps.id ===
+        `${tx.transactionHash}-${fixedRateId}-${tx.logIndex.toFixed(1)}`,
+      'incorrect: id'
+    )
     assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
     assert(swaps.by.id === user1, 'incorrect value for: id')
     assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')

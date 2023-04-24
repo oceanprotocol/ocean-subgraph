@@ -521,19 +521,31 @@ describe('Datatoken tests', async () => {
     await sleep(3000)
     const queryResult = await orderResponse.json()
     const order = queryResult.data.order
-    assert(order.publishingMarket.id === erc20Params.mpFeeAddress.toLowerCase())
     assert(
-      order.publishingMarketToken.id === erc20Params.feeToken.toLowerCase()
+      order.publishingMarket.id === erc20Params.mpFeeAddress.toLowerCase(),
+      'incorrect publish market fee address'
     )
-    assert(order.publishingMarketAmmount === erc20Params.feeAmount)
+    assert(
+      order.publishingMarketToken.id === erc20Params.feeToken.toLowerCase(),
+      'incorrect publish market fee token'
+    )
+    assert(
+      order.publishingMarketAmmount === erc20Params.feeAmount,
+      'incorrect publish market fee amount'
+    )
     assert(
       order.consumerMarket.id ===
-        consumeMarketFees.consumeMarketFeeAddress.toLowerCase()
+        consumeMarketFees.consumeMarketFeeAddress.toLowerCase(),
+      'incorrect consume market fee address'
     )
     assert(
       order.consumerMarketToken.id ===
-        consumeMarketFees.consumeMarketFeeToken.toLowerCase()
+        consumeMarketFees.consumeMarketFeeToken.toLowerCase(),
+      'incorrect consume market fee token'
     )
-    assert(order.consumerMarketAmmount === '0.00000000000002')
+    assert(
+      order.consumerMarketAmmount === '0.00000000000002',
+      'incorrect consume market fee amount'
+    )
   })
 })
