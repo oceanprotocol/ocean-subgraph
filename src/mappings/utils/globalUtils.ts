@@ -13,12 +13,13 @@ export function getGlobalStats(): GlobalStatistic {
   let globalStats = GlobalStatistic.load(GLOBAL_ID)
   if (!globalStats) {
     globalStats = new GlobalStatistic(GLOBAL_ID)
-    globalStats.version = '3.0.3'
+    globalStats.version = '3.0.4'
     globalStats.orderCount = 0
     globalStats.fixedCount = 0
     globalStats.datatokenCount = 0
     globalStats.dispenserCount = 0
     globalStats.nftCount = 0
+    globalStats.totalOceanLocked = BigDecimal.zero()
     globalStats.save()
   }
   return globalStats
@@ -33,6 +34,11 @@ export function getOPC(): OPC {
   return globalStats
 }
 
+export function getTotalOceanLocked(): BigDecimal {
+  const globalStats = getGlobalStats()
+  return globalStats.totalOceanLocked
+}
+
 export function getTemplates(): Template {
   let templates = Template.load(GLOBAL_ID)
   if (!templates) {
@@ -40,6 +46,12 @@ export function getTemplates(): Template {
     templates.save()
   }
   return templates
+}
+
+export function updateTotalOceanLocked(amount: BigDecimal): void {
+  const globalStats = getGlobalStats()
+  globalStats.totalOceanLocked = amount
+  globalStats.save()
 }
 
 export function addOrder(): void {

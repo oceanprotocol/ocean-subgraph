@@ -346,6 +346,9 @@ type GlobalStatistic @entity {
     "number of dispensers created"
     dispenserCount: Int!
 
+    "total ocean locked in veOcean"
+    totalOceanLocked:BigDecimal!
+   
    "current version"
     version: String
 }
@@ -518,6 +521,7 @@ type VeDeposit @entity {
   tx: String!
   eventIndex: Int!
   veOcean: VeOCEAN!
+  totalOceanLocked:BigDecimal!
 }
 
 
