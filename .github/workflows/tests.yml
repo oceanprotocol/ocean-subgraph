@@ -74,6 +74,7 @@ jobs:
           npm run test-publish-consume
           npm run test-dt
           npm run test-fixed
+          npm run test-dispenser
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
           BARGE_FOLDER: /home/runner/.ocean/

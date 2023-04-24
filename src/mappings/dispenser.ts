@@ -88,10 +88,8 @@ export function handleTokensDispensed(event: TokensDispensed): void {
     event.address,
     event.params.datatokenAddress
   )
-  const id = event.transaction.hash
-    .toHexString()
-    .concat('-')
-    .concat(dispenserID)
+  const eventIndex: number = event.logIndex.toI32()
+  const id = `${event.transaction.hash.toHexString()}-${dispenserID}-${eventIndex}`
 
   const dispenserTransaction = new DispenserTransaction(id)
   const dispenser = getDispenser(dispenserID)

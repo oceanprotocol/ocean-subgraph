@@ -170,7 +170,6 @@ export function handleAllowedSwapperChanged(
 
 // TODO: implement market fee, opf fee
 export function handleSwap(event: Swapped): void {
-  // TODO
   const fixedRateId = getFixedRateGraphID(
     event.params.exchangeId.toHexString(),
     event.address

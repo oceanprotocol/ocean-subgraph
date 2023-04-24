@@ -453,7 +453,13 @@ describe('Dispenser tests', async () => {
     })
     const dispense = (await response2.json()).data.dispenser.dispenses[0]
 
-    assert(dispense.id === `${tx.transactionHash}-${dispenserId}`, 'wrong id')
+    assert(
+      dispense.id ===
+        `${
+          tx.transactionHash
+        }-${dispenserId}-${tx.events.TokensDispensed.logIndex.toFixed(1)}`,
+      'wrong id'
+    )
     assert(dispense.dispenser.id === dispenserId, 'incorrect value for: user')
     assert(dispense.user.id === user2, 'incorrect value for: user')
     assert(dispense.amount === amount, 'incorrect value for: user')
