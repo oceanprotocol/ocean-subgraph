@@ -337,7 +337,7 @@ describe('Datatoken tests', async () => {
     )
   })
 
-  it('Check datatoken orders are updated correctly after publishing & ordering a datatoken', async () => {
+  it('Check datatoken orders are updated correctly after publishing & ordering a datatoken with fees', async () => {
     // Publish a datatoken for publishingMarketFeeToken
     const nftParams1: NftCreateData = {
       name: 'newNFT1',
@@ -511,11 +511,8 @@ describe('Datatoken tests', async () => {
       'Invalid log indeces'
     )
     const orderQuery = {
-      query: `query {order(id:"${orderId}"){id, publishingMarketAmmount, consumerMarketAmmount, eventIndex}}`
+      query: `query {order(id:"${orderId}"){id, publishingMarket{id}, publishingMarketToken{id}, publishingMarketAmmount, consumerMarket{id}, consumerMarketToken{id}, consumerMarketAmmount, eventIndex}}`
     }
-    // publishingMarket, publishingMarketToken
-    // consumerMarket, consumerMarketToken,
-
     await sleep(3000)
     const orderResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -524,7 +521,19 @@ describe('Datatoken tests', async () => {
     await sleep(3000)
     const queryResult = await orderResponse.json()
     const order = queryResult.data.order
+    assert(order.publishingMarket.id === erc20Params.mpFeeAddress.toLowerCase())
+    assert(
+      order.publishingMarketToken.id === erc20Params.feeToken.toLowerCase()
+    )
     assert(order.publishingMarketAmmount === erc20Params.feeAmount)
+    assert(
+      order.consumerMarket.id ===
+        consumeMarketFees.consumeMarketFeeAddress.toLowerCase()
+    )
+    assert(
+      order.consumerMarketToken.id ===
+        consumeMarketFees.consumeMarketFeeToken.toLowerCase()
+    )
     assert(order.consumerMarketAmmount === '0.00000000000002')
   })
 })

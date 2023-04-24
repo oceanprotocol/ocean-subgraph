@@ -145,24 +145,11 @@ export function handlePublishMarketFee(event: PublishMarketFee): void {
   )
 
   if (!order) return
-  log.info('found order: {}', [order.id])
   const publishMarket = getUser(event.params.PublishMarketFeeAddress.toHex())
   order.publishingMarket = publishMarket.id
-  log.info('order.publishingMarket: {}', [
-    event.params.PublishMarketFeeAddress.toHex()
-  ])
 
-  const publishMarketToken = getToken(
-    event.params.PublishMarketFeeAddress,
-    false
-  )
+  const publishMarketToken = getToken(event.params.PublishMarketFeeToken, true)
   order.publishingMarketToken = publishMarketToken.id
-  log.info('order.publishingMarketToken: {}', [
-    event.params.PublishMarketFeeAddress.toHexString()
-  ])
-  log.info('event.params.PublishMarketFeeAmount: {}', [
-    event.params.PublishMarketFeeAmount.toBigDecimal().toString()
-  ])
   order.publishingMarketAmmount = weiToDecimal(
     event.params.PublishMarketFeeAmount.toBigDecimal(),
     publishMarketToken.decimals
@@ -206,18 +193,9 @@ export function handleConsumeMarketFee(event: ConsumeMarketFee): void {
   if (!order) return
   const consumeMarket = getUser(event.params.consumeMarketFeeAddress.toHex())
   order.consumerMarket = consumeMarket.id
-  log.info('order.consumerMarket: {}', [
-    event.params.consumeMarketFeeAddress.toHexString()
-  ])
 
   const consumeMarketToken = getToken(event.params.consumeMarketFeeToken, false)
   order.consumerMarketToken = consumeMarketToken.id
-  log.info('order.consumerMarketToken: {}', [
-    event.params.consumeMarketFeeToken.toHexString()
-  ])
-  log.info('event.params.consumerMarketAmmount: {}', [
-    event.params.consumeMarketFeeAmount.toBigDecimal().toString()
-  ])
   order.consumerMarketAmmount = weiToDecimal(
     event.params.consumeMarketFeeAmount.toBigDecimal(),
     consumeMarketToken.decimals

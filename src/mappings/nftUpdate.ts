@@ -55,6 +55,7 @@ export function handleMetadataCreated(event: MetadataCreated): void {
 }
 
 export function handleMetadataUpdated(event: MetadataUpdated): void {
+  // TODO la updates
   const nftAddress = event.address.toHex()
   const nft = Nft.load(nftAddress)
   if (!nft) return
