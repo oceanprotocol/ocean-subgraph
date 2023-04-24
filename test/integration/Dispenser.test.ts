@@ -18,7 +18,7 @@ import { fetch } from 'cross-fetch'
 import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
 
-const sleepMs = 1800
+const sleepMs = 1600
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -388,7 +388,7 @@ describe('Dispenser tests', async () => {
     )
   })
 
-  it('Activates exchange', async () => {
+  it('Activates dispenser', async () => {
     const activeQuery = {
       query: `query {dispenser(id: "${dispenserId}"){active, eventIndex}}`
     }
@@ -400,7 +400,7 @@ describe('Dispenser tests', async () => {
     assert(initialActive.active === false, 'incorrect value for: initialActive')
     assert(initialActive.eventIndex !== null, 'incorrect value for: eventIndex')
 
-    // Activate exchange
+    // Activate dispenser
     const tx = await dispenser.activate(dtAddress, '100', '100', publisher)
     await sleep(sleepMs)
 
