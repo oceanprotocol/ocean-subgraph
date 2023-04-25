@@ -105,7 +105,7 @@ const minAbi = [
 describe('veOcean tests', async () => {
   let nftFactory
   let veOcean: VeOcean
-  let delegateContract
+  // let delegateContract
   let veAllocate: VeAllocate
   let veFeeDistributor: VeFeeDistributor
   let ownerAccount: string
@@ -122,10 +122,10 @@ describe('veOcean tests', async () => {
     ownerAccount = accounts[0]
     Alice = accounts[1]
     Bob = accounts[2]
-    delegateContract = new web3.eth.Contract(
-      veDelegation.abi as AbiItem[],
-      addresses.veDelegation
-    )
+    // delegateContract = new web3.eth.Contract(
+    //   veDelegation.abi as AbiItem[],
+    //   addresses.veDelegation
+    // )
 
     const tokenContract = new web3.eth.Contract(minAbi, addresses.Ocean)
     const estGas = await calculateEstimatedGas(
