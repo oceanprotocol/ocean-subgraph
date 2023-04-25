@@ -138,20 +138,6 @@ export function getveDelegation(
       return veDelegation
     }
   }
-
-  // if (veDelegation === null) {
-  //   veDelegation = new VeDelegation(id)
-  //   veDelegation.cancelTime = BigInt.zero()
-  //   veDelegation.expireTime = BigInt.zero()
-  //   veDelegation.tokenId = BigInt.zero()
-  //   veDelegation.amount = BigInt.zero()
-  //   veDelegation.receiver = ''
-  //   veDelegation.delegator = ''
-  //   veDelegation.block = 0
-  //   veDelegation.timestamp = 0
-  //   veDelegation.tx = ''
-  //   veDelegation.save()
-  // }
   return null
 }
 
