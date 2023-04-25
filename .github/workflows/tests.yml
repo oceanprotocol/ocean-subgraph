@@ -73,6 +73,7 @@ jobs:
       - run: |
           npm run test-dt
           npm run test-df
+          npm run test-dispenser
           npm run test-zend
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
