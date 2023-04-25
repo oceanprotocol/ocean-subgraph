@@ -79,6 +79,7 @@ jobs:
           npm run test-publish-consume
           npm run test-simple
           npm run test-users
+          npm run test-ve
           npm run test-zend
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
