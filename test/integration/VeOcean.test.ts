@@ -706,7 +706,8 @@ describe('veOcean tests', async () => {
           tokenId,
           amount,
           cancelTime,
-          expireTime
+          expireTime,
+          eventIndex
         }
         }`
     }
@@ -716,8 +717,15 @@ describe('veOcean tests', async () => {
       body: JSON.stringify(delegateQuery)
     })
     const json = await delegateResponse.json()
-    console.log('json', json)
-    console.log('json?.data?.veDelegations', json?.data?.veDelegations)
+    console.log('json: ', json)
     assert(json?.data?.veDelegations, 'No veDelegations')
+    assert(
+      json?.data?.veDelegations.eventIndex !== null,
+      'Invalid eventIndex for veDelegation'
+    )
+    assert(
+      json?.data?.veDelegations.id !== null,
+      'Invalid eventIndex for veDelegation'
+    )
   })
 })

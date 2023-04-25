@@ -461,7 +461,7 @@ enum veAllocationUpdateType {
 }
 
 type VeAllocationUpdate @entity {
-  "{tx}-{VeAllocation id}"
+  "{tx}-{VeAllocation id}-{eventIndex}"
   id: ID!
  
   veAllocation: VeAllocation!
@@ -475,7 +475,7 @@ type VeAllocationUpdate @entity {
 }
 
 type VeDelegation @entity {
-  "id = tokenId"
+  "{tx}-{tokenId}-{eventIndex}"
   id: ID!
   delegator: VeOCEAN!
   receiver: VeOCEAN!
@@ -486,6 +486,7 @@ type VeDelegation @entity {
   block: Int!
   timestamp: Int!
   tx: String!
+  eventIndex: Int!
 }
 
 type VeOCEAN @entity {

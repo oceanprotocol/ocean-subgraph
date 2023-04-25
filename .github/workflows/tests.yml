@@ -76,6 +76,7 @@ jobs:
           npm run test-fixed
           npm run test-dispenser
           npm run test-nft
+          npm run test-ve
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
           BARGE_FOLDER: /home/runner/.ocean/

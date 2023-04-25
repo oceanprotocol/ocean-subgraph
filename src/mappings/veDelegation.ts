@@ -5,7 +5,11 @@ import {
   ExtendBoost,
   TransferBoost
 } from '../@types/veDelegation/veDelegation'
-import { getveDelegation, getveOCEAN } from './utils/veUtils'
+import {
+  createDefaultVeDelegation,
+  getveDelegation,
+  getveOCEAN
+} from './utils/veUtils'
 
 export function handleDelegation(event: DelegateBoost): void {
   const _delegator = event.params._delegator.toHex()
@@ -14,8 +18,14 @@ export function handleDelegation(event: DelegateBoost): void {
   const _amount = event.params._amount
   const _cancelTime = event.params._cancel_time
   const _expireTime = event.params._expire_time
-
-  const veDelegation = getveDelegation(_tokenId.toHex())
+  const eventIndex: number = event.logIndex.toI32()
+  const tx = event.transaction.hash.toHex()
+  let veDelegation = getveDelegation(tx, _tokenId.toHex(), eventIndex)
+  if (!veDelegation) {
+    veDelegation = createDefaultVeDelegation(
+      `${tx}-${_tokenId.toHex()}-${eventIndex}`
+    )
+  }
   veDelegation.delegator = _delegator
   getveOCEAN(_receiver)
   veDelegation.receiver = _receiver
@@ -26,6 +36,7 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.block = event.block.number.toI32()
   veDelegation.timestamp = event.block.timestamp.toI32()
   veDelegation.tx = event.transaction.hash.toHex()
+  veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
 }
 
@@ -36,8 +47,15 @@ export function handleExtendBoost(event: ExtendBoost): void {
   const _amount = event.params._amount
   const _cancelTime = event.params._cancel_time
   const _expireTime = event.params._expire_time
+  const eventIndex: number = event.logIndex.toI32()
+  const tx = event.transaction.hash.toHex()
+  let veDelegation = getveDelegation(tx, _tokenId.toHex(), eventIndex)
+  if (!veDelegation) {
+    veDelegation = createDefaultVeDelegation(
+      `${tx}-${_tokenId.toHex()}-${eventIndex}`
+    )
+  }
 
-  const veDelegation = getveDelegation(_tokenId.toHex())
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
@@ -46,6 +64,7 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegation.expireTime = _expireTime
   veDelegation.timestamp = event.block.timestamp.toI32()
   veDelegation.tx = event.transaction.hash.toHex()
+  veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
 }
 
@@ -62,7 +81,15 @@ export function handleBurnBoost(event: BurnBoost): void {
   const _tokenId = event.params._token_id
 
   // delete
-  const veDelegation = getveDelegation(_tokenId.toHex())
+  const eventIndex: number = event.logIndex.toI32()
+  const tx = event.transaction.hash.toHex()
+  let veDelegation = getveDelegation(tx, _tokenId.toHex(), eventIndex)
+  if (!veDelegation) {
+    veDelegation = createDefaultVeDelegation(
+      `${tx}-${_tokenId.toHex()}-${eventIndex}`
+    )
+  }
   veDelegation.amount = BigInt.zero()
+  veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
 }
