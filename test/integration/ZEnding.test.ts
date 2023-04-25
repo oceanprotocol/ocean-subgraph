@@ -20,7 +20,7 @@ describe('Ending tests', () => {
   let lastblock
   it('Get Graph status', async () => {
     lastblock = await web3.eth.getBlockNumber()
-    await sleep(6000) // let graph ingest our last transactions
+    await sleep(3000) // let graph ingest our last transactions
     const query = {
       query: `query {
         _meta{hasIndexingErrors,
