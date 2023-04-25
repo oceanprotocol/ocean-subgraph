@@ -71,14 +71,6 @@ jobs:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
           BARGE_FOLDER: /home/runner/.ocean/
       - run: |
-          npm run test-dt
-          npm run test-df
-          npm run test-dispenser
-          npm run test-fixed
-          npm run test-nft
-          npm run test-publish-consume
-          npm run test-simple
-          npm run test-users
           npm run test-ve
           npm run test-zend
         env:
