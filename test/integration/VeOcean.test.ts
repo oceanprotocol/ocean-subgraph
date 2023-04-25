@@ -618,7 +618,6 @@ describe('veOcean tests', async () => {
     )
     const timestamp = Math.floor(Date.now() / 1000)
     const unlockTime = timestamp + 30 * 86400
-    console.log('unlock time', unlockTime)
 
     if (parseInt(currentBalance) > 0 || currentLock > 0) {
       // we already have some locked tokens, so our transaction should fail
@@ -717,7 +716,6 @@ describe('veOcean tests', async () => {
       body: JSON.stringify(delegateQuery)
     })
     const json = await delegateResponse.json()
-    console.log('json: ', json)
     assert(json?.data?.veDelegations, 'No veDelegations')
     assert(
       json?.data?.veDelegations.eventIndex !== null,

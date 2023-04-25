@@ -70,13 +70,7 @@ jobs:
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
           BARGE_FOLDER: /home/runner/.ocean/
-      - run: |
-          npm run test-publish-consume
-          npm run test-dt
-          npm run test-fixed
-          npm run test-dispenser
-          npm run test-nft
-          npm run test-ve
+      - run: npm run test-integration
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
           BARGE_FOLDER: /home/runner/.ocean/
