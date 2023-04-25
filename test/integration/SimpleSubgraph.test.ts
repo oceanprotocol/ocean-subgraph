@@ -144,7 +144,9 @@ describe('Tests coverage without provider/aquarius', async () => {
     assert(queryResult.data.nft.owner.id === newOwnerAccount)
     assert(
       transferHistory.id ===
-        `${nftAddress}-${tx.transactionHash}-${tx.events.Transfer.logIndex}`,
+        `${nftAddress}-${
+          tx.transactionHash
+        }-${tx.events.Transfer.logIndex.toFixed(1)}`,
       'Invalid transferHistory Id'
     )
     assert(transferHistory.txId === tx.transactionHash, 'invalid txId')
