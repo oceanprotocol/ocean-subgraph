@@ -40,6 +40,6 @@ describe('Ending tests', () => {
     assert(result.data._meta.hasIndexingErrors == false)
   })
   it('Make sure that graph has synced to last block', async () => {
-    assert(result.data._meta.block.number >= lastblock - 1)
+    assert(result.data._meta.block.number >= lastblock)
   })
 })
