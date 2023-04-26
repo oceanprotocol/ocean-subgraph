@@ -126,36 +126,24 @@ export function writeveAllocationUpdate(
   return allocationUpdate
 }
 
-export function getveDelegation(
-  transactionHash: string,
-  tokenId: string,
-  eventIndex: number
-): VeDelegation | null {
-  for (let i = eventIndex; i >= 0; i--) {
-    const id = `${transactionHash}-${tokenId}-${i}`
-    const veDelegation = VeDelegation.load(id)
-    if (veDelegation) {
-      return veDelegation
-    }
-  }
-  return null
-}
+export function getveDelegation(id: string): VeDelegation {
+  let veDelegation = VeDelegation.load(id)
 
-export function createDefaultVeDelegation(id: string): VeDelegation {
-  const veDelegation = new VeDelegation(id)
-  veDelegation.cancelTime = BigInt.zero()
-  veDelegation.expireTime = BigInt.zero()
-  veDelegation.tokenId = BigInt.zero()
-  veDelegation.amount = BigInt.zero()
-  veDelegation.receiver = ''
-  veDelegation.delegator = ''
-  veDelegation.block = 0
-  veDelegation.timestamp = 0
-  veDelegation.tx = ''
-  veDelegation.save()
+  if (veDelegation === null) {
+    veDelegation = new VeDelegation(id)
+    veDelegation.cancelTime = BigInt.zero()
+    veDelegation.expireTime = BigInt.zero()
+    veDelegation.tokenId = BigInt.zero()
+    veDelegation.amount = BigInt.zero()
+    veDelegation.receiver = ''
+    veDelegation.delegator = ''
+    veDelegation.block = 0
+    veDelegation.timestamp = 0
+    veDelegation.tx = ''
+    veDelegation.save()
+  }
   return veDelegation
 }
-
 export function getDeposit(id: string): VeDeposit {
   let deposit = VeDeposit.load(id)
   if (deposit === null) {
