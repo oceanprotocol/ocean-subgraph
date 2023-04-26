@@ -6,6 +6,7 @@ import {
   getTotalOceanLocked,
   updateTotalOceanLocked
 } from './utils/globalUtils'
+import { VeDeposit } from '../@types/schema'
 
 export function handleDeposit(event: Deposit): void {
   const provider = event.params.provider
@@ -16,28 +17,32 @@ export function handleDeposit(event: Deposit): void {
   const totalOceanLocked = getTotalOceanLocked()
   const veOCEAN = getveOCEAN(provider.toHex())
   // Create new Deposit entity
-  const deposit = getDeposit(
-    provider.toHex() +
-      '-' +
-      event.transaction.hash.toHex() +
-      '-' +
-      event.logIndex.toString()
+  const eventIndex: number = event.logIndex.toI32()
+  let deposit = getDeposit(
+    provider.toHex(),
+    event.transaction.hash.toHex(),
+    eventIndex
   )
-  deposit.provider = provider.toHex()
-  deposit.value = weiToDecimal(value.toBigDecimal(), 18)
-  deposit.unlockTime = locktime
-  deposit.type = type
-  deposit.timestamp = ts
-  deposit.block = event.block.number.toI32()
-  deposit.tx = event.transaction.hash.toHex()
-  deposit.eventIndex = event.logIndex.toI32()
-  deposit.sender = event.transaction.from.toHex()
-  deposit.veOcean = veOCEAN.id
+  if (!deposit) {
+    deposit = new VeDeposit(
+      `${provider.toHex()}-${event.transaction.hash.toHex()}-${eventIndex}`
+    )
+    deposit.provider = provider.toHex()
+    deposit.value = weiToDecimal(value.toBigDecimal(), 18)
+    deposit.unlockTime = locktime
+    deposit.type = type
+    deposit.timestamp = ts
+    deposit.block = event.block.number.toI32()
+    deposit.tx = event.transaction.hash.toHex()
+    deposit.eventIndex = event.logIndex.toI32()
+    deposit.sender = event.transaction.from.toHex()
+    deposit.veOcean = veOCEAN.id
 
-  deposit.totalOceanLocked = totalOceanLocked.plus(deposit.value)
-  updateTotalOceanLocked(deposit.totalOceanLocked)
+    deposit.totalOceanLocked = totalOceanLocked.plus(deposit.value)
+    updateTotalOceanLocked(deposit.totalOceanLocked)
 
-  deposit.save()
+    deposit.save()
+  }
   // --------------------------------------------
 
   const lockedAmount = weiToDecimal(value.toBigDecimal(), 18)
@@ -55,13 +60,13 @@ export function handleWithdraw(event: Withdraw): void {
 
   const veOCEAN = getveOCEAN(provider.toHex())
   // Create new Deposit entity
+  const eventIndex: number = event.logIndex.toI32()
   const deposit = getDeposit(
-    provider.toHex() +
-      '-' +
-      event.transaction.hash.toHex() +
-      '-' +
-      event.logIndex.toString()
+    provider.toHex(),
+    event.transaction.hash.toHex(),
+    eventIndex
   )
+  if (!deposit) return
   deposit.provider = provider.toHex()
   deposit.value = weiToDecimal(value.toBigDecimal(), 18).neg()
   deposit.unlockTime = BigInt.zero()

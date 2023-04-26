@@ -651,6 +651,9 @@ describe('veOcean tests', async () => {
     await sleep(2000)
     const info = (await initialResponse.json()).data.veOCEANs
     assert(info[0].id === Alice.toLowerCase(), 'ID is incorrect')
+    console.log('lockAmmount: ', info[0].lockedAmount)
+    console.log('currentBalance: ', currentBalance)
+    console.log('currentLock: ', currentLock)
     assert(info[0].lockedAmount === currentBalance, 'LockedAmount is incorrect')
     assert(info[0].unlockTime === currentLock, 'Unlock time is not correct')
 

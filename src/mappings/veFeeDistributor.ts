@@ -27,6 +27,7 @@ export function handleClaimed(event: Claimed): void {
 
   claim.block = event.block.number.toI32()
   claim.tx = event.transaction.hash.toHex()
+  claim.eventIndex = event.logIndex.toI32()
   claim.timestamp = event.block.timestamp
   claim.save()
 }
