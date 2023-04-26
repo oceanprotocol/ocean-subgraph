@@ -61,7 +61,6 @@ export function handleWithdraw(event: Withdraw): void {
       '-' +
       event.logIndex.toString()
   )
-  if (!deposit) return
   deposit.provider = provider.toHex()
   deposit.value = weiToDecimal(value.toBigDecimal(), 18).neg()
   deposit.unlockTime = BigInt.zero()

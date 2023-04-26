@@ -106,8 +106,7 @@ export function writeveAllocationUpdate(
   allocationType: string,
   amount: BigDecimal
 ): VeAllocationUpdate {
-  const eventIndex: number = event.logIndex.toI32()
-  const id = `${event.transaction.hash.toHex()}-${veAllocationId}-${eventIndex}`
+  const id = `${event.transaction.hash.toHex()}-${veAllocationId}-${event.logIndex.toString()}`
   let allocationUpdate = VeAllocationUpdate.load(id)
   if (allocationUpdate === null) {
     allocationUpdate = new VeAllocationUpdate(id)
@@ -140,6 +139,7 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.block = 0
     veDelegation.timestamp = 0
     veDelegation.tx = ''
+    veDelegation.eventIndex = 0
     veDelegation.save()
   }
   return veDelegation

@@ -14,10 +14,9 @@ export function handleDelegation(event: DelegateBoost): void {
   const _amount = event.params._amount
   const _cancelTime = event.params._cancel_time
   const _expireTime = event.params._expire_time
-  const eventIndex: number = event.logIndex.toI32()
   const tx = event.transaction.hash.toHex()
   const veDelegation = getveDelegation(
-    `${tx}-${_tokenId.toHex()}-${eventIndex}`
+    `${tx}-${_tokenId.toHex()}-${event.logIndex.toString()}`
   )
   veDelegation.delegator = _delegator
   getveOCEAN(_receiver)
@@ -40,10 +39,9 @@ export function handleExtendBoost(event: ExtendBoost): void {
   const _amount = event.params._amount
   const _cancelTime = event.params._cancel_time
   const _expireTime = event.params._expire_time
-  const eventIndex: number = event.logIndex.toI32()
   const tx = event.transaction.hash.toHex()
   const veDelegation = getveDelegation(
-    `${tx}-${_tokenId.toHex()}-${eventIndex}`
+    `${tx}-${_tokenId.toHex()}-${event.logIndex.toString()}`
   )
   if (!veDelegation) return
 
@@ -72,10 +70,9 @@ export function handleBurnBoost(event: BurnBoost): void {
   const _tokenId = event.params._token_id
 
   // delete
-  const eventIndex: number = event.logIndex.toI32()
   const tx = event.transaction.hash.toHex()
   const veDelegation = getveDelegation(
-    `${tx}-${_tokenId.toHex()}-${eventIndex}`
+    `${tx}-${_tokenId.toHex()}-${event.logIndex.toString()}`
   )
   veDelegation.amount = BigInt.zero()
   veDelegation.eventIndex = event.logIndex.toI32()
