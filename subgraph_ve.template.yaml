@@ -66,6 +66,10 @@
     eventHandlers:
       - event: DelegateBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
         handler: handleDelegation
+      - event: ExtendBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
+        handler: handleExtendBoost
+      - event: BurnBoost(indexed address,indexed address,indexed uint256)
+        handler: handleTransferBoost
 
 - name: veFeeDistributor
   kind: ethereum/contract
