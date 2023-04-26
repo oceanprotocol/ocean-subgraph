@@ -79,12 +79,14 @@ export function handleBurnBoost(event: BurnBoost): void {
   // delete
   const eventIndex: number = event.logIndex.toI32()
   const tx = event.transaction.hash.toHex()
-  let veDelegation = getveDelegation(tx, _tokenId.toHex(), eventIndex)
-  if (!veDelegation) {
-    veDelegation = createDefaultVeDelegation(
-      `${tx}-${_tokenId.toHex()}-${eventIndex}`
-    )
-  }
+  const veDelegation = getveDelegation(tx, _tokenId.toHex(), eventIndex)
+  if (!veDelegation) return
+  // {
+
+  //   veDelegation = createDefaultVeDelegation(
+  //     `${tx}-${_tokenId.toHex()}-${eventIndex}`
+  //   )
+  // }
   veDelegation.amount = BigInt.zero()
   veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
