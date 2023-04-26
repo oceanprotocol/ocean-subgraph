@@ -593,6 +593,8 @@ describe('veOcean tests', async () => {
     await veOcean.withdraw(Alice)
     await sleep(2000)
     const totalOceanLockedAfter = await getTotalLockedOcean()
+    console.log('totalOceanLockedBefore: ', totalOceanLockedBefore)
+    console.log('totalOceanLockedAfter: ', totalOceanLockedAfter)
     assert(
       parseFloat(totalOceanLockedAfter) < parseFloat(totalOceanLockedBefore),
       'After (' +
@@ -653,7 +655,6 @@ describe('veOcean tests', async () => {
     assert(info[0].id === Alice.toLowerCase(), 'ID is incorrect')
     console.log('lockAmmount: ', info[0].lockedAmount)
     console.log('currentBalance: ', currentBalance)
-    console.log('currentLock: ', currentLock)
     assert(info[0].lockedAmount === currentBalance, 'LockedAmount is incorrect')
     assert(info[0].unlockTime === currentLock, 'Unlock time is not correct')
 

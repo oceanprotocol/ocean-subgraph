@@ -1,10 +1,4 @@
-import {
-  BigDecimal,
-  ethereum,
-  BigInt,
-  Address,
-  log
-} from '@graphprotocol/graph-ts'
+import { BigDecimal, ethereum, BigInt, Address } from '@graphprotocol/graph-ts'
 import {
   VeAllocateUser,
   VeAllocateId,
@@ -162,38 +156,23 @@ export function createDefaultVeDelegation(id: string): VeDelegation {
   return veDelegation
 }
 
-export function getDeposit(
-  provider: string,
-  transactionHash: string,
-  eventIndex: number
-): VeDeposit | null {
-  for (let i = eventIndex; i >= 0; i--) {
-    const id = `${provider}-${transactionHash}-${i}`
-    log.info('deposit id: {}', [id])
-    const deposit = VeDeposit.load(id)
-    if (deposit && deposit.provider == provider) {
-      log.info('deposit provider: {}', [deposit.provider])
-      return deposit
-    }
+export function getDeposit(id: string): VeDeposit {
+  let deposit = VeDeposit.load(id)
+  if (deposit === null) {
+    deposit = new VeDeposit(id)
+    deposit.provider = ''
+    deposit.sender = ''
+    deposit.value = BigDecimal.zero()
+    deposit.unlockTime = BigInt.zero()
+    deposit.type = BigInt.zero()
+    deposit.timestamp = BigInt.zero()
+    deposit.tx = ''
+    deposit.eventIndex = 0
+    deposit.block = 0
+    // do not save it
+    // deposit.save()
   }
-  // let deposit = VeDeposit.load(id)
-
-  // if (deposit === null) {
-  //   deposit = new VeDeposit(id)
-  //   deposit.provider = ''
-  //   deposit.sender = ''
-  //   deposit.value = BigDecimal.zero()
-  //   deposit.unlockTime = BigInt.zero()
-  //   deposit.type = BigInt.zero()
-  //   deposit.timestamp = BigInt.zero()
-  //   deposit.tx = ''
-  //   deposit.eventIndex = 0
-  //   deposit.block = 0
-  //   // do not save it
-  //   // deposit.save()
-  // }
-  // return deposit
-  return null
+  return deposit
 }
 
 export function handleOneAllocation(
