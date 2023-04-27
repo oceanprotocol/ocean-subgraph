@@ -18,7 +18,7 @@ import { fetch } from 'cross-fetch'
 import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils/types'
 
-const sleepMs = 1600
+const sleepMs = 1800
 
 const data = JSON.parse(
   fs.readFileSync(
@@ -173,6 +173,7 @@ describe('Dispenser tests', async () => {
     assert(nft.block >= blockNumber, 'incorrect value for: block')
     assert(nft.block < blockNumber + 50, 'incorrect value for: block')
     assert(nft.orderCount === '0', 'incorrect value for: orderCount')
+    console.log('176 line nft.eventIndex: ', nft.eventIndex)
     assert(
       nft.eventIndex !== null && nft.eventIndex > 0,
       'Invalid eventIndex for NFT creation'
@@ -215,7 +216,6 @@ describe('Dispenser tests', async () => {
       method: 'POST',
       body: JSON.stringify(dtQuery)
     })
-    await sleep(sleepMs)
     dt = (await dtResponse.json()).data.token
 
     const dtTx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -261,6 +261,7 @@ describe('Dispenser tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    console.log('264 line eventIndex: ', dt.eventIndex)
     assert(
       dt.eventIndex !== null && dt.eventIndex > 0,
       'incorrect value for: eventIndex'
@@ -282,6 +283,7 @@ describe('Dispenser tests', async () => {
     })
     const dt = (await minterResponse.json()).data.token
     assert(dt.minter[1] === user1, 'incorrect value for: minter')
+    console.log('285 line eventIndex: ', dt.eventIndex)
     assert(dt.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 
@@ -349,6 +351,7 @@ describe('Dispenser tests', async () => {
     assert(response.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(response.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(response.tx === tx.transactionHash, 'incorrect value for: tx')
+    console.log('355 line response.eventIndex: ', response.eventIndex)
     assert(
       response.eventIndex !== null && response.eventIndex > 0,
       'incorrect value for: eventIndex'
@@ -398,6 +401,7 @@ describe('Dispenser tests', async () => {
     })
     const initialActive = (await initialResponse.json()).data.dispenser
     assert(initialActive.active === false, 'incorrect value for: initialActive')
+    console.log('405 line initialActive.eventIndex: ', initialActive.eventIndex)
     assert(initialActive.eventIndex !== null, 'incorrect value for: eventIndex')
 
     // Activate dispenser
@@ -467,6 +471,7 @@ describe('Dispenser tests', async () => {
     assert(dispense.createdTimestamp >= time, 'incorrect: createdTimestamp')
     assert(dispense.createdTimestamp < time + 15, 'incorrect: createdTimestamp')
     assert(dispense.tx === tx.transactionHash, 'incorrect value for: tx')
+    console.log('dispense.eventIndex: ', dispense.eventIndex)
     assert(dispense.eventIndex !== null, 'incorrect value for: eventIndex')
     assert(dispense.__typename === 'DispenserTransaction', 'wrong __typename')
   })
@@ -486,6 +491,7 @@ describe('Dispenser tests', async () => {
     })
     const balance = (await response.json()).data.dispenser
     assert(balance.balance === '0', 'incorrect value for: balance')
+    console.log('495 line balance.eventIndex: ', balance.eventIndex)
     assert(balance.eventIndex !== null, 'incorrect value for: eventIndex')
   })
 

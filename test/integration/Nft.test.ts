@@ -183,6 +183,7 @@ describe('NFT tests', async () => {
     assert(nft.block >= blockNumber, 'incorrect value for: block')
     assert(nft.block < blockNumber + 50, 'incorrect value for: block')
     assert(nft.orderCount === '0', 'incorrect value for: orderCount')
+    console.log('186 line nft.eventIndex: ', nft.eventIndex)
     assert(
       nft.eventIndex !== null && nft.eventIndex > 0,
       'Invalid eventIndex for NFT creation'
@@ -295,6 +296,7 @@ describe('NFT tests', async () => {
     assert(updatedNft.block >= blockNumber, 'incorrect value for: block')
     assert(updatedNft.block < blockNumber + 50, 'incorrect value for: block')
     assert(updatedNft.orderCount === '0', 'incorrect value for: orderCount')
+    console.log('298 line updatedNft.eventIndex: ', updatedNft.eventIndex)
     assert(
       updatedNft.eventIndex !== null && updatedNft.eventIndex > 0,
       'Invalid eventIndex for NFT update'
@@ -322,6 +324,7 @@ describe('NFT tests', async () => {
     })
     const updatedNft = (await response.json()).data.nft
     assert(updatedNft.nftData.key !== null, 'incorrect value for key')
+    console.log('327 line updatedNft.eventIndex: ', updatedNft.eventIndex)
     assert(
       updatedNft.eventIndex !== null && updatedNft.eventIndex > 0,
       'Invalid eventIndex for NFT update'

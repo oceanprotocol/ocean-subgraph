@@ -192,6 +192,7 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(nft.block >= blockNumber, 'incorrect value for: block')
     assert(nft.block < blockNumber + 50, 'incorrect value for: block')
     assert(nft.orderCount === '0', 'incorrect value for: orderCount')
+    console.log('195 line nft.eventIndex: ', nft.eventIndex)
     assert(
       nft.eventIndex !== null && nft.eventIndex > 0,
       'incorrect value for: eventIndex'
@@ -280,6 +281,7 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    console.log('284 line dt.eventIndex: ', dt.eventIndex)
     assert(
       dt.eventIndex !== null && dt.eventIndex > 0,
       'incorrect value for: eventIndex'
@@ -396,6 +398,7 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     assert(fixedTx.from === publisher, 'incorrect value for: tx')
     assert(fixedTx.to === factoryAddress, 'incorrect value for: tx')
+    console.log('401 line fixed.eventIndex: ', fixed.eventIndex)
     assert(
       fixed.eventIndex !== null && fixed.eventIndex > 0,
       'incorrect value for: eventIndex'
@@ -514,6 +517,7 @@ describe('Fixed Rate Exchange tests', async () => {
     const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
 
     assert(updatedActive.active === false, 'incorrect value for: updatedActive')
+    console.log('517 line updatedActive.eventIndex: ', updatedActive.eventIndex)
     assert(
       updatedActive.eventIndex !== null && updatedActive.eventIndex > 0,
       'incorrect value: eventIndex'
@@ -543,6 +547,7 @@ describe('Fixed Rate Exchange tests', async () => {
     })
     const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
     assert(updatedActive.active === true, 'incorrect value for: updatedActive')
+    console.log('546 line updatedActive.eventIndex: ', updatedActive.eventIndex)
     assert(
       updatedActive.eventIndex !== null && updatedActive.eventIndex > 0,
       'incorrect value: eventIndex'
