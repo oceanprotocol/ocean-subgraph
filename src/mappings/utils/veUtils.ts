@@ -133,7 +133,7 @@ export function getveDelegation(
     veDelegation.cancelTime = BigInt.zero()
     veDelegation.expireTime = BigInt.zero()
     veDelegation.tokenId = BigInt.zero()
-    veDelegation.amount = BigInt.zero()
+    veDelegation.amount = BigDecimal.zero()
     veDelegation.receiver = ''
     veDelegation.delegator = ''
     veDelegation.save()
