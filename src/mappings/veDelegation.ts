@@ -96,7 +96,6 @@ export function handleBurnBoost(event: BurnBoost): void {
   // delete
   const veDelegation = getveDelegation(event.address, _tokenId.toHex())
   veDelegation.amount = BigInt.zero()
-  veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
 
   const veDelegationUpdate = new VeDelegationUpdate(
