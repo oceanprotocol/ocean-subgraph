@@ -82,10 +82,6 @@ describe('Tests coverage without provider/aquarius', async () => {
     await sleep(3000)
     const queryResult = await response.json()
     assert(queryResult.data.nft.id === graphNftToken)
-    console.log(
-      '85 line queryResult.data.nft.eventIndex: ',
-      queryResult.data.nft.eventIndex
-    )
     assert(
       queryResult.data.nft.eventIndex !== null &&
         queryResult.data.nft.eventIndex > 0

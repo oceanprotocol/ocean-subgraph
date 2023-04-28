@@ -165,10 +165,6 @@ describe('Simple Publish & consume test', async () => {
     await sleep(3000)
     const queryResult = await response.json()
     assert(queryResult.data.nft.id === graphNftToken)
-    console.log(
-      '168 line queryResult.data.nft.eventIndex: ',
-      queryResult.data.nft.eventIndex
-    )
     assert(
       queryResult.data.nft.eventIndex !== null &&
         queryResult.data.nft.eventIndex > 0,
@@ -217,10 +213,6 @@ describe('Simple Publish & consume test', async () => {
     assert(
       initialResult.data.nft.owner.id.toLowerCase() ===
         publisherAccount.toLowerCase()
-    )
-    console.log(
-      '221 line initialResult.data.nft.eventIndex: ',
-      initialResult.data.nft.eventIndex
     )
     assert(
       initialResult.data.nft.eventIndex !== null &&
@@ -272,10 +264,6 @@ describe('Simple Publish & consume test', async () => {
     await sleep(3000)
     const queryResult = await response.json()
     assert(queryResult.data.nft.owner.id === newOwnerAccount)
-    console.log(
-      '275 line queryResult.data.nft.eventIndex: ',
-      queryResult.data.nft.eventIndex
-    )
     assert(
       queryResult.data.nft.eventIndex !== null &&
         queryResult.data.nft.eventIndex > 0,
@@ -353,10 +341,6 @@ describe('Simple Publish & consume test', async () => {
       providerFeeJSON.providerFeeToken.toLowerCase() ===
         setProviderFee.providerFeeToken.toLowerCase(),
       'Wrong providerFeeToken set'
-    )
-    console.log(
-      '357 line queryResult.data.order.eventIndex: ',
-      queryResult.data.order.eventIndex
     )
     assert(
       queryResult.data.order.eventIndex !== null,

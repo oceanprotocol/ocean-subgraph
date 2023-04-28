@@ -215,7 +215,6 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
-    console.log('dt.eventIndex: ', dt.eventIndex)
     assert(
       dt.eventIndex !== null && dt.eventIndex > 0,
       'incorrect value for: eventIndex'
@@ -332,7 +331,6 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
-    console.log('dt.eventIndex 2: ', dt.eventIndex)
     assert(
       dt.eventIndex !== null && dt.eventIndex > 0,
       'incorrect value for: eventIndex'
@@ -445,7 +443,6 @@ describe('Datatoken tests', async () => {
     assert(initialToken, 'Invalid initialToken')
     assert(initialToken.orderCount === '0', 'Invalid initial orderCount')
     assert(initialToken.orders.length === 0, 'Invalid initial orders')
-    console.log('initialToken.eventIndex: ', initialToken.eventIndex)
     assert(
       initialToken.eventIndex !== null && initialToken.eventIndex > 0,
       'Invalid eventIndex'
