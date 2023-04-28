@@ -1,4 +1,5 @@
 import { BigInt } from '@graphprotocol/graph-ts'
+import { VeDelegationUpdate } from '../@types/schema'
 import {
   BurnBoost,
   DelegateBoost,
@@ -14,22 +15,33 @@ export function handleDelegation(event: DelegateBoost): void {
   const _amount = event.params._amount
   const _cancelTime = event.params._cancel_time
   const _expireTime = event.params._expire_time
-  const tx = event.transaction.hash.toHex()
-  const veDelegation = getveDelegation(
-    `${tx}-${_tokenId.toHex()}-${event.logIndex.toString()}`
-  )
-  veDelegation.delegator = _delegator
+  // create veOcean if does not exists
   getveOCEAN(_receiver)
+  getveOCEAN(_delegator)
+
+  const veDelegation = getveDelegation(event.address, _tokenId.toHex())
+  veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
   veDelegation.amount = _amount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
-  veDelegation.block = event.block.number.toI32()
-  veDelegation.timestamp = event.block.timestamp.toI32()
-  veDelegation.tx = event.transaction.hash.toHex()
-  veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
+
+  const veDelegationUpdate = new VeDelegationUpdate(
+    event.transaction.hash.toHex() + '-' + event.logIndex.toString()
+  )
+  veDelegationUpdate.type = 0
+  veDelegationUpdate.veDelegation = veDelegation.id
+  veDelegationUpdate.block = event.block.number.toI32()
+  veDelegationUpdate.timestamp = event.block.timestamp.toI32()
+  veDelegationUpdate.tx = event.transaction.hash.toHex()
+  veDelegationUpdate.eventIndex = event.logIndex.toI32()
+  veDelegationUpdate.amount = _amount
+  veDelegationUpdate.cancelTime = _cancelTime
+  veDelegationUpdate.expireTime = _expireTime
+  veDelegationUpdate.sender = event.transaction.from.toHex()
+  veDelegationUpdate.save()
 }
 
 export function handleExtendBoost(event: ExtendBoost): void {
@@ -39,22 +51,34 @@ export function handleExtendBoost(event: ExtendBoost): void {
   const _amount = event.params._amount
   const _cancelTime = event.params._cancel_time
   const _expireTime = event.params._expire_time
-  const tx = event.transaction.hash.toHex()
-  const veDelegation = getveDelegation(
-    `${tx}-${_tokenId.toHex()}-${event.logIndex.toString()}`
-  )
-  if (!veDelegation) return
-
+  // create veOcean if does not exists
+  getveOCEAN(_receiver)
+  getveOCEAN(_delegator)
+  // it's possible to not have veDelegation object, because we missed handleDelegation
+  // that should not happend, but we create the object anyway
+  const veDelegation = getveDelegation(event.address, _tokenId.toHex())
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
   veDelegation.amount = _amount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
-  veDelegation.timestamp = event.block.timestamp.toI32()
-  veDelegation.tx = event.transaction.hash.toHex()
-  veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
+
+  const veDelegationUpdate = new VeDelegationUpdate(
+    event.transaction.hash.toHex() + '-' + event.logIndex.toString()
+  )
+  veDelegationUpdate.veDelegation = veDelegation.id
+  veDelegationUpdate.type = 1
+  veDelegationUpdate.block = event.block.number.toI32()
+  veDelegationUpdate.timestamp = event.block.timestamp.toI32()
+  veDelegationUpdate.tx = event.transaction.hash.toHex()
+  veDelegationUpdate.eventIndex = event.logIndex.toI32()
+  veDelegationUpdate.amount = _amount
+  veDelegationUpdate.cancelTime = _cancelTime
+  veDelegationUpdate.expireTime = _expireTime
+  veDelegationUpdate.sender = event.transaction.from.toHex()
+  veDelegationUpdate.save()
 }
 
 export function handleTransferBoost(event: TransferBoost): void {
@@ -70,11 +94,23 @@ export function handleBurnBoost(event: BurnBoost): void {
   const _tokenId = event.params._token_id
 
   // delete
-  const tx = event.transaction.hash.toHex()
-  const veDelegation = getveDelegation(
-    `${tx}-${_tokenId.toHex()}-${event.logIndex.toString()}`
-  )
+  const veDelegation = getveDelegation(event.address, _tokenId.toHex())
   veDelegation.amount = BigInt.zero()
   veDelegation.eventIndex = event.logIndex.toI32()
   veDelegation.save()
+
+  const veDelegationUpdate = new VeDelegationUpdate(
+    event.transaction.hash.toHex() + '-' + event.logIndex.toString()
+  )
+  veDelegationUpdate.veDelegation = veDelegation.id
+  veDelegationUpdate.type = 2
+  veDelegationUpdate.block = event.block.number.toI32()
+  veDelegationUpdate.timestamp = event.block.timestamp.toI32()
+  veDelegationUpdate.tx = event.transaction.hash.toHex()
+  veDelegationUpdate.eventIndex = event.logIndex.toI32()
+  veDelegationUpdate.amount = veDelegation.amount
+  veDelegationUpdate.cancelTime = veDelegation.cancelTime
+  veDelegationUpdate.expireTime = veDelegation.expireTime
+  veDelegationUpdate.sender = event.transaction.from.toHex()
+  veDelegationUpdate.save()
 }

@@ -475,7 +475,7 @@ type VeAllocationUpdate @entity {
 }
 
 type VeDelegation @entity {
-  "{tx}-{tokenId}-{eventIndex}"
+    "id = VeDelegation contract + tokenId"
   id: ID!
   delegator: VeOCEAN!
   receiver: VeOCEAN!
@@ -483,11 +483,26 @@ type VeDelegation @entity {
   amount: BigInt!
   cancelTime: BigInt!
   expireTime: BigInt!
+  updates: [VeDelegationUpdate!] @derivedFrom(field: "veDelegation")
+  
+}
+
+type VeDelegationUpdate @entity {
+  "id = {tx}-{eventIndex}"
+  id: ID!
   block: Int!
   timestamp: Int!
   tx: String!
   eventIndex: Int!
+  sender: String!
+  amount: BigInt!
+  cancelTime: BigInt!
+  expireTime: BigInt!
+  "type: CREATE_BOOST = 0, EXTEND_BOOST = 1, BURN_BOOST = 2"
+  type:Int!
+  veDelegation:VeDelegation!
 }
+
 
 type VeOCEAN @entity {
   "id = {user address}"
