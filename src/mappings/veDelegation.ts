@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { VeDelegationUpdate } from '../@types/schema'
 import {
   BurnBoost,
@@ -6,6 +6,7 @@ import {
   ExtendBoost,
   TransferBoost
 } from '../@types/veDelegation/veDelegation'
+import { weiToDecimal } from './utils/generic'
 import { getveDelegation, getveOCEAN } from './utils/veUtils'
 
 export function handleDelegation(event: DelegateBoost): void {
@@ -23,7 +24,10 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
-  veDelegation.amount = _amount
+  veDelegation.amount = weiToDecimal(
+    _amount.toBigDecimal(),
+    BigInt.fromI32(18).toI32()
+  )
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.save()
@@ -36,7 +40,7 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegationUpdate.block = event.block.number.toI32()
   veDelegationUpdate.timestamp = event.block.timestamp.toI32()
   veDelegationUpdate.tx = event.transaction.hash.toHex()
-  veDelegationUpdate.amount = _amount
+  veDelegationUpdate.amount = veDelegation.amount
   veDelegationUpdate.cancelTime = _cancelTime
   veDelegationUpdate.expireTime = _expireTime
   veDelegationUpdate.sender = event.transaction.from.toHex()
@@ -59,7 +63,10 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
-  veDelegation.amount = _amount
+  veDelegation.amount = weiToDecimal(
+    _amount.toBigDecimal(),
+    BigInt.fromI32(18).toI32()
+  )
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.save()
@@ -72,7 +79,7 @@ export function handleExtendBoost(event: ExtendBoost): void {
   veDelegationUpdate.block = event.block.number.toI32()
   veDelegationUpdate.timestamp = event.block.timestamp.toI32()
   veDelegationUpdate.tx = event.transaction.hash.toHex()
-  veDelegationUpdate.amount = _amount
+  veDelegationUpdate.amount = veDelegation.amount
   veDelegationUpdate.cancelTime = _cancelTime
   veDelegationUpdate.expireTime = _expireTime
   veDelegationUpdate.sender = event.transaction.from.toHex()
@@ -93,7 +100,7 @@ export function handleBurnBoost(event: BurnBoost): void {
 
   // delete
   const veDelegation = getveDelegation(event.address, _tokenId.toHex())
-  veDelegation.amount = BigInt.zero()
+  veDelegation.amount = BigDecimal.zero()
   veDelegation.save()
 
   const veDelegationUpdate = new VeDelegationUpdate(
