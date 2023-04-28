@@ -121,7 +121,11 @@ export function writeveAllocationUpdate(
   return allocationUpdate
 }
 
-export function getveDelegation(id: string): VeDelegation {
+export function getveDelegation(
+  contract: Address,
+  eventid: string
+): VeDelegation {
+  const id = contract.toHex() + '-' + eventid
   let veDelegation = VeDelegation.load(id)
 
   if (veDelegation === null) {
@@ -132,9 +136,6 @@ export function getveDelegation(id: string): VeDelegation {
     veDelegation.amount = BigInt.zero()
     veDelegation.receiver = ''
     veDelegation.delegator = ''
-    veDelegation.block = 0
-    veDelegation.timestamp = 0
-    veDelegation.tx = ''
     veDelegation.save()
   }
   return veDelegation

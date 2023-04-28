@@ -610,7 +610,6 @@ describe('veOcean tests', async () => {
     )
     const timestamp = Math.floor(Date.now() / 1000)
     const unlockTime = timestamp + 30 * 86400
-    console.log('unlock time', unlockTime)
 
     if (parseInt(currentBalance) > 0 || currentLock > 0) {
       // we already have some locked tokens, so our transaction should fail
@@ -656,14 +655,15 @@ describe('veOcean tests', async () => {
 
     await veOcean.increaseUnlockTime(Alice, extLockTime)
 
-    const estGas = await calculateEstimatedGas(
+    const initalBoostExpiry = extLockTime - 100000
+    let estGas = await calculateEstimatedGas(
       Alice,
       delegateContract.methods.create_boost,
       Alice,
       Bob,
-      10000,
+      5000,
       0,
-      extLockTime,
+      initalBoostExpiry,
       0
     )
 
@@ -675,41 +675,146 @@ describe('veOcean tests', async () => {
       delegateContract.methods.create_boost,
       Alice,
       Bob,
-      10000,
+      5000,
       0,
-      extLockTime,
+      initalBoostExpiry,
       0
     )
 
     assert(tx3, 'Transaction failed')
     assert(tx3.events.DelegateBoost, 'No Delegate boost event')
+    const tokenId = tx3.events.DelegateBoost.returnValues._token_id
+    await evmIncreaseTime(60)
+    // extend boost
+    estGas = await calculateEstimatedGas(
+      Alice,
+      delegateContract.methods.extend_boost,
+      tokenId,
+      10000,
+      extLockTime,
+      0
+    )
 
-    sleep(4000)
+    const tx4 = await sendTx(
+      Alice,
+      estGas,
+      web3,
+      1,
+      delegateContract.methods.extend_boost,
+      tokenId,
+      10000,
+      extLockTime,
+      0
+    )
+
+    assert(tx4, 'Transaction failed')
+    assert(tx4.events.ExtendBoost, 'No ExtendBoost event')
+    await evmIncreaseTime(60)
+    // burn it
+    estGas = await calculateEstimatedGas(
+      Alice,
+      delegateContract.methods.cancel_boost,
+      tokenId
+    )
+
+    const tx5 = await sendTx(
+      Alice,
+      estGas,
+      web3,
+      1,
+      delegateContract.methods.cancel_boost,
+      tokenId
+    )
+
+    assert(tx5, 'Transaction failed')
+    assert(tx5.events.BurnBoost, 'No BurnBoost event')
+
+    await sleep(3000)
     const delegateQuery = {
-      query: `query {
-        veDelegations{  
-          id,
+      query: `query{
+        veDelegations(where:{delegator:"${Alice.toLowerCase()}"}){
+          id
           delegator {
             id
-          },
-          receiver {
+          }
+          receiver{
             id
-          },
-          tokenId,
-          amount,
-          cancelTime,
+          }
+          amount
+          tokenId
+          cancelTime
           expireTime
+          updates(orderBy:timestamp orderDirection:asc){
+            id
+            block
+            timestamp
+            tx
+            sender
+            amount
+            cancelTime
+            expireTime
+            type
+          }
         }
-        }`
+      }`
     }
 
     const delegateResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(delegateQuery)
     })
-    const json = await delegateResponse.json()
-    console.log('json', json)
-    console.log('json?.data?.veDelegations', json?.data?.veDelegations)
-    assert(json?.data?.veDelegations, 'No veDelegations')
+    const resp = await delegateResponse.json()
+    const delegations = resp.data.veDelegations
+
+    assert(delegations.length > 0, 'No veDelegations')
+    assert(
+      delegations[0].tokenId.toLowerCase() ==
+        tx3.events.DelegateBoost.returnValues._token_id.toLowerCase(),
+      'Invalid tokenID'
+    )
+    assert(delegations[0].amount == '0', 'Invalid amount, should be 0')
+    assert(delegations[0].updates.length > 0, 'No updates')
+    // check updates.  first is create boost
+    assert(
+      delegations[0].updates[0].type == 0,
+      'Invalid type. should be createBoost'
+    )
+    assert(
+      delegations[0].updates[0].cancelTime ==
+        tx3.events.DelegateBoost.returnValues._cancel_time,
+      'Invalid cancelTime'
+    )
+    assert(
+      delegations[0].updates[0].expireTime ==
+        tx3.events.DelegateBoost.returnValues._expire_time,
+      'Invalid expireTime'
+    )
+    assert(
+      delegations[0].updates[0].amount ==
+        tx3.events.DelegateBoost.returnValues._amount,
+      'Invalid amount'
+    )
+    // check extend boos update
+    assert(
+      delegations[0].updates[1].type == 1,
+      'Invalid type. should be extend Boost'
+    )
+    assert(
+      delegations[0].updates[1].cancelTime ==
+        tx4.events.ExtendBoost.returnValues._cancel_time,
+      'Invalid cancelTime for extend boost'
+    )
+    assert(
+      delegations[0].updates[1].expireTime ==
+        tx4.events.ExtendBoost.returnValues._expire_time,
+      'Invalid expireTime for extend boost'
+    )
+    assert(
+      delegations[0].updates[1].amount ==
+        tx4.events.ExtendBoost.returnValues._amount,
+      'Invalid amount for extend boost'
+    )
+    // check burn
+    assert(delegations[0].updates[2].type == 2, 'Invalid type. should be burn')
   })
 })
