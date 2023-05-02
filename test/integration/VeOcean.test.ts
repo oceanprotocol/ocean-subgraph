@@ -799,7 +799,7 @@ describe('veOcean tests', async () => {
       'Invalid expireTime'
     )
     assert(
-      delegations[0].updates[0].amount ==
+      web3.utils.toWei(delegations[0].updates[0].amount) ==
         tx3.events.DelegateBoost.returnValues._amount,
       'Invalid amount'
     )
@@ -819,7 +819,7 @@ describe('veOcean tests', async () => {
       'Invalid expireTime for extend boost'
     )
     assert(
-      delegations[0].updates[1].amount ==
+      web3.utils.toWei(delegations[0].updates[1].amount) ==
         tx4.events.ExtendBoost.returnValues._amount,
       'Invalid amount for extend boost'
     )

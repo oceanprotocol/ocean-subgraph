@@ -480,7 +480,7 @@ type VeDelegation @entity {
   delegator: VeOCEAN!
   receiver: VeOCEAN!
   tokenId: BigInt!
-  amount: BigInt!
+  amount: BigDecimal!
   cancelTime: BigInt!
   expireTime: BigInt!
   updates: [VeDelegationUpdate!] @derivedFrom(field: "veDelegation")
@@ -495,7 +495,7 @@ type VeDelegationUpdate @entity {
   tx: String!
   eventIndex: Int!
   sender: String!
-  amount: BigInt!
+  amount: BigDecimal!
   cancelTime: BigInt!
   expireTime: BigInt!
   "type: CREATE_BOOST = 0, EXTEND_BOOST = 1, BURN_BOOST = 2"
