@@ -136,6 +136,8 @@ export function getveDelegation(
     veDelegation.amount = BigDecimal.zero()
     veDelegation.receiver = ''
     veDelegation.delegator = ''
+    veDelegation.lockedAmount = BigDecimal.zero()
+    veDelegation.lockedAmountinVe = BigDecimal.zero()
     veDelegation.save()
   }
   return veDelegation
