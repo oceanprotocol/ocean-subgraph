@@ -37,7 +37,8 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedRateExchange.contract = event.address.toHexString()
   fixedRateExchange.exchangeId = event.params.exchangeId.toHexString()
   fixedRateExchange.datatoken = getToken(event.params.datatoken, true).id
-  fixedRateExchange.baseToken = getToken(event.params.baseToken, false).id
+  const baseToken = getToken(event.params.baseToken, false)
+  fixedRateExchange.baseToken = baseToken.id
   fixedRateExchange.datatokenSupply = BigDecimal.zero()
   fixedRateExchange.baseTokenSupply = BigDecimal.zero()
   fixedRateExchange.datatokenBalance = BigDecimal.zero()
@@ -46,7 +47,7 @@ export function handleExchangeCreated(event: ExchangeCreated): void {
   fixedRateExchange.active = false
   fixedRateExchange.price = weiToDecimal(
     event.params.fixedRate.toBigDecimal(),
-    BigInt.fromI32(18).toI32()
+    BigInt.fromI32(baseToken.decimals).toI32()
   )
   fixedRateExchange.createdTimestamp = event.block.timestamp.toI32()
   fixedRateExchange.tx = event.transaction.hash.toHex()
@@ -71,6 +72,9 @@ export function handleRateChange(event: ExchangeRateChanged): void {
   newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
   newExchangeUpdate.exchangeId = fixedRateId
+
+  const fixedRateExchange = getFixedRateExchange(fixedRateId)
+  const baseToken = getToken(fixedRateExchange.baseToken, false)
 
   fixedRateExchange.price = weiToDecimal(
     event.params.newRate.toBigDecimal(),
