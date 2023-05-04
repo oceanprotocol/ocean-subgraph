@@ -73,9 +73,6 @@ export function handleRateChange(event: ExchangeRateChanged): void {
   newExchangeUpdate.block = event.block.number.toI32()
   newExchangeUpdate.exchangeId = fixedRateId
 
-  const fixedRateExchange = getFixedRateExchange(fixedRateId)
-  const baseToken = getToken(fixedRateExchange.baseToken, false)
-
   fixedRateExchange.price = weiToDecimal(
     event.params.newRate.toBigDecimal(),
     BigInt.fromI32(18).toI32()
