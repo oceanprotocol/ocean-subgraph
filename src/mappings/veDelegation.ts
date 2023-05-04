@@ -30,7 +30,7 @@ export function handleDelegation(event: DelegateBoost): void {
     BigInt.fromI32(18).toI32()
   )
   veDelegation.lockedAmount = delegator.lockedAmount
-  veDelegation.timeLeft = delegator.unlockTime.toI32().minus(ts)
+  veDelegation.timeLeftUnlock = delegator.unlockTime.toI32() - ts
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.save()

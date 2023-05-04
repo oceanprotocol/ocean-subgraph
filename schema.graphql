@@ -1,130 +1,130 @@
 type Token @entity {
-    id: ID!                                               
-    symbol: String                                      
-    name: String                                          
-    decimals: Int!                                        
-    address: String!                                      
-    cap: BigDecimal                                       
-    supply: BigDecimal                                    
-    isDatatoken: Boolean!                                 
-    
-    "address of ERC721 that owns the token, valid only for datatokens"
-    nft: Nft    
+  id: ID!
+  symbol: String
+  name: String
+  decimals: Int!
+  address: String!
+  cap: BigDecimal
+  supply: BigDecimal
+  isDatatoken: Boolean!
 
-    "array of addresses with minter role"                                 
-    minter: [String!] 
+  "address of ERC721 that owns the token, valid only for datatokens"
+  nft: Nft
 
-    "array of addresses with payment manager minter role"                                 
-    paymentManager: [String!] 
+  "array of addresses with minter role"
+  minter: [String!]
 
-    "address that collects the payments (NOT fees)"                                      
-    paymentCollector: String   
+  "array of addresses with payment manager minter role"
+  paymentManager: [String!]
 
-    "address of the market where the datatoken was created. This address collects market fees."                       
-    publishMarketFeeAddress: String 
+  "address that collects the payments (NOT fees)"
+  paymentCollector: String
 
-    "adreess of fee token (can be Ocean, ETH, etc.)"                     
-    publishMarketFeeToken: String   
+  "address of the market where the datatoken was created. This address collects market fees."
+  publishMarketFeeAddress: String
 
-    "fee amount. Fixed value."             
-    publishMarketFeeAmount: BigDecimal   
+  "adreess of fee token (can be Ocean, ETH, etc.)"
+  publishMarketFeeToken: String
 
-    "template ID of the datatoken"                               
-    templateId: Int                                       
+  "fee amount. Fixed value."
+  publishMarketFeeAmount: BigDecimal
 
-    "number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts"
-    holderCount: BigInt!   
+  "template ID of the datatoken"
+  templateId: Int
 
-    "number of orders executed for this datatoken"                                
-    orderCount: BigInt!                                    
+  "number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts"
+  holderCount: BigInt!
 
-    "orders created with the datatoken, only available for datatokens"
-    orders: [Order!] @derivedFrom(field:"datatoken")
+  "number of orders executed for this datatoken"
+  orderCount: BigInt!
 
-    "fixed rate exchanges, only available for datatokens"
-    fixedRateExchanges: [FixedRateExchange!] @derivedFrom(field:"datatoken")
+  "orders created with the datatoken, only available for datatokens"
+  orders: [Order!] @derivedFrom(field: "datatoken")
 
-    "dispensers using this token"
-    dispensers: [Dispenser!] @derivedFrom(field:"token")
+  "fixed rate exchanges, only available for datatokens"
+  fixedRateExchanges: [FixedRateExchange!] @derivedFrom(field: "datatoken")
 
-    "block time datatoken was created"
-    createdTimestamp: Int!        
+  "dispensers using this token"
+  dispensers: [Dispenser!] @derivedFrom(field: "token")
 
-    "datatoken creation transaction id"                         
-    tx: String!        
+  "block time datatoken was created"
+  createdTimestamp: Int!
 
-    "block number when it was created"                                   
-    block: Int!           
+  "datatoken creation transaction id"
+  tx: String!
 
-    lastPriceToken: Token
-    lastPriceValue: BigDecimal!
+  "block number when it was created"
+  block: Int!
+
+  lastPriceToken: Token
+  lastPriceValue: BigDecimal!
 }
 
 "utility type"
 type TokenValuePair @entity {
-   "address of the token"
-   id : ID!
-   token : Token!
-   value : BigDecimal!
+  "address of the token"
+  id: ID!
+  token: Token!
+  value: BigDecimal!
 }
 
-type Nft @entity{
-    "nft address"
-    id: ID!                                                
-    symbol: String!                                       
-    name: String!                                          
-    tokenUri: String
-  
-    "address of the owner of the nft"                                     
-    owner: User!      
-    "address of the creator of the nft"                                     
-    creator: User!      
+type Nft @entity {
+  "nft address"
+  id: ID!
+  symbol: String!
+  name: String!
+  tokenUri: String
 
-    "same as id, it's just for easy discoverability"                                    
-    address: String!     
+  "address of the owner of the nft"
+  owner: User!
+  "address of the creator of the nft"
+  creator: User!
 
-    "provider url that can decrypt the ddo"                                  
-    providerUrl: String  
+  "same as id, it's just for easy discoverability"
+  address: String!
 
-    "state of the asset (described in docs)"                                  
-    assetState: Int!                                       
+  "provider url that can decrypt the ddo"
+  providerUrl: String
 
-    managerRole: [String!]
-    erc20DeployerRole: [String!]
-    storeUpdateRole: [String!] 
-    "addresses that can update the metadata"
-    metadataRole: [String!]                                 
+  "state of the asset (described in docs)"
+  assetState: Int!
 
-    "template address"
-    template: String!           
+  managerRole: [String!]
+  erc20DeployerRole: [String!]
+  storeUpdateRole: [String!]
+  "addresses that can update the metadata"
+  metadataRole: [String!]
 
-    "set if NFT is transferable"
-    transferable: Boolean!
+  "template address"
+  template: String!
 
-    "block time nft was created"
-    createdTimestamp: Int!                                  
-    "nft creation transaction id"
-    tx: String!   
-    "block number when it was created"                                            
-    block: Int  
+  "set if NFT is transferable"
+  transferable: Boolean!
 
-    "number of orders executed for all underlying datatokens"                                
-    orderCount: BigInt!  
+  "block time nft was created"
+  createdTimestamp: Int!
+  "nft creation transaction id"
+  tx: String!
+  "block number when it was created"
+  block: Int
 
-    "has metadata"
-    hasMetadata: Boolean!                                            
+  "number of orders executed for all underlying datatokens"
+  orderCount: BigInt!
 
-    nftData: [NftData!] @derivedFrom(field: "nft")
-    transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
+  "has metadata"
+  hasMetadata: Boolean!
+
+  nftData: [NftData!] @derivedFrom(field: "nft")
+  transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
 }
 
-type NftData @entity{
-    "nft address+key"
-    id: ID!
-    nft: Nft!
-    key: Bytes
-    value: Bytes
-  }
+type NftData @entity {
+  "nft address+key"
+  id: ID!
+  nft: Nft!
+  key: Bytes
+  value: Bytes
+}
 
 type OrderReuse @entity {
   id: ID!
@@ -138,11 +138,11 @@ type OrderReuse @entity {
   "gas price in Wei"
   gasPrice: BigInt
   gasUsed: BigDecimal
-  }
+}
 
-type Order @entity {  
-  "transaction hash - token address - from address"                                       
-  id: ID!                                                    
+type Order @entity {
+  "transaction hash - token address - from address"
+  id: ID!
   datatoken: Token!
 
   consumer: User!
@@ -151,18 +151,16 @@ type Order @entity {
   serviceIndex: Int!
   nftOwner: User!
 
-
   # the fees will be updated from an event that will be created after (todo)
   publishingMarket: User
-  publishingMarketToken: Token                                #
-  publishingMarketAmmount: BigDecimal                         #call contract to get fee amount
+  publishingMarketToken: Token #
+  publishingMarketAmmount: BigDecimal #call contract to get fee amount
   providerFee: String
   providerFeeValidUntil: BigInt
 
   consumerMarket: User
-  consumerMarketToken: Token                                  #
-  consumerMarketAmmount: BigDecimal                           #call contract to get fee amount
-
+  consumerMarketToken: Token #
+  consumerMarketAmmount: BigDecimal #call contract to get fee amount
   reuses: [OrderReuse!] @derivedFrom(field: "order")
 
   createdTimestamp: Int!
@@ -182,19 +180,19 @@ type User @entity {
   tokenBalancesOwned: [TokenValuePair!]
   orders: [Order!] @derivedFrom(field: "payer")
   freSwaps: [FixedRateExchangeSwap!] @derivedFrom(field: "by")
-  
-  "total number of orders made by this user"       
+
+  "total number of orders made by this user"
   totalOrders: BigInt!
 
-  "total number of orders made on assets owned by this user"       
+  "total number of orders made on assets owned by this user"
   totalSales: BigInt!
 }
 
 type FixedRateExchange @entity {
   "fixed rate exchange id"
-  id: ID!             
+  id: ID!
   contract: String!
-  exchangeId: String!                                       
+  exchangeId: String!
   owner: User!
   datatoken: Token!
   baseToken: Token!
@@ -207,13 +205,13 @@ type FixedRateExchange @entity {
   price: BigDecimal!
   active: Boolean!
   "amount of total basetokens spent"
-  totalSwapValue: BigDecimal!  
-  "address that is allowed to  swap tokens"                              
-  allowedSwapper: String                                     
+  totalSwapValue: BigDecimal!
+  "address that is allowed to  swap tokens"
+  allowedSwapper: String
   "if the owner allowes the fre to mint"
-  withMint: Boolean  
-  "if the fre has the minter role on the datatoken"                                        
-  isMinter: Boolean             
+  withMint: Boolean
+  "if the fre has the minter role on the datatoken"
+  isMinter: Boolean
 
   updates: [FixedRateExchangeUpdate!] @derivedFrom(field: "exchangeId")
   swaps: [FixedRateExchangeSwap!] @derivedFrom(field: "exchangeId")
@@ -222,12 +220,11 @@ type FixedRateExchange @entity {
   tx: String!
   block: Int!
 
-  "address of the market where the datatoken was created. This address collects market fees."                       
-  publishMarketFeeAddress: String 
+  "address of the market where the datatoken was created. This address collects market fees."
+  publishMarketFeeAddress: String
 
-  "fee amount. Fixed value"             
-  publishMarketSwapFee: BigDecimal   
-
+  "fee amount. Fixed value"
+  publishMarketSwapFee: BigDecimal
 }
 
 type FixedRateExchangeUpdate @entity {
@@ -258,39 +255,37 @@ type FixedRateExchangeSwap @entity {
   createdTimestamp: Int!
   tx: String!
   oceanFeeAmount: BigDecimal!
-  marketFeeAmount:  BigDecimal!
+  marketFeeAmount: BigDecimal!
   consumeMarketFeeAmount: BigDecimal!
 }
 
-
 type Dispenser @entity {
   "token address"
-  id: ID!        
-  contract: String!                                              
-  active: Boolean!   
-  "if using the enterprise template the owner will always be the erc721 factory, for normal template it will a user"                         
+  id: ID!
+  contract: String!
+  active: Boolean!
+  "if using the enterprise template the owner will always be the erc721 factory, for normal template it will a user"
   owner: String
   token: Token!
 
   allowedSwapper: String
-  isMinter: Boolean   
-  "max tokens that can be dispensed"                                         
-  maxTokens: BigDecimal! 
-  "max balance of requester. If the balance is higher, the dispense is rejected"                              
-  maxBalance: BigDecimal!    
-  "how many tokens are left"                                   
-  balance: BigDecimal!                        
-
+  isMinter: Boolean
+  "max tokens that can be dispensed"
+  maxTokens: BigDecimal!
+  "max balance of requester. If the balance is higher, the dispense is rejected"
+  maxBalance: BigDecimal!
+  "how many tokens are left"
+  balance: BigDecimal!
 
   block: Int!
   createdTimestamp: Int!
-  tx: String!                 
-  
+  tx: String!
+
   dispenses: [DispenserTransaction!] @derivedFrom(field: "dispenser")
 }
 
 type DispenserTransaction @entity {
-  id: ID!                                                      
+  id: ID!
   dispenser: Dispenser!
   user: User!
   amount: BigDecimal!
@@ -302,66 +297,67 @@ type DispenserTransaction @entity {
 
 "utility type"
 type GlobalTotalLiquidityPair @entity {
-   "address of the token"
-   id : ID!
-   globalStatistic: GlobalStatistic!
-   token : Token!
-   value : BigDecimal!
+  "address of the token"
+  id: ID!
+  globalStatistic: GlobalStatistic!
+  token: Token!
+  value: BigDecimal!
 }
 
 "utility type"
 type GlobalTotalFixedSwapPair @entity {
-   "address of the token"
-   id : ID!
-    globalStatistic: GlobalStatistic!
-   token : Token!
-   value : BigDecimal!
-   count: BigInt!
+  "address of the token"
+  id: ID!
+  globalStatistic: GlobalStatistic!
+  token: Token!
+  value: BigDecimal!
+  count: BigInt!
 }
 type GlobalStatistic @entity {
-    id: ID!     
+  id: ID!
 
-    "total swap volume for each base token in fixed rate exchanges"
-    totalFixedSwapVolume: [GlobalTotalFixedSwapPair!]    @derivedFrom(field: "globalStatistic")                          
-     
-    "number of total orders. fixed rate exchange orders + dispenser orders"
-    orderCount: Int!                                    
+  "total swap volume for each base token in fixed rate exchanges"
+  totalFixedSwapVolume: [GlobalTotalFixedSwapPair!]
+    @derivedFrom(field: "globalStatistic")
 
-    "total nfts(erc721) created"
-    nftCount: Int!
-    "total datatokens (tokens with isDatatoken = true) created"
-    datatokenCount:Int!  
-    
-    "number of fixed rate exchanges"
-    fixedCount: Int!
+  "number of total orders. fixed rate exchange orders + dispenser orders"
+  orderCount: Int!
 
-    "number of dispensers created"
-    dispenserCount: Int!
+  "total nfts(erc721) created"
+  nftCount: Int!
+  "total datatokens (tokens with isDatatoken = true) created"
+  datatokenCount: Int!
 
-    "total ocean locked in veOcean"
-    totalOceanLocked:BigDecimal!
-   
-   "current version"
-    version: String
+  "number of fixed rate exchanges"
+  fixedCount: Int!
+
+  "number of dispensers created"
+  dispenserCount: Int!
+
+  "total ocean locked in veOcean"
+  totalOceanLocked: BigDecimal!
+
+  "current version"
+  version: String
 }
 
 type OPC @entity {
-    id: ID!
-    "fee in percent for swaps involving OPC approved tokens"
-    swapOceanFee: BigDecimal
-    "fee in percent for swaps involving non OPC approved tokens"
-    swapNonOceanFee: BigDecimal
-    "fee in percent taken by OPC from orderFees"
-    orderFee: BigDecimal
-    "fee in percent taken by OPC from providerFees"
-    providerFee: BigDecimal
-    approvedTokens: [Token!]
+  id: ID!
+  "fee in percent for swaps involving OPC approved tokens"
+  swapOceanFee: BigDecimal
+  "fee in percent for swaps involving non OPC approved tokens"
+  swapNonOceanFee: BigDecimal
+  "fee in percent taken by OPC from orderFees"
+  orderFee: BigDecimal
+  "fee in percent taken by OPC from providerFees"
+  providerFee: BigDecimal
+  approvedTokens: [Token!]
 }
 
- enum NftUpdateType {
-  METADATA_CREATED,
-  METADATA_UPDATED,
-  STATE_UPDATED,
+enum NftUpdateType {
+  METADATA_CREATED
+  METADATA_UPDATED
+  STATE_UPDATED
   TOKENURI_UPDATED
 }
 
@@ -370,10 +366,10 @@ type NftUpdate @entity {
   tokenUri: String
   nft: Nft!
 
-  "provider url that can decrypt the ddo"                                  
-  providerUrl: String  
+  "provider url that can decrypt the ddo"
+  providerUrl: String
 
- "user that made the update"
+  "user that made the update"
   userAddress: String!
 
   "state of the asset in this update"
@@ -387,7 +383,7 @@ type NftUpdate @entity {
   tx: String!
 }
 
-type Template @entity{
+type Template @entity {
   id: ID!
   fixedRateTemplates: [String!]
   dispenserTemplates: [String!]
@@ -395,11 +391,11 @@ type Template @entity{
 }
 
 # Not tracking allocationToId or idToAllocation
-type VeAllocateUser @entity{
+type VeAllocateUser @entity {
   "id = {user}"
   id: ID!
-  
-  veAllocation: [VeAllocation!] @derivedFrom(field: "allocationUser")  
+
+  veAllocation: [VeAllocation!] @derivedFrom(field: "allocationUser")
   allocatedTotal: BigDecimal!
 
   block: Int!
@@ -409,7 +405,7 @@ type VeAllocateUser @entity{
   veOcean: VeOCEAN!
 }
 
-type VeAllocateId @entity{
+type VeAllocateId @entity {
   "id = {DataNFT Address}-{chain id}"
   id: ID!
   nftAddress: String!
@@ -431,7 +427,7 @@ type VeAllocation @entity {
 
   allocationUser: VeAllocateUser!
   allocationId: VeAllocateId!
-  
+
   updates: [VeAllocationUpdate!] @derivedFrom(field: "veAllocation")
   allocated: BigDecimal!
   chainId: BigInt!
@@ -444,14 +440,14 @@ type VeAllocation @entity {
 }
 
 enum veAllocationUpdateType {
-  SET,
+  SET
   REMOVED
 }
 
 type VeAllocationUpdate @entity {
   "{tx}-{VeAllocation id}"
   id: ID!
- 
+
   veAllocation: VeAllocation!
   type: veAllocationUpdateType!
   allocatedTotal: BigDecimal!
@@ -469,11 +465,10 @@ type VeDelegation @entity {
   tokenId: BigInt!
   amount: BigDecimal!
   lockedAmount: BigDecimal!
-  timeLeft: Int!
+  timeLeftUnlock: Int!
   cancelTime: BigInt!
   expireTime: BigInt!
   updates: [VeDelegationUpdate!] @derivedFrom(field: "veDelegation")
-  
 }
 
 type VeDelegationUpdate @entity {
@@ -487,10 +482,9 @@ type VeDelegationUpdate @entity {
   cancelTime: BigInt!
   expireTime: BigInt!
   "type: CREATE_BOOST = 0, EXTEND_BOOST = 1, BURN_BOOST = 2"
-  type:Int!
-  veDelegation:VeDelegation!
+  type: Int!
+  veDelegation: VeDelegation!
 }
-
 
 type VeOCEAN @entity {
   "id = {user address}"
@@ -511,7 +505,7 @@ type VeDeposit @entity {
   "id = {user address}-{tx}-{eventIndex}"
   id: ID!
   "veOcean holder"
-  provider:String!
+  provider: String!
   "who initiated the tx"
   sender: String!
   "amount of tokens locked"
@@ -519,14 +513,13 @@ type VeDeposit @entity {
   "unlock timestamp"
   unlockTime: BigInt!
   "deposit type: DEPOSIT_FOR = 0, CREATE_LOCK_TYPE = 1,INCREASE_LOCK_AMOUNT = 2,INCREASE_UNLOCK_TIME = 3, WITHDRAW = 4"
-  type:BigInt!
+  type: BigInt!
   timestamp: BigInt!
   block: Int!
   tx: String!
   veOcean: VeOCEAN!
-  totalOceanLocked:BigDecimal!
+  totalOceanLocked: BigDecimal!
 }
-
 
 type VeFeeDistributor @entity {
   "id = contract address"
@@ -534,7 +527,8 @@ type VeFeeDistributor @entity {
   "token used by FeeDistributor"
   token: Token!
   claims: [VeClaim!] @derivedFrom(field: "VeFeeDistributor")
-  checkpoints: [VeFeeDistributorCheckPoint!] @derivedFrom(field: "VeFeeDistributor")
+  checkpoints: [VeFeeDistributorCheckPoint!]
+    @derivedFrom(field: "VeFeeDistributor")
 }
 
 type VeFeeDistributorCheckPoint @entity {
@@ -567,7 +561,7 @@ type VeClaim @entity {
 }
 
 enum DFHistoryType {
-  Allocated,
+  Allocated
   Claimed
 }
 
@@ -578,7 +572,6 @@ type DFAvailableClaim @entity {
   amount: BigDecimal!
   token: Token!
 }
-
 
 type DFHistory @entity {
   "id = {user-id}-{txId}-{eventId}"
@@ -591,7 +584,6 @@ type DFHistory @entity {
   block: Int!
   tx: String!
 }
-
 
 type DFReward @entity {
   "id = {user address}"
