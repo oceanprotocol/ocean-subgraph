@@ -22,7 +22,6 @@ export function handleDelegation(event: DelegateBoost): void {
   const veDelegation = getveDelegation(event.address, _tokenId.toHex())
   const ts = event.block.timestamp.toI32()
 
-  const MAX_TIME = 4 * 365 * 86400  // max lock time
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
