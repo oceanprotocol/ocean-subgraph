@@ -72,10 +72,14 @@ export function handleRateChange(event: ExchangeRateChanged): void {
   newExchangeUpdate.tx = event.transaction.hash.toHex()
   newExchangeUpdate.block = event.block.number.toI32()
   newExchangeUpdate.exchangeId = fixedRateId
+  const baseToken = getToken(
+    Address.fromString(fixedRateExchange.baseToken),
+    false
+  )
 
   fixedRateExchange.price = weiToDecimal(
     event.params.newRate.toBigDecimal(),
-    BigInt.fromI32(18).toI32()
+    BigInt.fromI32(baseToken.decimals).toI32()
   )
   newExchangeUpdate.newPrice = fixedRateExchange.price
 
@@ -182,6 +186,10 @@ export function handleSwap(event: Swapped): void {
     Address.fromString(fixedRateExchange.baseToken),
     false
   )
+  const dataToken = getToken(
+    Address.fromString(fixedRateExchange.datatoken),
+    false
+  )
 
   swap.baseTokenAmount = weiToDecimal(
     event.params.baseTokenSwappedAmount.toBigDecimal(),
@@ -189,7 +197,7 @@ export function handleSwap(event: Swapped): void {
   )
   swap.dataTokenAmount = weiToDecimal(
     event.params.datatokenSwappedAmount.toBigDecimal(),
-    BigInt.fromI32(18).toI32()
+    BigInt.fromI32(dataToken.decimals).toI32()
   )
 
   // Track fees
@@ -238,12 +246,16 @@ export function handlePublishMarketFeeChanged(
     event.address
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
+  const baseToken = getToken(
+    Address.fromString(fixedRateExchange.baseToken),
+    false
+  )
   if (fixedRateExchange) {
     fixedRateExchange.publishMarketFeeAddress =
       event.params.newMarketCollector.toHexString()
     fixedRateExchange.publishMarketSwapFee = weiToDecimal(
       event.params.swapFee.toBigDecimal(),
-      BigInt.fromI32(18).toI32()
+      BigInt.fromI32(baseToken.decimals).toI32()
     )
     fixedRateExchange.save()
   }
