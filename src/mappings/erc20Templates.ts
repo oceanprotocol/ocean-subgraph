@@ -138,7 +138,7 @@ export function handlePublishMarketFeeChanged(
   token.publishMarketFeeAddress =
     event.params.PublishMarketFeeAddress.toHexString()
   token.publishMarketFeeToken = event.params.PublishMarketFeeToken.toHexString()
-  let decimals = BigInt.fromI32(18).toI32()
+  let decimals = BigInt.fromI32(token.decimals).toI32()
   if (
     token.publishMarketFeeToken != '0x0000000000000000000000000000000000000000'
   ) {
