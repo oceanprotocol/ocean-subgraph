@@ -31,8 +31,7 @@ export function handleDelegation(event: DelegateBoost): void {
   veDelegation.lockedAmount = delegator.lockedAmount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
-  veDelegation.
-    veDelegation.save()
+  veDelegation.save()
 
   const veDelegationUpdate = new VeDelegationUpdate(
     event.transaction.hash.toHex() + '-' + event.logIndex.toString()
