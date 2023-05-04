@@ -68,7 +68,7 @@ describe('Fixed Rate Exchange tests', async () => {
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
     fixedRateAddress = addresses.FixedPrice.toLowerCase()
-    baseTokenAddress = addresses.MockDAI.toLowerCase()
+    baseTokenAddress = addresses.MockUSDC.toLowerCase()
     Factory = new NftFactory(factoryAddress, web3)
     accounts = await web3.eth.getAccounts()
     publisher = accounts[0].toLowerCase()
@@ -610,15 +610,15 @@ describe('Fixed Rate Exchange tests', async () => {
       publisher
     )
 
-    const daiContract = new web3.eth.Contract(
+    const usdcContract = new web3.eth.Contract(
       MockERC20.abi as AbiItem[],
-      addresses.MockDAI
+      addresses.MockUSDC
     )
-    // user1 need DAI so that they can buy the datatoken
-    await daiContract.methods
+    // user1 need USDC so that they can buy the datatoken
+    await usdcContract.methods
       .transfer(user1, web3.utils.toWei('100'))
       .send({ from: publisher })
-    await daiContract.methods
+    await usdcContract.methods
       .approve(fixedRateAddress, web3.utils.toWei('10000000'))
       .send({ from: user1 })
 
