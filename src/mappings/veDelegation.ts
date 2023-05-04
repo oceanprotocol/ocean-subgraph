@@ -19,8 +19,10 @@ export function handleDelegation(event: DelegateBoost): void {
   // create veOcean if does not exists
   getveOCEAN(_receiver)
   const delegator = getveOCEAN(_delegator)
-
   const veDelegation = getveDelegation(event.address, _tokenId.toHex())
+
+
+  const MAX_TIME = 4 * 365 * 86400  // max lock time
   veDelegation.delegator = _delegator
   veDelegation.receiver = _receiver
   veDelegation.tokenId = _tokenId
@@ -29,6 +31,7 @@ export function handleDelegation(event: DelegateBoost): void {
     BigInt.fromI32(18).toI32()
   )
   veDelegation.lockedAmount = delegator.lockedAmount
+  veDelegation.lockedAmountinVe = delegator.lockedAmount.mul(timeLeft).divDecimal(MAX_TIME)
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
   veDelegation.save()
