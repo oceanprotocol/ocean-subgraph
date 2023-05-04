@@ -188,7 +188,7 @@ export function handleSwap(event: Swapped): void {
   )
   const dataToken = getToken(
     Address.fromString(fixedRateExchange.datatoken),
-    false
+    true
   )
 
   swap.baseTokenAmount = weiToDecimal(

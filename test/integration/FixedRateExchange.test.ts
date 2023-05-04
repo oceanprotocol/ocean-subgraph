@@ -103,7 +103,7 @@ describe('Fixed Rate Exchange tests', async () => {
       baseTokenAddress,
       owner: publisher,
       marketFeeCollector: marketPlaceFeeAddress,
-      baseTokenDecimals: 18,
+      baseTokenDecimals: 6,
       datatokenDecimals: 18,
       fixedRate: price,
       marketFee: publishMarketSwapFee,
@@ -236,7 +236,7 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')
-    assert(dt.decimals === 18, 'incorrect value for: decimals')
+    assert(dt.decimals === 6, 'incorrect value for: decimals')
     assert(dt.address === datatokenAddress, 'incorrect value for: address')
     assert(dt.cap === cap, 'incorrect value for: cap')
     assert(dt.supply === '0', 'incorrect value for: supply')
