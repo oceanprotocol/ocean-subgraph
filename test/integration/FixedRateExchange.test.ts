@@ -68,7 +68,7 @@ describe('Fixed Rate Exchange tests', async () => {
   before(async () => {
     factoryAddress = addresses.ERC721Factory.toLowerCase()
     fixedRateAddress = addresses.FixedPrice.toLowerCase()
-    baseTokenAddress = addresses.MockUSDC.toLowerCase()
+    baseTokenAddress = addresses.MockDAI.toLowerCase()
     Factory = new NftFactory(factoryAddress, web3)
     accounts = await web3.eth.getAccounts()
     publisher = accounts[0].toLowerCase()
@@ -103,7 +103,7 @@ describe('Fixed Rate Exchange tests', async () => {
       baseTokenAddress,
       owner: publisher,
       marketFeeCollector: marketPlaceFeeAddress,
-      baseTokenDecimals: 6,
+      baseTokenDecimals: 18,
       datatokenDecimals: 18,
       fixedRate: price,
       marketFee: publishMarketSwapFee,
@@ -236,7 +236,7 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(dt.id === datatokenAddress, 'incorrect value for: id')
     assert(dt.symbol, 'incorrect value for: symbol')
     assert(dt.name, 'incorrect value for: name')
-    assert(dt.decimals === 6, 'incorrect value for: decimals')
+    assert(dt.decimals === 18, 'incorrect value for: decimals')
     assert(dt.address === datatokenAddress, 'incorrect value for: address')
     assert(dt.cap === cap, 'incorrect value for: cap')
     assert(dt.supply === '0', 'incorrect value for: supply')
@@ -610,15 +610,15 @@ describe('Fixed Rate Exchange tests', async () => {
       publisher
     )
 
-    const usdcContract = new web3.eth.Contract(
+    const daiContract = new web3.eth.Contract(
       MockERC20.abi as AbiItem[],
-      addresses.MockUSDC
+      addresses.MockDAI
     )
-    // user1 need USDC so that they can buy the datatoken
-    await usdcContract.methods
+    // user1 need DAI so that they can buy the datatoken
+    await daiContract.methods
       .transfer(user1, web3.utils.toWei('100'))
       .send({ from: publisher })
-    await usdcContract.methods
+    await daiContract.methods
       .approve(fixedRateAddress, web3.utils.toWei('10000000'))
       .send({ from: user1 })
 
