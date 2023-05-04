@@ -18,7 +18,7 @@ export function handleDelegation(event: DelegateBoost): void {
   const _expireTime = event.params._expire_time
   // create veOcean if does not exists
   getveOCEAN(_receiver)
-  getveOCEAN(_delegator)
+  const delegator = getveOCEAN(_delegator)
 
   const veDelegation = getveDelegation(event.address, _tokenId.toHex())
   veDelegation.delegator = _delegator
@@ -28,9 +28,11 @@ export function handleDelegation(event: DelegateBoost): void {
     _amount.toBigDecimal(),
     BigInt.fromI32(18).toI32()
   )
+  veDelegation.lockedAmount = delegator.lockedAmount
   veDelegation.cancelTime = _cancelTime
   veDelegation.expireTime = _expireTime
-  veDelegation.save()
+  veDelegation.
+    veDelegation.save()
 
   const veDelegationUpdate = new VeDelegationUpdate(
     event.transaction.hash.toHex() + '-' + event.logIndex.toString()
