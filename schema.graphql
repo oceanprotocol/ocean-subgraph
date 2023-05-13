@@ -469,7 +469,7 @@ type VeDelegation @entity {
   tokenId: BigInt!
   amount: BigDecimal!
   lockedAmount: BigDecimal!
-  timeLeft: Int!
+  timeLeftUnlock: Int!
   cancelTime: BigInt!
   expireTime: BigInt!
   updates: [VeDelegationUpdate!] @derivedFrom(field: "veDelegation")
