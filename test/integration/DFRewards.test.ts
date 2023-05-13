@@ -159,6 +159,7 @@ describe('DFRewards tests', async () => {
               }
               type
               tx
+              eventIndex
             }
           }        
                 }`
@@ -175,6 +176,7 @@ describe('DFRewards tests', async () => {
     )
     assert(info[0].history[0].amount === '100')
     assert(info[0].history[0].tx === tx.transactionHash.toLowerCase())
+    assert(info[0].history[0].eventIndex === tx.events.Allocated.logIndex)
     assert(info[0].history[0].type === 'Allocated')
   })
 
@@ -183,7 +185,7 @@ describe('DFRewards tests', async () => {
       user2,
       datatokenAddress1
     )
-    await dfRewards.claimRewards(user2, user2, datatokenAddress1)
+    const tx = await dfRewards.claimRewards(user2, user2, datatokenAddress1)
 
     const user2Balance = await dfRewards.getAvailableRewards(
       user2,
@@ -219,6 +221,7 @@ describe('DFRewards tests', async () => {
               }
               type
               tx
+              eventIndex
             }
           }        
                 }`
@@ -235,5 +238,6 @@ describe('DFRewards tests', async () => {
     )
     assert(info[0].history[0].amount === expectedReward)
     assert(info[0].history[0].type === 'Claimed')
+    assert(info[0].history[0].eventIndex === tx.events.Claimed.logIndex)
   })
 })

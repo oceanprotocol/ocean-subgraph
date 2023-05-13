@@ -20,8 +20,8 @@ import { NftUpdateType } from './utils/constants'
 import { getNftToken, getNftTokenWithID } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
-function getId(tx: string, nftAddress: string): string {
-  return `${tx}-${nftAddress}`
+function getId(tx: string, nftAddress: string, eventIndex: number): string {
+  return `${tx}-${nftAddress}-${eventIndex}`
 }
 
 export function handleMetadataCreated(event: MetadataCreated): void {
@@ -33,8 +33,9 @@ export function handleMetadataCreated(event: MetadataCreated): void {
   nft.providerUrl = event.params.decryptorUrl.toString()
   nft.hasMetadata = true
 
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
 
   nftUpdate.type = NftUpdateType.METADATA_CREATED
@@ -47,6 +48,7 @@ export function handleMetadataCreated(event: MetadataCreated): void {
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
 
   nftUpdate.save()
@@ -60,8 +62,9 @@ export function handleMetadataUpdated(event: MetadataUpdated): void {
 
   nft.assetState = event.params.state
   nft.hasMetadata = true
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
 
   nftUpdate.nft = nft.id
@@ -71,6 +74,7 @@ export function handleMetadataUpdated(event: MetadataUpdated): void {
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
 
   nftUpdate.save()
@@ -83,9 +87,9 @@ export function handleMetadataState(event: MetadataState): void {
   if (!nft) return
 
   nft.assetState = event.params.state
-
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
 
   nftUpdate.nft = nft.id
@@ -95,6 +99,7 @@ export function handleMetadataState(event: MetadataState): void {
 
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
 
   nftUpdate.save()
@@ -108,9 +113,9 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
   if (!nft) return
 
   nft.tokenUri = event.params.tokenURI.toString()
-
+  const eventIndex: number = event.logIndex.toI32()
   const nftUpdate = new NftUpdate(
-    getId(event.transaction.hash.toHex(), nftAddress)
+    getId(event.transaction.hash.toHex(), nftAddress, eventIndex)
   )
   nftUpdate.nft = nft.id
   nftUpdate.type = NftUpdateType.TOKENURI_UPDATED
@@ -118,6 +123,7 @@ export function handleTokenUriUpdate(event: TokenURIUpdate): void {
   nftUpdate.tokenUri = nft.tokenUri
   nftUpdate.timestamp = event.block.timestamp.toI32()
   nftUpdate.tx = event.transaction.hash.toHex()
+  nftUpdate.eventIndex = event.logIndex.toI32()
   nftUpdate.block = event.block.number.toI32()
   nftUpdate.assetState = nft.assetState
   nftUpdate.save()
@@ -133,6 +139,7 @@ export function handleAddedManager(event: AddedManager): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.managerRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 export function handleRemovedManager(event: RemovedManager): void {
@@ -148,6 +155,7 @@ export function handleRemovedManager(event: RemovedManager): void {
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.managerRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -160,6 +168,7 @@ export function handleAddedTo725StoreList(event: AddedTo725StoreList): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.storeUpdateRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -178,6 +187,7 @@ export function handleRemovedFrom725StoreList(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.storeUpdateRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -192,6 +202,7 @@ export function handleAddedToCreateERC20List(
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.erc20DeployerRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -210,6 +221,7 @@ export function handleRemovedFromCreateERC20List(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.erc20DeployerRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -222,6 +234,7 @@ export function handleAddedToMetadataList(event: AddedToMetadataList): void {
   if (!existingRoles.includes(event.params.user.toHexString()))
     existingRoles.push(event.params.user.toHexString())
   nft.metadataRole = existingRoles
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -240,6 +253,7 @@ export function handleRemovedFromMetadataList(
     if (role !== event.params.user.toHexString()) newList.push(role)
   }
   nft.metadataRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -250,6 +264,7 @@ export function handleCleanedPermissions(event: CleanedPermissions): void {
   nft.erc20DeployerRole = newList
   nft.storeUpdateRole = newList
   nft.managerRole = newList
+  nft.eventIndex = event.logIndex.toI32()
   nft.save()
 }
 
@@ -260,15 +275,16 @@ export function handleNftTransferred(event: Transfer): void {
   const newOwner = getUser(event.params.to.toHexString())
   nft.owner = newOwner.id
   nft.save()
-
-  const transferId = `${nft.address}-${event.transaction.hash.toHex()}-${
-    event.logIndex
-  }`
+  const eventIndex: number = event.logIndex.toI32()
+  const transferId = `${
+    nft.address
+  }-${event.transaction.hash.toHex()}-${eventIndex}`
   const newTransfer = new NftTransferHistory(transferId)
   newTransfer.oldOwner = oldOwner
   newTransfer.nft = nft.id
   newTransfer.newOwner = newOwner.id
   newTransfer.txId = event.transaction.hash.toHex()
+  newTransfer.eventIndex = event.logIndex.toI32()
   newTransfer.timestamp = event.block.timestamp.toI32()
   newTransfer.block = event.block.number.toI32()
   newTransfer.save()

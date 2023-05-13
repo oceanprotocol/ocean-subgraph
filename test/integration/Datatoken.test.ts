@@ -135,7 +135,7 @@ describe('Datatoken tests', async () => {
     datatokenAddress = result.events.TokenCreated.returnValues[0].toLowerCase()
 
     // Check values before updating metadata
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -161,6 +161,7 @@ describe('Datatoken tests', async () => {
           dispensers {id},
           createdTimestamp,
           tx,
+          eventIndex,
           block,
           lastPriceValue
         }}`
@@ -214,6 +215,10 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    assert(
+      dt.eventIndex !== null && dt.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Correct Datatoken fields after updating metadata', async () => {
@@ -247,7 +252,7 @@ describe('Datatoken tests', async () => {
     )
 
     // Check values before updating metadata
-    await sleep(2000)
+    await sleep(3000)
     const initialQuery = {
       query: `query {
         token(id: "${datatokenAddress}"){    
@@ -273,6 +278,7 @@ describe('Datatoken tests', async () => {
           dispensers {id},
           createdTimestamp,
           tx,
+          eventIndex,
           block,
           lastPriceValue
         }}`
@@ -281,7 +287,7 @@ describe('Datatoken tests', async () => {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
-    await sleep(2000)
+    await sleep(3000)
     const dt = (await initialResponse.json()).data.token
 
     const tx: TransactionReceipt = await web3.eth.getTransactionReceipt(dt.tx)
@@ -325,10 +331,41 @@ describe('Datatoken tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    assert(
+      dt.eventIndex !== null && dt.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
-  it('Check datatoken orders are updated correctly after publishing & ordering a datatoken', async () => {
-    // Start with publishing a new datatoken
+  it('Check datatoken orders are updated correctly after publishing & ordering a datatoken with fees', async () => {
+    // Publish a datatoken for publishingMarketFeeToken
+    const nftParams1: NftCreateData = {
+      name: 'newNFT1',
+      symbol: 'newTST1',
+      templateIndex,
+      tokenURI: '',
+      transferable: true,
+      owner: publisher
+    }
+    const erc20Params1: DatatokenCreateParams = {
+      templateIndex,
+      cap: '100000',
+      feeAmount: '0',
+      paymentCollector: ZERO_ADDRESS,
+      feeToken: ZERO_ADDRESS,
+      minter: publisher,
+      mpFeeAddress: ZERO_ADDRESS
+    }
+    const result1 = await Factory.createNftWithDatatoken(
+      publisher,
+      nftParams1,
+      erc20Params1
+    )
+    await sleep(3000)
+    const publishingTokenAddress = result1.events.TokenCreated.returnValues[0]
+    const publishingDatatoken = new Datatoken(web3, 8996)
+
+    // Start with publishing the datatoken used for startOrder
     const nftParams: NftCreateData = {
       name: 'newNFT',
       symbol: 'newTST',
@@ -340,42 +377,76 @@ describe('Datatoken tests', async () => {
     const erc20Params: DatatokenCreateParams = {
       templateIndex,
       cap: '100000',
-      feeAmount: '0',
+      feeAmount: '0.2',
       paymentCollector: ZERO_ADDRESS,
-      feeToken: ZERO_ADDRESS,
+      feeToken: publishingTokenAddress,
       minter: publisher,
-      mpFeeAddress: ZERO_ADDRESS
+      mpFeeAddress: publisher
     }
     const result = await Factory.createNftWithDatatoken(
       publisher,
       nftParams,
       erc20Params
     )
-    await sleep(2000)
+    await sleep(3000)
     const newDtAddress = result.events.TokenCreated.returnValues[0]
 
     const datatoken = new Datatoken(web3, 8996)
+
+    await datatoken.approve(
+      newDtAddress,
+      publishingTokenAddress,
+      '100000000000000000000000000',
+      user1
+    )
+    await publishingDatatoken.approve(
+      publishingTokenAddress,
+      newDtAddress,
+      '100000000000000000000000000',
+      user1
+    )
     await datatoken.mint(newDtAddress, publisher, '100', user1)
+    await publishingDatatoken.mint(
+      publishingTokenAddress,
+      publisher,
+      '100',
+      user1
+    )
     const user1balance = await datatoken.balance(newDtAddress, user1)
     const user2balance = await datatoken.balance(newDtAddress, user2)
     assert(Number(user1balance) === 100, 'Invalid user1 balance')
     assert(Number(user2balance) === 0, 'Invalid user2 balance')
 
+    const user1balanceOfPublishing = await datatoken.balance(
+      publishingTokenAddress,
+      user1
+    )
+    const user2balanceOfPublishing = await datatoken.balance(
+      publishingTokenAddress,
+      user2
+    )
+    assert(Number(user1balanceOfPublishing) === 100, 'Invalid user1 balance')
+    assert(Number(user2balanceOfPublishing) === 0, 'Invalid user2 balance')
+
     const query = {
-      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}}}}`
+      query: `query {token(id: "${newDtAddress.toLowerCase()}"){id,orderCount,orders {id, nftOwner{id}, lastPriceToken{id}, eventIndex}, eventIndex}}`
     }
 
-    await sleep(2000)
+    await sleep(3000)
     let response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
-
+    await sleep(3000)
     const initialToken = (await response.json()).data.token
 
     assert(initialToken, 'Invalid initialToken')
     assert(initialToken.orderCount === '0', 'Invalid initial orderCount')
     assert(initialToken.orders.length === 0, 'Invalid initial orders')
+    assert(
+      initialToken.eventIndex !== null && initialToken.eventIndex > 0,
+      'Invalid eventIndex'
+    )
 
     const providerData = JSON.stringify({ timeout: 0 })
     const providerFeeToken = ZERO_ADDRESS
@@ -400,22 +471,31 @@ describe('Datatoken tests', async () => {
       providerData: web3.utils.toHex(web3.utils.asciiToHex(providerData)),
       validUntil: providerValidUntil
     }
+    const consumeMarketFees = {
+      consumeMarketFeeAddress: publisher,
+      consumeMarketFeeToken: publishingTokenAddress,
+      consumeMarketFeeAmount: '20000'
+    }
     assert(setProviderFee, 'Invalid setProviderFee')
     const orderTx = await datatoken.startOrder(
       newDtAddress,
       user1,
       user2,
       1,
-      setProviderFee
+      setProviderFee,
+      consumeMarketFees
     )
     assert(orderTx, 'Invalid orderTx')
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${newDtAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toFixed(
+      1
+    )}`
 
-    await sleep(2000)
+    await sleep(3000)
     response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
+    await sleep(3000)
 
     const token = (await response.json()).data.token
 
@@ -424,5 +504,48 @@ describe('Datatoken tests', async () => {
     assert(token.orders[0].id === orderId)
     assert(token.orders[0].lastPriceToken.id === ZERO_ADDRESS)
     assert(token.orders[0].nftOwner.id === publisher, 'invalid nftOwner')
+    assert(token.orders[0].eventIndex === 0, 'invalid order eventIndex')
+    assert(token.eventIndex !== null, 'Invalid eventIndex')
+    assert(
+      token.eventIndex !== token.orders[0].eventIndex,
+      'Invalid log indeces'
+    )
+    const orderQuery = {
+      query: `query {order(id:"${orderId}"){id, publishingMarket{id}, publishingMarketToken{id}, publishingMarketAmmount, consumerMarket{id}, consumerMarketToken{id}, consumerMarketAmmount, eventIndex}}`
+    }
+    await sleep(3000)
+    const orderResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(orderQuery)
+    })
+    await sleep(3000)
+    const queryResult = await orderResponse.json()
+    const order = queryResult.data.order
+    assert(
+      order.publishingMarket.id === erc20Params.mpFeeAddress.toLowerCase(),
+      'incorrect publish market fee address'
+    )
+    assert(
+      order.publishingMarketToken.id === erc20Params.feeToken.toLowerCase(),
+      'incorrect publish market fee token'
+    )
+    assert(
+      order.publishingMarketAmmount === erc20Params.feeAmount,
+      'incorrect publish market fee amount'
+    )
+    assert(
+      order.consumerMarket.id ===
+        consumeMarketFees.consumeMarketFeeAddress.toLowerCase(),
+      'incorrect consume market fee address'
+    )
+    assert(
+      order.consumerMarketToken.id ===
+        consumeMarketFees.consumeMarketFeeToken.toLowerCase(),
+      'incorrect consume market fee token'
+    )
+    assert(
+      order.consumerMarketAmmount === '0.00000000000002',
+      'incorrect consume market fee amount'
+    )
   })
 })

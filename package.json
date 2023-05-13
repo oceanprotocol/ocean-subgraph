@@ -33,6 +33,8 @@
     "test-df": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/DFRewards.test.ts'",
     "test-dt": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/Datatoken.test.ts'",
     "test-zend": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/ZEnding.test.ts'",
+    "test-publish-consume": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/SimplePublishConsume.test.ts'",
+    "test-nft": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/Nft.test.ts'",
     "lint": "eslint --ignore-path .gitignore --ext .js --ext .ts --ext .tsx .",
     "lint:fix": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx . --fix",
     "format": "prettier --ignore-path .gitignore './**/*.{css,yml,js,ts,tsx,json,yaml}' --write",
@@ -72,7 +74,8 @@
   "dependencies": {
     "@oceanprotocol/contracts": "^1.1.12",
     "@oceanprotocol/lib": "^2.7.0",
-    "cross-fetch": "^3.1.4"
+    "cross-fetch": "^3.1.4",
+    "ethereumjs-util": "^7.1.5"
   },
   "repository": {
     "type": "git",
