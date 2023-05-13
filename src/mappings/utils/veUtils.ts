@@ -137,7 +137,7 @@ export function getveDelegation(
     veDelegation.receiver = ''
     veDelegation.delegator = ''
     veDelegation.lockedAmount = BigDecimal.zero()
-    veDelegation.timeLeftUnlock = 0
+    veDelegation.timeLeft = BigInt.zero()
     veDelegation.save()
   }
   return veDelegation
