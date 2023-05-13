@@ -481,6 +481,8 @@ type VeDelegation @entity {
   receiver: VeOCEAN!
   tokenId: BigInt!
   amount: BigDecimal!
+  lockedAmount: BigDecimal!
+  timeLeftUnlock: Int!
   cancelTime: BigInt!
   expireTime: BigInt!
   updates: [VeDelegationUpdate!] @derivedFrom(field: "veDelegation")
@@ -628,4 +630,3 @@ type NftTransferHistory @entity {
   timestamp: Int!
   block: Int!
 }
-
