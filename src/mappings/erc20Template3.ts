@@ -5,7 +5,7 @@ import {
   PredictTrueVals,
   PredictSlot,
   PredictSettingUpdate,
-  PredictContract
+  PredictionRevenue
 } from '../@types/schema'
 import { BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 
@@ -179,5 +179,51 @@ export function handleSettingChanged(event: SettingChanged): void {
 }
 
 export function handleRevenueAdded(event: RevenueAdded): void {
-  // TODO
+  /*
+   for (uint256 i = 0; i < num_epochs; i++) {
+                // TODO FIND A WAY TO ACHIEVE THIS WITHOUT A LOOP
+                subscriptionRevenueAtBlock[
+                    slot + blocksPerEpoch * (i)
+                ] += amt_per_epoch;
+            }
+    emit RevenueAdded(amount,slot,amt_per_epoch,num_epochs,blocksPerEpoch);
+  */
+  const numEpochs = event.params.numEpochs
+  const blocksPerEpoch = event.params.blocksPerEpoch
+  let decimals = 18
+  const predictContract = getPredictContract(event.address)
+  if (predictContract.stakeToken) {
+    const stakeToken = getToken(
+      Address.fromString(predictContract.stakeToken!),
+      false
+    )
+    decimals = stakeToken.decimals
+  }
+  const amountPerEpoch = weiToDecimal(
+    event.params.amountPerEpoch.toBigDecimal(),
+    BigInt.fromI32(decimals).toI32()
+  )
+  const slot = event.params.slot
+  for (let i = BigInt.zero(); i.lt(numEpochs); i = i.plus(BigInt.fromI32(1))) {
+    const targetSlot = slot.plus(blocksPerEpoch.times(i))
+    const predictSlot = getPredictSlot(event.address.toHexString(), targetSlot)
+    predictSlot.revenue = predictSlot.revenue.plus(amountPerEpoch)
+    predictSlot.save()
+    const revenueId =
+      event.address.toHexString() +
+      '-' +
+      targetSlot.toString() +
+      '-' +
+      event.transaction.hash.toHexString() +
+      '-' +
+      event.logIndex.toHexString()
+    const predictRevenue = new PredictionRevenue(revenueId)
+    predictRevenue.slot = predictSlot.id
+    predictRevenue.amount = amountPerEpoch
+    predictRevenue.block = event.block.number.toI32()
+    predictRevenue.txId = event.transaction.hash.toHexString()
+    predictRevenue.eventIndex = event.logIndex.toI32()
+    predictRevenue.timestamp = event.block.timestamp.toI32()
+    predictRevenue.save()
+  }
 }

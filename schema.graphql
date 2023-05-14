@@ -696,6 +696,18 @@ type PredictTrueVals @entity{
   block: Int!
 }
 
+type PredictionRevenue @entity{
+  "id = {contract address}-{slot}-{txid}-{eventIndex}"
+  id: ID!
+  slot: PredictSlot!
+  amount: BigDecimal!
+  "txId"
+  txId: String
+  eventIndex:Int!
+  timestamp: Int!
+  block: Int!
+}
+
 type PredictSlot @entity{
   "id = {contract address}-{slot}"
   id: ID!
@@ -704,8 +716,10 @@ type PredictSlot @entity{
   predictions:[PredictPrediction!] @derivedFrom(field: "slot")
   trueValues: [PredictTrueVals!] @derivedFrom(field: "slot")
   revenue: BigDecimal!
+  revenues: [PredictionRevenue!] @derivedFrom(field: "slot")
   status: PredictSlotStatus!
 }
+
 
 type PredictSettingUpdate @entity{
   "id = {contract address}-{txId}-{eventIndex}"
