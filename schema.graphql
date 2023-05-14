@@ -675,7 +675,7 @@ type PredictPrediction @entity{
   slot: PredictSlot!
   user: User!
   stake: BigDecimal!
-  payout: PredictPayout!
+  payout: PredictPayout
   "txId"
   txId: String
   eventIndex:Int!
@@ -705,7 +705,7 @@ type PredictSlot @entity{
   predictions:[PredictPrediction!] @derivedFrom(field: "slot")
   trueValues: [PredictTrueVals!] @derivedFrom(field: "slot")
   revenue: BigDecimal!
-  status:PredictSlotStatus!
+  status: PredictSlotStatus!
 }
 
 type PredictSettingUpdate @entity{

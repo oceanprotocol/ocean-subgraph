@@ -18,13 +18,61 @@ import {
   RevenueAdded
 } from '../@types/templates/ERC20Template3/ERC20Template3'
 
-import { integer } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 import { getPredictContract, getToken } from './utils/tokenUtils'
 import { getUser } from './utils/userUtils'
 
+function getPredictSlot(
+  predictContractAddress: string,
+  slot: BigInt
+): PredictSlot {
+  const id = predictContractAddress + '-' + slot.toString()
+  let newPredictSlot = PredictSlot.load(id)
+  if (newPredictSlot === null) {
+    newPredictSlot = new PredictSlot(id)
+    newPredictSlot.predictContract = predictContractAddress
+    newPredictSlot.slot = slot
+    newPredictSlot.revenue = BigDecimal.zero()
+    newPredictSlot.status = 'Pending'
+    newPredictSlot.save()
+  }
+  return newPredictSlot
+}
+
 export function handlePredictionSubmitted(event: PredictionSubmitted): void {
-  // TODO
+  const predictSlot = getPredictSlot(
+    event.address.toHexString(),
+    event.params.slot
+  )
+  const user = getUser(event.params.predictoor.toHex())
+  const id =
+    event.address.toHexString() +
+    '-' +
+    event.params.slot.toString() +
+    '-' +
+    user.id
+  const predictPrediction = new PredictPrediction(id)
+  predictPrediction.slot = predictSlot.id
+  predictPrediction.user = user.id
+  const predictContract = getPredictContract(event.address)
+  let decimals = 18
+  if (predictContract.stakeToken) {
+    const stakeToken = getToken(
+      Address.fromString(predictContract.stakeToken!),
+      false
+    )
+    decimals = stakeToken.decimals
+  }
+  predictPrediction.stake = weiToDecimal(
+    event.params.stake.toBigDecimal(),
+    BigInt.fromI32(decimals).toI32()
+  )
+  predictPrediction.payout = null
+  predictPrediction.block = event.block.number.toI32()
+  predictPrediction.txId = event.transaction.hash.toHexString()
+  predictPrediction.eventIndex = event.logIndex.toI32()
+  predictPrediction.timestamp = event.block.timestamp.toI32()
+  predictPrediction.save()
 }
 
 export function handlePredictionPayout(event: PredictionPayout): void {
