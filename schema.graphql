@@ -98,6 +98,9 @@ type Nft @entity{
     "template address"
     template: String!           
 
+    "template ID of the datatoken"                               
+    templateId: Int 
+    
     "set if NFT is transferable"
     transferable: Boolean!
 
@@ -630,3 +633,113 @@ type NftTransferHistory @entity {
   timestamp: Int!
   block: Int!
 }
+
+type PredictSubscription @entity{
+  "id = {contract address}-{txid}-{eventIndex}"
+  id: ID!
+  predictContract: PredictContract!
+  user: User!
+  expireTime: BigInt!
+  "txId"
+  txId: String
+  eventIndex:Int!
+  timestamp: Int!
+  block: Int!
+}
+
+enum PredictSlotStatus {
+  Pending,
+  Paying,
+  Canceled
+}
+
+
+type PredictPayout @entity{
+  "id = {contract address}-{slot}-{user}"
+  id: ID!
+  prediction: PredictPrediction!
+  payout: BigDecimal!
+  predictedValue: Boolean!
+  trueValue: Boolean!
+  aggregatedPredictedValue: BigDecimal!
+  "txId"
+  txId: String
+  eventIndex:Int!
+  timestamp: Int!
+  block: Int!
+}
+
+type PredictPrediction @entity{
+  "id = {contract address}-{slot}-{user}"
+  id: ID!
+  slot: PredictSlot!
+  user: User!
+  stake: BigDecimal!
+  payout: PredictPayout!
+  "txId"
+  txId: String
+  eventIndex:Int!
+  timestamp: Int!
+  block: Int!
+}
+
+
+type PredictTrueVals @entity{
+  "id = {contract address}-{slot}"
+  id: ID!
+  slot: PredictSlot!
+  trueValue: Boolean!
+  "txId"
+  txId: String
+  eventIndex:Int!
+  timestamp: Int!
+  block: Int!
+  submiter: String
+}
+
+type PredictSlot @entity{
+  "id = {contract address}-{slot}"
+  id: ID!
+  predictContract: PredictContract!
+  slot: BigInt!
+  predictions:[PredictPrediction!] @derivedFrom(field: "slot")
+  trueValues: [PredictTrueVals!] @derivedFrom(field: "slot")
+  revenue: BigDecimal!
+  status:PredictSlotStatus!
+}
+
+type PredictSettingUpdate @entity{
+  "id = {contract address}-{txId}-{eventIndex}"
+  id: ID!
+  predictContract: PredictContract!
+  blocksPerEpoch: BigInt!
+  blocksPerSubscription: BigInt!
+  truevalSubmitTimeoutBlock: BigInt!
+  stakeToken: Token
+  "txId"
+  txId: String
+  eventIndex:Int!
+  timestamp: Int!
+  block: Int!
+}
+type PredictContract @entity{
+  "id = {contract address}"
+  id: ID!
+  token: Token!
+  slots: [PredictSlot!] @derivedFrom(field: "predictContract")
+  settingUpdates: [PredictSettingUpdate!] @derivedFrom(field: "predictContract")
+  subscriptions: [PredictSubscription!] @derivedFrom(field: "predictContract")
+  blocksPerEpoch: BigInt!
+  blocksPerSubscription: BigInt!
+  truevalSubmitTimeoutBlock: BigInt!
+  stakeToken: Token
+  "creation txId"
+  txId: String
+  "timestamp of creation tx"
+  timestamp: Int!
+  "block of creation tx"
+  block: Int!
+  eventIndex: Int!
+}
+
+

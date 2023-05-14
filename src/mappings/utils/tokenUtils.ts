@@ -1,7 +1,11 @@
 import { Address, log, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { Nft, Token } from '../../@types/schema'
+import { Nft, Token, PredictContract } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
-import { ERC20Template, ERC721Template } from '../../@types/templates'
+import {
+  ERC20Template,
+  ERC721Template,
+  ERC20Template3
+} from '../../@types/templates'
 import { addNft } from './globalUtils'
 import { ZERO_ADDRESS } from './constants'
 
@@ -31,6 +35,7 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   token.block = 0
   token.tx = ''
   token.eventIndex = 0
+  token.templateId = 0
   token.save()
   return token
 }
@@ -55,6 +60,7 @@ export function createNftToken(address: Address): Nft {
   token.creator = ''
   token.assetState = 0
   token.template = ''
+  token.templateId = 0
   token.transferable = true
   token.createdTimestamp = 0
   token.block = 0
@@ -108,4 +114,29 @@ export function getUSDValue(
   timestamp: number
 ): BigDecimal {
   return BigDecimal.zero()
+}
+
+export function createPredictContract(address: Address): PredictContract {
+  ERC20Template3.create(address)
+  const predictContract = new PredictContract(address.toHexString())
+  const token = getToken(address, true)
+  predictContract.token = token.id
+  predictContract.blocksPerEpoch = BigInt.zero()
+  predictContract.blocksPerSubscription = BigInt.zero()
+  predictContract.truevalSubmitTimeoutBlock = BigInt.zero()
+  predictContract.stakeToken = null
+  predictContract.txId = ''
+  predictContract.timestamp = 0
+  predictContract.block = 0
+  predictContract.eventIndex = 0
+  predictContract.save()
+  return predictContract
+}
+
+export function getPredictContract(address: Address): PredictContract {
+  let newPredictContract = PredictContract.load(address.toHexString())
+  if (newPredictContract === null) {
+    newPredictContract = createPredictContract(address)
+  }
+  return newPredictContract
 }
