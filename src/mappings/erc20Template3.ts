@@ -7,7 +7,7 @@ import {
   PredictSettingUpdate,
   PredictContract
 } from '../@types/schema'
-import { BigInt, BigDecimal, Address, log } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 
 import {
   PredictionSubmitted,
@@ -76,15 +76,76 @@ export function handlePredictionSubmitted(event: PredictionSubmitted): void {
 }
 
 export function handlePredictionPayout(event: PredictionPayout): void {
-  // TODO
+  const user = getUser(event.params.predictoor.toHex())
+  const predictionId =
+    event.address.toHexString() +
+    '-' +
+    event.params.slot.toString() +
+    '-' +
+    user.id
+  const predictPrediction = PredictPrediction.load(predictionId)
+  if (!predictPrediction) return
+  const predictionPayout = new PredictPayout(predictionId)
+  predictionPayout.prediction = predictPrediction.id
+  let decimals = 18
+  const predictContract = getPredictContract(event.address)
+  if (predictContract.stakeToken) {
+    const stakeToken = getToken(
+      Address.fromString(predictContract.stakeToken!),
+      false
+    )
+    decimals = stakeToken.decimals
+  }
+  predictionPayout.payout = weiToDecimal(
+    event.params.payout.toBigDecimal(),
+    BigInt.fromI32(decimals).toI32()
+  )
+  predictionPayout.predictedValue = event.params.predictedValue
+  predictionPayout.trueValue = event.params.trueValue
+  predictionPayout.aggregatedPredictedValue = weiToDecimal(
+    event.params.aggregatedPredictedValue.toBigDecimal(),
+    18
+  )
+  predictionPayout.block = event.block.number.toI32()
+  predictionPayout.txId = event.transaction.hash.toHexString()
+  predictionPayout.eventIndex = event.logIndex.toI32()
+  predictionPayout.timestamp = event.block.timestamp.toI32()
+  predictionPayout.save()
 }
 
 export function handleNewSubscription(event: NewSubscription): void {
-  // TODO
+  const id =
+    event.address.toHexString() +
+    '-' +
+    event.transaction.hash.toString() +
+    '-' +
+    event.logIndex.toString()
+  const newSubscription = new PredictSubscription(id)
+  const predictContract = getPredictContract(event.address)
+  newSubscription.predictContract = predictContract.id
+  const user = getUser(event.params.user.toHex())
+  newSubscription.user = user.id
+  newSubscription.expireTime = event.params.expires
+  newSubscription.block = event.block.number.toI32()
+  newSubscription.txId = event.transaction.hash.toHexString()
+  newSubscription.eventIndex = event.logIndex.toI32()
+  newSubscription.timestamp = event.block.timestamp.toI32()
+  newSubscription.save()
 }
 
 export function handleTruevalSubmitted(event: TruevalSubmitted): void {
-  // TODO
+  const predictSlot = getPredictSlot(
+    event.address.toHexString(),
+    event.params.slot
+  )
+  const newPredictTrueVals = new PredictTrueVals(predictSlot.id) // they share the same id
+  newPredictTrueVals.slot = predictSlot.id
+  newPredictTrueVals.trueValue = event.params.trueValue
+  newPredictTrueVals.block = event.block.number.toI32()
+  newPredictTrueVals.txId = event.transaction.hash.toHexString()
+  newPredictTrueVals.eventIndex = event.logIndex.toI32()
+  newPredictTrueVals.timestamp = event.block.timestamp.toI32()
+  newPredictTrueVals.save()
 }
 
 export function handleSettingChanged(event: SettingChanged): void {

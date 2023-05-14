@@ -694,7 +694,6 @@ type PredictTrueVals @entity{
   eventIndex:Int!
   timestamp: Int!
   block: Int!
-  submiter: String
 }
 
 type PredictSlot @entity{
