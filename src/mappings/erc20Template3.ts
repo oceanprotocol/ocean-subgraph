@@ -117,7 +117,7 @@ export function handleNewSubscription(event: NewSubscription): void {
   const id =
     event.address.toHexString() +
     '-' +
-    event.transaction.hash.toString() +
+    event.transaction.hash.toHexString() +
     '-' +
     event.logIndex.toString()
   const newSubscription = new PredictSubscription(id)
