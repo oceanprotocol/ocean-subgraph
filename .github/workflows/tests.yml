@@ -52,7 +52,7 @@ jobs:
         run: |
           bash -x start_ocean.sh --with-thegraph --skip-subgraph-deploy --no-dashboard 2>&1 > start_ocean.log &
         env:
-          CONTRACTS_VERSION: v1.1.7
+          CONTRACTS_VERSION: predictoor
 
       - run: npm ci
 
@@ -74,6 +74,6 @@ jobs:
         env:
           ADDRESS_FILE: /home/runner/.ocean/ocean-contracts/artifacts/address.json
           BARGE_FOLDER: /home/runner/.ocean/
-      - name:  docker logs
+      - name: docker logs
         run: docker logs ocean_graph-node_1
         if: ${{ failure() }}
