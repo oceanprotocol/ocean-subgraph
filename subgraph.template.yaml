@@ -222,6 +222,10 @@ dataSources:
       entities:
         - ERC721Factory
       abis:
+        - name: ERC721Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
+        - name: ERC20Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
         - name: ERC721Factory
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
         - name: ERC20
