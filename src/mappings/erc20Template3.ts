@@ -145,6 +145,10 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
   newPredictTrueVals.txId = event.transaction.hash.toHexString()
   newPredictTrueVals.eventIndex = event.logIndex.toI32()
   newPredictTrueVals.timestamp = event.block.timestamp.toI32()
+  newPredictTrueVals.floatValue = weiToDecimal(
+    event.params.floatValue.toBigDecimal(),
+    18
+  )
   newPredictTrueVals.save()
 }
 

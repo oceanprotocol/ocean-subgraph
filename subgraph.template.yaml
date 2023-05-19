@@ -80,7 +80,7 @@ templates:
           handler: handlePredictionPayout
         - event: NewSubscription(indexed address,uint256,uint256)
           handler: handleNewSubscription
-        - event: TruevalSubmitted(indexed uint256,bool,uint8)
+        - event: TruevalSubmitted(indexed uint256,bool,uint256,uint8)
           handler: handleTruevalSubmitted
         - event: SettingChanged(uint256,uint256,uint256,address)
           handler: handleSettingChanged
