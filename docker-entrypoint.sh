@@ -6,8 +6,7 @@ echo "deploy subgraph is ${DEPLOY_SUBGRAPH}"
 
 if [ "${DEPLOY_SUBGRAPH}" = "true" ]
 then
-  [ -d /ocean-contracts/subgraph ] || mkdir /ocean-contracts/subgraph
-  rm -f /ocean-contracts/subgraph/ready
+  rm -f /ocean-subgraph/ready
   echo "Waiting for contracts to be deployed"
   while [ ! -f "/ocean-contracts/artifacts/ready" ]; do
     sleep 2
@@ -15,6 +14,6 @@ then
   export ADDRESS_FILE="/ocean-contracts/artifacts/address.json"
   cd /usr/src/app/
   npm run quickstart:barge
-  touch /ocean-contracts/subgraph/ready
+  touch /ocean-subgraph/ready
 fi
 tail -f /dev/null
