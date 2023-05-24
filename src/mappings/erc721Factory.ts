@@ -1,13 +1,16 @@
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { ERC721Template } from '../@types/templates/ERC721Template/ERC721Template'
 import { ERC20Template } from '../@types/templates/ERC20Template/ERC20Template'
+import { ERC20Template3 } from '../@types/templates/ERC20Template3/ERC20Template3'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
-
+import {
+  ERC20Template as factoryERC20Template,
+  ERC20Template3 as factoryERC20Template3
+} from '../@types/templates'
 import { getUser } from './utils/userUtils'
 import { getToken, getNftToken, getPredictContract } from './utils/tokenUtils'
 import { addDatatoken } from './utils/globalUtils'
-
 export function handleNftCreated(event: NFTCreated): void {
   // const nft = new Nft(event.params.newTokenAddress.toHexString())
   const nft = getNftToken(event.params.newTokenAddress)
@@ -60,6 +63,7 @@ export function handleNewToken(event: TokenCreated): void {
   token.save()
   addDatatoken()
   if (token.templateId == 3) {
+    factoryERC20Template3.create(event.params.newTokenAddress)
     const predictContract = getPredictContract(event.params.newTokenAddress)
     predictContract.timestamp = event.block.timestamp.toI32()
     predictContract.txId = event.transaction.hash.toHex()
@@ -67,4 +71,5 @@ export function handleNewToken(event: TokenCreated): void {
     predictContract.eventIndex = event.logIndex.toI32()
     predictContract.save()
   }
+  factoryERC20Template.create(event.params.newTokenAddress)
 }

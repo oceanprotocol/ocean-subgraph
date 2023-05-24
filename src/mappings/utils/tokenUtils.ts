@@ -1,19 +1,12 @@
 import { Address, log, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { Nft, Token, PredictContract } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
-import {
-  ERC20Template,
-  ERC721Template,
-  ERC20Template3
-} from '../../@types/templates'
+import { ERC721Template } from '../../@types/templates'
 import { addNft } from './globalUtils'
 import { ZERO_ADDRESS } from './constants'
 
 export function createToken(address: Address, isDatatoken: boolean): Token {
   log.debug('started creating token with address: {}', [address.toHexString()])
-  if (isDatatoken) {
-    ERC20Template.create(address)
-  }
   const token = new Token(address.toHexString())
   const contract = ERC20.bind(address)
   const name = contract.try_name()
@@ -117,7 +110,6 @@ export function getUSDValue(
 }
 
 export function createPredictContract(address: Address): PredictContract {
-  ERC20Template3.create(address)
   const predictContract = new PredictContract(address.toHexString())
   const token = getToken(address, true)
   predictContract.token = token.id

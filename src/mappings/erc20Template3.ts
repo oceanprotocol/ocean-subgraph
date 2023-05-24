@@ -2,7 +2,7 @@ import {
   PredictSubscription,
   PredictPayout,
   PredictPrediction,
-  PredictTrueVals,
+  PredictTrueVal,
   PredictSlot,
   PredictSettingUpdate,
   PredictionRevenue
@@ -87,6 +87,7 @@ export function handlePredictionPayout(event: PredictionPayout): void {
   if (!predictPrediction) return
   const predictionPayout = new PredictPayout(predictionId)
   predictionPayout.prediction = predictPrediction.id
+
   let decimals = 18
   const predictContract = getPredictContract(event.address)
   if (predictContract.stakeToken) {
@@ -111,6 +112,9 @@ export function handlePredictionPayout(event: PredictionPayout): void {
   predictionPayout.eventIndex = event.logIndex.toI32()
   predictionPayout.timestamp = event.block.timestamp.toI32()
   predictionPayout.save()
+
+  predictPrediction.payout = predictionPayout.id
+  predictPrediction.save()
 }
 
 export function handleNewSubscription(event: NewSubscription): void {
@@ -138,7 +142,8 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
     event.address.toHexString(),
     event.params.slot
   )
-  const newPredictTrueVals = new PredictTrueVals(predictSlot.id) // they share the same id
+  const id = event.address.toHexString() + '-' + event.params.slot.toString()
+  const newPredictTrueVals = new PredictTrueVal(id) // they share the same id
   newPredictTrueVals.slot = predictSlot.id
   newPredictTrueVals.trueValue = event.params.trueValue
   newPredictTrueVals.block = event.block.number.toI32()

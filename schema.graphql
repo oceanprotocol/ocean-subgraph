@@ -684,7 +684,7 @@ type PredictPrediction @entity{
 }
 
 
-type PredictTrueVals @entity{
+type PredictTrueVal @entity{
   "id = {contract address}-{slot}"
   id: ID!
   slot: PredictSlot!
@@ -715,7 +715,7 @@ type PredictSlot @entity{
   predictContract: PredictContract!
   slot: BigInt!
   predictions:[PredictPrediction!] @derivedFrom(field: "slot")
-  trueValues: [PredictTrueVals!] @derivedFrom(field: "slot")
+  trueValues: [PredictTrueVal!] @derivedFrom(field: "slot")
   revenue: BigDecimal!
   revenues: [PredictionRevenue!] @derivedFrom(field: "slot")
   status: PredictSlotStatus!
