@@ -1,7 +1,6 @@
 import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
 import { ERC721Template } from '../@types/templates/ERC721Template/ERC721Template'
 import { ERC20Template } from '../@types/templates/ERC20Template/ERC20Template'
-import { ERC20Template3 } from '../@types/templates/ERC20Template3/ERC20Template3'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 import {
