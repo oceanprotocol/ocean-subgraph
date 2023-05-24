@@ -14,6 +14,7 @@ then
   export ADDRESS_FILE="/ocean-contracts/artifacts/address.json"
   cd /usr/src/app/
   npm run quickstart:barge
+  sleep 3
   touch /ocean-subgraph/ready
 fi
 tail -f /dev/null
