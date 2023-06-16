@@ -1,0 +1,358 @@
+specVersion: 0.0.4
+description: Ocean provides data sharing through IDOs
+repository: https://github.com/oceanprotocol/ocean-subgraph
+schema:
+  file: ./schema.graphql
+templates:
+  - name: ERC20Template
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: ERC20Template
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc20Templates.ts
+      entities:
+        - ERC20Template
+      abis:
+        - name: ERC20Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
+        - name: ERC20TemplateEnterprise
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20Roles
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+      eventHandlers:
+        - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleOrderStarted
+          receipt: true
+        - event: OrderReused(bytes32,address,uint256,uint256)
+          handler: handlerOrderReused
+          receipt: true
+        - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
+          handler: handleNewPaymentCollector
+        - event: PublishMarketFee(indexed address,indexed address,uint256)
+          handler: handlePublishMarketFee
+        - event: PublishMarketFeeChanged(address,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
+        - event: ConsumeMarketFee(indexed address,indexed address,uint256)
+          handler: handleConsumeMarketFee
+        - event: AddedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedMinter
+        - event: AddedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedPaymentManager
+        - event: RemovedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedMinter
+        - event: RemovedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedPaymentManager
+        - event: CleanedPermissions(indexed address,uint256,uint256)
+          handler: handleCleanedPermissions
+        - event: ProviderFee(indexed address,indexed address,uint256,bytes,uint8,bytes32,bytes32,uint256)
+          handler: handleProviderFee
+          receipt: true
+
+  - name: ERC721Template
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: ERC721Template
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/nftUpdate.ts
+      entities:
+        - ERC721Template
+      abis:
+        - name: ERC721Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
+        - name: ERC721RolesAddress
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC721RolesAddress.sol/ERC721RolesAddress.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: MetadataCreated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
+          handler: handleMetadataCreated
+        - event: MetadataUpdated(indexed address,uint8,string,bytes,bytes,bytes32,uint256,uint256)
+          handler: handleMetadataUpdated
+        - event: MetadataState(indexed address,uint8,uint256,uint256)
+          handler: handleMetadataState
+        - event: TokenURIUpdate(indexed address,string,uint256,uint256,uint256)
+          handler: handleTokenUriUpdate
+        - event: AddedManager(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedManager
+        - event: AddedTo725StoreList(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedTo725StoreList
+        - event: AddedToCreateERC20List(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedToCreateERC20List
+        - event: AddedToMetadataList(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedToMetadataList
+        - event: RemovedFrom725StoreList(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedFrom725StoreList
+        - event: RemovedFromCreateERC20List(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedFromCreateERC20List
+        - event: RemovedFromMetadataList(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedFromMetadataList
+        - event: RemovedManager(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedManager
+        - event: CleanedPermissions(indexed address,uint256,uint256)
+          handler: handleCleanedPermissions
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleNftTransferred
+        - event: DataChanged(indexed bytes32,bytes)
+          handler: handleNftData
+
+  - name: Dispenser
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: Dispenser
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/dispenser.ts
+      entities:
+        - Dispenser
+      abis:
+        - name: Dispenser
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: DispenserCreated(indexed address,indexed address,uint256,uint256,address)
+          handler: handleNewDispenser
+        - event: DispenserActivated(indexed address)
+          handler: handleActivate
+        - event: DispenserDeactivated(indexed address)
+          handler: handleDeactivate
+        - event: DispenserAllowedSwapperChanged(indexed address,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: TokensDispensed(indexed address,indexed address,uint256)
+          handler: handleTokensDispensed
+        - event: OwnerWithdrawed(indexed address,indexed address,uint256)
+          handler: handleOwnerWinthdraw
+
+  - name: FixedRateExchange
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: FixedRateExchange
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/fixedRateExchange.ts
+      entities:
+        - FixedRateExchange
+      abis:
+        - name: FixedRateExchange
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: ExchangeCreated(indexed bytes32,indexed address,indexed address,address,uint256)
+          handler: handleExchangeCreated
+        - event: ExchangeRateChanged(indexed bytes32,indexed address,uint256)
+          handler: handleRateChange
+        - event: ExchangeMintStateChanged(indexed bytes32,indexed address,bool)
+          handler: handleMintStateChanged
+        - event: ExchangeActivated(indexed bytes32,indexed address)
+          handler: handleActivated
+        - event: ExchangeDeactivated(indexed bytes32,indexed address)
+          handler: handleDeactivated
+        - event: ExchangeAllowedSwapperChanged(indexed bytes32,indexed address)
+          handler: handleAllowedSwapperChanged
+        - event: Swapped(indexed bytes32,indexed address,uint256,uint256,address,uint256,uint256,uint256)
+          handler: handleSwap
+        - event: PublishMarketFeeChanged(indexed bytes32,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
+        - event: TokenCollected(indexed bytes32,indexed address,indexed address,uint256)
+          handler: handleTokenCollected
+
+dataSources:
+  - kind: ethereum/contract
+    name: ERC721Factory
+    network: mumbai
+    source:
+      address: '0x7d46d74023507D30ccc2d3868129fbE4e400e40B'
+      abi: ERC721Factory
+      startBlock: 26354458
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc721Factory.ts
+      entities:
+        - ERC721Factory
+      abis:
+        - name: ERC721Factory
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: NFTCreated(address,indexed address,string,indexed address,string,string,bool,indexed address)
+          handler: handleNftCreated
+        - event: TokenCreated(indexed address,indexed address,string,string,uint256,address)
+          handler: handleNewToken
+
+  - kind: ethereum/contract
+    name: FactoryRouter
+    network: mumbai
+    source:
+      address: '0x564955E9d25B49afE5Abd66966Ab4Bc9Ad55Fedb'
+      abi: FactoryRouter
+      startBlock: 26354458
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/factoryRouter.ts
+      entities:
+        - FactoryRouter
+      abis:
+        - name: FactoryRouter
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/FactoryRouter.sol/FactoryRouter.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: TokenAdded(indexed address,indexed address)
+          handler: handleTokenAdded
+        - event: TokenRemoved(indexed address,indexed address)
+          handler: handleTokenRemoved
+        - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleOPCFeeChanged
+        - event: SSContractAdded(indexed address,indexed address)
+          handler: handleSSContractAdded
+        - event: SSContractRemoved(indexed address,indexed address)
+          handler: handleSSContractRemoved
+        - event: FixedRateContractAdded(indexed address,indexed address)
+          handler: handleFixedRateContractAdded
+        - event: FixedRateContractRemoved(indexed address,indexed address)
+          handler: handleFixedRateContractRemoved
+        - event: DispenserContractAdded(indexed address,indexed address)
+          handler: handleDispenserContractAdded
+        - event: DispenserContractRemoved(indexed address,indexed address)
+          handler: handleDispenserContractRemoved
+  - name: veAllocate
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: veAllocate
+      address: '0x3fa1d5AC45ab1Ff9CFAe227c5583Ec0484b54Ef9'
+      startBlock: 26354458
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/veAllocate.ts
+      entities:
+        - veAllocate
+      abis:
+        - name: veAllocate
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veAllocate.sol/veAllocate.json
+      eventHandlers:
+        - event: AllocationSet(indexed address,indexed address,indexed uint256,uint256)
+          handler: handleAllocationSet
+        - event: AllocationSetMultiple(indexed address,address[],uint256[],uint256[])
+          handler: handleAllocationSetMultiple
+  
+  - name: veOCEAN
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: veOCEAN
+      address: '0x061955B6980A34fce74b235f90DBe20d76f087b1'
+      startBlock: 26354458
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/veOCEAN.ts
+      entities:
+        - veOCEAN
+      abis:
+        - name: veOCEAN
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veOCEAN.vy/veOCEAN.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleWithdraw
+        - event: Supply(uint256,uint256)
+          handler: handleSupply
+  
+  - name: veDelegation
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: veDelegation
+      address: '0x96E3aE4247a01C3d40a261df1F8ead70E32E7C0c'
+      startBlock: 26354458
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/veDelegation.ts
+      entities:
+        - veDelegation
+      abis:
+        - name: veDelegation
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veDelegation.vy/veDelegation.json
+      eventHandlers:
+        - event: DelegateBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
+          handler: handleDelegation
+        - event: ExtendBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
+          handler: handleExtendBoost
+        - event: BurnBoost(indexed address,indexed address,indexed uint256)
+          handler: handleBurnBoost
+  
+  - name: veFeeDistributor
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: veFeeDistributor
+      address: '0x35F1e6765750E874EB9d0675393A1A394A4749b4'
+      startBlock: 26354458
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/veFeeDistributor.ts
+      entities:
+        - veFeeDistributor
+      abis:
+        - name: veFeeDistributor
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veFeeDistributor.vy/veFeeDistributor.json
+      eventHandlers:
+        - event: Claimed(indexed address,uint256,uint256,uint256)
+          handler: handleClaimed
+        - event: CheckpointToken(uint256,uint256)
+          handler: handleCheckpoint
+  
+  - name: DFRewards
+    kind: ethereum/contract
+    network: mumbai
+    source:
+      abi: DFRewards
+      address: '0x4259c164eedA7483dda2b4b622D761A88674D31f'
+      startBlock: 26354458
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/dfRewards.ts
+      entities:
+        - DFRewards
+      abis:
+        - name: DFRewards
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/df/DFRewards.sol/DFRewards.json
+      eventHandlers:
+        - event: Allocated(address[],uint256[],address)
+          handler: handleAllocated
+        - event: Claimed(address,uint256,address)
+          handler: handleClaimed
+  

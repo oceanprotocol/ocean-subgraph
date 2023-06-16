@@ -17,7 +17,7 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
-      ethereum: 'goerli:https://goerli.infura.io/v3/${INFURA_PROJECT_ID}'
+      ethereum: 'mumbai:https://polygon-mumbai-bor.publicnode.com'
       RUST_LOG: info
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
