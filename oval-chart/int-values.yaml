@@ -1,0 +1,128 @@
+# Default values for oval-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: perpetuumprogress/oval-metadatacache
+  pullPolicy: Always
+  # Set environment variables
+  env:
+    - name: "LOG_LEVEL"
+      value: "DEBUG"
+    - name: "AQUARIUS_BIND_URL"
+      value: "http://0.0.0.0:5000"
+    - name: "AQUARIUS_WORKERS"
+      value: "1"
+    - name: "DB_HOSTNAME"
+      value: "elasticsearch-master"
+    - name: "DB_MODULE"
+      value: "elasticsearch"
+    - name: "DB_NAME"
+      value: "aquarius"
+    - name: "DB_PORT"
+      value: 9200
+    - name: "DB_SCHEME"
+      value: "http"
+    - name: "DB_USERNAME"
+      value: "elastic "
+    - name: "DB_PASSWORD"
+      value: "changeme"
+    - name: "DB_SSL"
+      value: "false"
+      #   - name: "RUN_AQUARIUS_SERVER"
+      #      value: "false"
+    - name: "RUN_EVENTS_MONITOR"
+      value: "1"
+    - name: "CONFIG_FILE"
+      value: "config.ini"
+    - name: "ALLOWED_PUBLISHERS"
+      value: '["0x279e112d0D182A7234Fe11D0363B3C6f2edd71e4"]'
+    - name: "BFACTORY_BLOCK"
+      value: "7298806"
+    - name: "METADATA_CONTRACT_BLOCK"
+      value: "7298808"
+    - name: "NETWORK_NAME"
+      value: "goerli"
+    - name: "OCEAN_ADDRESS"
+      value: "0xCfDdA22C9837aE76E0faA845354f33C62E03653a"
+    - name: "BLOCKS_CHUNK_SIZE"
+      value: "5000"
+    - name: "EVENTS_HTTP"
+      value: "1" 
+    # Overrides the image tag whose default is the chart appVersion.
+  tag: "int"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "dev-oval-metadatacache-run-service-account"
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 5000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: 
+      cert-manager.io/cluster-issuer: letsencrypt-production
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: metadatacache.int.oval.pepro.io
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: 
+    - secretName: int-oval-metadatacache-tls
+      hosts:
+         - metadatacache.int.oval.pepro.io
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
