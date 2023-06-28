@@ -246,16 +246,19 @@ export function handlePublishMarketFeeChanged(
     event.address
   )
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
-  const baseToken = getToken(
-    Address.fromString(fixedRateExchange.baseToken),
-    false
-  )
+
   if (fixedRateExchange) {
+    const feeToken = getToken(
+      Address.fromString(fixedRateExchange.publishMarketFeeAddress),
+      false
+    )
+    const feeDecimals = BigInt.fromI32(feeToken.decimals).toI32()
+
     fixedRateExchange.publishMarketFeeAddress =
       event.params.newMarketCollector.toHexString()
     fixedRateExchange.publishMarketSwapFee = weiToDecimal(
       event.params.swapFee.toBigDecimal(),
-      BigInt.fromI32(baseToken.decimals).toI32()
+      feeDecimals
     )
     fixedRateExchange.save()
   }

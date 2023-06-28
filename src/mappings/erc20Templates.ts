@@ -129,6 +129,7 @@ export function handlerOrderReused(event: OrderReused): void {
 }
 
 export function handlePublishMarketFee(event: PublishMarketFee): void {}
+
 export function handlePublishMarketFeeChanged(
   event: PublishMarketFeeChanged
 ): void {
