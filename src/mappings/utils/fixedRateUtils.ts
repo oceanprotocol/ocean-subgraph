@@ -57,7 +57,8 @@ export function updateFixedRateExchangeSupply(
 
 export function getUpdateOrSwapId(
   txAddress: string,
-  exchangeId: string
+  exchangeId: string,
+  eventIndex: number
 ): string {
-  return `${txAddress}-${exchangeId}`
+  return `${txAddress}-${exchangeId}-${eventIndex}`
 }

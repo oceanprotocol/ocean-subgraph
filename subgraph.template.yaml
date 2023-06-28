@@ -38,6 +38,8 @@ templates:
           handler: handlePublishMarketFee
         - event: PublishMarketFeeChanged(address,address,address,uint256)
           handler: handlePublishMarketFeeChanged
+        - event: ConsumeMarketFee(indexed address,indexed address,uint256)
+          handler: handleConsumeMarketFee
         - event: AddedMinter(indexed address,indexed address,uint256,uint256)
           handler: handleAddedMinter
         - event: AddedPaymentManager(indexed address,indexed address,uint256,uint256)

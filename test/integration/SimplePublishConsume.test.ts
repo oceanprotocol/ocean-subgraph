@@ -152,18 +152,24 @@ describe('Simple Publish & consume test', async () => {
     )
 
     // graph tests here
-    await sleep(2000)
+    await sleep(3000)
     const graphNftToken = erc721Address.toLowerCase()
     const query = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id}}`
+          nft(id:"${graphNftToken}"){symbol,id,eventIndex}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
+    await sleep(3000)
     const queryResult = await response.json()
     assert(queryResult.data.nft.id === graphNftToken)
+    assert(
+      queryResult.data.nft.eventIndex !== null &&
+        queryResult.data.nft.eventIndex > 0,
+      'Invalid eventIndex for NFT creation'
+    )
   })
   it('should publish and transfer an NFT', async () => {
     const nftParams: NftCreateData = {
@@ -188,27 +194,34 @@ describe('Simple Publish & consume test', async () => {
       nftParams,
       erc20Params
     )
-    await sleep(2000)
+    await sleep(3000)
     const erc721Address = result.events.NFTCreated.returnValues[0]
     const datatokenAddress = result.events.TokenCreated.returnValues[0]
     const graphNftToken = erc721Address.toLowerCase()
 
     const queryOriginalOwner = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner{id}}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner{id},eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(queryOriginalOwner)
     })
+    await sleep(3000)
     const initialResult = await initialResponse.json()
     // Checking original owner account has been set correctly
     assert(
       initialResult.data.nft.owner.id.toLowerCase() ===
         publisherAccount.toLowerCase()
     )
-    const chain = await web3.eth.getChainId()
+    assert(
+      initialResult.data.nft.eventIndex !== null &&
+        initialResult.data.nft.eventIndex > 0,
+      'Invalid eventIndex for NFT creation'
+    )
+
     // create the files encrypted string
+    const chain = await web3.eth.getChainId()
     let providerResponse = await ProviderInstance.encrypt(
       assetUrl,
       chain,
@@ -235,21 +248,27 @@ describe('Simple Publish & consume test', async () => {
       encryptedResponse,
       '0x' + metadataHash
     )
-    await sleep(2000)
+    await sleep(3000)
 
     // Transfer the NFT
     await nft.transferNft(graphNftToken, publisherAccount, newOwnerAccount)
-    await sleep(2000)
+    await sleep(3000)
     const query2 = {
       query: `query {
-          nft(id:"${graphNftToken}"){symbol,id,owner{id}, transferable}}`
+          nft(id:"${graphNftToken}"){symbol,id,owner{id}, transferable, eventIndex}}`
     }
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query2)
     })
+    await sleep(3000)
     const queryResult = await response.json()
     assert(queryResult.data.nft.owner.id === newOwnerAccount)
+    assert(
+      queryResult.data.nft.eventIndex !== null &&
+        queryResult.data.nft.eventIndex > 0,
+      'Invalid eventIndex for NFT creation'
+    )
   })
 
   it('should save  provider fees after startOrder is called', async () => {
@@ -287,18 +306,20 @@ describe('Simple Publish & consume test', async () => {
       1,
       setProviderFee
     )
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}`
-
+    await sleep(3000)
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user1.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toFixed(
+      1
+    )}`
     const query = {
-      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
+      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
     }
 
-    await sleep(2000)
+    await sleep(3000)
     const response = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(query)
     })
-
+    await sleep(3000)
     const queryResult = await response.json()
 
     const providerFeeJSON = JSON.parse(queryResult.data.order.providerFee)
@@ -320,6 +341,10 @@ describe('Simple Publish & consume test', async () => {
       providerFeeJSON.providerFeeToken.toLowerCase() ===
         setProviderFee.providerFeeToken.toLowerCase(),
       'Wrong providerFeeToken set'
+    )
+    assert(
+      queryResult.data.order.eventIndex !== null,
+      'Invalid eventIndex for order'
     )
   })
 
@@ -361,16 +386,19 @@ describe('Simple Publish & consume test', async () => {
     assert(orderTx.transactionHash, 'Failed to start order')
 
     // Check initial provider fee has been set correctly
-    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}`
+    const orderId = `${orderTx.transactionHash.toLowerCase()}-${datatokenAddress.toLowerCase()}-${user4.toLowerCase()}-${orderTx.events.OrderStarted.logIndex.toFixed(
+      1
+    )}`
 
     const initialQuery = {
-      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}}}`
+      query: `query {order(id:"${orderId}"){id, providerFee, lastPriceToken{id}, eventIndex}}`
     }
-    await sleep(2000)
+    await sleep(3000)
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
       body: JSON.stringify(initialQuery)
     })
+    await sleep(3000)
     const initialQueryResult = await initialResponse.json()
     const initialProviderFeeJSON = JSON.parse(
       initialQueryResult.data.order.providerFee
@@ -392,6 +420,10 @@ describe('Simple Publish & consume test', async () => {
       initialProviderFeeJSON.providerFeeToken.toLowerCase() ===
         setInitialProviderFee.providerFeeToken.toLowerCase(),
       'Wrong initial providerFeeToken set'
+    )
+    assert(
+      initialQueryResult.data.order.eventIndex !== null,
+      'Invalid eventIndex for order'
     )
 
     providerFeeAmount = '990000'
@@ -421,7 +453,7 @@ describe('Simple Publish & consume test', async () => {
 
     const reusedOrder = await datatoken.reuseOrder(
       datatokenAddress,
-      user2,
+      user4,
       orderTx.transactionHash,
       setNewProviderFee
     )
@@ -433,7 +465,11 @@ describe('Simple Publish & consume test', async () => {
     // Check the new provider fee has been set in OrderReuse
 
     const reuseQuery = {
-      query: `query {orderReuse(id:"${reusedOrder.transactionHash}"){id, providerFee}}`
+      query: `query {orderReuse(id:"${
+        reusedOrder.transactionHash
+      }-${reusedOrder.events.OrderReused.logIndex.toFixed(
+        1
+      )}"){id, providerFee, eventIndex}}`
     }
 
     await sleep(2000)
@@ -462,6 +498,18 @@ describe('Simple Publish & consume test', async () => {
       reuseProviderFeeJSON.providerFeeToken.toLowerCase() ===
         setNewProviderFee.providerFeeToken.toLowerCase(),
       'New providerFeeToken set in reuse order is wrong'
+    )
+    assert(
+      reuseQueryResult.data.orderReuse.eventIndex !== null,
+      'Invalid eventIndex for reuse order'
+    )
+    assert(
+      reuseQueryResult.data.orderReuse.eventIndex === 0,
+      'Invalid reuse order event index'
+    )
+    assert(
+      initialQueryResult.data.order.eventIndex === 0,
+      'Invalid start order event index'
     )
   })
 })

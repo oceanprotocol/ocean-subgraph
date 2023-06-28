@@ -151,6 +151,7 @@ describe('Fixed Rate Exchange tests', async () => {
                 transferable,
                 createdTimestamp,
                 tx,
+                eventIndex,
                 block,
                 orderCount}}`
     }
@@ -191,6 +192,10 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(nft.block >= blockNumber, 'incorrect value for: block')
     assert(nft.block < blockNumber + 50, 'incorrect value for: block')
     assert(nft.orderCount === '0', 'incorrect value for: orderCount')
+    assert(
+      nft.eventIndex !== null && nft.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Test DT Fields after deploying Fixed rate exchange', async () => {
@@ -220,6 +225,7 @@ describe('Fixed Rate Exchange tests', async () => {
           dispensers {id},
           createdTimestamp,
           tx,
+          eventIndex,
           block,
           lastPriceToken,
           lastPriceValue
@@ -274,6 +280,10 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(dt.block >= blockNumber, 'incorrect value for: block')
     assert(dt.block < blockNumber + 50, 'incorrect value for: block')
     assert(dt.lastPriceValue === '0', 'incorrect value for: lastPriceValue')
+    assert(
+      dt.eventIndex !== null && dt.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Test fixedRateExchanges Fields', async () => {
@@ -310,6 +320,7 @@ describe('Fixed Rate Exchange tests', async () => {
           }
           createdTimestamp
           tx
+          eventIndex
           block
           publishMarketFeeAddress
           publishMarketSwapFee
@@ -385,6 +396,10 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     assert(fixedTx.from === publisher, 'incorrect value for: tx')
     assert(fixedTx.to === factoryAddress, 'incorrect value for: tx')
+    assert(
+      fixed.eventIndex !== null && fixed.eventIndex > 0,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Updates Fixed Rate Price', async () => {
@@ -398,6 +413,7 @@ describe('Fixed Rate Exchange tests', async () => {
           }
           oldPrice
           newPrice
+          eventIndex
         }
       }}`
     }
@@ -422,7 +438,7 @@ describe('Fixed Rate Exchange tests', async () => {
 
     // Update price
     const newPrice = '999'
-    await fixedRate.setRate(publisher, exchangeId, newPrice)
+    const tx = await fixedRate.setRate(publisher, exchangeId, newPrice)
     await sleep(sleepMs)
 
     // Check price after first update
@@ -441,10 +457,14 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     assert(updates2.oldPrice === price1, 'incorrect value: 2nd oldPrice')
     assert(updates2.newPrice === newPrice, 'incorrect value: 2nd newPrice')
+    assert(
+      updates2.eventIndex === tx.events.ExchangeRateChanged.logIndex,
+      'incorrect value: 2nd eventIndex'
+    )
 
     // Update price a 2nd time
     const newPrice2 = '1' // '5.123'
-    await fixedRate.setRate(publisher, exchangeId, newPrice2)
+    const tx2 = await fixedRate.setRate(publisher, exchangeId, newPrice2)
     await sleep(sleepMs)
 
     // Check price after 2nd update
@@ -464,10 +484,14 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     assert(updates3.oldPrice === newPrice, 'incorrect value: 3rd oldPrice')
     assert(updates3.newPrice === newPrice2, 'incorrect value: 3rd newPrice')
+    assert(
+      updates3.eventIndex === tx2.events.ExchangeRateChanged.logIndex,
+      'incorrect value: 3nd eventIndex'
+    )
   })
   it('Deactivates exchange', async () => {
     const deactiveQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active, eventIndex}}`
     }
 
     const initialResponse = await fetch(subgraphUrl, {
@@ -488,13 +512,17 @@ describe('Fixed Rate Exchange tests', async () => {
       body: JSON.stringify(deactiveQuery)
     })
     const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
-      .active
-    assert(updatedActive === false, 'incorrect value for: updatedActive')
+
+    assert(updatedActive.active === false, 'incorrect value for: updatedActive')
+    assert(
+      updatedActive.eventIndex !== null && updatedActive.eventIndex > 0,
+      'incorrect value: eventIndex'
+    )
   })
 
   it('Activates exchange', async () => {
     const activeQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active, eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -514,13 +542,16 @@ describe('Fixed Rate Exchange tests', async () => {
       body: JSON.stringify(activeQuery)
     })
     const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
-      .active
-    assert(updatedActive === true, 'incorrect value for: updatedActive')
+    assert(updatedActive.active === true, 'incorrect value for: updatedActive')
+    assert(
+      updatedActive.eventIndex !== null && updatedActive.eventIndex > 0,
+      'incorrect value: eventIndex'
+    )
   })
 
   it('Activate Minting', async () => {
     const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -531,7 +562,7 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(initialMint === null, 'incorrect value for: initialMint')
 
     // Activate minting
-    await fixedRate.activateMint(publisher, exchangeId)
+    const tx = await fixedRate.activateMint(publisher, exchangeId)
     await sleep(sleepMs)
 
     // Check the updated value for active
@@ -541,13 +572,16 @@ describe('Fixed Rate Exchange tests', async () => {
     })
 
     const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(updatedMint === true, 'incorrect value for: updatedMint')
+    assert(updatedMint.withMint === true, 'incorrect value for: updatedMint')
+    assert(
+      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Deactivate Minting', async () => {
     const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
     }
     const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
@@ -558,7 +592,7 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(initialMint === true, 'incorrect value for: initialMint')
 
     // Activate minting
-    await fixedRate.deactivateMint(publisher, exchangeId)
+    const tx = await fixedRate.deactivateMint(publisher, exchangeId)
     await sleep(sleepMs)
 
     // Check the updated value for active
@@ -568,8 +602,11 @@ describe('Fixed Rate Exchange tests', async () => {
     })
 
     const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(updatedMint === false, 'incorrect value for: updatedMint')
+    assert(updatedMint.withMint === false, 'incorrect value for: updatedMint')
+    assert(
+      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('User1 buys a datatoken', async () => {
@@ -584,6 +621,7 @@ describe('Fixed Rate Exchange tests', async () => {
           block
           createdTimestamp
           tx
+          eventIndex
           oceanFeeAmount
           marketFeeAmount
           consumeMarketFeeAmount
@@ -654,7 +692,11 @@ describe('Fixed Rate Exchange tests', async () => {
     const swappedAmount = web3.utils.fromWei(
       new BN(tx.returnValues.baseTokenSwappedAmount)
     )
-    assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
+    assert(
+      swaps.id ===
+        `${tx.transactionHash}-${fixedRateId}-${tx.logIndex.toFixed(1)}`,
+      'incorrect: id'
+    )
     assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
     assert(swaps.by.id === user1, 'incorrect value for: id')
     assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
@@ -669,6 +711,7 @@ describe('Fixed Rate Exchange tests', async () => {
       'wrong consumeMarketFeeAmount'
     )
     assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
+    assert(swaps.eventIndex === tx.logIndex, 'incorrect value for: eventIndex')
     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
   it('User1 sells a datatoken', async () => {
@@ -691,6 +734,7 @@ describe('Fixed Rate Exchange tests', async () => {
           block
           createdTimestamp
           tx
+          eventIndex
           oceanFeeAmount
           __typename
         }  
@@ -705,7 +749,11 @@ describe('Fixed Rate Exchange tests', async () => {
     const swappedAmount = web3.utils.fromWei(
       new BN(tx.returnValues.baseTokenSwappedAmount)
     )
-    assert(swaps.id === `${tx.transactionHash}-${fixedRateId}`, 'incorrect: id')
+    assert(
+      swaps.id ===
+        `${tx.transactionHash}-${fixedRateId}-${tx.logIndex.toFixed(1)}`,
+      'incorrect: id'
+    )
     assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
     assert(swaps.by.id === user1, 'incorrect value for: id')
     assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
@@ -715,12 +763,13 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
     assert(swaps.oceanFeeAmount === oceanFeeAmount, 'incorrect: oceanFeeAmount')
     assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
+    assert(swaps.eventIndex === tx.logIndex, 'incorrect value for: eventIndex')
     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
 
   it('Updates allowed swapper', async () => {
     const swapperQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper}}`
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){allowedSwapper, eventIndex}}`
     }
     // Check initial allowedSwapper
     const swapperResponse1 = await fetch(subgraphUrl, {
@@ -734,7 +783,7 @@ describe('Fixed Rate Exchange tests', async () => {
       'incorrect value for: allowedSwapper'
     )
 
-    await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
+    const tx = await fixedRate.setAllowedSwapper(publisher, exchangeId, user1)
     await sleep(sleepMs)
 
     const swapperResponse2 = await fetch(subgraphUrl, {
@@ -742,8 +791,16 @@ describe('Fixed Rate Exchange tests', async () => {
       body: JSON.stringify(swapperQuery)
     })
     const allowedSwapper2 = (await swapperResponse2.json()).data
-      .fixedRateExchange.allowedSwapper
+      .fixedRateExchange
 
-    assert(allowedSwapper2 === user1, 'incorrect value for: allowedSwapper 2')
+    assert(
+      allowedSwapper2.allowedSwapper === user1,
+      'incorrect value for: allowedSwapper 2'
+    )
+    assert(
+      allowedSwapper2.eventIndex ===
+        tx.events.ExchangeAllowedSwapperChanged.logIndex,
+      'incorrect value for: eventIndex'
+    )
   })
 })

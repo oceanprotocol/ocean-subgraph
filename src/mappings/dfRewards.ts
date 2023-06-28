@@ -26,6 +26,7 @@ export function handleAllocated(event: Allocated): void {
     history.type = 'Allocated'
     history.timestamp = event.block.timestamp
     history.tx = event.transaction.hash.toHex()
+    history.eventIndex = event.logIndex.toI32()
     history.block = event.block.number.toI32()
     history.save()
 
@@ -55,6 +56,7 @@ export function handleClaimed(event: Claimed): void {
   history.type = 'Claimed'
   history.timestamp = event.block.timestamp
   history.tx = event.transaction.hash.toHex()
+  history.eventIndex = event.logIndex.toI32()
   history.block = event.block.number.toI32()
   history.save()
 
