@@ -259,10 +259,14 @@ export function handlePublishMarketFeeChanged(
   const fixedRateExchange = getFixedRateExchange(fixedRateId)
 
   if (fixedRateExchange) {
+    const dataToken = getToken(
+      Address.fromString(fixedRateExchange.datatoken),
+      true
+    )
     let feeDecimals = BigInt.fromI32(18).toI32()
-    if (fixedRateExchange.publishMarketFeeAddress) {
+    if (dataToken) {
       const feeToken = getToken(
-        Address.fromString(fixedRateExchange!.publishMarketFeeAddress!),
+        Address.fromString(dataToken.publishMarketFeeToken!),
         false
       )
       feeDecimals = BigInt.fromI32(feeToken.decimals).toI32()
