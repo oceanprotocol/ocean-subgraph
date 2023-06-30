@@ -264,7 +264,7 @@ export function handlePublishMarketFeeChanged(
       true
     )
     let feeDecimals = BigInt.fromI32(18).toI32()
-    if (dataToken) {
+    if (dataToken.publishMarketFeeToken) {
       const feeToken = getToken(
         Address.fromString(dataToken.publishMarketFeeToken!),
         false
