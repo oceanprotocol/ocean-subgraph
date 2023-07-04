@@ -94,7 +94,7 @@ describe('Fixed Rate Exchange tests', async () => {
       cap,
       feeAmount,
       paymentCollector: ZERO_ADDRESS,
-      feeToken: ZERO_ADDRESS,
+      feeToken: addresses.MockUSDC.toLowerCase(),
       minter: publisher,
       mpFeeAddress: marketPlaceFeeAddress
     }
