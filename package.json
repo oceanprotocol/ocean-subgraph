@@ -15,6 +15,7 @@
     "quickstart:moonriver": "node ./scripts/generatenetworkssubgraphs.js moonriver && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:energyweb": "node ./scripts/generatenetworkssubgraphs.js energyweb && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:bsc": "node ./scripts/generatenetworkssubgraphs.js bsc && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:oasis_saphire_testnet": "node ./scripts/generatenetworkssubgraphs.js oasis_saphire_testnet && npm run codegen && npm run create:local && npm run deploy:local",
     "create:thegraph": "graph create oceanprotocol/ocean-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-barge": "graph create oceanprotocol/ocean-subgraph --node http://172.15.0.15:8020",
@@ -72,7 +73,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@oceanprotocol/contracts": "^1.1.12",
+    "@oceanprotocol/contracts": "^2.0.0-next.1",
     "@oceanprotocol/lib": "^2.7.0",
     "cross-fetch": "^3.1.4",
     "ethereumjs-util": "^7.1.5"
