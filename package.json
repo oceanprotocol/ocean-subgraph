@@ -14,6 +14,8 @@
     "quickstart:mainnet": "node ./scripts/generatenetworkssubgraphs.js mainnet && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:moonriver": "node ./scripts/generatenetworkssubgraphs.js moonriver && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:energyweb": "node ./scripts/generatenetworkssubgraphs.js energyweb && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:sepolia": "node ./scripts/generatenetworkssubgraphs.js sepolia && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:gen-x-testnet": "node ./scripts/generatenetworkssubgraphs.js gen-x-testnet && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:bsc": "node ./scripts/generatenetworkssubgraphs.js bsc && npm run codegen && npm run create:local && npm run deploy:local",
     "create:thegraph": "graph create oceanprotocol/ocean-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
@@ -72,7 +74,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@oceanprotocol/contracts": "^1.1.12",
+    "@oceanprotocol/contracts": "^1.1.14",
     "@oceanprotocol/lib": "^2.7.0",
     "cross-fetch": "^3.1.6",
     "ethereumjs-util": "^7.1.5"
