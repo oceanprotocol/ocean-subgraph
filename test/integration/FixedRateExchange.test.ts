@@ -94,7 +94,7 @@ describe('Fixed Rate Exchange tests', async () => {
       cap,
       feeAmount,
       paymentCollector: ZERO_ADDRESS,
-      feeToken: addresses.MockUSDC.toLowerCase(),
+      feeToken: ZERO_ADDRESS,
       minter: publisher,
       mpFeeAddress: marketPlaceFeeAddress
     }
@@ -195,6 +195,72 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(
       nft.eventIndex !== null && nft.eventIndex > 0,
       'incorrect value for: eventIndex'
+    )
+  })
+
+  it('Deploying a Fixed Rate Exchange with USDC as feeToken', async () => {
+    const usdcSwapFee = '1'
+
+    const nftParams: NftCreateData = {
+      name: nftName,
+      symbol: nftSymbol,
+      templateIndex: 1,
+      tokenURI,
+      transferable: true,
+      owner: publisher
+    }
+    const erc20Params: DatatokenCreateParams = {
+      templateIndex,
+      cap,
+      feeAmount,
+      paymentCollector: ZERO_ADDRESS,
+      feeToken: addresses.MockUSDC, // Testing if the decimals are correct when using USDC as the feeToken
+      minter: publisher,
+      mpFeeAddress: marketPlaceFeeAddress
+    }
+    const fixedRateParams: FreCreationParams = {
+      fixedRateAddress,
+      baseTokenAddress,
+      owner: publisher,
+      marketFeeCollector: marketPlaceFeeAddress,
+      baseTokenDecimals: 18,
+      datatokenDecimals: 18,
+      fixedRate: price,
+      marketFee: usdcSwapFee,
+      allowedConsumer: ZERO_ADDRESS,
+      withMint: false
+    }
+
+    const result = await Factory.createNftWithDatatokenWithFixedRate(
+      publisher,
+      nftParams,
+      erc20Params,
+      fixedRateParams
+    )
+
+    const secondDatatokenAddress =
+      result.events.TokenCreated.returnValues[0].toLowerCase()
+
+    const dtQuery = {
+      query: `query {
+        token(id: "${secondDatatokenAddress}"){
+          publishMarketFeeAddress,
+          publishMarketFeeAmount
+        }}`
+    }
+    const dtResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(dtQuery)
+    })
+    const secondDt = (await dtResponse.json()).data.token
+
+    assert(secondDt, 'No datatoken')
+    console.log('publishMarketFeeAmount', dt.publishMarketFeeAmount)
+    console.log('usdcSwapFee', usdcSwapFee)
+
+    assert(
+      dt.publishMarketFeeAmount === usdcSwapFee,
+      'incorrect value for: publishMarketFeeAmount'
     )
   })
 
