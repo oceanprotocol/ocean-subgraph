@@ -55,10 +55,16 @@ export function handleNewToken(event: TokenCreated): void {
   token.cap = weiToDecimal(event.params.cap.toBigDecimal(), 18)
   // get token id
   const contract = ERC20Template.bind(event.params.newTokenAddress)
-  const contractTemplate = contract.try_getId()
-  if (!contractTemplate.reverted) {
-    token.templateId = contractTemplate.value
-  }
+  let tries = 0
+  // protect against crappy rpc
+  do {
+    const contractTemplate = contract.try_getId()
+    if (!contractTemplate.reverted) {
+      token.templateId = contractTemplate.value
+      break
+    }
+    tries++
+  } while (tries < 300)
   token.save()
   addDatatoken()
   if (token.templateId == 3) {
