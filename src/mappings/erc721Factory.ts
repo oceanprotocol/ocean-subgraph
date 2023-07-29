@@ -65,7 +65,9 @@ export function handleNewToken(event: TokenCreated): void {
 export function handleNew721Template(event: Template721Added): void {
   const dbId = getErc721TemplateId(event.params._templateAddress)
   if (dbId === BigInt.zero()) {
-    const template = new Erc721Template(event.params._templateAddress)
+    const template = new Erc721Template(
+      event.params._templateAddress.toHexString()
+    )
     template.templateId = event.params.nftTemplateCount
     template.save()
   }
@@ -74,7 +76,9 @@ export function handleNew721Template(event: Template721Added): void {
 export function handleNew20Template(event: Template20Added): void {
   const dbId = getErc20TemplateId(event.params._templateAddress)
   if (dbId === BigInt.zero()) {
-    const template = new Erc20Template(event.params._templateAddress)
+    const template = new Erc20Template(
+      event.params._templateAddress.toHexString()
+    )
     template.templateId = event.params.nftTemplateCount
     template.save()
   }
