@@ -1,7 +1,6 @@
 import {
   NFTCreated,
   TokenCreated,
-  ERC721Factory,
   Template721Added,
   Template20Added
 } from '../@types/ERC721Factory/ERC721Factory'
