@@ -9,14 +9,8 @@ import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
-import {
-  getToken,
-  getNftToken,
-  getErc721TemplateId,
-  getErc20TemplateId
-} from './utils/tokenUtils'
+import { getToken, getNftToken, getErc20TemplateId } from './utils/tokenUtils'
 import { addDatatoken } from './utils/globalUtils'
-import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleNftCreated(event: NFTCreated): void {
   // const nft = new Nft(event.params.newTokenAddress.toHexString())
@@ -63,22 +57,20 @@ export function handleNewToken(event: TokenCreated): void {
 }
 
 export function handleNew721Template(event: Template721Added): void {
-  const dbId = getErc721TemplateId(event.params._templateAddress)
-  if (dbId === BigInt.zero()) {
-    const template = new Erc721Template(
-      event.params._templateAddress.toHexString()
-    )
+  let template = Erc721Template.load(
+    event.params._templateAddress.toHexString()
+  )
+  if (template === null) {
+    template = new Erc721Template(event.params._templateAddress.toHexString())
     template.templateId = event.params.nftTemplateCount
     template.save()
   }
 }
 
 export function handleNew20Template(event: Template20Added): void {
-  const dbId = getErc20TemplateId(event.params._templateAddress)
-  if (dbId === BigInt.zero()) {
-    const template = new Erc20Template(
-      event.params._templateAddress.toHexString()
-    )
+  let template = Erc20Template.load(event.params._templateAddress.toHexString())
+  if (template === null) {
+    template = new Erc20Template(event.params._templateAddress.toHexString())
     template.templateId = event.params.nftTemplateCount
     template.save()
   }

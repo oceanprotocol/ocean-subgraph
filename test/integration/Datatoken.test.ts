@@ -197,8 +197,10 @@ describe('Datatoken tests', async () => {
       dt.publishMarketFeeAmount === publishMarketFeeAmount,
       'incorrect value for: publishMarketFeeAmount'
     )
-
-    assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
+    assert(
+      parseInt(dt.templateId) === templateIndex,
+      'incorrect value for: templateId'
+    )
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
     assert(dt.orders, 'incorrect value for: orders')
@@ -314,7 +316,10 @@ describe('Datatoken tests', async () => {
       dt.publishMarketFeeAmount === publishMarketFeeAmount,
       'incorrect value for: publishMarketFeeAmount'
     )
-    assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
+    assert(
+      parseInt(dt.templateId) === templateIndex,
+      'incorrect value for: templateId'
+    )
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
     assert(dt.orders, 'incorrect value for: orders')
