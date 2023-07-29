@@ -30,7 +30,7 @@ type Token @entity {
     publishMarketFeeAmount: BigDecimal   
 
     "template ID of the datatoken"                               
-    templateId: Int                                       
+    templateId: BigInt                                       
 
     "number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts"
     holderCount: BigInt!   
@@ -633,6 +633,20 @@ type NftTransferHistory @entity {
   timestamp: Int!
   block: Int!
 }
+
+type Erc721Template @entity {
+  #ID = template address
+  id: ID!
+  templateId: BigInt!
+}
+
+type Erc20Template @entity {
+  #ID = template address
+  id: ID!
+  templateId: BigInt!
+}
+
+
 
 type PredictSubscription @entity{
   "id = {contract address}-{txid}-{eventIndex}"

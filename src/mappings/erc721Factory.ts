@@ -1,6 +1,11 @@
-import { NFTCreated, TokenCreated } from '../@types/ERC721Factory/ERC721Factory'
-import { ERC721Template } from '../@types/templates/ERC721Template/ERC721Template'
-import { ERC20Template } from '../@types/templates/ERC20Template/ERC20Template'
+import {
+  NFTCreated,
+  TokenCreated,
+  ERC721Factory,
+  Template721Added,
+  Template20Added
+} from '../@types/ERC721Factory/ERC721Factory'
+import { Erc721Template, Erc20Template } from '../@types/schema'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 import {
@@ -8,7 +13,14 @@ import {
   ERC20Template3 as factoryERC20Template3
 } from '../@types/templates'
 import { getUser } from './utils/userUtils'
-import { getToken, getNftToken, getPredictContract } from './utils/tokenUtils'
+import {
+  getToken,
+  getNftToken,
+  getPredictContract,
+  getErc721TemplateId,
+  getErc20TemplateId
+} from './utils/tokenUtils'
+import { BigInt } from '@graphprotocol/graph-ts'
 import { addDatatoken } from './utils/globalUtils'
 export function handleNftCreated(event: NFTCreated): void {
   // const nft = new Nft(event.params.newTokenAddress.toHexString())
@@ -26,12 +38,8 @@ export function handleNftCreated(event: NFTCreated): void {
   nft.block = event.block.number.toI32()
   nft.eventIndex = event.logIndex.toI32()
   nft.transferable = event.params.transferable
-  // get token id
-  const contract = ERC721Template.bind(event.params.newTokenAddress)
-  const contractTemplate = contract.try_getId()
-  if (!contractTemplate.reverted) {
-    nft.templateId = contractTemplate.value
-  }
+  nft.template = event.params.templateAddress.toHexString()
+
   nft.save()
 }
 
@@ -53,21 +61,10 @@ export function handleNewToken(event: TokenCreated): void {
   token.decimals = 18
   token.supply = decimal.ZERO
   token.cap = weiToDecimal(event.params.cap.toBigDecimal(), 18)
-  // get token id
-  const contract = ERC20Template.bind(event.params.newTokenAddress)
-  let tries = 0
-  // protect against crappy rpc
-  do {
-    const contractTemplate = contract.try_getId()
-    if (!contractTemplate.reverted) {
-      token.templateId = contractTemplate.value
-      break
-    }
-    tries++
-  } while (tries < 300)
+  token.templateId = getErc20TemplateId(event.params.templateAddress)
   token.save()
   addDatatoken()
-  if (token.templateId == 3) {
+  if (token.templateId == BigInt.fromString('3')) {
     factoryERC20Template3.create(event.params.newTokenAddress)
     const predictContract = getPredictContract(event.params.newTokenAddress)
     predictContract.timestamp = event.block.timestamp.toI32()
@@ -77,4 +74,40 @@ export function handleNewToken(event: TokenCreated): void {
     predictContract.save()
   }
   factoryERC20Template.create(event.params.newTokenAddress)
+}
+
+export function handleNew721Template(event: Template721Added): void {
+  const dbId = getErc721TemplateId(event.params._templateAddress)
+  if (dbId === BigInt.zero()) {
+    const template = new Erc721Template(event.params._templateAddress)
+    template.templateId = event.params.nftTemplateCount
+    template.save()
+  }
+}
+
+export function handleNew20Template(event: Template20Added): void {
+  const dbId = getErc20TemplateId(event.params._templateAddress)
+  if (dbId === BigInt.zero()) {
+    const template = new Erc20Template(event.params._templateAddress)
+    template.templateId = event.params.nftTemplateCount
+    template.save()
+  }
+}
+
+export function handleNew721Template(event: Template721Added): void {
+  const dbId = getErc721TemplateId(event.params._templateAddress)
+  if (dbId === BigInt.zero()) {
+    const template = new Erc721Template(event.params._templateAddress)
+    template.templateId = event.params.nftTemplateCount
+    template.save()
+  }
+}
+
+export function handleNew20Template(event: Template20Added): void {
+  const dbId = getErc20TemplateId(event.params._templateAddress)
+  if (dbId === BigInt.zero()) {
+    const template = new Erc20Template(event.params._templateAddress)
+    template.templateId = event.params.nftTemplateCount
+    template.save()
+  }
 }

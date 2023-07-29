@@ -1,5 +1,11 @@
 import { Address, log, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { Nft, Token, PredictContract } from '../../@types/schema'
+import {
+  Nft,
+  Token,
+  PredictContract,
+  Erc721Template,
+  Erc20Template
+} from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
 import { ERC721Template } from '../../@types/templates'
 import { addNft } from './globalUtils'
@@ -28,7 +34,7 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   token.block = 0
   token.tx = ''
   token.eventIndex = 0
-  token.templateId = 0
+  token.templateId = BigInt.zero()
   token.save()
   return token
 }
@@ -53,7 +59,6 @@ export function createNftToken(address: Address): Nft {
   token.creator = ''
   token.assetState = 0
   token.template = ''
-  token.templateId = 0
   token.transferable = true
   token.createdTimestamp = 0
   token.block = 0
@@ -131,4 +136,20 @@ export function getPredictContract(address: Address): PredictContract {
     newPredictContract = createPredictContract(address)
   }
   return newPredictContract
+}
+
+export function getErc721TemplateId(address: Address): BigInt {
+  const template = Erc721Template.load(address)
+  if (template) {
+    return template.templateId
+  }
+  return BigInt.zero()
+}
+
+export function getErc20TemplateId(address: Address): BigInt {
+  const template = Erc20Template.load(address)
+  if (template) {
+    return template.templateId
+  }
+  return BigInt.zero()
 }
