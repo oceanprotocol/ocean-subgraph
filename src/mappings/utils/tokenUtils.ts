@@ -114,6 +114,22 @@ export function getUSDValue(
   return BigDecimal.zero()
 }
 
+export function getErc721TemplateId(address: Address): BigInt {
+  const template = Erc721Template.load(address.toHexString())
+  if (template) {
+    return template.templateId
+  }
+  return BigInt.zero()
+}
+
+export function getErc20TemplateId(address: Address): BigInt {
+  const template = Erc20Template.load(address.toHexString())
+  if (template) {
+    return template.templateId
+  }
+  return BigInt.zero()
+}
+
 export function createPredictContract(address: Address): PredictContract {
   const predictContract = new PredictContract(address.toHexString())
   const token = getToken(address, true)
@@ -136,20 +152,4 @@ export function getPredictContract(address: Address): PredictContract {
     newPredictContract = createPredictContract(address)
   }
   return newPredictContract
-}
-
-export function getErc721TemplateId(address: Address): BigInt {
-  const template = Erc721Template.load(address.toHexString())
-  if (template) {
-    return template.templateId
-  }
-  return BigInt.zero()
-}
-
-export function getErc20TemplateId(address: Address): BigInt {
-  const template = Erc20Template.load(address.toHexString())
-  if (template) {
-    return template.templateId
-  }
-  return BigInt.zero()
 }
