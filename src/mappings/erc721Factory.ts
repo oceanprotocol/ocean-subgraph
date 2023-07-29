@@ -1,13 +1,21 @@
 import {
   NFTCreated,
   TokenCreated,
-  ERC721Factory
+  ERC721Factory,
+  Template721Added,
+  Template20Added
 } from '../@types/ERC721Factory/ERC721Factory'
+import { Erc721Template, Erc20Template } from '../@types/schema'
 import { decimal } from './utils/constants'
 import { weiToDecimal } from './utils/generic'
 
 import { getUser } from './utils/userUtils'
-import { getToken, getNftToken } from './utils/tokenUtils'
+import {
+  getToken,
+  getNftToken,
+  getErc721TemplateId,
+  getErc20TemplateId
+} from './utils/tokenUtils'
 import { addDatatoken } from './utils/globalUtils'
 import { BigInt } from '@graphprotocol/graph-ts'
 
@@ -27,6 +35,7 @@ export function handleNftCreated(event: NFTCreated): void {
   nft.block = event.block.number.toI32()
   nft.eventIndex = event.logIndex.toI32()
   nft.transferable = event.params.transferable
+  nft.template = event.params.templateAddress.toHexString()
 
   nft.save()
 }
@@ -49,25 +58,25 @@ export function handleNewToken(event: TokenCreated): void {
   token.decimals = 18
   token.supply = decimal.ZERO
   token.cap = weiToDecimal(event.params.cap.toBigDecimal(), 18)
-  const eventTemplateAddress = event.params.templateAddress
-    .toHexString()
-    .toLowerCase()
-  const contract = ERC721Factory.bind(event.address)
-  const templateCount = contract.try_getCurrentTemplateCount()
-  if (templateCount.reverted) return
-  const templateCountNum = templateCount.value.toI32()
-
-  for (let i = 0; i < templateCountNum; i++) {
-    const template = contract.try_getTokenTemplate(BigInt.fromI32(1 + i))
-    if (template.reverted) return
-    const templateAddress = template.value.templateAddress
-      .toHexString()
-      .toLowerCase()
-    if (templateAddress == eventTemplateAddress) {
-      token.templateId = 1 + i
-    }
-  }
-
+  token.templateId = getErc20TemplateId(event.params.templateAddress)
   token.save()
   addDatatoken()
+}
+
+export function handleNew721Template(event: Template721Added): void {
+  const dbId = getErc721TemplateId(event.params._templateAddress)
+  if (dbId === BigInt.zero()) {
+    const template = new Erc721Template(event.params._templateAddress)
+    template.templateId = event.params.nftTemplateCount
+    template.save()
+  }
+}
+
+export function handleNew20Template(event: Template20Added): void {
+  const dbId = getErc20TemplateId(event.params._templateAddress)
+  if (dbId === BigInt.zero()) {
+    const template = new Erc20Template(event.params._templateAddress)
+    template.templateId = event.params.nftTemplateCount
+    template.save()
+  }
 }

@@ -1,5 +1,5 @@
 import { Address, log, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { Nft, Token } from '../../@types/schema'
+import { Nft, Token, Erc721Template, Erc20Template } from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
 import { ERC20Template, ERC721Template } from '../../@types/templates'
 import { addNft } from './globalUtils'
@@ -108,4 +108,20 @@ export function getUSDValue(
   timestamp: number
 ): BigDecimal {
   return BigDecimal.zero()
+}
+
+export function getErc721TemplateId(address: Address): BigInt {
+  const template = Erc721Template.load(address)
+  if (template) {
+    return template.templateId
+  }
+  return BigInt.zero()
+}
+
+export function getErc20TemplateId(address: Address): BigInt {
+  const template = Erc20Template.load(address)
+  if (template) {
+    return template.templateId
+  }
+  return BigInt.zero()
 }
