@@ -127,6 +127,7 @@ describe('Fixed Rate Exchange tests', async () => {
       result.events.NewFixedRate.returnValues.exchangeId.toLowerCase()
 
     fixedRateId = `${exchangeContract}-${exchangeId}`
+    const nftTemplate = await Factory.getNFTTemplate(nftParams.templateIndex)
 
     // Check NFT values
     await sleep(sleepMs)
@@ -176,7 +177,10 @@ describe('Fixed Rate Exchange tests', async () => {
     )
     assert(nft.storeUpdateRole === null, 'incorrect value for: storeUpdateRole')
     assert(nft.metadataRole === null, 'incorrect value for: metadataRole')
-    assert(nft.template === '', 'incorrect value for: template')
+    assert(
+      nft.template === nftTemplate.templateAddress.toLowerCase(),
+      'incorrect value for: template'
+    )
     assert(nft.transferable === true, 'incorrect value for: transferable')
     assert(
       nft.createdTimestamp >= time,
@@ -263,7 +267,10 @@ describe('Fixed Rate Exchange tests', async () => {
       'incorrect value for: publishMarketFeeAmount'
     )
 
-    assert(dt.templateId === templateIndex, 'incorrect value for: templateId')
+    assert(
+      parseInt(dt.templateId) === templateIndex,
+      'incorrect value for: templateId'
+    )
     assert(dt.holderCount === '0', 'incorrect value for: holderCount')
     assert(dt.orderCount === '0', 'incorrect value for: orderCount')
     assert(dt.orders, 'incorrect value for: orders')

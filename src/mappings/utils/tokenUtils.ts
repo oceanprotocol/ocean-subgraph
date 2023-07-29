@@ -139,7 +139,7 @@ export function getPredictContract(address: Address): PredictContract {
 }
 
 export function getErc721TemplateId(address: Address): BigInt {
-  const template = Erc721Template.load(address)
+  const template = Erc721Template.load(address.toHexString())
   if (template) {
     return template.templateId
   }
@@ -147,7 +147,7 @@ export function getErc721TemplateId(address: Address): BigInt {
 }
 
 export function getErc20TemplateId(address: Address): BigInt {
-  const template = Erc20Template.load(address)
+  const template = Erc20Template.load(address.toHexString())
   if (template) {
     return template.templateId
   }
