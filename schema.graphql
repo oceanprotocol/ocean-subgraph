@@ -30,7 +30,7 @@ type Token @entity {
     publishMarketFeeAmount: BigDecimal   
 
     "template ID of the datatoken"                               
-    templateId: BigInt                                       
+    templateId: BigInt!                                     
 
     "number of addresses holding a balance of datatoken , TODO: can we actually calculate this? what happens when users trade the dts"
     holderCount: BigInt!   

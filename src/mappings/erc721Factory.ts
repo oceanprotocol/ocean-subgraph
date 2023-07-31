@@ -18,7 +18,6 @@ import {
   getErc20TemplateId,
   getPredictContract
 } from './utils/tokenUtils'
-import { BigInt } from '@graphprotocol/graph-ts'
 import { addDatatoken } from './utils/globalUtils'
 
 export function handleNftCreated(event: NFTCreated): void {
@@ -62,7 +61,7 @@ export function handleNewToken(event: TokenCreated): void {
   token.templateId = getErc20TemplateId(event.params.templateAddress)
   token.save()
   addDatatoken()
-  if (token.templateId === BigInt.fromString('3')) {
+  if (token.templateId.toString() == '3') {
     factoryERC20Template3.create(event.params.newTokenAddress)
     const predictContract = getPredictContract(event.params.newTokenAddress)
     predictContract.timestamp = event.block.timestamp.toI32()
