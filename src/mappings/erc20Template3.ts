@@ -161,17 +161,16 @@ export function handleSettingChanged(event: SettingChanged): void {
   const predictContract = getPredictContract(event.address)
   predictContract.secondsPerEpoch = event.params.secondsPerEpoch
   predictContract.secondsPerSubscription = event.params.secondsPerSubscription
-  predictContract.truevalSubmitTimeout =
-    event.params.trueValueSubmitTimeout
+  predictContract.truevalSubmitTimeout = event.params.trueValueSubmitTimeout
   const stakeToken = getToken(event.params.stakeToken, false)
   predictContract.stakeToken = stakeToken.id
   predictContract.save()
   const predictSettingsUpdate = new PredictSettingUpdate(
     event.address.toHexString() +
-    '- ' +
-    event.transaction.hash.toHexString() +
-    '-' +
-    event.logIndex.toHexString()
+      '- ' +
+      event.transaction.hash.toHexString() +
+      '-' +
+      event.logIndex.toHexString()
   )
   predictSettingsUpdate.block = event.block.number.toI32()
   predictSettingsUpdate.txId = event.transaction.hash.toHexString()
