@@ -742,7 +742,7 @@ type PredictSettingUpdate @entity{
   predictContract: PredictContract!
   secondsPerEpoch: BigInt!
   secondsPerSubscription: BigInt!
-  truevalSubmitTimeoutBlock: BigInt!
+  truevalSubmitTimeout: BigInt!
   stakeToken: Token
   "txId"
   txId: String
@@ -759,7 +759,7 @@ type PredictContract @entity{
   subscriptions: [PredictSubscription!] @derivedFrom(field: "predictContract")
   secondsPerEpoch: BigInt!
   secondsPerSubscription: BigInt!
-  truevalSubmitTimeoutBlock: BigInt!
+  truevalSubmitTimeout: BigInt!
   stakeToken: Token
   "creation txId"
   txId: String

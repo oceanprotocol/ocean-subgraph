@@ -134,9 +134,9 @@ export function createPredictContract(address: Address): PredictContract {
   const predictContract = new PredictContract(address.toHexString())
   const token = getToken(address, true)
   predictContract.token = token.id
-  predictContract.blocksPerEpoch = BigInt.zero()
-  predictContract.blocksPerSubscription = BigInt.zero()
-  predictContract.truevalSubmitTimeoutBlock = BigInt.zero()
+  predictContract.secondsPerEpoch = BigInt.zero()
+  predictContract.secondsPerSubscription = BigInt.zero()
+  predictContract.truevalSubmitTimeout = BigInt.zero()
   predictContract.stakeToken = null
   predictContract.txId = ''
   predictContract.timestamp = 0
