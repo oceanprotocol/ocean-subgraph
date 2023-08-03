@@ -740,8 +740,8 @@ type PredictSettingUpdate @entity{
   "id = {contract address}-{txId}-{eventIndex}"
   id: ID!
   predictContract: PredictContract!
-  blocksPerEpoch: BigInt!
-  blocksPerSubscription: BigInt!
+  secondsPerEpoch: BigInt!
+  secondsPerSubscription: BigInt!
   truevalSubmitTimeoutBlock: BigInt!
   stakeToken: Token
   "txId"
@@ -757,8 +757,8 @@ type PredictContract @entity{
   slots: [PredictSlot!] @derivedFrom(field: "predictContract")
   settingUpdates: [PredictSettingUpdate!] @derivedFrom(field: "predictContract")
   subscriptions: [PredictSubscription!] @derivedFrom(field: "predictContract")
-  blocksPerEpoch: BigInt!
-  blocksPerSubscription: BigInt!
+  secondsPerEpoch: BigInt!
+  secondsPerSubscription: BigInt!
   truevalSubmitTimeoutBlock: BigInt!
   stakeToken: Token
   "creation txId"
