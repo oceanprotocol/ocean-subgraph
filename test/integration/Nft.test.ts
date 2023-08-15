@@ -66,6 +66,7 @@ const ddo = {
     }
   ]
 }
+let nftTemplate
 
 describe('NFT tests', async () => {
   const nftName = 'testNFT'
@@ -119,7 +120,7 @@ describe('NFT tests', async () => {
     )
     erc721Address = result.events.NFTCreated.returnValues[0]
     datatokenAddress = result.events.TokenCreated.returnValues[0]
-
+    nftTemplate = await Factory.getNFTTemplate(nftParams.templateIndex)
     // Check values before updating metadata
     await sleep(3000)
     nftAddress = erc721Address.toLowerCase()
@@ -167,7 +168,10 @@ describe('NFT tests', async () => {
     )
     assert(nft.storeUpdateRole === null, 'incorrect value for: storeUpdateRole')
     assert(nft.metadataRole === null, 'incorrect value for: metadataRole')
-    assert(nft.template === '', 'incorrect value for: template')
+    assert(
+      nft.template === nftTemplate.templateAddress.toLowerCase(),
+      'incorrect value for: template'
+    )
     assert(nft.transferable === true, 'incorrect value for: transferable')
     assert(
       nft.createdTimestamp >= time,
@@ -276,7 +280,10 @@ describe('NFT tests', async () => {
       updatedNft.metadataRole === null,
       'incorrect value for: metadataRole'
     )
-    assert(updatedNft.template === '', 'incorrect value for: template')
+    assert(
+      updatedNft.template === nftTemplate.templateAddress.toLowerCase(),
+      'incorrect value for: template'
+    )
     assert(
       updatedNft.transferable === true,
       'incorrect value for: transferable'
