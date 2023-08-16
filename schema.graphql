@@ -733,6 +733,8 @@ type PredictSlot @entity{
   revenue: BigDecimal!
   revenues: [PredictionRevenue!] @derivedFrom(field: "slot")
   status: PredictSlotStatus!
+  roundSumStakesUp: BigDecimal!
+  roundSumStakes: BigDecimal!
 }
 
 
@@ -740,9 +742,9 @@ type PredictSettingUpdate @entity{
   "id = {contract address}-{txId}-{eventIndex}"
   id: ID!
   predictContract: PredictContract!
-  blocksPerEpoch: BigInt!
-  blocksPerSubscription: BigInt!
-  truevalSubmitTimeoutBlock: BigInt!
+  secondsPerEpoch: BigInt!
+  secondsPerSubscription: BigInt!
+  truevalSubmitTimeout: BigInt!
   stakeToken: Token
   "txId"
   txId: String
@@ -757,9 +759,9 @@ type PredictContract @entity{
   slots: [PredictSlot!] @derivedFrom(field: "predictContract")
   settingUpdates: [PredictSettingUpdate!] @derivedFrom(field: "predictContract")
   subscriptions: [PredictSubscription!] @derivedFrom(field: "predictContract")
-  blocksPerEpoch: BigInt!
-  blocksPerSubscription: BigInt!
-  truevalSubmitTimeoutBlock: BigInt!
+  secondsPerEpoch: BigInt!
+  secondsPerSubscription: BigInt!
+  truevalSubmitTimeout: BigInt!
   stakeToken: Token
   "creation txId"
   txId: String

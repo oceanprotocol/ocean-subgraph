@@ -52,7 +52,7 @@ jobs:
         run: |
           bash -x start_ocean.sh --with-thegraph --skip-subgraph-deploy --no-dashboard 2>&1 > start_ocean.log &
         env:
-          CONTRACTS_VERSION: predictoor
+          CONTRACTS_VERSION: predictoor3
 
       - run: npm ci
 

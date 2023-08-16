@@ -33,6 +33,8 @@ function getPredictSlot(
     newPredictSlot.predictContract = predictContractAddress
     newPredictSlot.slot = slot
     newPredictSlot.revenue = BigDecimal.zero()
+    newPredictSlot.roundSumStakesUp = BigDecimal.zero()
+    newPredictSlot.roundSumStakes = BigDecimal.zero()
     newPredictSlot.status = 'Pending'
     newPredictSlot.save()
   }
@@ -155,14 +157,31 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
     18
   )
   newPredictTrueVals.save()
+  let decimals = 18
+  const predictContract = getPredictContract(event.address)
+  if (predictContract.stakeToken) {
+    const stakeToken = getToken(
+      Address.fromString(predictContract.stakeToken!),
+      false
+    )
+    decimals = stakeToken.decimals
+  }
+  predictSlot.roundSumStakesUp = weiToDecimal(
+    event.params.roundSumStakesUp.toBigDecimal(),
+    BigInt.fromI32(decimals).toI32()
+  )
+  predictSlot.roundSumStakes = weiToDecimal(
+    event.params.roundSumStakes.toBigDecimal(),
+    BigInt.fromI32(decimals).toI32()
+  )
+  predictSlot.save()
 }
 
 export function handleSettingChanged(event: SettingChanged): void {
   const predictContract = getPredictContract(event.address)
-  predictContract.blocksPerEpoch = event.params.blocksPerEpoch
-  predictContract.blocksPerSubscription = event.params.blocksPerSubscription
-  predictContract.truevalSubmitTimeoutBlock =
-    event.params.trueValueSubmitTimeoutBlock
+  predictContract.secondsPerEpoch = event.params.secondsPerEpoch
+  predictContract.secondsPerSubscription = event.params.secondsPerSubscription
+  predictContract.truevalSubmitTimeout = event.params.trueValueSubmitTimeout
   const stakeToken = getToken(event.params.stakeToken, false)
   predictContract.stakeToken = stakeToken.id
   predictContract.save()
@@ -178,11 +197,11 @@ export function handleSettingChanged(event: SettingChanged): void {
   predictSettingsUpdate.eventIndex = event.logIndex.toI32()
   predictSettingsUpdate.timestamp = event.block.timestamp.toI32()
   predictSettingsUpdate.predictContract = predictContract.id
-  predictSettingsUpdate.blocksPerEpoch = event.params.blocksPerEpoch
-  predictSettingsUpdate.blocksPerSubscription =
-    event.params.blocksPerSubscription
-  predictSettingsUpdate.truevalSubmitTimeoutBlock =
-    event.params.trueValueSubmitTimeoutBlock
+  predictSettingsUpdate.secondsPerEpoch = event.params.secondsPerEpoch
+  predictSettingsUpdate.secondsPerSubscription =
+    event.params.secondsPerSubscription
+  predictSettingsUpdate.truevalSubmitTimeout =
+    event.params.trueValueSubmitTimeout
   predictSettingsUpdate.stakeToken = stakeToken.id
   predictSettingsUpdate.save()
 }
@@ -190,15 +209,14 @@ export function handleSettingChanged(event: SettingChanged): void {
 export function handleRevenueAdded(event: RevenueAdded): void {
   /*
    for (uint256 i = 0; i < num_epochs; i++) {
-                // TODO FIND A WAY TO ACHIEVE THIS WITHOUT A LOOP
                 subscriptionRevenueAtBlock[
-                    slot + blocksPerEpoch * (i)
+                    slot + secondsPerEpoch * (i)
                 ] += amt_per_epoch;
             }
-    emit RevenueAdded(amount,slot,amt_per_epoch,num_epochs,blocksPerEpoch);
+    emit RevenueAdded(amount,slot,amt_per_epoch,num_epochs,secondsPerEpoch);
   */
   const numEpochs = event.params.numEpochs
-  const blocksPerEpoch = event.params.blocksPerEpoch
+  const secondsPerEpoch = event.params.secondsPerEpoch
   let decimals = 18
   const predictContract = getPredictContract(event.address)
   if (predictContract.stakeToken) {
@@ -214,7 +232,7 @@ export function handleRevenueAdded(event: RevenueAdded): void {
   )
   const slot = event.params.slot
   for (let i = BigInt.zero(); i.lt(numEpochs); i = i.plus(BigInt.fromI32(1))) {
-    const targetSlot = slot.plus(blocksPerEpoch.times(i))
+    const targetSlot = slot.plus(secondsPerEpoch.times(i))
     const predictSlot = getPredictSlot(event.address.toHexString(), targetSlot)
     predictSlot.revenue = predictSlot.revenue.plus(amountPerEpoch)
     predictSlot.save()

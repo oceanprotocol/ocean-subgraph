@@ -1,7 +1,7 @@
 version: '3'
 services:
   graph-node:
-    image: graphprotocol/graph-node:v0.27.0
+    image: graphprotocol/graph-node:v0.28.2
     ports:
       - '9000:8000'
       - '8001:8001'
@@ -17,8 +17,9 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
-      ethereum: 'goerli:https://goerli.infura.io/v3/${INFURA_PROJECT_ID}'
-      RUST_LOG: info
+      ethereum: 'oasis_saphire_testnet:http://192.168.136.129:8080'
+      RUST_LOG: warning
+      GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: 100
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
     ports:

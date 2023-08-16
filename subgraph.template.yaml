@@ -68,7 +68,7 @@ templates:
         - ERC20Template3
       abis:
         - name: ERC20Template3
-          file: ./abis/ERC20Template3.json
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template3.sol/ERC20Template3.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: ERC20Roles
@@ -80,7 +80,7 @@ templates:
           handler: handlePredictionPayout
         - event: NewSubscription(indexed address,uint256,uint256)
           handler: handleNewSubscription
-        - event: TruevalSubmitted(indexed uint256,bool,uint256,uint8)
+        - event: TruevalSubmitted(indexed uint256,bool,uint256,uint8,uint256,uint256)
           handler: handleTruevalSubmitted
         - event: SettingChanged(uint256,uint256,uint256,address)
           handler: handleSettingChanged
