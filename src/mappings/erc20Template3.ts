@@ -33,6 +33,8 @@ function getPredictSlot(
     newPredictSlot.predictContract = predictContractAddress
     newPredictSlot.slot = slot
     newPredictSlot.revenue = BigDecimal.zero()
+    newPredictSlot.roundSumStakesUp = BigDecimal.zero()
+    newPredictSlot.roundSumStakes = BigDecimal.zero()
     newPredictSlot.status = 'Pending'
     newPredictSlot.save()
   }
@@ -155,6 +157,24 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
     18
   )
   newPredictTrueVals.save()
+  let decimals = 18
+  const predictContract = getPredictContract(event.address)
+  if (predictContract.stakeToken) {
+    const stakeToken = getToken(
+      Address.fromString(predictContract.stakeToken!),
+      false
+    )
+    decimals = stakeToken.decimals
+  }
+  predictSlot.roundSumStakesUp = weiToDecimal(
+    event.params.roundSumStakesUp.toBigDecimal(),
+    BigInt.fromI32(decimals).toI32()
+  )
+  predictSlot.roundSumStakes = weiToDecimal(
+    event.params.roundSumStakes.toBigDecimal(),
+    BigInt.fromI32(decimals).toI32()
+  )
+  predictSlot.save()
 }
 
 export function handleSettingChanged(event: SettingChanged): void {

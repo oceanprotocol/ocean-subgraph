@@ -733,6 +733,8 @@ type PredictSlot @entity{
   revenue: BigDecimal!
   revenues: [PredictionRevenue!] @derivedFrom(field: "slot")
   status: PredictSlotStatus!
+  roundSumStakesUp: BigDecimal!
+  roundSumStakes: BigDecimal!
 }
 
 
