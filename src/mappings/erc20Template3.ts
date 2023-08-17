@@ -183,10 +183,10 @@ export function handleSettingChanged(event: SettingChanged): void {
   predictContract.save()
   const predictSettingsUpdate = new PredictSettingUpdate(
     event.address.toHexString() +
-    '- ' +
-    event.transaction.hash.toHexString() +
-    '-' +
-    event.logIndex.toHexString()
+      '- ' +
+      event.transaction.hash.toHexString() +
+      '-' +
+      event.logIndex.toHexString()
   )
   predictSettingsUpdate.block = event.block.number.toI32()
   predictSettingsUpdate.txId = event.transaction.hash.toHexString()
