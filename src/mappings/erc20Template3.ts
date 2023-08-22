@@ -24,7 +24,7 @@ import { getUser } from './utils/userUtils'
 
 function getPredictSlot(
   predictContractAddress: string,
-  slot: number
+  slot: any
 ): PredictSlot {
   const id = predictContractAddress + '-' + slot.toString()
   let newPredictSlot = PredictSlot.load(id)
