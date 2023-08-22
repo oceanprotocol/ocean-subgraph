@@ -44,7 +44,7 @@ function getPredictSlot(
 export function handlePredictionSubmitted(event: PredictionSubmitted): void {
   const predictSlot = getPredictSlot(
     event.address.toHexString(),
-    event.params.slot.toNumber()
+    parseInt(event.params.slot)
   )
   const user = getUser(event.params.predictoor.toHex())
   const id =
@@ -142,7 +142,7 @@ export function handleNewSubscription(event: NewSubscription): void {
 export function handleTruevalSubmitted(event: TruevalSubmitted): void {
   const predictSlot = getPredictSlot(
     event.address.toHexString(),
-    event.params.slot.toNumber()
+    parseInt(event.params.slot)
   )
   const id = event.address.toHexString() + '-' + event.params.slot.toString()
   const newPredictTrueVals = new PredictTrueVal(id) // they share the same id
@@ -236,7 +236,7 @@ export function handleRevenueAdded(event: RevenueAdded): void {
   const slot = event.params.slot
   for (let i = BigInt.zero(); i.lt(numEpochs); i = i.plus(BigInt.fromI32(1))) {
     const targetSlot = slot.plus(secondsPerEpoch.times(i))
-    const targetSlotInt = targetSlot.toNumber()
+    const targetSlotInt = parseInt(targetSlot)
     const predictSlot = getPredictSlot(
       event.address.toHexString(),
       targetSlotInt
