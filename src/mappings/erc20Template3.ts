@@ -44,7 +44,7 @@ function getPredictSlot(
 export function handlePredictionSubmitted(event: PredictionSubmitted): void {
   const predictSlot = getPredictSlot(
     event.address.toHexString(),
-    parseInt(event.params.slot)
+    parseInt(event.params.slot.toString())
   )
   const user = getUser(event.params.predictoor.toHex())
   const id =
@@ -142,7 +142,7 @@ export function handleNewSubscription(event: NewSubscription): void {
 export function handleTruevalSubmitted(event: TruevalSubmitted): void {
   const predictSlot = getPredictSlot(
     event.address.toHexString(),
-    parseInt(event.params.slot)
+    parseInt(event.params.slot.toString())
   )
   const id = event.address.toHexString() + '-' + event.params.slot.toString()
   const newPredictTrueVals = new PredictTrueVal(id) // they share the same id
