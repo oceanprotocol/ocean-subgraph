@@ -174,7 +174,13 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
     event.params.roundSumStakes.toBigDecimal(),
     BigInt.fromI32(decimals).toI32()
   )
-  predictSlot.status = event.status
+
+  if (event.status == 1) {
+    predictSlot.status = "Paying";
+  }
+  if (event.status == 2) {
+    predictSlot.status = "Canceled";
+  }
   predictSlot.save()
 }
 
