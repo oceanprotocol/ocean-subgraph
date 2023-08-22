@@ -236,7 +236,7 @@ export function handleRevenueAdded(event: RevenueAdded): void {
   const slot = event.params.slot
   for (let i = BigInt.zero(); i.lt(numEpochs); i = i.plus(BigInt.fromI32(1))) {
     const targetSlot = slot.plus(secondsPerEpoch.times(i))
-    const targetSlotInt = Number(targetSlot);
+    const targetSlotInt = Number(targetSlot)
     const predictSlot = getPredictSlot(
       event.address.toHexString(),
       targetSlotInt
