@@ -703,7 +703,6 @@ type PredictTrueVal @entity{
   id: ID!
   slot: PredictSlot!
   trueValue: Boolean!
-  floatValue: BigDecimal!
   "txId"
   txId: String
   eventIndex:Int!
