@@ -171,10 +171,10 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
     BigInt.fromI32(decimals).toI32()
   )
 
-  if (event.status == 1) {
+  if (event.params.status == 1) {
     predictSlot.status = 'Paying'
   }
-  if (event.status == 2) {
+  if (event.params.status == 2) {
     predictSlot.status = 'Canceled'
   }
   predictSlot.save()
@@ -236,9 +236,10 @@ export function handleRevenueAdded(event: RevenueAdded): void {
   const slot = event.params.slot
   for (let i = BigInt.zero(); i.lt(numEpochs); i = i.plus(BigInt.fromI32(1))) {
     const targetSlot = slot.plus(secondsPerEpoch.times(i))
+    const targetSlotInt = Number(targetSlot);
     const predictSlot = getPredictSlot(
       event.address.toHexString(),
-      Number(targetSlot)
+      targetSlotInt
     )
     predictSlot.revenue = predictSlot.revenue.plus(amountPerEpoch)
     predictSlot.save()

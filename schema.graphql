@@ -737,6 +737,8 @@ type PredictSlot @entity{
 }
 
 
+
+
 type PredictSettingUpdate @entity{
   "id = {contract address}-{txId}-{eventIndex}"
   id: ID!
