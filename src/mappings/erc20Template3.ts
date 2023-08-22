@@ -174,6 +174,7 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
     event.params.roundSumStakes.toBigDecimal(),
     BigInt.fromI32(decimals).toI32()
   )
+  predictSlot.status = event.status
   predictSlot.save()
 }
 
@@ -187,10 +188,10 @@ export function handleSettingChanged(event: SettingChanged): void {
   predictContract.save()
   const predictSettingsUpdate = new PredictSettingUpdate(
     event.address.toHexString() +
-      '- ' +
-      event.transaction.hash.toHexString() +
-      '-' +
-      event.logIndex.toHexString()
+    '- ' +
+    event.transaction.hash.toHexString() +
+    '-' +
+    event.logIndex.toHexString()
   )
   predictSettingsUpdate.block = event.block.number.toI32()
   predictSettingsUpdate.txId = event.transaction.hash.toHexString()
