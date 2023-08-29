@@ -24,7 +24,7 @@ import { getUser } from './utils/userUtils'
 
 function getPredictSlot(
   predictContractAddress: string,
-  slot: BigInt
+  slot: i32
 ): PredictSlot {
   const id = predictContractAddress + '-' + slot.toString()
   let newPredictSlot = PredictSlot.load(id)
@@ -44,7 +44,7 @@ function getPredictSlot(
 export function handlePredictionSubmitted(event: PredictionSubmitted): void {
   const predictSlot = getPredictSlot(
     event.address.toHexString(),
-    event.params.slot
+    event.params.slot.toI32()
   )
   const user = getUser(event.params.predictoor.toHex())
   const id =
@@ -142,7 +142,7 @@ export function handleNewSubscription(event: NewSubscription): void {
 export function handleTruevalSubmitted(event: TruevalSubmitted): void {
   const predictSlot = getPredictSlot(
     event.address.toHexString(),
-    event.params.slot
+    event.params.slot.toI32()
   )
   const id = event.address.toHexString() + '-' + event.params.slot.toString()
   const newPredictTrueVals = new PredictTrueVal(id) // they share the same id
@@ -170,6 +170,13 @@ export function handleTruevalSubmitted(event: TruevalSubmitted): void {
     event.params.roundSumStakes.toBigDecimal(),
     BigInt.fromI32(decimals).toI32()
   )
+
+  if (event.params.status == 1) {
+    predictSlot.status = 'Paying'
+  }
+  if (event.params.status == 2) {
+    predictSlot.status = 'Canceled'
+  }
   predictSlot.save()
 }
 
@@ -229,7 +236,10 @@ export function handleRevenueAdded(event: RevenueAdded): void {
   const slot = event.params.slot
   for (let i = BigInt.zero(); i.lt(numEpochs); i = i.plus(BigInt.fromI32(1))) {
     const targetSlot = slot.plus(secondsPerEpoch.times(i))
-    const predictSlot = getPredictSlot(event.address.toHexString(), targetSlot)
+    const predictSlot = getPredictSlot(
+      event.address.toHexString(),
+      targetSlot.toI32()
+    )
     predictSlot.revenue = predictSlot.revenue.plus(amountPerEpoch)
     predictSlot.save()
     const revenueId =
