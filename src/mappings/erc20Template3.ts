@@ -15,7 +15,8 @@ import {
   NewSubscription,
   TruevalSubmitted,
   SettingChanged,
-  RevenueAdded
+  RevenueAdded,
+  Paused
 } from '../@types/templates/ERC20Template3/ERC20Template3'
 
 import { weiToDecimal } from './utils/generic'
@@ -207,6 +208,12 @@ export function handleSettingChanged(event: SettingChanged): void {
     event.params.trueValueSubmitTimeout
   predictSettingsUpdate.stakeToken = stakeToken.id
   predictSettingsUpdate.save()
+}
+
+export function handlePaused(event: Paused): void {
+  const predictContract = getPredictContract(event.address)
+  predictContract.paused = event.params.paused
+  predictContract.save()
 }
 
 export function handleRevenueAdded(event: RevenueAdded): void {

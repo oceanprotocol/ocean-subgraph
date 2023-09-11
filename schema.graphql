@@ -757,6 +757,7 @@ type PredictContract @entity{
   "id = {contract address}"
   id: ID!
   token: Token!
+  paused: Boolean!
   slots: [PredictSlot!] @derivedFrom(field: "predictContract")
   settingUpdates: [PredictSettingUpdate!] @derivedFrom(field: "predictContract")
   subscriptions: [PredictSubscription!] @derivedFrom(field: "predictContract")

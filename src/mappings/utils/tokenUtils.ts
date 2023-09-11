@@ -142,6 +142,7 @@ export function createPredictContract(address: Address): PredictContract {
   predictContract.timestamp = 0
   predictContract.block = 0
   predictContract.eventIndex = 0
+  predictContract.paused = false
   predictContract.save()
   return predictContract
 }
