@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "@oceanprotocol/contracts": "^1.1.14",
-    "@graphprotocol/graph-cli": "^0.38.0",
+    "@graphprotocol/graph-cli": "^0.58.0",
     "@graphprotocol/graph-ts": "^0.30.0"
   },
   "repository": {
