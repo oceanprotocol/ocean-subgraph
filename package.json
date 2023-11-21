@@ -17,14 +17,16 @@
     "quickstart:sepolia": "node ./scripts/generatenetworkssubgraphs.js sepolia && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:gen-x-testnet": "node ./scripts/generatenetworkssubgraphs.js gen-x-testnet && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:bsc": "node ./scripts/generatenetworkssubgraphs.js bsc && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:oasis_saphire_testnet": "node ./scripts/generatenetworkssubgraphs.js oasis_saphire_testnet && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:oasis_saphire": "node ./scripts/generatenetworkssubgraphs.js oasis_saphire && npm run codegen && npm run create:local && npm run deploy:local",
     "create:thegraph": "graph create oceanprotocol/ocean-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-barge": "graph create oceanprotocol/ocean-subgraph --node http://172.15.0.15:8020",
     "codegen": "graph codegen --output-dir src/@types",
     "build": "graph build",
     "deploy:thegraph": "graph deploy oceanprotocol/ocean-subgraph -l $npm_package_version --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy:local": "graph deploy oceanprotocol/ocean-subgraph subgraph.yaml -l $npm_package_version  --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
-    "deploy:local-barge": "graph deploy oceanprotocol/ocean-subgraph subgraph.yaml -l $npm_package_version  --ipfs http://172.15.0.16:5001 --node http://172.15.0.15:8020",
+    "deploy:local": "graph deploy oceanprotocol/ocean-subgraph subgraph.yaml -l $npm_package_version --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
+    "deploy:local-barge": "graph deploy oceanprotocol/ocean-subgraph subgraph.yaml -l $npm_package_version --ipfs http://172.15.0.16:5001 --node http://172.15.0.15:8020",
     "test": "npm run codegen && npm run lint && npm run type-check",
     "test-integration": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/**/*.test.ts'",
     "test-dispenser": "TS_NODE_PROJECT='test/integration/tsconfig.json' mocha --config=test/integration/.mocharc.json --node-env=test --exit 'test/integration/Dispenser.test.ts'",
@@ -46,7 +48,8 @@
     "changelog": "auto-changelog -p"
   },
   "devDependencies": {
-    "@oceanprotocol/lib": "^2.7.0",
+    "@graphprotocol/graph-cli": "^0.56.0",
+    "@graphprotocol/graph-ts": "^0.30.0",
     "@types/chai": "^4.3.5",
     "@types/chai-spies": "^1.0.3",
     "@types/mocha": "^10.0.2",
@@ -76,9 +79,10 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.56.0",
-    "@graphprotocol/graph-ts": "^0.30.0",
-    "@oceanprotocol/contracts": "^1.1.14"
+    "@oceanprotocol/contracts": "^2.0.2",
+    "@oceanprotocol/lib": "^2.7.0",
+    "cross-fetch": "^3.1.6",
+    "ethereumjs-util": "^7.1.5"
   },
   "repository": {
     "type": "git",

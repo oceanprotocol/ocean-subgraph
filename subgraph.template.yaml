@@ -54,6 +54,41 @@ templates:
           handler: handleProviderFee
           receipt: true
 
+  - name: ERC20Template3
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      abi: ERC20Template3
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc20Template3.ts
+      entities:
+        - ERC20Template3
+      abis:
+        - name: ERC20Template3
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template3.sol/ERC20Template3.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20Roles
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+      eventHandlers:
+        - event: PredictionSubmitted(indexed address,indexed uint256,uint256)
+          handler: handlePredictionSubmitted
+        - event: PredictionPayout(indexed address,indexed uint256,uint256,uint256,bool,bool,uint256,uint8)
+          handler: handlePredictionPayout
+        - event: NewSubscription(indexed address,uint256,uint256)
+          handler: handleNewSubscription
+        - event: TruevalSubmitted(indexed uint256,bool,uint8,uint256,uint256)
+          handler: handleTruevalSubmitted
+        - event: SettingChanged(uint256,uint256,uint256,address)
+          handler: handleSettingChanged
+        - event: RevenueAdded(uint256,uint256,uint256,uint256,uint256)
+          handler: handleRevenueAdded
+        - event: Paused(bool)
+          handler: handlePaused
+
   - name: ERC721Template
     kind: ethereum/contract
     network: __NETWORK__
@@ -189,6 +224,10 @@ dataSources:
       entities:
         - ERC721Factory
       abis:
+        - name: ERC721Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
+        - name: ERC20Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
         - name: ERC721Factory
           file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
         - name: ERC20

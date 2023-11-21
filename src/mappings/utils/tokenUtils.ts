@@ -1,15 +1,18 @@
 import { Address, log, BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { Nft, Token, Erc721Template, Erc20Template } from '../../@types/schema'
+import {
+  Nft,
+  Token,
+  PredictContract,
+  Erc721Template,
+  Erc20Template
+} from '../../@types/schema'
 import { ERC20 } from '../../@types/templates/ERC20Template/ERC20'
-import { ERC20Template, ERC721Template } from '../../@types/templates'
+import { ERC721Template } from '../../@types/templates'
 import { addNft } from './globalUtils'
 import { ZERO_ADDRESS } from './constants'
 
 export function createToken(address: Address, isDatatoken: boolean): Token {
   log.debug('started creating token with address: {}', [address.toHexString()])
-  if (isDatatoken) {
-    ERC20Template.create(address)
-  }
   const token = new Token(address.toHexString())
   const contract = ERC20.bind(address)
   const name = contract.try_name()
@@ -31,6 +34,7 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   token.block = 0
   token.tx = ''
   token.eventIndex = 0
+  token.templateId = BigInt.zero()
   token.save()
   return token
 }
@@ -124,4 +128,29 @@ export function getErc20TemplateId(address: Address): BigInt {
     return template.templateId
   }
   return BigInt.zero()
+}
+
+export function createPredictContract(address: Address): PredictContract {
+  const predictContract = new PredictContract(address.toHexString())
+  const token = getToken(address, true)
+  predictContract.token = token.id
+  predictContract.secondsPerEpoch = BigInt.zero()
+  predictContract.secondsPerSubscription = BigInt.zero()
+  predictContract.truevalSubmitTimeout = BigInt.zero()
+  predictContract.stakeToken = null
+  predictContract.txId = ''
+  predictContract.timestamp = 0
+  predictContract.block = 0
+  predictContract.eventIndex = 0
+  predictContract.paused = false
+  predictContract.save()
+  return predictContract
+}
+
+export function getPredictContract(address: Address): PredictContract {
+  let newPredictContract = PredictContract.load(address.toHexString())
+  if (newPredictContract === null) {
+    newPredictContract = createPredictContract(address)
+  }
+  return newPredictContract
 }
