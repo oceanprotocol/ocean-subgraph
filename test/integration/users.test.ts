@@ -64,7 +64,7 @@ describe('User tests', async () => {
   const publishMarketSwapFee = '0.003'
   const templateIndex = 1
   const dtAmount = '10'
-  const datatoken = new Datatoken(web3, 8996)
+  // const datatoken = new Datatoken(web3, 8996)
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
