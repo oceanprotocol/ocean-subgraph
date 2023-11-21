@@ -276,8 +276,3 @@ dataSources:
           handler: handleDispenserContractAdded
         - event: DispenserContractRemoved(indexed address,indexed address)
           handler: handleDispenserContractRemoved
-
-        - event: SSContractAdded(indexed address,indexed address)
-          handler: handleSSContractAdded
-        - event: SSContractRemoved(indexed address,indexed address)
-          handler: handleSSContractRemoved

@@ -3,8 +3,6 @@ import {
   TokenRemoved,
   OPCFeeChanged,
   FactoryRouter,
-  SSContractAdded,
-  SSContractRemoved,
   FixedRateContractAdded,
   FixedRateContractRemoved,
   DispenserContractAdded,
