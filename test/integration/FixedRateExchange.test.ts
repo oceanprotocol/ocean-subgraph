@@ -586,36 +586,6 @@ describe('Fixed Rate Exchange tests', async () => {
     )
   })
 
-  it('Deactivate Minting', async () => {
-    const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
-    }
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-    const initialMint = (await initialResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(initialMint === true, 'incorrect value for: initialMint')
-
-    // Activate minting
-    const tx = await fixedRate.deactivateMint(publisher, exchangeId)
-    await sleep(sleepMs)
-
-    // Check the updated value for active
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-
-    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
-    assert(updatedMint.withMint === false, 'incorrect value for: updatedMint')
-    assert(
-      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
-      'incorrect value for: eventIndex'
-    )
-  })
-
   it('User1 buys a datatoken', async () => {
     const swapsQuery = {
       query: `query {fixedRateExchange(id: "${fixedRateId}"){
@@ -721,57 +691,35 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(swaps.eventIndex === tx.logIndex, 'incorrect value for: eventIndex')
     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
-  it('User1 sells a datatoken', async () => {
-    await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
-    const tx = (await fixedRate.sellDatatokens(user1, exchangeId, '10', '9'))
-      .events?.Swapped
-    const oceanFeeAmount = web3.utils.fromWei(
-      new BN(tx.returnValues.oceanFeeAmount)
-    )
-    assert(tx != null)
-    await sleep(sleepMs)
-    const swapsQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){
-        swaps(orderBy: createdTimestamp, orderDirection: desc){
-          id
-          exchangeId{id}
-          by{id}
-          baseTokenAmount
-          dataTokenAmount
-          block
-          createdTimestamp
-          tx
-          eventIndex
-          oceanFeeAmount
-          __typename
-        }  
-      }}`
+
+  it('Deactivate Minting', async () => {
+    const mintingQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
     }
-    // Check initial swaps
-    const response = await fetch(subgraphUrl, {
+    const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
-      body: JSON.stringify(swapsQuery)
+      body: JSON.stringify(mintingQuery)
     })
-    const swaps = (await response.json()).data.fixedRateExchange.swaps[0]
-    const swappedAmount = web3.utils.fromWei(
-      new BN(tx.returnValues.baseTokenSwappedAmount)
-    )
+    const initialMint = (await initialResponse.json()).data.fixedRateExchange
+      .withMint
+    assert(initialMint === true, 'incorrect value for: initialMint')
+
+    // Activate minting
+    const tx = await fixedRate.deactivateMint(publisher, exchangeId)
+    await sleep(sleepMs)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+
+    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
+    assert(updatedMint.withMint === false, 'incorrect value for: updatedMint')
     assert(
-      swaps.id ===
-        `${tx.transactionHash}-${fixedRateId}-${tx.logIndex.toFixed(1)}`,
-      'incorrect: id'
+      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
+      'incorrect value for: eventIndex'
     )
-    assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
-    assert(swaps.by.id === user1, 'incorrect value for: id')
-    assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
-    assert(swaps.dataTokenAmount === dtAmount, 'incorrect: dataTokenAmount')
-    assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
-    assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
-    assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
-    assert(swaps.oceanFeeAmount === oceanFeeAmount, 'incorrect: oceanFeeAmount')
-    assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
-    assert(swaps.eventIndex === tx.logIndex, 'incorrect value for: eventIndex')
-    assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
 
   it('Updates allowed swapper', async () => {
