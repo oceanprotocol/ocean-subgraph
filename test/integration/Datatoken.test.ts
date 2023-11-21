@@ -1,3 +1,4 @@
+import 'mocha'
 import {
   DatatokenCreateParams,
   ProviderInstance,
