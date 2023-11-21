@@ -268,10 +268,6 @@ dataSources:
           handler: handleTokenRemoved
         - event: OPCFeeChanged(indexed address,uint256,uint256,uint256,uint256)
           handler: handleOPCFeeChanged
-        - event: SSContractAdded(indexed address,indexed address)
-          handler: handleSSContractAdded
-        - event: SSContractRemoved(indexed address,indexed address)
-          handler: handleSSContractRemoved
         - event: FixedRateContractAdded(indexed address,indexed address)
           handler: handleFixedRateContractAdded
         - event: FixedRateContractRemoved(indexed address,indexed address)
@@ -280,3 +276,8 @@ dataSources:
           handler: handleDispenserContractAdded
         - event: DispenserContractRemoved(indexed address,indexed address)
           handler: handleDispenserContractRemoved
+
+        - event: SSContractAdded(indexed address,indexed address)
+          handler: handleSSContractAdded
+        - event: SSContractRemoved(indexed address,indexed address)
+          handler: handleSSContractRemoved
