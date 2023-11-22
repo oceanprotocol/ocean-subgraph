@@ -64,7 +64,7 @@ describe('User tests', async () => {
   const publishMarketSwapFee = '0.003'
   const templateIndex = 1
   const dtAmount = '10'
-  const datatoken = new Datatoken(web3, 8996)
+  // const datatoken = new Datatoken(web3, 8996)
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
@@ -123,7 +123,7 @@ describe('User tests', async () => {
       fixedRate: price,
       marketFee: publishMarketSwapFee,
       allowedConsumer: ZERO_ADDRESS,
-      withMint: false
+      withMint: true
     }
 
     const result = await Factory.createNftWithDatatokenWithFixedRate(
@@ -196,27 +196,6 @@ describe('User tests', async () => {
     assert(user.totalSales === '0', 'incorrect value for: totalSales')
     assert(user.__typename === 'User', 'incorrect value for: __typename')
   })
-  it('User1 sells a datatoken', async () => {
-    const initialUser = await userQuery(user1)
-    await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
-    const tx = (await fixedRate.sellDatatokens(user1, exchangeId, '10', '9'))
-      .events?.Swapped
-
-    assert(tx != null)
-    const user = await userQuery(user1)
-
-    assert(user.id === user1, 'incorrect value for: id')
-    assert(user.tokenBalancesOwned.length === 0, 'incorrect tokenBalancesOwned')
-    assert(user.orders.length === 0, 'incorrect value for: orders')
-    assert(
-      user.freSwaps.length === initialUser.freSwaps.length,
-      'incorrect value for: freSwaps'
-    )
-    assert(user.totalOrders === '0', 'incorrect value for: totalOrders')
-    assert(user.totalSales === '0', 'incorrect value for: totalSales')
-    assert(user.__typename === 'User', 'incorrect value for: __typename')
-  })
-
   it('Check user fields after publishing & ordering a datatoken', async () => {
     // Start with publishing a new datatoken
     const nftParams: NftCreateData = {

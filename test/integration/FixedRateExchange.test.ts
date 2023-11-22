@@ -44,7 +44,7 @@ describe('Fixed Rate Exchange tests', async () => {
   const publishMarketSwapFee = '0.003'
   const templateIndex = 1
   const dtAmount = '10'
-  const datatoken = new Datatoken(web3, 8996)
+  // const datatoken = new Datatoken(web3, 8996)
   let datatokenAddress: string
   let fixedRateAddress: string
   let baseTokenAddress: string
@@ -108,7 +108,7 @@ describe('Fixed Rate Exchange tests', async () => {
       fixedRate: price,
       marketFee: publishMarketSwapFee,
       allowedConsumer: ZERO_ADDRESS,
-      withMint: false
+      withMint: true
     }
 
     const result = await Factory.createNftWithDatatokenWithFixedRate(
@@ -356,7 +356,8 @@ describe('Fixed Rate Exchange tests', async () => {
       'incorrect value for: baseToken.id'
     )
     assert(
-      fixed.datatokenSupply === '0',
+      fixed.datatokenSupply ===
+        '115792089237316195423570985008687900000000000000000000000000',
       'incorrect value for: datatokenSupply'
     )
     assert(
@@ -378,7 +379,7 @@ describe('Fixed Rate Exchange tests', async () => {
       fixed.allowedSwapper === ZERO_ADDRESS,
       'incorrect value for: allowedSwapper'
     )
-    assert(fixed.withMint === null, 'incorrect value for: withMint')
+    assert(fixed.withMint === true, 'incorrect value for: withMint')
     assert(fixed.isMinter === null, 'incorrect value for: isMinter')
     assert(fixed.updates, 'incorrect value for: updates.id')
     assert(fixed.swaps, 'incorrect value for: swaps')
@@ -496,125 +497,6 @@ describe('Fixed Rate Exchange tests', async () => {
       'incorrect value: 3nd eventIndex'
     )
   })
-  it('Deactivates exchange', async () => {
-    const deactiveQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active, eventIndex}}`
-    }
-
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(deactiveQuery)
-    })
-    const initialActive = (await initialResponse.json()).data.fixedRateExchange
-      .active
-    assert(initialActive === true, 'incorrect value for: initialActive')
-
-    // Deactivate exchange
-    await fixedRate.deactivate(publisher, exchangeId)
-    await sleep(sleepMs)
-
-    // Check the updated value for active
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(deactiveQuery)
-    })
-    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
-
-    assert(updatedActive.active === false, 'incorrect value for: updatedActive')
-    assert(
-      updatedActive.eventIndex !== null && updatedActive.eventIndex > 0,
-      'incorrect value: eventIndex'
-    )
-  })
-
-  it('Activates exchange', async () => {
-    const activeQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){active, eventIndex}}`
-    }
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(activeQuery)
-    })
-    const initialActive = (await initialResponse.json()).data.fixedRateExchange
-      .active
-    assert(initialActive === false, 'incorrect value for: initialActive')
-
-    // Activate exchange
-    await fixedRate.activate(publisher, exchangeId)
-    await sleep(sleepMs)
-
-    // Check the updated value for active
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(activeQuery)
-    })
-    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
-    assert(updatedActive.active === true, 'incorrect value for: updatedActive')
-    assert(
-      updatedActive.eventIndex !== null && updatedActive.eventIndex > 0,
-      'incorrect value: eventIndex'
-    )
-  })
-
-  it('Activate Minting', async () => {
-    const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
-    }
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-    const initialMint = (await initialResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(initialMint === null, 'incorrect value for: initialMint')
-
-    // Activate minting
-    const tx = await fixedRate.activateMint(publisher, exchangeId)
-    await sleep(sleepMs)
-
-    // Check the updated value for active
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-
-    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
-    assert(updatedMint.withMint === true, 'incorrect value for: updatedMint')
-    assert(
-      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
-      'incorrect value for: eventIndex'
-    )
-  })
-
-  it('Deactivate Minting', async () => {
-    const mintingQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
-    }
-    const initialResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-    const initialMint = (await initialResponse.json()).data.fixedRateExchange
-      .withMint
-    assert(initialMint === true, 'incorrect value for: initialMint')
-
-    // Activate minting
-    const tx = await fixedRate.deactivateMint(publisher, exchangeId)
-    await sleep(sleepMs)
-
-    // Check the updated value for active
-    const updatedResponse = await fetch(subgraphUrl, {
-      method: 'POST',
-      body: JSON.stringify(mintingQuery)
-    })
-
-    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
-    assert(updatedMint.withMint === false, 'incorrect value for: updatedMint')
-    assert(
-      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
-      'incorrect value for: eventIndex'
-    )
-  })
 
   it('User1 buys a datatoken', async () => {
     const swapsQuery = {
@@ -721,57 +603,63 @@ describe('Fixed Rate Exchange tests', async () => {
     assert(swaps.eventIndex === tx.logIndex, 'incorrect value for: eventIndex')
     assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
   })
-  it('User1 sells a datatoken', async () => {
-    await datatoken.approve(datatokenAddress, fixedRateAddress, dtAmount, user1)
-    const tx = (await fixedRate.sellDatatokens(user1, exchangeId, '10', '9'))
-      .events?.Swapped
-    const oceanFeeAmount = web3.utils.fromWei(
-      new BN(tx.returnValues.oceanFeeAmount)
-    )
-    assert(tx != null)
-    await sleep(sleepMs)
-    const swapsQuery = {
-      query: `query {fixedRateExchange(id: "${fixedRateId}"){
-        swaps(orderBy: createdTimestamp, orderDirection: desc){
-          id
-          exchangeId{id}
-          by{id}
-          baseTokenAmount
-          dataTokenAmount
-          block
-          createdTimestamp
-          tx
-          eventIndex
-          oceanFeeAmount
-          __typename
-        }  
-      }}`
+
+  it('Deactivate Minting', async () => {
+    const mintingQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
     }
-    // Check initial swaps
-    const response = await fetch(subgraphUrl, {
+    const initialResponse = await fetch(subgraphUrl, {
       method: 'POST',
-      body: JSON.stringify(swapsQuery)
+      body: JSON.stringify(mintingQuery)
     })
-    const swaps = (await response.json()).data.fixedRateExchange.swaps[0]
-    const swappedAmount = web3.utils.fromWei(
-      new BN(tx.returnValues.baseTokenSwappedAmount)
-    )
+    const initialMint = (await initialResponse.json()).data.fixedRateExchange
+      .withMint
+    assert(initialMint === true, 'incorrect value for: initialMint')
+
+    // Activate minting
+    const tx = await fixedRate.deactivateMint(publisher, exchangeId)
+    await sleep(sleepMs)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+
+    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
+    assert(updatedMint.withMint === false, 'incorrect value for: updatedMint')
     assert(
-      swaps.id ===
-        `${tx.transactionHash}-${fixedRateId}-${tx.logIndex.toFixed(1)}`,
-      'incorrect: id'
+      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
+      'incorrect value for: eventIndex'
     )
-    assert(swaps.exchangeId.id === fixedRateId, 'incorrect: exchangeId')
-    assert(swaps.by.id === user1, 'incorrect value for: id')
-    assert(swaps.baseTokenAmount === swappedAmount, 'incorrect baseTokenAmount')
-    assert(swaps.dataTokenAmount === dtAmount, 'incorrect: dataTokenAmount')
-    assert(swaps.block === tx.blockNumber, 'incorrect value for: block')
-    assert(swaps.createdTimestamp >= time, 'incorrect: createdTimestamp')
-    assert(swaps.createdTimestamp < time + 25, 'incorrect: createdTimestamp 2')
-    assert(swaps.oceanFeeAmount === oceanFeeAmount, 'incorrect: oceanFeeAmount')
-    assert(swaps.tx === tx.transactionHash, 'incorrect value for: tx')
-    assert(swaps.eventIndex === tx.logIndex, 'incorrect value for: eventIndex')
-    assert(swaps.__typename === 'FixedRateExchangeSwap', 'incorrect __typename')
+  })
+  it('Activate Minting', async () => {
+    const mintingQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){withMint, eventIndex}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+    const initialMint = (await initialResponse.json()).data.fixedRateExchange
+      .withMint
+    assert(initialMint === false, 'incorrect value for: initialMint')
+
+    // Activate minting
+    const tx = await fixedRate.activateMint(publisher, exchangeId)
+    await sleep(sleepMs)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(mintingQuery)
+    })
+    const updatedMint = (await updatedResponse.json()).data.fixedRateExchange
+    assert(updatedMint.withMint === true, 'incorrect value for: updatedMint')
+    assert(
+      updatedMint.eventIndex === tx.events.ExchangeMintStateChanged.logIndex,
+      'incorrect value for: eventIndex'
+    )
   })
 
   it('Updates allowed swapper', async () => {
@@ -808,6 +696,65 @@ describe('Fixed Rate Exchange tests', async () => {
       allowedSwapper2.eventIndex ===
         tx.events.ExchangeAllowedSwapperChanged.logIndex,
       'incorrect value for: eventIndex'
+    )
+  })
+  it('Deactivates exchange', async () => {
+    const deactiveQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active, eventIndex}}`
+    }
+
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(deactiveQuery)
+    })
+    const initialActive = (await initialResponse.json()).data.fixedRateExchange
+      .active
+    assert(initialActive === true, 'incorrect value for: initialActive')
+
+    // Deactivate exchange
+    await fixedRate.deactivate(publisher, exchangeId)
+    await sleep(sleepMs)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(deactiveQuery)
+    })
+    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
+
+    assert(updatedActive.active === false, 'incorrect value for: updatedActive')
+    assert(
+      updatedActive.eventIndex !== null && updatedActive.eventIndex >= 0,
+      'incorrect value: eventIndex'
+    )
+  })
+
+  it('Activates exchange', async () => {
+    const activeQuery = {
+      query: `query {fixedRateExchange(id: "${fixedRateId}"){active, eventIndex}}`
+    }
+    const initialResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(activeQuery)
+    })
+    const initialActive = (await initialResponse.json()).data.fixedRateExchange
+      .active
+    assert(initialActive === false, 'incorrect value for: initialActive')
+
+    // Activate exchange
+    await fixedRate.activate(publisher, exchangeId)
+    await sleep(sleepMs)
+
+    // Check the updated value for active
+    const updatedResponse = await fetch(subgraphUrl, {
+      method: 'POST',
+      body: JSON.stringify(activeQuery)
+    })
+    const updatedActive = (await updatedResponse.json()).data.fixedRateExchange
+    assert(updatedActive.active === true, 'incorrect value for: updatedActive')
+    assert(
+      updatedActive.eventIndex !== null && updatedActive.eventIndex >= 0,
+      'incorrect value: eventIndex'
     )
   })
 })

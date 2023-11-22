@@ -403,7 +403,6 @@ type Template @entity{
   id: ID!
   fixedRateTemplates: [String!]
   dispenserTemplates: [String!]
-  ssTemplates: [String!]
 }
 
 # Not tracking allocationToId or idToAllocation

@@ -19,6 +19,8 @@
     "quickstart:bsc": "node ./scripts/generatenetworkssubgraphs.js bsc && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:oasis_saphire_testnet": "node ./scripts/generatenetworkssubgraphs.js oasis_saphire_testnet && npm run codegen && npm run create:local && npm run deploy:local",
     "quickstart:oasis_saphire": "node ./scripts/generatenetworkssubgraphs.js oasis_saphire && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:optimism": "node ./scripts/generatenetworkssubgraphs.js optimism && npm run codegen && npm run create:local && npm run deploy:local",
+    "quickstart:optimism_sepolia": "node ./scripts/generatenetworkssubgraphs.js optimism_sepolia && npm run codegen && npm run create:local && npm run deploy:local",
     "create:thegraph": "graph create oceanprotocol/ocean-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create oceanprotocol/ocean-subgraph --node http://127.0.0.1:8020",
     "create:local-barge": "graph create oceanprotocol/ocean-subgraph --node http://172.15.0.15:8020",
@@ -79,7 +81,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@oceanprotocol/contracts": "^2.0.2",
+    "@oceanprotocol/contracts": "^2.0.3",
     "@oceanprotocol/lib": "^2.7.0",
     "cross-fetch": "^3.1.6",
     "ethereumjs-util": "^7.1.5"

@@ -52,6 +52,11 @@ export function updateFixedRateExchangeSupply(
     fixedRateDetails.value.value8.toBigDecimal(),
     baseToken.decimals
   )
+  // update withMint state
+  fixedRateExchange.withMint = fixedRateDetails.value.value11
+
+  // update active state
+  fixedRateExchange.active = fixedRateDetails.value.value6
   fixedRateExchange.save()
 }
 

@@ -37,7 +37,7 @@ jobs:
         with:
           repository: 'oceanprotocol/barge'
           path: 'barge'
-          ref: main
+          ref: feature/bump_contracts_and_subgraph
 
       - name: Login to Docker Hub
         if: ${{ env.DOCKERHUB_PASSWORD && env.DOCKERHUB_USERNAME }}
@@ -51,8 +51,6 @@ jobs:
         working-directory: ${{ github.workspace }}/barge
         run: |
           bash -x start_ocean.sh --with-thegraph --skip-subgraph-deploy --no-dashboard 2>&1 > start_ocean.log &
-        env:
-          CONTRACTS_VERSION: predictoor3
 
       - run: npm ci
 
