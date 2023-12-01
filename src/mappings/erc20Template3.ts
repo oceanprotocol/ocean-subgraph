@@ -118,6 +118,21 @@ export function handlePredictionPayout(event: PredictionPayout): void {
 
   predictPrediction.payout = predictionPayout.id
   predictPrediction.save()
+
+  let shouldUpdateSlot = false
+  const predictSlot = getPredictSlot(
+    event.address.toHexString(),
+    event.params.slot.toI32()
+  )
+  if (event.params.status == 1 && predictSlot.status !== 'Paying') {
+    predictSlot.status = 'Paying'
+    shouldUpdateSlot = true
+  }
+  if (event.params.status == 2 && predictSlot.status !== 'Canceled') {
+    predictSlot.status = 'Canceled'
+    shouldUpdateSlot = true
+  }
+  if (shouldUpdateSlot == true) predictSlot.save()
 }
 
 export function handleNewSubscription(event: NewSubscription): void {
