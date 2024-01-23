@@ -55,7 +55,7 @@
     "@types/mocha": "^10.0.2",
     "@types/node": "^20.8.2",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
+    "@typescript-eslint/parser": "^6.19.0",
     "auto-changelog": "^2.4.0",
     "chai": "^4.3.10",
     "chai-spies": "^1.0.0",
