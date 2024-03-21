@@ -3,31 +3,23 @@ Copyright 2023 Ocean Protocol Foundation
 SPDX-License-Identifier: Apache-2.0
 -->
 
-  
-
 - [Kubernetes deployment](#kubernetes-deployment)
-  * [Postgresql](#postgresql)
-  * [IPFS](#ipfs)
-  * [Graph-node](#graph-node)
+  - [Postgresql](#postgresql)
+  - [IPFS](#ipfs)
+  - [Graph-node](#graph-node)
 - [Docker Compose deployment](#docker-compose-deployment)
-  * [Single systemd service (Graph-node+Postgresql+IPFS)](#single-systemd-service-graph-nodepostgresqlipfs)
+  - [Single systemd service (Graph-node+Postgresql+IPFS)](#single-systemd-service-graph-nodepostgresqlipfs)
 - [Ocean-subgraph deployment](#ocean-subgraph-deployment)
-
-
-
 
 #### Kubernetes deployment
 
-[ocean-subgraph](https://github.com/oceanprotocol/ocean-subgraph)  must be deployed on top of [graph-node](https://github.com/graphprotocol/graph-node) which has the following dependencies:
+[ocean-subgraph](https://github.com/oceanprotocol/ocean-subgraph) must be deployed on top of [graph-node](https://github.com/graphprotocol/graph-node) which has the following dependencies:
 
 - PostgreSQL
 
 - IPFS
 
-
 Templates (yaml files) provided and could be customized based on the environment's specifics.
-
-
 
 ##### Postgresql
 
@@ -63,41 +55,41 @@ spec:
         app: ipfs
     spec:
       containers:
-      - image: ipfs/go-ipfs:v0.4.22
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /debug/metrics/prometheus
-            port: api
-            scheme: HTTP
-          initialDelaySeconds: 15
-          periodSeconds: 3
-          successThreshold: 1
-          timeoutSeconds: 1
-        name: s1-ipfs
-        ports:
-        - containerPort: 5001
-          name: api
-          protocol: TCP
-        - containerPort: 8080
-          name: gateway
-          protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /debug/metrics/prometheus
-            port: api
-            scheme: HTTP
-          initialDelaySeconds: 15
-          periodSeconds: 3
-          successThreshold: 1
-          timeoutSeconds: 1
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /data/ipfs
-          name: ipfs-storage
+        - image: ipfs/go-ipfs:v0.4.22
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /debug/metrics/prometheus
+              port: api
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 3
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: s1-ipfs
+          ports:
+            - containerPort: 5001
+              name: api
+              protocol: TCP
+            - containerPort: 8080
+              name: gateway
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /debug/metrics/prometheus
+              port: api
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 3
+            successThreshold: 1
+            timeoutSeconds: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /data/ipfs
+              name: ipfs-storage
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -110,20 +102,20 @@ spec:
       partition: 0
     type: RollingUpdate
   volumeClaimTemplates:
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      creationTimestamp: null
-      name: ipfs-storage
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1G
-      volumeMode: Filesystem
-    status:
-      phase: Pending
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        creationTimestamp: null
+        name: ipfs-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1G
+        volumeMode: Filesystem
+      status:
+        phase: Pending
 ---
 apiVersion: v1
 kind: Service
@@ -135,18 +127,16 @@ spec:
   clusterIP:
   clusterIPs:
   ipFamilies:
-  - IPv4
+    - IPv4
   ipFamilyPolicy: SingleStack
   ports:
-  - name: api
-    port: 5001
-  - name: gateway
-    port: 8080
+    - name: api
+      port: 5001
+    - name: gateway
+      port: 8080
   selector:
     app: ipfs
 ```
-
-
 
 ##### Graph-node
 
@@ -179,66 +169,66 @@ spec:
         app: mumbai-graph-node
     spec:
       containers:
-      - env:
-        - name: ipfs
-          value: ipfs.<namespace>.svc.cluster.local:5001
-        - name: postgres_host
-          value: postgresql.<namespace>.svc.cluster.local
-        - name: postgres_user
-          value: < postgresql user >
-        - name: postgres_pass
-          value: < postgresql database password >
-        - name: postgres_db
-          value: < postgresql database >
-        - name: ethereum
-          value: mumbai:https://polygon-mumbai.infura.io/v3/< INFURA ID>
-        - name: GRAPH_KILL_IF_UNRESPONSIVE
-          value: "true"
-        image: graphprotocol/graph-node:v0.28.2
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /
-            port: 8000
-            scheme: HTTP
-          initialDelaySeconds: 20
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 1
-        name: mumbai-graph-node
-        ports:
-        - containerPort: 8000
-          name: graphql
-          protocol: TCP
-        - containerPort: 8020
-          name: jsonrpc
-          protocol: TCP
-        - containerPort: 8030
-          name: indexnode
-          protocol: TCP
-        - containerPort: 8040
-          name: metrics
-          protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /
-            port: 8000
-            scheme: HTTP
-          initialDelaySeconds: 20
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: "2"
-            memory: 1536Mi
-          requests:
-            cpu: 1500m
-            memory: 1536Mi
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
+        - env:
+            - name: ipfs
+              value: ipfs.<namespace>.svc.cluster.local:5001
+            - name: postgres_host
+              value: postgresql.<namespace>.svc.cluster.local
+            - name: postgres_user
+              value: < postgresql user >
+            - name: postgres_pass
+              value: < postgresql database password >
+            - name: postgres_db
+              value: < postgresql database >
+            - name: ethereum
+              value: mumbai:https://polygon-mumbai.infura.io/v3/< INFURA ID>
+            - name: GRAPH_KILL_IF_UNRESPONSIVE
+              value: 'true'
+          image: graphprotocol/graph-node:v0.28.2
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: mumbai-graph-node
+          ports:
+            - containerPort: 8000
+              name: graphql
+              protocol: TCP
+            - containerPort: 8020
+              name: jsonrpc
+              protocol: TCP
+            - containerPort: 8030
+              name: indexnode
+              protocol: TCP
+            - containerPort: 8040
+              name: metrics
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: '2'
+              memory: 1536Mi
+            requests:
+              cpu: 1500m
+              memory: 1536Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -249,37 +239,34 @@ kind: Service
 metadata:
   labels:
     app: mumbai-graph-node
-  name:  mumbai-graph-node
+  name: mumbai-graph-node
 spec:
   clusterIP:
   clusterIPs:
   internalTrafficPolicy: Cluster
   ipFamilies:
-  - IPv4
+    - IPv4
   ipFamilyPolicy: SingleStack
   ports:
-  - name: graphql
-    port: 8000
-  - name: jsonrpc
-    port: 8020
-  - name: indexnode
-    port: 8030
-  - name: metrics
-    port: 8040
+    - name: graphql
+      port: 8000
+    - name: jsonrpc
+      port: 8020
+    - name: indexnode
+      port: 8030
+    - name: metrics
+      port: 8040
   selector:
     app: mumbai-graph-node
 ```
-
-
-
 
 #### Docker Compose deployment
 
 ##### Single systemd service (Graph-node+Postgresql+IPFS)
 
-a) create */etc/docker/compose/graph-node/docker-compose.yml* file
+a) create _/etc/docker/compose/graph-node/docker-compose.yml_ file
 
- */etc/docker/compose/graph-node/docker-compose.yml* (annotated - example for  `mumbai` network)
+_/etc/docker/compose/graph-node/docker-compose.yml_ (annotated - example for `mumbai` network)
 
 ```yaml
 version: '3'
@@ -318,7 +305,7 @@ services:
     restart: on-failure
     ports:
       - '5432:5432'
-    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements"]
+    command: ['postgres', '-cshared_preload_libraries=pg_stat_statements']
     environment:
       POSTGRES_USER: graph-node
       POSTGRES_PASSWORD: < password >
@@ -332,9 +319,7 @@ volumes:
     driver: local
 ```
 
-
-
-b) create */etc/systemd/system/docker-compose@graph-node.service* file
+b) create _/etc/systemd/system/docker-compose@graph-node.service_ file
 
 ```shell
 [Unit]
@@ -357,8 +342,6 @@ ExecStopPost=/usr/bin/env docker-compose -p $PROJECT down
 WantedBy=multi-user.target
 ```
 
-
-
 c) run:
 
 ```shell
@@ -371,15 +354,11 @@ optional - enable service to start at boot:
 $ sudo systemctl enable docker-compose@graph-node.service
 ```
 
-
-
 d) start aquarius service:
 
 ```shell
 $ sudo systemctl start docker-compose@graph-node.service
 ```
-
-
 
 check status:
 
@@ -406,8 +385,6 @@ Jun 25 17:05:25 testvm systemd[1]: Finished graph-node service with docker compo
 
 ```
 
-
-
 - check containers status
 
 ```shell
@@ -418,35 +395,31 @@ ipfs/go-ipfs:v0.4.23               4001/tcp, 8080-8081/tcp, 0.0.0.0:5001->5001/t
 postgres:15.3                      0.0.0.0:5432->5432/tcp, :::5432->5432/tcp                                                                                                                                              postgres     Up 55 minutes
 ```
 
-
-
 - check logs for graph-node container
 
 ```shell
 $ docker logs graph-node  [--follow]
 ```
 
-
-
 #### Ocean-subgraph deployment
 
 - install Node.js locally
 
-- download and extract  [Ocean-subgraph](https://github.com/oceanprotocol/ocean-subgraph) (check [here](https://github.com/oceanprotocol/ocean-subgraph/releases) the available releases)
+- download and extract [Ocean-subgraph](https://github.com/oceanprotocol/ocean-subgraph) (check [here](https://github.com/oceanprotocol/ocean-subgraph/releases) the available releases)
 - run inside the extracted directory:
 
 ```shell
 $ npm i
 ```
 
-then 
+then
 
 (Note: in this example we are deploying on graph-node running for `mumbai` testnet )
 
-Note: for `ocean-subgraph` deployment in kubernetes environment, both  `graph-node` and `ipfs` services must be locally forwarded using  `kubectl port-forward` command.
+Note: for `ocean-subgraph` deployment in kubernetes environment, both `graph-node` and `ipfs` services must be locally forwarded using `kubectl port-forward` command.
 
 ```shell
-$ npm run quickstart:mumbai 
+$ npm run quickstart:mumbai
 
 > ocean-subgraph@3.0.8 quickstart:mumbai
 > node ./scripts/generatenetworkssubgraphs.js mumbai && npm run codegen && npm run create:local && npm run deploy:local
@@ -458,7 +431,6 @@ Skipping bsc
 Skipping energyweb
 Skipping moonriver
 Skipping mainnet
-Skipping goerli
 Skipping polygonedge
 Skipping gaiaxtestnet
 Skipping alfajores

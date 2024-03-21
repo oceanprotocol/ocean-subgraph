@@ -35,7 +35,6 @@ This subgraph is deployed under `/subgraphs/name/oceanprotocol/ocean-subgraph/` 
 - [v4.subgraph.bsc.oceanprotocol.com](https://v4.subgraph.bsc.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [v4.subgraph.moonriver.oceanprotocol.com](https://v4.subgraph.moonriver.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [v4.subgraph.energyweb.oceanprotocol.com](https://v4.subgraph.energyweb.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
-- [v4.subgraph.goerli.oceanprotocol.com](https://v4.subgraph.goerli.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 - [v4.subgraph.mumbai.oceanprotocol.com](https://v4.subgraph.mumbai.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph/graphql)
 
 ## ⛵ Example Queries
