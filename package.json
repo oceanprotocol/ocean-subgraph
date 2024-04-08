@@ -75,7 +75,7 @@
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "ts-node-register": "^1.0.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.4",
     "@oceanprotocol/lib": "^2.7.0"
   },
   "dependencies": {
