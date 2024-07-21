@@ -130,7 +130,6 @@ export function getErc20TemplateId(address: Address): BigInt {
   return BigInt.zero()
 }
 
-  */
 
 export function createPredictContract(address: Address): PredictContract {
   const predictContract = new PredictContract(address.toHexString())
