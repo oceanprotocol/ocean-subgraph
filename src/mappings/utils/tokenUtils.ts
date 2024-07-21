@@ -131,30 +131,30 @@ export function getErc20TemplateId(address: Address): BigInt {
 }
 /*
 type HardCodedContractData = {
-  token: string
-  secondsPerEpoch: BigInt
-  secondsPerSubscription: BigInt
-  truevalSubmitTimeout: BigInt
-  stakeToken: string
-  txId: string
-  timestamp: number
-  block: number
-  eventIndex: number
-}
+  token: string;
+  secondsPerEpoch: number;
+  secondsPerSubscription: number;
+  truevalSubmitTimeout: number;
+  stakeToken: string;
+  txId: string;
+  timestamp: number;
+  block: number;
+  eventIndex: number;
+};
 
-type HardCodedContractDataType = { [key: string]: HardCodedContractData }
+type HardCodedContractDataType = { [key: string]: HardCodedContractData };
 
 const hardCodedContractData: HardCodedContractDataType = {
-  '0x18f54cc21b7a2fdd011bea06bba7801b280e3151': {
-    token: '0x18f54cc21b7a2fdd011bea06bba7801b280e3151',
-    secondsPerEpoch: BigInt.fromI32(300),
-    secondsPerSubscription: BigInt.fromI32(86400),
-    truevalSubmitTimeout: BigInt.fromI32(259200),
-    stakeToken: '0x39d22b78a7651a76ffbde2aaab5fd92666aca520',
-    txId: '0xc6bdecd2c06b1c7fe350f0d375e14a3f0312756c4a659e8edfbf74567acba77e',
-    timestamp: 1696238187,
-    block: 916047,
-    eventIndex: 6
+  "0x18f54cc21b7a2fdd011bea06bba7801b280e3151": {
+    "token": "0x18f54cc21b7a2fdd011bea06bba7801b280e3151",
+    "secondsPerEpoch": 300,
+    "secondsPerSubscription": 86400,
+    "truevalSubmitTimeout": 259200,
+    "stakeToken": "0x39d22b78a7651a76ffbde2aaab5fd92666aca520",
+    "txId": "0xc6bdecd2c06b1c7fe350f0d375e14a3f0312756c4a659e8edfbf74567acba77e",
+    "timestamp": 1696238187,
+    "block": 916047,
+    "eventIndex": 6
   },
   '0x2d8e2267779d27c2b3ed5408408ff15d9f3a3152': {
     token: '0x2d8e2267779d27c2b3ed5408408ff15d9f3a3152',
