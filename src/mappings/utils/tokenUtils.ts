@@ -132,14 +132,14 @@ export function getErc20TemplateId(address: Address): BigInt {
 
 type HardCodedContractData = {
   token: string;
-  secondsPerEpoch: i32;
-  secondsPerSubscription: i32;
-  truevalSubmitTimeout: i32;
+  secondsPerEpoch: number;
+  secondsPerSubscription: number;
+  truevalSubmitTimeout: number;
   stakeToken: string;
   txId: string;
-  timestamp: i32;
-  block: i32;
-  eventIndex: i32;
+  timestamp: number;
+  block: number;
+  eventIndex: number;
 };
 
 type HardCodedContractDataType = { [key: string]: HardCodedContractData };
