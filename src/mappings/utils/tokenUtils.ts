@@ -130,6 +130,20 @@ export function getErc20TemplateId(address: Address): BigInt {
   return BigInt.zero()
 }
 
+declare const hardCodedContractData: {
+  [key: string]: {
+    token: string;
+    secondsPerEpoch: i32;
+    secondsPerSubscription: i32;
+    truevalSubmitTimeout: i32;
+    stakeToken: string;
+    txId: string;
+    timestamp: i32;
+    block: i32;
+    eventIndex: i32;
+  };
+};
+
 const hardCodedContractData = {
   "0x18f54cc21b7a2fdd011bea06bba7801b280e3151": {
     "token": "0x18f54cc21b7a2fdd011bea06bba7801b280e3151",
