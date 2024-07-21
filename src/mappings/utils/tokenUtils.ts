@@ -130,7 +130,7 @@ export function getErc20TemplateId(address: Address): BigInt {
   return BigInt.zero()
 }
 
-type HardCodedContractData = {
+interface HardCodedContractData = {
   token: string;
   secondsPerEpoch: number;
   secondsPerSubscription: number;
@@ -142,7 +142,7 @@ type HardCodedContractData = {
   eventIndex: number;
 };
 
-type HardCodedContractDataType = { [key: string]: HardCodedContractData };
+interface HardCodedContractDataType = { [key: string]: HardCodedContractData };
 
 const hardCodedContractData: HardCodedContractDataType = {
   "0x18f54cc21b7a2fdd011bea06bba7801b280e3151": {
