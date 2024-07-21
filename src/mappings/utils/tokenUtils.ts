@@ -372,7 +372,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.secondsPerEpoch = BigInt.fromI32(contractData.secondsPerEpoch)
     predictContract.secondsPerSubscription = BigInt.fromI32(contractData.secondsPerSubscription)
     predictContract.truevalSubmitTimeout = BigInt.fromI32(contractData.truevalSubmitTimeout)
-    predictContract.stakeToken = contractData.stakeToken
+    predictContract.stakeToken = Address.fromString(contractData.stakeToken)
     predictContract.txId = contractData.txId
     predictContract.timestamp = contractData.timestamp
     predictContract.block = contractData.block
