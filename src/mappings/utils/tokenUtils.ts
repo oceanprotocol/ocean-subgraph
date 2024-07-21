@@ -145,7 +145,7 @@ export function createPredictContract(address: Address): PredictContract {
   predictContract.paused = false
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x18f54cc21b7a2fdd011bea06bba7801b280e3151'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -161,7 +161,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x2d8e2267779d27c2b3ed5408408ff15d9f3a3152'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -177,7 +177,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x30f1c55e72fe105e4a1fbecdff3145fc14177695'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -193,7 +193,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x31fabe1fc9887af45b77c7d1e13c5133444ebfbd'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -209,7 +209,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x3fb744c3702ff2237fc65f261046ead36656f3bc'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -225,7 +225,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x55c6c33514f80b51a1f1b63c8ba229feb132cedb'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -241,7 +241,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x74a61f733bd9a2ce40d2e39738fe4912925c06dd'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -257,7 +257,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x8165caab33131a4ddbf7dc79f0a8a4920b0b2553'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -273,7 +273,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x93f9d558ccde9ea371a20d36bd3ba58c7218b48f'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -289,7 +289,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0x9c4a2406e5aa0f908d6e816e5318b9fc8a507e1f'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -305,7 +305,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xa2d9dbbdf21c30bb3e63d16ba75f644ac11a0cf0'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -321,7 +321,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xaa6515c138183303b89b98aea756b54f711710c5'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -337,7 +337,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xb1c55346023dee4d8b0d7b10049f0c8854823766'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -353,7 +353,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xbe09c6e3f2341a79f74898b8d68c4b5818a2d434'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -369,7 +369,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xd41ffee162905b45b65fa6b6e4468599f0490065'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -385,7 +385,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xd49cbfd694f4556c00023ddd3559c36af3ae0a80'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -401,7 +401,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xe66421fd29fc2d27d0724f161f01b8cbdcd69690'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -417,7 +417,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xf28c94c55d8c5e1d70ca3a82744225a4f7570b30'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(300)
@@ -433,7 +433,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xf8c34175fc1f1d373ec67c4fd1f1ce57c69c3fb3'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
@@ -449,7 +449,7 @@ export function createPredictContract(address: Address): PredictContract {
   }
 
   if (
-    address.toHexString().toLowerCase() ===
+    address.toHexString().toLowerCase() ==
     '0xfa69b2c1224cebb3b6a36fb5b8c3c419afab08dd'.toLowerCase()
   ) {
     predictContract.secondsPerEpoch = BigInt.fromI32(3600)
