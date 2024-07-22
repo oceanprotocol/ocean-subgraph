@@ -62,6 +62,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     }
   } else {
     log.info("nft not found", [])
+    order.nftOwner = ADDRESS_ZERO
   }
 
   const payer = getUser(event.params.payer.toHex())
