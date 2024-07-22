@@ -340,7 +340,7 @@ export function handleProviderFee(event: ProviderFee): void {
     event.logIndex.toI32()
   )
   if (orderReuse) {
-    log.info('order reuse id in provider fee handler: {}', [orderReuse.id], [])
+    log.info('order reuse id in provider fee handler: {}', [orderReuse.id])
     orderReuse.providerFee = providerFee
     orderReuse.providerFeeValidUntil = event.params.validUntil
     orderReuse.save()
