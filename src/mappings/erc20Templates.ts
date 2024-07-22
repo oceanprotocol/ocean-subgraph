@@ -27,7 +27,10 @@ import {
   searchOrderReusedForEvent
 } from './utils/orderUtils'
 
+const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000"
+
 export function handleOrderStarted(event: OrderStarted): void {
+  log.info("handleOrderStarted")
   const order = new Order(
     getOrderId(
       event.transaction.hash.toHex(),
@@ -36,41 +39,59 @@ export function handleOrderStarted(event: OrderStarted): void {
       event.logIndex.toI32()
     )
   )
-
+  log.info("Created order object")
   const token = getToken(event.address, true)
+  log.info("Got the token")
   order.datatoken = token.id
   token.orderCount = token.orderCount.plus(integer.ONE)
+  log.info("set data token and order count")
 
   const consumer = getUser(event.params.consumer.toHex())
   order.consumer = consumer.id
+  log.info("got consumer id")
 
   if (token.nft) {
     const nft = Nft.load(token.nft as string) as Nft
-    const nftOwner = getUser(nft.owner)
-    order.nftOwner = nftOwner.id
+    if (nft) {
+      log.info("nft loaded and set")
+      const nftOwner = getUser(nft.owner)
+      order.nftOwner = nftOwner.id
+    } else {
+      log.info("nft couldnt load")
+      order.nftOwner = ADDRESS_ZERO
+    }
+  } else {
+    log.info("nft not found")
   }
 
   const payer = getUser(event.params.payer.toHex())
   payer.totalOrders = payer.totalOrders.plus(integer.ONE)
   payer.save()
+  log.info("payer saved")
   order.payer = payer.id
 
   order.amount = weiToDecimal(
     event.params.amount.toBigDecimal(),
     token.decimals
   )
+  log.info("set order amount")
 
   order.serviceIndex = event.params.serviceIndex.toI32()
+  log.info("set order service index")
 
   const publishMarket = getUser(event.params.publishMarketAddress.toHex())
   order.publishingMarket = publishMarket.id
+  log.info("set order publish market")
 
   order.createdTimestamp = event.block.timestamp.toI32()
   order.tx = event.transaction.hash.toHex()
   order.eventIndex = event.logIndex.toI32()
   order.block = event.block.number.toI32()
+  log.info("set created ts tx eventindex and block")
   const tokenId = token.lastPriceToken
+  log.info("got token id")
   if (tokenId) {
+    log.info("token id setting")
     const priceToken = getToken(Address.fromString(tokenId), false)
     order.lastPriceToken = priceToken.id
     order.lastPriceValue = token.lastPriceValue
@@ -79,21 +100,28 @@ export function handleOrderStarted(event: OrderStarted): void {
       order.lastPriceValue,
       order.createdTimestamp
     )
+    log.info("token id is set")
   }
 
   if (event.receipt !== null && event.receipt!.gasUsed) {
     order.gasUsed = event.receipt!.gasUsed.toBigDecimal()
-  } else {
+    log.info("LOG1")
+} else {
     order.gasUsed = BigDecimal.zero()
-  }
+    log.info("LOG2")
+}
   if (event.transaction.gasPrice) {
     order.gasPrice = event.transaction.gasPrice
-  } else {
+    log.info("LOG3")
+} else {
     order.gasPrice = BigInt.zero()
-  }
+    log.info("LOG4")
+}
+  log.info("order save start")
   order.save()
   token.save()
   addOrder()
+  log.info("order save done")
   if (token.nft) {
     const nft = Nft.load(token.nft as string) as Nft
     if (nft) {
@@ -103,6 +131,7 @@ export function handleOrderStarted(event: OrderStarted): void {
     const owner = getUser(nft.owner)
     owner.totalSales = owner.totalSales.plus(integer.ONE)
     owner.save()
+    log.info("owner data updated")
   }
 }
 
