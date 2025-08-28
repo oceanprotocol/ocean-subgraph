@@ -215,7 +215,7 @@ dataSources:
     source:
       address: __ERC721FACTORYADDRESS__
       abi: ERC721Factory
-      startBlock: __STARTBLOCK__
+      startBlock: 9983528
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -248,7 +248,7 @@ dataSources:
     source:
       address: __FACTORYROUTERADDRESS__
       abi: FactoryRouter
-      startBlock: __STARTBLOCK__
+      startBlock: 9983528
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
