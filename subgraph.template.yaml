@@ -1036,6 +1036,83 @@ dataSources:
         - event: Paused(bool)
           handler: handlePaused
 
+  
+  - name: ERC20Template3_21
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      address: "0x64f82267D817351d501a659f1A9ad3019813f726"
+      abi: ERC20Template3
+      startBlock: 1957490
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc20Template3.ts
+      entities:
+        - ERC20Template3
+      abis:
+        - name: ERC20Template3
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template3.sol/ERC20Template3.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20Roles
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+      eventHandlers:
+        - event: PredictionSubmitted(indexed address,indexed uint256,uint256)
+          handler: handlePredictionSubmitted
+        - event: PredictionPayout(indexed address,indexed uint256,uint256,uint256,bool,bool,uint256,uint8)
+          handler: handlePredictionPayout
+        - event: NewSubscription(indexed address,uint256,uint256)
+          handler: handleNewSubscription
+        - event: TruevalSubmitted(indexed uint256,bool,uint8,uint256,uint256)
+          handler: handleTruevalSubmitted
+        - event: SettingChanged(uint256,uint256,uint256,address)
+          handler: handleSettingChanged
+        - event: RevenueAdded(uint256,uint256,uint256,uint256,uint256)
+          handler: handleRevenueAdded
+        - event: Paused(bool)
+          handler: handlePaused
+
+
+  
+  - name: ERC20Template3_22
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      address: "0x47c97076B40BF861cb75652Fe0ed30Bc8107e0Cb"
+      abi: ERC20Template3
+      startBlock: 1957490
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc20Template3.ts
+      entities:
+        - ERC20Template3
+      abis:
+        - name: ERC20Template3
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template3.sol/ERC20Template3.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20Roles
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+      eventHandlers:
+        - event: PredictionSubmitted(indexed address,indexed uint256,uint256)
+          handler: handlePredictionSubmitted
+        - event: PredictionPayout(indexed address,indexed uint256,uint256,uint256,bool,bool,uint256,uint8)
+          handler: handlePredictionPayout
+        - event: NewSubscription(indexed address,uint256,uint256)
+          handler: handleNewSubscription
+        - event: TruevalSubmitted(indexed uint256,bool,uint8,uint256,uint256)
+          handler: handleTruevalSubmitted
+        - event: SettingChanged(uint256,uint256,uint256,address)
+          handler: handleSettingChanged
+        - event: RevenueAdded(uint256,uint256,uint256,uint256,uint256)
+          handler: handleRevenueAdded
+        - event: Paused(bool)
+          handler: handlePaused
+
   - name: ERC20Template__1
     kind: ethereum/contract
     network: __NETWORK__
@@ -1895,6 +1972,97 @@ dataSources:
     network: __NETWORK__
     source:
       address: "0xfa69b2c1224cebb3b6a36fb5b8c3c419afab08dd"
+      abi: ERC20Template
+      startBlock: 1957490
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc20Templates.ts
+      entities:
+        - ERC20Template
+      abis:
+        - name: ERC20Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20Roles
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+      eventHandlers:
+        - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleOrderStarted
+          receipt: true
+        - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
+          handler: handleNewPaymentCollector
+        - event: PublishMarketFee(indexed address,indexed address,uint256)
+          handler: handlePublishMarketFee
+        - event: PublishMarketFeeChanged(address,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
+        - event: ConsumeMarketFee(indexed address,indexed address,uint256)
+          handler: handleConsumeMarketFee
+        - event: AddedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedMinter
+        - event: AddedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedPaymentManager
+        - event: RemovedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedMinter
+        - event: RemovedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedPaymentManager
+        - event: CleanedPermissions(indexed address,uint256,uint256)
+          handler: handleCleanedPermissions
+
+
+  - name: ERC20Template__21
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      address: "0x64f82267D817351d501a659f1A9ad3019813f726"
+      abi: ERC20Template
+      startBlock: 1957490
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/erc20Templates.ts
+      entities:
+        - ERC20Template
+      abis:
+        - name: ERC20Template
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20Roles
+          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+      eventHandlers:
+        - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleOrderStarted
+          receipt: true
+        - event: NewPaymentCollector(indexed address,indexed address,uint256,uint256)
+          handler: handleNewPaymentCollector
+        - event: PublishMarketFee(indexed address,indexed address,uint256)
+          handler: handlePublishMarketFee
+        - event: PublishMarketFeeChanged(address,address,address,uint256)
+          handler: handlePublishMarketFeeChanged
+        - event: ConsumeMarketFee(indexed address,indexed address,uint256)
+          handler: handleConsumeMarketFee
+        - event: AddedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedMinter
+        - event: AddedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleAddedPaymentManager
+        - event: RemovedMinter(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedMinter
+        - event: RemovedPaymentManager(indexed address,indexed address,uint256,uint256)
+          handler: handleRemovedPaymentManager
+        - event: CleanedPermissions(indexed address,uint256,uint256)
+          handler: handleCleanedPermissions
+
+
+
+  - name: ERC20Template__22
+    kind: ethereum/contract
+    network: __NETWORK__
+    source:
+      address: "0x47c97076B40BF861cb75652Fe0ed30Bc8107e0Cb"
       abi: ERC20Template
       startBlock: 1957490
     mapping:
