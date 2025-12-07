@@ -1057,7 +1057,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1074,7 +1074,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1091,7 +1091,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1108,7 +1108,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1125,7 +1125,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1142,7 +1142,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1159,7 +1159,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1176,7 +1176,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1193,7 +1193,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1210,7 +1210,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1227,7 +1227,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1244,7 +1244,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1261,7 +1261,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1278,7 +1278,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1295,7 +1295,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1312,7 +1312,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1329,7 +1329,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1346,7 +1346,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1363,7 +1363,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
@@ -1380,7 +1380,7 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.txId =
       '0x0000000000000000000000000000000000000000000000000000000000000000'
     predictContract.timestamp = 0
-    predictContract.block = 14000000
+    predictContract.block = 14700000
     predictContract.eventIndex = 0
     predictContract.paused = false
   }
