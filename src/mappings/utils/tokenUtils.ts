@@ -1385,6 +1385,330 @@ export function createPredictContract(address: Address): PredictContract {
     predictContract.paused = false
   }
 
+
+  // MAINNET USDC CONTRACTS
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0xd2Bea42EC9611616956B2573821bAf564c27635f'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x9eA85e1d4D0Cd67c9aCaAeA2b74252f06690DAB5'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0xf905C45f3752d7a2D6CB4f708915fd0808ff72c1'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x4DCA85dEAdEF976Ea6Cc9F20e6E0B1D85f46b0b5'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x396Ff1B2023918E0472CF203578E66A14A99D026'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x2011A3712F2323E70Df23b79fDa740399Ec366A8'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x2AeD1a7EedE56079a590985F94d04082e32556b6'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0xf684e13f0DB813b6E95DfD73eD9b6ac8ff886b8C'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x73D50FcE6d8C406E94606EbDec778C1860e683f5'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x26e262C5997343aC536D3f3eEE1526e0cdd79Ab3'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x2B2c3ba24AeC931655946535b22461d82cD6529D'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x69227325739f92B4b384ebD004094C76d7558762'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0xe36bf380095aB9eA01A8121f88bd7e37bF4c8aDa'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x65468D64074343B94656971db3f700C90AD5C199'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x1D422caB6e19B6977b838153A2e6579561914B25'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x0142D466c45635B06a51bc4ebfED42530B22DC4e'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x84A2B63ba8cd9f86a4B7dAfFBbeE9F52e40407a1'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x2D3138fbF0ca820E91198b93a1A0f38a7033BAbC'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x8333Cf75c098b404d50A653d64702247c6166DF7'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(300)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+
+  if (
+    address.toHexString().toLowerCase() ==
+    '0x4281fb7B7973925c5B2034389EF47443fBBb2E3E'.toLowerCase()
+  ) {
+    predictContract.secondsPerEpoch = BigInt.fromI32(3600)
+    predictContract.secondsPerSubscription = BigInt.fromI32(86400)
+    predictContract.truevalSubmitTimeout = BigInt.fromI32(259200)
+    predictContract.stakeToken = '0x2c2E3812742Ab2DA53a728A09F5DE670Aba584b6'
+    predictContract.txId =
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    predictContract.timestamp = 0
+    predictContract.block = 11788389
+    predictContract.eventIndex = 0
+    predictContract.paused = false
+  }
+  // END MAINNET USDC CONTRACTS
+
   predictContract.save()
   return predictContract
 }
