@@ -4855,7 +4855,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xd2bea42ec9611616956b2573821baf564c27635f"
+      address: "0xf820b25995e84ca2dfc44d632a05fae47597e92e"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -4892,7 +4892,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xd2bea42ec9611616956b2573821baf564c27635f"
+      address: "0xf820b25995e84ca2dfc44d632a05fae47597e92e"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -4938,7 +4938,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x9ea85e1d4d0cd67c9acaaea2b74252f06690dab5"
+      address: "0xd6c337123f48a6ccaf1ef5d94c49f56b0b586877"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -4975,7 +4975,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x9ea85e1d4d0cd67c9acaaea2b74252f06690dab5"
+      address: "0xd6c337123f48a6ccaf1ef5d94c49f56b0b586877"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5021,7 +5021,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xf905c45f3752d7a2d6cb4f708915fd0808ff72c1"
+      address: "0x873f8575d7cdf3a4411bb3b09066d170bc797b1f"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5058,7 +5058,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xf905c45f3752d7a2d6cb4f708915fd0808ff72c1"
+      address: "0x873f8575d7cdf3a4411bb3b09066d170bc797b1f"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5104,7 +5104,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x4dca85deadef976ea6cc9f20e6e0b1d85f46b0b5"
+      address: "0x51440280db0f9ecdc45a378c6da138e82d7a4656"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5141,7 +5141,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x4dca85deadef976ea6cc9f20e6e0b1d85f46b0b5"
+      address: "0x51440280db0f9ecdc45a378c6da138e82d7a4656"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5187,7 +5187,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x396ff1b2023918e0472cf203578e66a14a99d026"
+      address: "0x760fc993d6373bc7db326e0f014b30d9b591a753"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5224,7 +5224,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x396ff1b2023918e0472cf203578e66a14a99d026"
+      address: "0x760fc993d6373bc7db326e0f014b30d9b591a753"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5270,7 +5270,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2011a3712f2323e70df23b79fda740399ec366a8"
+      address: "0xfe629da24876aaf9bef01976cba4ab9293df7393"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5307,7 +5307,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2011a3712f2323e70df23b79fda740399ec366a8"
+      address: "0xfe629da24876aaf9bef01976cba4ab9293df7393"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5353,7 +5353,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2aed1a7eede56079a590985f94d04082e32556b6"
+      address: "0xcdf7ddc86338b192bb7bd00d28b9ced458931dcf"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5390,7 +5390,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2aed1a7eede56079a590985f94d04082e32556b6"
+      address: "0xcdf7ddc86338b192bb7bd00d28b9ced458931dcf"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5436,7 +5436,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xf684e13f0db813b6e95dfd73ed9b6ac8ff886b8c"
+      address: "0x64a072aaf0dbe0667aea10366e0764f29fa4d95f"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5473,7 +5473,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xf684e13f0db813b6e95dfd73ed9b6ac8ff886b8c"
+      address: "0x64a072aaf0dbe0667aea10366e0764f29fa4d95f"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5519,7 +5519,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x73d50fce6d8c406e94606ebdec778c1860e683f5"
+      address: "0x73d1277805fa923ec8defa9500e89af7fe0d79d9"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5556,7 +5556,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x73d50fce6d8c406e94606ebdec778c1860e683f5"
+      address: "0x73d1277805fa923ec8defa9500e89af7fe0d79d9"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5602,7 +5602,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x26e262c5997343ac536d3f3eee1526e0cdd79ab3"
+      address: "0x27cd0b6e8dc740589402269e9e837f06b57e9fa1"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5639,7 +5639,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x26e262c5997343ac536d3f3eee1526e0cdd79ab3"
+      address: "0x27cd0b6e8dc740589402269e9e837f06b57e9fa1"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5685,7 +5685,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2b2c3ba24aec931655946535b22461d82cd6529d"
+      address: "0xb6325a0abc73723c44d6f3893bc38a7a92bf36e4"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5722,7 +5722,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2b2c3ba24aec931655946535b22461d82cd6529d"
+      address: "0xb6325a0abc73723c44d6f3893bc38a7a92bf36e4"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5768,7 +5768,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x69227325739f92b4b384ebd004094c76d7558762"
+      address: "0xc9c91d67f24b49744c185a971199a9db3af0e11a"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5805,7 +5805,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x69227325739f92b4b384ebd004094c76d7558762"
+      address: "0xc9c91d67f24b49744c185a971199a9db3af0e11a"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5851,7 +5851,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xe36bf380095ab9ea01a8121f88bd7e37bf4c8ada"
+      address: "0x1813764ae8c942337d1b9516d1c41b8bb4940820"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5888,7 +5888,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xe36bf380095ab9ea01a8121f88bd7e37bf4c8ada"
+      address: "0x1813764ae8c942337d1b9516d1c41b8bb4940820"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -5934,7 +5934,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x65468d64074343b94656971db3f700c90ad5c199"
+      address: "0x60ffa6b15879fd3b976b4fc49184fe683c85a402"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -5971,7 +5971,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x65468d64074343b94656971db3f700c90ad5c199"
+      address: "0x60ffa6b15879fd3b976b4fc49184fe683c85a402"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -6017,7 +6017,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x1d422cab6e19b6977b838153a2e6579561914b25"
+      address: "0x9357073c63eccd056516f950c562c02cc1153251"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -6054,7 +6054,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x1d422cab6e19b6977b838153a2e6579561914b25"
+      address: "0x9357073c63eccd056516f950c562c02cc1153251"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -6100,7 +6100,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x0142d466c45635b06a51bc4ebfed42530b22dc4e"
+      address: "0x826694eb107d2dbc031f5221b48f6fb37a05f233"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -6137,7 +6137,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x0142d466c45635b06a51bc4ebfed42530b22dc4e"
+      address: "0x826694eb107d2dbc031f5221b48f6fb37a05f233"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -6183,7 +6183,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x84a2b63ba8cd9f86a4b7daffbbee9f52e40407a1"
+      address: "0x973edc9e13af5235a105afc943d612ab788c56c3"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -6220,7 +6220,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x84a2b63ba8cd9f86a4b7daffbbee9f52e40407a1"
+      address: "0x973edc9e13af5235a105afc943d612ab788c56c3"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -6266,7 +6266,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2d3138fbf0ca820e91198b93a1a0f38a7033babc"
+      address: "0xbfb34b787b6c1fcfe294e1459074db5cdaee498a"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -6303,7 +6303,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2d3138fbf0ca820e91198b93a1a0f38a7033babc"
+      address: "0xbfb34b787b6c1fcfe294e1459074db5cdaee498a"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -6349,7 +6349,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x8333cf75c098b404d50a653d64702247c6166df7"
+      address: "0x1aec2028142f35239189b399831f26f258a83664"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -6386,7 +6386,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x8333cf75c098b404d50a653d64702247c6166df7"
+      address: "0x1aec2028142f35239189b399831f26f258a83664"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -6432,7 +6432,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x4281fb7b7973925c5b2034389ef47443fbbb2e3e"
+      address: "0xbda59133c2afb959249683237a03799ed68e92ff"
       abi: ERC20Template3
       startBlock: 11788389
     mapping:
@@ -6469,7 +6469,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x4281fb7b7973925c5b2034389ef47443fbbb2e3e"
+      address: "0xbda59133c2afb959249683237a03799ed68e92ff"
       abi: ERC20Template
       startBlock: 11788389
     mapping:
@@ -6515,7 +6515,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x428ffa28f6dcc6576b437167632a7dcfbda9b943"
+      address: "0x059129078488d6261b8f92806ddf442cc5ee64e7"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -6552,7 +6552,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x428ffa28f6dcc6576b437167632a7dcfbda9b943"
+      address: "0x059129078488d6261b8f92806ddf442cc5ee64e7"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -6598,7 +6598,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x4467c08b03991e60db01df842582eda5963e7d22"
+      address: "0xe0ddb478c07257f7ff7ba032f0200f8d5d4992c1"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -6635,7 +6635,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x4467c08b03991e60db01df842582eda5963e7d22"
+      address: "0xe0ddb478c07257f7ff7ba032f0200f8d5d4992c1"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -6681,7 +6681,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x5b8156e585e1472cce0f4dbd544aa00e010fae63"
+      address: "0x18febe20a46d59af5f964e39cc474333b69d2158"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -6718,7 +6718,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x5b8156e585e1472cce0f4dbd544aa00e010fae63"
+      address: "0x18febe20a46d59af5f964e39cc474333b69d2158"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -6764,7 +6764,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x7b9f2155baf99c438a80ca335a6b3ca021d32a90"
+      address: "0xf8c73fad4fe7600b94fc96e764ecba8b1df77f40"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -6801,7 +6801,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x7b9f2155baf99c438a80ca335a6b3ca021d32a90"
+      address: "0xf8c73fad4fe7600b94fc96e764ecba8b1df77f40"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -6847,7 +6847,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x47502437ebddd90c0c2013a6c06b3020839453c7"
+      address: "0xb5e823328d88656d8375a7ac8f66e87731ef6ec5"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -6884,7 +6884,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x47502437ebddd90c0c2013a6c06b3020839453c7"
+      address: "0xb5e823328d88656d8375a7ac8f66e87731ef6ec5"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -6930,7 +6930,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x77ed6ac88e283a5021422ab27565b465b0032dfa"
+      address: "0x354ea09808a9a86b85c7e8ca3f3ccbe57e2be99c"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -6967,7 +6967,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x77ed6ac88e283a5021422ab27565b465b0032dfa"
+      address: "0x354ea09808a9a86b85c7e8ca3f3ccbe57e2be99c"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7013,7 +7013,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xad8afe251897f2cfc621eff586c4e3b53ce86dd9"
+      address: "0xa82534177a0d37d2f6c5fdf7909271eeb56a3cb8"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7050,7 +7050,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xad8afe251897f2cfc621eff586c4e3b53ce86dd9"
+      address: "0xa82534177a0d37d2f6c5fdf7909271eeb56a3cb8"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7096,7 +7096,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x50250e9c8b08b082ab219dc56dd7c47e5bbdd1d9"
+      address: "0x6979ed95bfc8515680295da4d9fb31e08974b9e9"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7133,7 +7133,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x50250e9c8b08b082ab219dc56dd7c47e5bbdd1d9"
+      address: "0x6979ed95bfc8515680295da4d9fb31e08974b9e9"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7179,7 +7179,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x01e617b6af30877809b67bea0f37d958400aa53d"
+      address: "0x272dbbd82a859eaf03d2456cb1e15cc595b3a578"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7216,7 +7216,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x01e617b6af30877809b67bea0f37d958400aa53d"
+      address: "0x272dbbd82a859eaf03d2456cb1e15cc595b3a578"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7262,7 +7262,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x7f39b35d21b66cdd4c57700845a1d6ed61d823d5"
+      address: "0x4df6ff076b40cefa19638a588dcadf6e8bb62b20"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7299,7 +7299,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x7f39b35d21b66cdd4c57700845a1d6ed61d823d5"
+      address: "0x4df6ff076b40cefa19638a588dcadf6e8bb62b20"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7345,7 +7345,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xa2b7bc235c24ae615085a00744e510ce9141b2e1"
+      address: "0x31bc8b94d64d08d9582dfc4ff26595310131f1b2"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7382,7 +7382,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xa2b7bc235c24ae615085a00744e510ce9141b2e1"
+      address: "0x31bc8b94d64d08d9582dfc4ff26595310131f1b2"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7428,7 +7428,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x63b3ab343aa1e3046aa5d4c38a0b4e5c02dbc433"
+      address: "0xa4445d8f837bd12ae9f76202a4d513fe7f6fc9ca"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7465,7 +7465,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x63b3ab343aa1e3046aa5d4c38a0b4e5c02dbc433"
+      address: "0xa4445d8f837bd12ae9f76202a4d513fe7f6fc9ca"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7511,7 +7511,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x6844566441f37d6e7721411c709f28120f4e31eb"
+      address: "0xfb224aea6506515eb22b1f6631b4bf4be6aa1352"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7548,7 +7548,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x6844566441f37d6e7721411c709f28120f4e31eb"
+      address: "0xfb224aea6506515eb22b1f6631b4bf4be6aa1352"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7594,7 +7594,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x59010deb94801a9cf8490cb443cb4c5b2b5db653"
+      address: "0xc1e841d56527dddf2b0c7e31a8aa2f50e5ea84ef"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7631,7 +7631,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x59010deb94801a9cf8490cb443cb4c5b2b5db653"
+      address: "0xc1e841d56527dddf2b0c7e31a8aa2f50e5ea84ef"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7677,7 +7677,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x1a6f1222ab4346804d317fb5c3a105e292e9d43f"
+      address: "0x31c01f101360e324b93d05799f176d36389a5106"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7714,7 +7714,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x1a6f1222ab4346804d317fb5c3a105e292e9d43f"
+      address: "0x31c01f101360e324b93d05799f176d36389a5106"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7760,7 +7760,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xd7abe7ba98dcd9068df1cc64ecc4d7848045e0fb"
+      address: "0x785e0bb0d3249b7e2c56abbd921f969bbc814def"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7797,7 +7797,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xd7abe7ba98dcd9068df1cc64ecc4d7848045e0fb"
+      address: "0x785e0bb0d3249b7e2c56abbd921f969bbc814def"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7843,7 +7843,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2375ffbf9102da186f154e97a2fa2f2ce3e31147"
+      address: "0xbc5a7a042d6d6381e6ef1a3e6f9d1903b824a34b"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7880,7 +7880,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2375ffbf9102da186f154e97a2fa2f2ce3e31147"
+      address: "0xbc5a7a042d6d6381e6ef1a3e6f9d1903b824a34b"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -7926,7 +7926,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2d9fbd67ecc2859cc37e205303bae0f35eed2ac8"
+      address: "0x13650c4ef8c9edc98a1d6833d8daa75c5148cb23"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -7963,7 +7963,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0x2d9fbd67ecc2859cc37e205303bae0f35eed2ac8"
+      address: "0x13650c4ef8c9edc98a1d6833d8daa75c5148cb23"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -8009,7 +8009,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xe47177e8698dad40027118f937bd15b3fab9ba23"
+      address: "0x5b46d30fd18aaeb16b8919ee4d693296be637de1"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -8046,7 +8046,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xe47177e8698dad40027118f937bd15b3fab9ba23"
+      address: "0x5b46d30fd18aaeb16b8919ee4d693296be637de1"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
@@ -8092,7 +8092,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xde8fabb6ff1d20583d8ff327a35d0f6f22a8b8f0"
+      address: "0xade314f4b7671b2cc1233d157fea846a1dcba879"
       abi: ERC20Template3
       startBlock: 14700000
     mapping:
@@ -8129,7 +8129,7 @@ dataSources:
     kind: ethereum/contract
     network: __NETWORK__
     source:
-      address: "0xde8fabb6ff1d20583d8ff327a35d0f6f22a8b8f0"
+      address: "0xade314f4b7671b2cc1233d157fea846a1dcba879"
       abi: ERC20Template
       startBlock: 14700000
     mapping:
